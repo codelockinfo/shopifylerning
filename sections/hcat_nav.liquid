@@ -1,0 +1,126 @@
+{%- assign se_blocks = section.blocks -%} 
+
+{%- if template.suffix == "hcat_nav" and template.name == 'search' -%}
+
+	[nt_cl]
+	{%- for block in se_blocks -%}
+	<li id="item_{{block.id}}" class="cat_menu-0"><a class="lh__1 flex al_center pr" href="{{block.settings.url}}"{% if block.settings.cus_cl %} style="color: {{block.settings.cl}} !important"{% endif %}>{%- render 'title_menu2',block:block -%}</a></li>
+	{%- endfor -%}
+	[nt_cl]
+
+{%- else -%}
+  <div id="html_hcat_nav" class="hide hidden">
+  	 {%- for block in se_blocks -%}<li class="item_{{block.id}}" class="cat_menu-0"><a class="lh__1 flex al_center pr" href="{{block.settings.url}}"{% if block.settings.cus_cl %} style="color: {{block.settings.cl}} !important"{% endif %} {{ block.shopify_attributes }}>{%- render 'title_menu2',block:block -%}</a></li>{%- endfor -%}
+  </div>
+{%- endif -%}
+
+{%- schema -%}
+  {
+    "name": "Header Categories",
+    "max_blocks": 40,
+    /*"settings": [
+      {
+        "type": "color",
+        "id": "bg",
+        "label": "Heading background Color",
+        "default": "#007e91"
+      },
+      {
+        "type": "color",
+        "id": "cl",
+        "label": "Heading color Text",
+        "default": "#fff"
+      }
+    ],*/
+    "blocks": [
+      {
+        "type": "simple",
+        "name":"Item by category",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Heading"
+          },
+          {
+            "type": "url",
+            "id": "url",
+            "label": "Link",
+            "default": "/"
+          },
+         {
+           "type": "select",
+           "id": "icons_op",
+           "options": [
+             {
+               "value": "0",
+               "label": "None"
+             },
+             {
+               "value": "1",
+               "label": "Image"
+             },
+             {
+               "value": "2",
+               "label": "Icon"
+             }
+           ],
+           "label": "== Show icons option:",
+           "default": "2"
+         },
+         {
+             "type": "image_picker",
+             "id": "image",
+             "label": "Image"
+         },
+         {
+            "id": "icon",
+            "type": "text",
+            "label": "Icon",
+            "default":"chair",
+            "info":"Ex:user [Line awesome icons](https://icons8.com/line-awesome)"
+         },
+          {
+            "type": "checkbox",
+            "id": "cus_cl",
+            "label": "Use cusom color text?",
+            "default": false
+          },
+          {
+            "type":"color",
+            "id":"cl",
+            "default": "#ec0101",
+            "label":"Label color"
+          },
+          {
+            "type":"text",
+            "id":"lb",
+            "label":"Label text"
+          },
+          {
+            "type":"color",
+            "id":"lb_cl",
+            "label":"Label color"
+          }
+        ]
+      }
+   ],
+    "default": {
+      "blocks": [
+        {
+          "type": "simple",
+          "settings": {
+            "title": "Heading 1","url":"#"
+          }
+        },
+        {
+          "type": "simple",
+          "settings": {
+            "title": "Heading 2","url":"#"
+          }
+        }
+      ]
+    }
+  }
+{% endschema %}

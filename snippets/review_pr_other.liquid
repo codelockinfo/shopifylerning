@@ -1,0 +1,30 @@
+<span class="stamped-product-reviews-badge stamped-main-badge" data-id="{{ product.id }}" data-product-sku="{{ product.handle }}" style="display: inline-block;">{{- product.metafields.stamped.badge -}}</span>
+
+{%- comment -%}
+DOCUMENT https://kalles-docs.the4.co/features/custom-review-app#custom-review-apps
+
+1. Judge.me Product Reviews https://support.judge.me/support/solutions/articles/44001699621-judge-me-manual-installation-guide
+
+  {%- render 'judgeme_widgets', widget_type: 'judgeme_preview_badge', jm_style: '', concierge_install: true -%}
+
+2. stamped.io https://apps.shopify.com/product-reviews-addon
+
+  <span class="stamped-product-reviews-badge stamped-main-badge" data-id="{{ product.id }}" data-product-sku="{{ product.handle }}" style="display: inline-block;">{{- product.metafields.stamped.badge -}}</span>
+
+3. Yotpo: Photo & Product Reviews https://apps.shopify.com/yotpo-social-reviews
+
+  <div class="yotpo bottomLine" style="display:inline-block" data-product-id="{{ product.id }}"> </div>
+
+4. rivyo-product-review https://apps.shopify.com/rivyo-product-review 
+
+  <div class="wc_product_review_badge" data-handle="{{ product.handle }}" data-product_id="{{ product.id }}"></div>
+
+5. aliexpress-reviews-importer
+
+  <div id="shop_booster_rate_6" product-id="{{ product.id }}"></div>
+
+6. Areviews - Reviews Importer
+  Note: If you not config then it insert by js app Areviews
+  <div class="areviews_header_stars"></div> 
+
+{%- endcomment -%}

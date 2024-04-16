@@ -1,0 +1,1288 @@
+{%- liquid
+  assign sid = section.id
+  assign rtl = settings.use_rtl
+  if rtl 
+    assign ltr = false 
+  else 
+    assign ltr = true  
+  endif
+  assign index = 1
+  assign se_blocks = section.blocks
+  assign arr_blocks_img = se_blocks | where: "type", 'image' -%}
+  
+<div class="nt_se_{{sid}} type_css_btna {{section.settings.layout}}">
+  {%- render 'section_title' -%}
+  <div class="mt__30 nt_banner_holder row fl_center js_packery cat_space_{{section.settings.cat_space}}" data-packery='{ "itemSelector": ".cat_space_item","gutter": 0,"percentPosition": true,"originLeft": {{ltr}} }'> 
+    <div class="grid-sizer"></div>
+    {%- for block in arr_blocks_img %}{% assign bk_stts = block.settings %}{% assign image = bk_stts.image -%}
+      <div class="cat_space_item hoverz_{{bk_stts.hoverz}} col-lg-{{bk_stts.col_pr}} col-md-{{bk_stts.col_pr_tb}} col-{{bk_stts.col_pr_mb}} pr_animated done bg_content_{{bk_stts.bg_content_bl}} border_bl_{{bk_stts.border_bl}} br_style_{{bk_stts.br_style}}" id="bk_{{block.id}}">
+        <div class="banner_hzoom nt_promotion oh pr">
+          {%- if image != blank %}{% assign image_mb = bk_stts.image_mb |default:image -%}
+            <div class="dek_img_slide nt_bg_lz pr_lazy_img lazyload item__position {{bk_stts.img_align}}" data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{image.aspect_ratio}}" data-sizes="auto" data-parent-fit="cover"></div>
+            <div class="mb_img_slide nt_bg_lz pr_lazy_img lazyload item__position {{bk_stts.img_align}}" data-bgset="{{ image_mb | img_url: '1x1' }}" data-ratio="{{image_mb.aspect_ratio}}" data-sizes="auto" data-parent-fit="cover"></div>
+          {%- else -%}
+            {%- capture cl -%}{% cycle 'a8dacc', 'f76b6a' %}{%- endcapture -%}
+            <div class="nt_bg_lz pr_lazy_img lazyload item__position {{bk_stts.img_align}}" data-bg="https://placehold.jp/50/{{cl}}/{{cl}}/530x600.png?text=1" style="padding-top:52.63157894736842%"></div>
+          {%- endif -%}
+          <a href="{{ bk_stts.url }}" target="{{bk_stts.open_link}}" class="pa t__0 l__0 r__0 b__0{% if bk_stts.url == blank %} pe_none{% endif %}"></a>
+          <div class="nt_promotion_html pa t__0_ l__0_ pa_txts mb_h_pos{{bk_stts.cap_h_pos_mb}} mb_v_pos{{bk_stts.cap_v_pos_mb}} h_pos{{bk_stts.cap_h_pos}} v_pos{{bk_stts.cap_v_pos}} {{bk_stts.txt_align}} {{bk_stts.txt_align_mb}} pe_none z_100">
+              <div class="wrap_html_block">
+              {%- for block in se_blocks offset:index %}{% assign bk_stts = block.settings %}{% assign index = index|plus:1 -%}
+                 {%- case block.type -%}
+                    {%- when 'hd' -%}
+                       <h3 id="b_{{block.id}}" class="slt4_h3 lh__1 mg__0" {{ block.shopify_attributes }}>{{bk_stts.title}}</h3>
+                    {%- when 'subhd' -%}
+                       <h4 id="b_{{block.id}}" class="slt4_h4 mg__0 lh__1 {{bk_stts.font}}{% if bk_stts.hide %} dn db_md{% endif %}" {{ block.shopify_attributes }}>{{bk_stts.title}}</h4>
+                    {%- when 'txt' -%}
+                       <p id="b_{{block.id}}" class="slt4_p mg__0{% if bk_stts.hide %} dn db_md{% endif %}" {{ block.shopify_attributes }}>{{bk_stts.title}}</p> 
+                    {%- when '4' -%}<div id="b_{{block.id}}" class="space_banner dib" {{ block.shopify_attributes }}></div>
+                    {%- when 'btn' -%}
+                       {%- if bk_stts.btn_link != blank and bk_stts.title != blank -%}<a id="b_{{block.id}}" class="slt4_btn button pe_auto round_{{bk_stts.btn_round}} btn_icon_{{bk_stts.btn_icon}}" href="{{bk_stts.btn_link}}" target="{{open_link}}" {{ block.shopify_attributes }}>{{bk_stts.title}}</a>{%- endif -%}
+                       {%- if bk_stts.btn_link2 != blank and bk_stts.title2 != blank -%}<a id="b_{{block.id}}" class="slt4_btn button pe_auto btn_style_{{bk_stts.btn_style}} round_{{bk_stts.btn_round}} btn_icon_{{bk_stts.btn_icon}}" href="{{bk_stts.btn_link2}}" target="{{open_link}}" {{ block.shopify_attributes }}>{{bk_stts.title2}}</a>{%- endif -%}
+                    {%- when 'html' -%}
+                       <div id="b_{{block.id}}" class="slt4_html" {{ block.shopify_attributes }}>{{bk_stts.html}}</div>
+                    {%- when 'space' -%}
+                       <div id="b_{{block.id}}" class="slt4_space" {{ block.shopify_attributes }}></div>
+                    {%- else -%}{%- break -%}
+                 {%- endcase -%}
+              {%- endfor -%}
+              </div>
+          </div>
+        </div>
+      </div>
+    {%- endfor -%}
+  </div>
+</div>
+
+{%- render 'section_css' -%}
+{%- style -%}
+    {%- for block in section.blocks %}{% assign bid = block.id %}{% assign btype = block.type %}{% assign bk_stts = block.settings -%}
+    {%- if btype == 'image' -%}
+      {%- assign image = bk_stts.image %}{% assign image_mb = bk_stts.image_mb |default:image -%}
+       #bk_{{bid}} .nt_promotion>a:after{ background-color: {{bk_stts.cl_overlay}};opacity: {{bk_stts.cl_opacity | divided_by: 100.00}} }
+       {%- if image != blank -%}
+         #bk_{{bid}} .mb_img_slide.nt_bg_lz {padding-top:{{ 1 | divided_by: image_mb.aspect_ratio | times: 100}}%;}
+         @media (min-width: 768px) {
+            #bk_{{bid}} .dek_img_slide.nt_bg_lz {padding-top:{{ 1 | divided_by: image.aspect_ratio | times: 100}}%;}
+         }
+         {%- if bk_stts.bg_content_bl -%}
+            #bk_{{bid}} .pa_txts>div {
+              {%- assign bg_content_op = bk_stts.bg_content_op | divided_by: 100.0 -%}
+              color: {{ bk_stts.bg_content_cl | color_modify: 'alpha', bg_content_op }};
+              background-color: currentColor;
+              {%- if bk_stts.border_bl -%}
+              border-color: {{bk_stts.br_color}};
+              box-shadow: 0 0 0 {{bk_stts.br_pd_mb}}px currentColor;
+              {%- endif -%}
+              padding: {{ bk_stts.content_pd_mb}};
+            }
+            @media (min-width: 768px) {
+              #bk_{{bid}} .pa_txts>div {
+                padding: {{ bk_stts.content_pd}};
+                {%- if bk_stts.border_bl -%}
+                box-shadow: 0 0 0 {{bk_stts.br_pd}}px currentColor;
+                {%- endif -%}
+              }
+            }
+         {%- endif -%}
+       {%- endif -%}
+
+    {%- elsif btype == 'html' %}{% continue -%}
+    {%- elsif btype == '4' -%}
+       #b_{{bid}} {width: {{bk_stts.w_mb}}px;margin: {{bk_stts.sp_mb}}px 0 {{bk_stts.spb_mb}}px;height: {{bk_stts.h_mb}}px;background-color: {{bk_stts.color}}}
+       @media (min-width: 768px) { #b_{{bid}} {width: {{bk_stts.w}}px;margin: {{bk_stts.sp}}px 0 {{bk_stts.spb}}px;height: {{bk_stts.h}}px} }
+    {%- elsif btype == 'btn' -%}
+      #b_{{bid}}{ padding-left:{{bk_stts.pd_mb}}px;padding-right:{{bk_stts.pd_mb}}px;border-radius:{{bk_stts.bdr_mb}}px;{% if bk_stts.ls_mb_text != 0 %}letter-spacing:{{bk_stts.ls_mb_text}}px;{% endif %}min-height:{{bk_stts.h_mb}}px;font-size: {{bk_stts.fs_mb_text}}px;color: {{bk_stts.cl_txt}};background-color: {{bk_stts.cl_bg}};border-color: {{bk_stts.cl_bd}} }#b_{{bid}}.btn_icon_true:after {color: {{bk_stts.cl_txt}} }
+      @media (min-width: 768px) {#b_{{bid}} { padding-left:{{bk_stts.pd}}px;padding-right:{{bk_stts.pd}}px;border-radius:{{bk_stts.bdr}}px;{% if bk_stts.ls_text != 0 %}letter-spacing:{{bk_stts.ls_text}}px;{% endif %}font-weight: {{bk_stts.fw_text}};min-height:{{bk_stts.h}}px;font-size: {{bk_stts.fs_text}}px }}
+    {%- elsif btype == 'space' -%}
+      #b_{{bid}} {height: {{bk_stts.sp_mb}}px}@media (min-width: 768px) {#b_{{bid}} { height:{{bk_stts.sp}}px} }
+    {%- else -%}
+      #b_{{bid}} { {% if bk_stts.content_pd_mb != blank %}padding:{{bk_stts.content_pd_mb}};{% endif %}{% if bk_stts.ls_mb_text != 0 %}letter-spacing:{{bk_stts.ls_mb_text}}px;{% endif %}{% if bk_stts.lh_mb_text != 0 %}line-height:{{bk_stts.lh_mb_text}}px;{% endif %}font-size: {{bk_stts.fs_mb_text}}px;font-weight: {{bk_stts.fw_text}};color: {{bk_stts.color}} }@media (min-width: 768px) {#b_{{bid}} { {% if bk_stts.content_pd != blank %}padding:{{bk_stts.content_pd}};{% endif %}{% if bk_stts.ls_text != 0 %}letter-spacing:{{bk_stts.ls_text}}px;{% endif %}{% if bk_stts.lh_text != 0 %}line-height: {{bk_stts.lh_text}}px;{% endif %}font-size: {{bk_stts.fs_text}}px}}
+    {%- endif -%}
+    {%- endfor -%}
+{%- endstyle -%}
+
+
+{%- schema -%}
+  {
+    "name": "Banner Custom 2",
+    "class": "nt_section type_banner3 type_packery",
+    "max_blocks": 30,
+    "settings": [
+      {
+        "type": "header",
+        "content": "== Title Settings"
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading"
+      },
+      {
+        "type": "textarea",
+        "id": "sub_title",
+        "label": "Sub Text"
+      },
+      {
+        "type": "select",
+        "id": "sub_font",
+        "default": "2",
+        "options": [
+         {
+            "value": "1",
+            "label": "Body font"
+         },
+         {
+            "value": "2",
+            "label": "Sub title font"
+          }
+        ],
+        "label": "Sub Text use font:"
+      },
+      {
+        "type": "select",
+        "id": "style_title",
+        "options": [
+         {
+            "value": "title_1",
+            "label": "Style 1"
+         },
+         {
+            "value": "title_2",
+            "label": "Style 2"
+          },
+         {
+            "value": "title_3",
+            "label": "Style 3"
+          },
+         {
+            "value": "title_4",
+            "label": "Style 4"
+          },
+         {
+            "value": "title_5 lazyload",
+            "label": "Style 5"
+          },
+         {
+            "value": "title_6",
+            "label": "Style 6"
+          },
+         {
+            "value": "title_7 +la",
+            "label": "Style 7 (with line-awesome)"
+          }
+        ],
+        "label": "Style title"
+      },
+      {
+        "type": "text",
+        "id": "ic_tt",
+        "label": "Style 7 icon line-awesome",
+        "default": "gem"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_clpr",
+        "label": "Use icon color primary?",
+        "default": false
+      },
+      {
+        "type": "paragraph",
+        "content": "[Get icons Line awesome](https://icons8.com/line-awesome)"
+      },
+      {
+        "type": "header",
+        "content": "== General Settings"
+      },
+     {
+       "type": "select",
+       "id": "cat_space",
+       "options": [
+        {
+           "value": "30",
+           "label": "30"
+         },
+         {
+           "value": "20",
+           "label": "20"
+         },
+         {
+           "value": "10",
+           "label": "10"
+         },
+         {
+           "value": "6",
+           "label": "6"
+         },
+         {
+           "value": "2",
+           "label": "2"
+         },
+         {
+           "value": "0",
+           "label": "0"
+         }
+       ],
+       "label": "Space between Banners",
+       "default": "30"
+     },
+      {
+        "type": "header",
+        "content": "== Design Options"
+      },
+      {
+        "type": "select",
+        "id": "layout",
+        "options": [
+         {
+            "value": "container",
+            "label": "Container"
+         },
+         {
+            "value": "nt_full",
+            "label": "Full Width"
+          }
+        ],
+        "label": "Layout"
+      },
+      {
+        "type": "color",
+        "id": "cl_bg",
+        "label": "Background color"
+      },
+      {
+        "type": "text",
+        "id": "mg",
+        "label": "Margin",
+        "info":"Margin top, margin right, margin bottom, margin left. If you not use to blank",
+        "default": "50px,,50px,",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd",
+        "label": "Padding",
+        "info":"Padding top, padding right, padding bottom, padding left. If you not use to blank",
+        "placeholder": "50px,,50px,"
+      },
+     {
+        "type": "header",
+        "content": "== Design Mobile Options"
+      },
+      {
+        "type": "text",
+        "id": "mg_mb",
+        "label": "Margin",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd_mb",
+        "label": "Padding",
+        "placeholder": "50px,,50px,"
+      }
+    ],
+    "blocks": [
+      {
+      "type": "image",
+      "name": "Image (Parent)",
+      "settings": [
+        {
+           "type": "image_picker",
+           "id": "image",
+           "label": "Image"
+         },
+        {
+           "type": "image_picker",
+           "id": "image_mb",
+           "label": "Mobile image (optional)"
+         },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link image",
+          "info": "The whole image becomes clickable."
+        },
+        {
+          "type": "select",
+          "id": "open_link",
+          "options": [
+            {
+              "value": "_self",
+              "label": "Current window (_self)"
+            },
+           {
+              "value": "_blank",
+              "label": "New window (_blank)"
+            }
+          ],
+          "label": "Open link in",
+          "default": "_blank"
+        },
+        {
+          "type": "checkbox",
+          "id": "hoverz",
+          "label": "Enable zoom image on hover?",
+          "default": true
+        },
+        {
+          "type": "select",
+          "id": "col_pr",
+          "label": "Banner width (desktop)",
+          "default": "6",
+          "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "8",
+              "label": "66,6%"
+            },
+            {
+              "value": "7",
+              "label": "58,3%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            },
+            {
+              "value": "5",
+              "label": "41,6%"
+            },
+            {
+              "value": "4",
+              "label": "33,3%"
+            },
+            {
+              "value": "3",
+              "label": "25%"
+            },
+            {
+              "value": "15",
+              "label": "20%"
+            },
+            {
+              "value": "2",
+              "label": "16,6%"
+            }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "col_pr_tb",
+          "label": "Banner width (tablet)",
+          "default": "6",
+          "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "8",
+              "label": "66,6%"
+            },
+            {
+              "value": "7",
+              "label": "58,3%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            },
+            {
+              "value": "5",
+              "label": "41,6%"
+            },
+            {
+              "value": "4",
+              "label": "33,3%"
+            },
+            {
+              "value": "3",
+              "label": "25%"
+            },
+            {
+              "value": "15",
+              "label": "20%"
+            },
+            {
+              "value": "2",
+              "label": "16,6%"
+            }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "col_pr_mb",
+          "label": "Banner width (mobile)",
+          "default": "12",
+          "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            }
+          ]
+        },
+        {
+           "type": "header",
+           "content": "== Content settings"
+         },
+        /*{
+          "type": "select",
+          "id": "v_tp",
+          "label": "Vertical position Top/Bottom:",
+          "options": [
+            {
+              "value": "top",
+              "label": "Top"
+            },
+            {
+              "value": "bottom",
+              "label": "Bottom"
+            }
+          ]
+        },*/
+        {
+           "type": "range",
+           "id": "cap_v_pos",
+           "label": "Content vertical position",
+           "info":" <= 50: Top position , > 50 bottom position",
+           "default": 50,
+           "min": 0,
+           "max": 100,
+           "step": 1,
+           "unit": "%"
+        },
+        {
+           "type": "range",
+           "id": "cap_h_pos",
+           "label": "Content horizontal position",
+           "info":" <= 50: Left position , > 50 right position",
+           "default": 50,
+           "min": 0,
+           "max": 100,
+           "step": 1,
+           "unit": "%"
+        },
+        {
+          "type": "select",
+          "id": "txt_align",
+          "label": "Text alignment",
+          "default": "tc_md",
+          "options": [
+            {
+              "value": "tl_md",
+              "label": "Left"
+            },
+            {
+              "value": "tc_md",
+              "label": "Center"
+            },
+            {
+              "value": "tr_md",
+              "label": "Right"
+            }
+          ]
+        },
+        {
+           "type": "header",
+           "content": "== Content mobile settings"
+         },
+        {
+           "type": "range",
+           "id": "cap_v_pos_mb",
+           "label": "Content vertical position",
+           "info":" <= 50: Top position , > 50 bottom position",
+           "default": 50,
+           "min": 0,
+           "max": 100,
+           "step": 1,
+           "unit": "%"
+        },
+        {
+           "type": "range",
+           "id": "cap_h_pos_mb",
+           "label": "Content horizontal position",
+           "info":" <= 50: Left position , > 50 right position",
+           "default": 50,
+           "min": 0,
+           "max": 100,
+           "step": 1,
+           "unit": "%"
+        },
+        {
+          "type": "select",
+          "id": "txt_align_mb",
+          "label": "Text alignment",
+          "default": "tc",
+          "options": [
+            {
+              "value": "tl",
+              "label": "Left"
+            },
+            {
+              "value": "tc",
+              "label": "Center"
+            },
+            {
+              "value": "tr",
+              "label": "Right"
+            }
+          ]
+        },
+        {
+          "type": "header",
+          "content": "== Color settings"
+        },
+        {
+          "type": "color",
+          "id": "cl_overlay",
+          "label": "Overlay",
+          "default": "#000"
+        },
+        {
+          "type": "range",
+          "id": "cl_opacity",
+          "label": "Overlay opacity",
+          "default": 0,
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%"
+        },
+        {
+           "type": "header",
+           "content": "== Background Color content settings"
+        },
+        {
+          "type": "checkbox",
+          "id": "bg_content_bl",
+          "label": "Enable Background content Color?",
+          "default": false
+        },
+        {
+          "type": "color",
+          "id": "bg_content_cl",
+          "label": "Background Color",
+          "default": "#fff"
+        },
+        {
+          "type": "range",
+          "id": "bg_content_op",
+          "label": "Background Color opacity",
+          "default": 50,
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%"
+        },
+        {
+          "type": "text",
+          "id": "content_pd",
+          "label": "Content pading (desktop)",
+          "default": "40px 80px"
+        },
+        {
+          "type": "text",
+          "id": "content_pd_mb",
+          "label": "Content pading (mobile)",
+          "default": "10px 20px"
+        },
+        {"type": "paragraph","content": "————————————————"},
+        {
+          "type": "checkbox",
+          "id": "border_bl",
+          "label": "Enable Border content Color?",
+          "default": false
+        },
+        {
+          "type": "color",
+          "id": "br_color",
+          "label": "Border Color",
+          "default": "#222"
+        },
+        {
+          "type": "select",
+          "id": "br_style",
+          "options": [
+            {
+              "value": "solid",
+              "label": "Solid"
+            },
+            {
+              "value": "dashed",
+              "label": "Dashed"
+            },
+           {
+              "value": "double",
+              "label": "Double"
+            }
+          ],
+          "label": "Border Style"
+        },
+        {
+          "type": "range",
+          "id": "br_pd",
+          "label": "Border pading (desktop)",
+          "default": 20,
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "px"
+        },
+        {
+          "type": "range",
+          "id": "br_pd_mb",
+          "label": "Border pading (mobile)",
+          "default": 10,
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "px"
+        }
+        ]
+      },
+      {
+        "type": "hd",
+        "name": "Heading",
+        "settings": [
+            {
+              "type": "textarea",
+              "id": "title",
+              "label": "Heading",
+              "default": "Heading Banner"
+            },
+            {
+              "type": "color",
+              "id": "color",
+              "label": "Color Text",
+              "default": "#fff"
+            },
+            {
+              "type": "range",
+              "id": "fw_text",
+              "min": 400,
+              "max": 800,
+              "step": 100,
+              "label": "Font weight",
+              "default": 600
+            },
+            {
+              "type": "range",
+              "id": "fs_text",
+              "min": 20,
+              "max": 70,
+              "step": 0.5,
+              "label": "Font size",
+              "unit": "px",
+              "default": 30
+            },
+            {
+              "type": "range",
+              "id": "lh_text",
+              "min": 0,
+              "max": 100,
+              "step": 1,
+              "label": "Line Height",
+              "info": "set is '0' use to default",
+              "unit": "px",
+              "default": 0
+            },
+            {
+              "type": "range",
+              "id": "ls_text",
+              "min": 0,
+              "max": 10,
+              "step": 0.1,
+              "label": "Letter spacing",
+              "info": "set is '0' use to default",
+              "unit": "px",
+              "default": 0
+            },
+            {
+              "type": "range",
+              "id": "fs_mb_text",
+              "min": 10,
+              "max": 50,
+              "step": 0.5,
+              "label": "Font size (mobile)",
+              "unit": "px",
+              "default": 15
+            },
+            {
+              "type": "range",
+              "id": "lh_mb_text",
+              "min": 0,
+              "max": 50,
+              "step": 0.5,
+              "label": "Line Height (mobile)",
+              "info": "set is '0' use to default",
+              "unit": "px",
+              "default": 0
+            },
+            {
+              "type": "range",
+              "id": "ls_mb_text",
+              "min": 0,
+              "max": 10,
+              "step": 0.1,
+              "label": "Letter spacing",
+              "info": "set is '0' use to default",
+              "unit": "px",
+              "default": 0
+            }
+          ]
+      },
+      {
+        "type": "subhd",
+        "name": "Sub Heading",
+        "settings": [
+            {
+              "type": "select",
+              "id": "font",
+              "default": "f__libre",
+              "options": [
+               {
+                  "value": "f_body",
+                  "label": "Body font"
+               },
+               {
+                  "value": "f_heading",
+                  "label": "Heading font"
+               },
+               {
+                  "value": "f__libre",
+                  "label": "Sub title font"
+                }
+              ],
+              "label": "Sub Heading use font:"
+            },
+            {
+              "type": "textarea",
+              "id": "title",
+              "label": "Heading",
+              "default": "Sub banner"
+            },
+            {
+              "type": "color",
+              "id": "color",
+              "label": "Color Text",
+              "default": "#fff"
+            },
+            {
+              "type": "range",
+              "id": "fw_text",
+              "min": 400,
+              "max": 800,
+              "step": 100,
+              "label": "Font weight",
+              "default": 400
+            },
+            {
+              "type": "range",
+              "id": "fs_text",
+              "min": 10,
+              "max": 50,
+              "step": 0.5,
+              "label": "Font size",
+              "unit": "px",
+              "default": 14
+            },
+            {
+              "type": "range",
+              "id": "lh_text",
+              "min": 0,
+              "max": 100,
+              "step": 1,
+              "label": "Line Height",
+              "info": "set is '0' use to default",
+              "unit": "px",
+              "default": 0
+            },
+            {
+              "type": "range",
+              "id": "ls_text",
+              "min": 0,
+              "max": 10,
+              "step": 0.1,
+              "label": "Letter spacing",
+              "info": "set is '0' use to default",
+              "unit": "px",
+              "default": 0
+            },
+            {
+              "type": "range",
+              "id": "fs_mb_text",
+              "min": 10,
+              "max": 50,
+              "step": 0.5,
+              "label": "Font size (mobile)",
+              "unit": "px",
+              "default": 14
+            },
+            {
+              "type": "range",
+              "id": "lh_mb_text",
+              "min": 0,
+              "max": 50,
+              "step": 0.5,
+              "label": "Line Height (mobile)",
+              "info": "set is '0' use to default",
+              "unit": "px",
+              "default": 0
+            },
+            {
+              "type": "range",
+              "id": "ls_mb_text",
+              "min": 0,
+              "max": 10,
+              "step": 0.1,
+              "label": "Letter spacing",
+              "info": "set is '0' use to default",
+              "unit": "px",
+              "default": 0
+            },
+            {
+              "type": "checkbox",
+              "id": "hide",
+              "label": "Hidden on mobile?",
+              "default": false
+            }
+          ]
+      },
+      {
+        "type": "txt",
+        "name": "Content",
+        "settings": [
+            {
+              "type": "textarea",
+              "id": "title",
+              "label": "Content"
+            },
+            {
+              "type": "text",
+              "id": "content_pd",
+              "label": "Content pading (desktop)",
+              "info": "eg: 20px 20px"
+            },
+            {
+              "type": "text",
+              "id": "content_pd_mb",
+              "label": "Content pading (mobile)",
+              "info": "eg: 5px 5px"
+            },
+            {
+              "type": "color",
+              "id": "color",
+              "label": "Color Text",
+              "default": "#fff"
+            },
+            {
+              "type": "range",
+              "id": "fw_text",
+              "min": 400,
+              "max": 800,
+              "step": 100,
+              "label": "Font weight",
+              "default": 400
+            },
+            {
+              "type": "range",
+              "id": "fs_text",
+              "min": 10,
+              "max": 50,
+              "step": 0.5,
+              "label": "Font size",
+              "unit": "px",
+              "default": 14
+            },
+            {
+              "type": "range",
+              "id": "lh_text",
+              "min": 0,
+              "max": 100,
+              "step": 1,
+              "label": "Line Height",
+              "info": "set is '0' use to default",
+              "unit": "px",
+              "default": 0
+            },
+            {
+              "type": "range",
+              "id": "ls_text",
+              "min": 0,
+              "max": 10,
+              "step": 0.1,
+              "label": "Letter spacing",
+              "info": "set is '0' use to default",
+              "unit": "px",
+              "default": 0
+            },
+            {
+              "type": "range",
+              "id": "fs_mb_text",
+              "min": 10,
+              "max": 50,
+              "step": 0.5,
+              "label": "Font size (mobile)",
+              "unit": "px",
+              "default": 14
+            },
+            {
+              "type": "range",
+              "id": "lh_mb_text",
+              "min": 0,
+              "max": 50,
+              "step": 0.5,
+              "label": "Line Height (mobile)",
+              "info": "set is '0' use to default",
+              "unit": "px",
+              "default": 0
+            },
+            {
+              "type": "range",
+              "id": "ls_mb_text",
+              "min": 0,
+              "max": 10,
+              "step": 0.1,
+              "label": "Letter spacing",
+              "info": "set is '0' use to default",
+              "unit": "px",
+              "default": 0
+            },
+            {
+              "type": "checkbox",
+              "id": "hide",
+              "label": "Hidden on mobile?",
+              "default": false
+            }
+          ]
+      },
+      {
+        "type": "btn",
+        "name": "Button",
+        "settings": [
+            {
+              "type": "text",
+              "id": "title",
+              "label": "Button label",
+              "default": "Shop Now"
+            },
+            {
+              "type": "url",
+              "id": "btn_link",
+              "label": "Button link (Optional)"
+            },
+            {"type": "paragraph","content": "————————————————"},
+            {
+              "type": "text",
+              "id": "title2",
+              "label": "Button label 2",
+              "default": "Shop Now"
+            },
+            {
+              "type": "url",
+              "id": "btn_link2",
+              "label": "Button link 2 (Optional)"
+            },
+            {"type": "paragraph","content": "————————————————"},
+            /*{
+              "type": "checkbox",
+              "id": "btn_round",
+              "label": "Button round?",
+              "default": true
+            },*/
+            {
+              "type": "checkbox",
+              "id": "btn_icon",
+              "label": "Button icon?",
+              "default": false
+            },
+            {
+              "type": "color",
+              "id": "cl_txt",
+              "label": "Text color",
+              "default": "#fff"
+            },
+            {
+              "type": "color",
+              "id": "cl_bg",
+              "label": "Background color",
+              "default": "#222"
+            },
+            {
+              "type": "color",
+              "id": "cl_bd",
+              "label": "Border color",
+              "default": "#222"
+            },
+            {
+              "type": "range",
+              "id": "fs_text",
+              "min": 10,
+              "max": 40,
+              "step": 0.5,
+              "label": "Font size",
+              "unit": "px",
+              "default": 14
+            },
+            {
+              "type": "range",
+              "id": "fw_text",
+              "min": 400,
+              "max": 600,
+              "step": 100,
+              "label": "Font weight",
+              "default": 600
+            },
+            { 
+              "type": "range",
+              "id": "h",
+              "min": 40,
+              "max": 80,
+              "step": 0.5,
+              "label": "Min height button",
+              "unit": "px",
+              "default": 40
+            },
+            {
+              "type": "range",
+              "id": "ls_text",
+              "min": 0,
+              "max": 10,
+              "step": 0.1,
+              "label": "Letter spacing",
+              "info": "set is '0' use to default",
+              "unit": "px",
+              "default": 0
+            },
+            {
+              "type": "range",
+              "id": "bdr",
+              "min": 0,
+              "max": 100,
+              "step": 1,
+              "label": "Border radius",
+              "unit": "px",
+              "default": 0
+            },
+            {
+              "type": "range",
+              "id": "pd",
+              "min": 0,
+              "max": 100,
+              "step": 1,
+              "label": "Padding left/right",
+              "unit": "px",
+              "default": 15
+            },
+            {"type": "paragraph","content": "————————————————"},
+            {
+              "type": "range",
+              "id": "fs_mb_text",
+              "min": 10,
+              "max": 50,
+              "step": 0.5,
+              "label": "Font size (mobile)",
+              "unit": "px",
+              "default": 14
+            },
+            { 
+              "type": "range",
+              "id": "h_mb",
+              "min": 40,
+              "max": 80,
+              "step": 0.5,
+              "label": "Min height button (mobile)",
+              "unit": "px",
+              "default": 40
+            },
+            {
+              "type": "range",
+              "id": "ls_mb_text",
+              "min": 0,
+              "max": 10,
+              "step": 0.1,
+              "label": "Letter spacing (mobile)",
+              "info": "set is '0' use to default",
+              "unit": "px",
+              "default": 0
+            },
+            {
+              "type": "range",
+              "id": "bdr_mb",
+              "min": 0,
+              "max": 100,
+              "step": 1,
+              "label": "Border radius (mobile)",
+              "unit": "px",
+              "default": 0
+            },
+            {
+              "type": "range",
+              "id": "pd_mb",
+              "min": 0,
+              "max": 100,
+              "step": 1,
+              "label": "Padding left/right (mobile)",
+              "unit": "px",
+              "default": 15
+            }
+          ]
+      },
+      {
+        "type": "html",
+        "name": "HTML",
+        "settings": [
+            {
+              "type": "html",
+              "id": "html",
+              "label": "Custom HTMl",
+              "default": "<h3>Best shopify theme 2020<\/h3>"
+            }
+          ]
+      },
+      {
+        "type": "space",
+        "name": "Space between",
+        "settings": [
+            {
+              "type": "range",
+              "id": "sp",
+              "min": 0,
+              "max": 100,
+              "step": 1,
+              "label": "Space",
+              "unit": "px",
+              "default": 20
+            },
+            {
+              "type": "range",
+              "id": "sp_mb",
+              "min": 0,
+              "max": 50,
+              "step": 0.5,
+              "label": "Space (mobile)",
+              "unit": "px",
+              "default": 10
+            }
+          ]
+      },
+      {
+        "type": "4",
+        "name": "Space HTML",
+        "settings": [
+            {
+              "type": "color",
+              "id": "color",
+              "label": "Color",
+              "default": "#fff"
+            },
+            {
+              "type": "range",
+              "id": "w",
+              "min": 50,
+              "max": 150,
+              "step": 10,
+              "label": "Width",
+              "default": 140
+            },
+            {
+              "type": "range",
+              "id": "h",
+              "min": 1,
+              "max": 5,
+              "step": 0.5,
+              "label": "Height",
+              "default": 3
+            },
+            {
+              "type": "range",
+              "id": "sp",
+              "min": 0,
+              "max": 100,
+              "step": 1,
+              "label": "Space Top",
+              "unit": "px",
+              "default": 20
+            },
+            {
+              "type": "range",
+              "id": "spb",
+              "min": 0,
+              "max": 100,
+              "step": 1,
+              "label": "Space Bottom",
+              "unit": "px",
+              "default": 20
+            },
+            {"type": "paragraph","content": "————————————————"},
+            {
+              "type": "range",
+              "id": "w_mb",
+              "min": 50,
+              "max": 150,
+              "step": 10,
+              "label": "Width (mobile)",
+              "default": 140
+            },
+            {
+              "type": "range",
+              "id": "h_mb",
+              "min": 1,
+              "max": 5,
+              "step": 0.5,
+              "label": "Height (mobile)",
+              "default": 3
+            },
+            {
+              "type": "range",
+              "id": "sp_mb",
+              "min": 0,
+              "max": 50,
+              "step": 0.5,
+              "label": "Space Top (mobile)",
+              "unit": "px",
+              "default": 10
+            },
+            {
+              "type": "range",
+              "id": "spb_mb",
+              "min": 0,
+              "max": 50,
+              "step": 0.5,
+              "label": "Space Bottom (mobile)",
+              "unit": "px",
+              "default": 10
+            }
+          ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "3. Banner Custom 2",
+        "category": "III. Image",
+        "blocks": [
+          { "type": "image" },
+          { "type": "hd" },
+          { "type": "space" },
+          { "type": "subhd" },
+          { "type": "space" },
+          { "type": "btn" },
+          { "type": "image" },
+          { "type": "hd" },
+          { "type": "space" },
+          { "type": "subhd" },
+          { "type": "space" },
+          { "type": "btn" }
+        ]
+      }
+    ]
+  }
+{% endschema %}

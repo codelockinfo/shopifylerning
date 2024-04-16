@@ -1,0 +1,11 @@
+{%- assign NITRO_WISHLIST_ID = '' | split:' '-%}
+{%- assign NITRO_WISHLIST_HANDLE = '' | split:' '-%}
+{%- assign NITRO_WISHLIST_COUNT = 0 -%}
+{%- assign NITRO_WISHLIST = '' -%}
+{%- if customer-%}
+	{%- if customer.metafields.nitro_wishlist.products and customer.metafields.nitro_wishlist.products != blank -%}
+		{%- assign NITRO_WISHLIST_HANDLE = customer.metafields.nitro_wishlist.products | strip | split: '|' | last | split: ' ' -%}
+				{%- assign NITRO_WISHLIST_COUNT = NITRO_WISHLIST_HANDLE.size  -%}
+				{%- assign NITRO_WISHLIST = customer.metafields.nitro_wishlist.products | strip | split: '|' | first -%}
+	{%- endif -%}
+{%- endif -%}

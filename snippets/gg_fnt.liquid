@@ -1,0 +1,10 @@
+{%- liquid 
+  assign fm = settings.fnt_bd2
+  assign fmh = settings.fnt_heading2 |default:fm
+  assign fmsub = settings.fnt_sub_tt2 |default:fm -%}
+{%- capture font_var -%}
+  {{fm | strip | replace: ' ', '+'}}:300,300i,400,400i,500,500i,600,600i,700,700i,800,800i
+  {%- if fm != fmh -%}|{{fmh | strip | replace: ' ', '+'}}:300,300i,400,400i,500,500i,600,600i,700,700i,800,800i{% endif -%}
+  {%- if fmsub != fm and fmsub != fmh -%}|{{fmsub | strip | replace: ' ', '+'}}:300,300i,400,400i,500,500i{% endif -%}
+{%- endcapture -%}
+<link rel="preload" href="https://fonts.googleapis.com/css?family={{font_var}}&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">

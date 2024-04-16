@@ -1,0 +1,500 @@
+{%- liquid
+  assign sett_equal = false
+  assign show_vendor = false
+  assign col = 12
+  assign col_tb = 12
+  assign col_mb = ' pr_animated done' | prepend:12
+  assign inc_pr = '1'
+  assign limit = section.settings.limit
+  assign sid = section.id 
+  assign inc_price = settings.price_format
+  assign use_rating = settings.use_pr_rating
+  assign inc_rating = settings.app_review
+  assign show_color = settings.show_pr_color
+  assign show_cl_type = settings.show_color_type
+  assign show_size = settings.show_pr_size -%} 
+
+  <div class="nt_se_{{sid}} {{section.settings.layout}}">
+    {%- render 'section_title' -%}
+    <div class="products nt_packery nt_products_holder mt__30 row fl_center al_center space_0">
+      {%- if section.blocks.size > 0 -%}
+         {%- for block in section.blocks %}{% assign bk_stts = block.settings -%}
+           {%- case block.type -%}
+           {%- when 'img' -%}
+              {%- assign image = bk_stts.image -%}
+              {%- assign url = bk_stts.url -%}
+              <div class="col-12 col-md-4 mb__30">
+                  <div class="nt_promotion oh pr banner_hzoom ban_des_cd1 {{bk_stts.txt_align}}" id="bl_{{block.id}}">
+                     {%- capture img_html -%}
+                        {%- if image != blank -%}
+                           <div class="pr_lazy_img nt_bg_lz lazyload" data-bgset="{{ image | img_url: '1x1' }}" data-wiis data-ratio="{{image.aspect_ratio}}" data-sizes="auto" style="padding-top:{{ 1 | divided_by: image.aspect_ratio | times: 100}}%;"></div>
+                        {%- else -%}
+                           <div class="pr_lazy_img nt_bg_lz lazyload" style="padding-top: 127.586%;" data-bg="https://placehold.jp/25/E7F0F5/E7F0F5/370x472.png?text=Banner+IMG"></div>
+                        {%- endif -%}
+                     {%- endcapture -%}
+                     {%- if url != blank -%}
+                     <a href="{{url}}">{{img_html}}</a>
+                     {%- else -%}
+                     {{- img_html -}}
+                     {%- endif -%}
+                     <div class="pa pe_none pa_txts mb_h_pos{{bk_stts.cap_h_pos}} mb_v_pos{{bk_stts.cap_v_pos}} h_pos{{bk_stts.cap_h_pos}} v_pos{{bk_stts.cap_v_pos}}">
+                        <h3 class="fwm fs__14 mg__0 mb__10 ls__1 lh__1">{{bk_stts.title}}</h3>
+                        <h4 class="mg__0 fs__35 mb__10 lh__1">{{bk_stts.title2}}</h4>
+                        <h5 class="mg__0 fs__14">{{bk_stts.title3}}</h5>
+                     </div>
+                  </div>
+              </div>
+           {%- when 'pr' -%}
+              <div class="col-12 col-md-4 mb__30">
+                  <div class="pr oh wrapp_rse_cd tc">
+                    {%- assign product = all_products[bk_stts.product] %}
+                    {%- if product != blank -%}
+                       {%- render 'pr_loop_grid_2',product:product,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}
+                    {%- else -%}
+                       <div class="pr_animated mt__30 pr_grid_item product nt_pr desgin__1 col-12 pr_animated done">
+                         <div class="product-inner pr">
+                           <div class="product-image pr oh"><a class="db" href="/admin/products">{% capture current %}{% cycle 'group2':'1','2','3','4','5','6','7','8' -%}{% endcapture %}<div class="pr_lazy_img main-img nt_img_ratio nt_bg_lz lazyload" style="padding-top:127.586%" data-bg="{{ 'product-' | append:current | append:'.jpg' | asset_url }}"></div></a></div>
+                           <div class="product-info mt__15"><h3 class="product-title pr fs__14 mg__0 fwm"><a class="cd chp" href="/admin/products">{{ 'homepage.onboarding.product_title' | t }}</a></h3><span class="price dib mb__5"><del>$59.00</del><ins>$39.00</ins></span></div>
+                        </div>
+                       </div>
+                    {%- endif -%}
+                    {%- if bk_stts.countdown != blank -%}
+                    <div class="sepr_deal_dt pa pe_none op__0 l__0 r__0 b__0 deal_{{bk_stts.cd_des}}"><div class="sepr_coun_dt" data-date="{{bk_stts.countdown}}"></div></div>
+                    {%- endif -%}
+                  </div>
+              </div>
+           {%- when 'img2' -%}
+              {%- assign image = bk_stts.image -%}
+              {%- assign url = bk_stts.url -%}
+              <div class="col-12 col-md-4 mb__30">
+                  <div class="nt_promotion oh pr banner_hzoom ban_des_cd2 {{bk_stts.txt_align}}" id="bl_{{block.id}}">
+                     {%- capture img_html -%}
+                        {%- if image != blank -%}
+                           <div class="pr_lazy_img nt_bg_lz lazyload" data-bgset="{{ image | img_url: '1x1' }}" data-wiis data-ratio="{{image.aspect_ratio}}" data-sizes="auto" style="padding-top:{{ 1 | divided_by: image.aspect_ratio | times: 100}}%;"></div>
+                        {%- else -%}
+                           <div class="pr_lazy_img nt_bg_lz lazyload" style="padding-top: 127.586%;" data-bg="https://placehold.jp/25/E7F0F5/E7F0F5/370x472.png?text=Banner+IMG"></div>
+                        {%- endif -%}
+                     {%- endcapture -%}
+                     {%- if url != blank -%}
+                     <a href="{{url}}">{{img_html}}</a>
+                     {%- else -%}
+                     {{- img_html -}}
+                     {%- endif -%}
+                     <div class="pa pe_none pa_txts mb_h_pos{{bk_stts.cap_h_pos}} mb_v_pos{{bk_stts.cap_v_pos}} h_pos{{bk_stts.cap_h_pos}} v_pos{{bk_stts.cap_v_pos}}">
+                        <h3 class="fwm fs__18 mg__0 mb__10 ls__1 lh__1">{{bk_stts.title}}</h3>
+                        <h4 class="mg__0 fs__50 mb__10 lh__1">{{bk_stts.title2}}</h4>
+                        <h6 class="mg__0"><a href="{{url |default:'#'}}" class="button">{{bk_stts.title3}}</a></h6>
+                     </div>
+                  </div>
+           </div>
+           {%- endcase -%}
+
+           {%- style -%}
+             {%- if block.type == 'pr' -%}{%- continue -%}{%- endif -%}
+                {%- assign block_id = block.id -%}
+                #bl_{{block_id}} h3 { color:{{bk_stts.cl_t1}} }#bl_{{block_id}} h4 { color:{{bk_stts.cl_t2}} } #bl_{{block_id}} h5 { color:{{bk_stts.cl_t3}} }#bl_{{block_id}} a.button { color:{{bk_stts.cl_t3}};border-color:{{bk_stts.cl_t3}} }
+           {%- endstyle -%}
+
+         {%- endfor -%}
+      {%- else -%}
+        <div class="col-12 tc">{%- render 'no-blocks' -%}</div>
+      {%- endif -%}
+    </div>
+  </div>
+
+  {%- render 'section_css' -%}
+
+{%- schema -%}
+  {
+    "name": "Product Countdown Banner",
+    "class": "nt_section type_prs_countd_banner tp_se_cdt2",
+    "max_blocks": 3,
+    "settings": [
+      {
+        "type": "header",
+        "content": "== Title Settings"
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading"
+      },
+      {
+        "type": "textarea",
+        "id": "sub_title",
+        "label": "Sub Text"
+      },
+      {
+        "type": "select",
+        "id": "sub_font",
+        "default": "2",
+        "options": [
+         {
+            "value": "1",
+            "label": "Body font"
+         },
+         {
+            "value": "2",
+            "label": "Sub title font"
+          }
+        ],
+        "label": "Sub Text use font:"
+      },
+      {
+        "type": "select",
+        "id": "style_title",
+        "options": [
+         {
+            "value": "title_1",
+            "label": "Design 1"
+         },
+         {
+            "value": "title_2",
+            "label": "Design 2"
+          },
+         {
+            "value": "title_3",
+            "label": "Design 3"
+          },
+         {
+            "value": "title_4",
+            "label": "Design 4"
+          },
+         {
+            "value": "title_5 lazyload",
+            "label": "Design 5"
+          },
+         {
+            "value": "title_6",
+            "label": "Design 6"
+          },
+         {
+            "value": "title_7 +la",
+            "label": "Design 7 (with line-awesome)"
+          },
+         {
+            "value": "title_8",
+            "label": "Design 8"
+          },
+         {
+            "value": "title_9",
+            "label": "Design 9"
+          },
+         {
+            "value": "title_10",
+            "label": "Design 10"
+          },
+         {
+            "value": "title_11",
+            "label": "Design 11"
+          },
+         {
+            "value": "title_12",
+            "label": "Design 12"
+          },
+         {
+            "value": "title_13",
+            "label": "Design 13"
+          }
+        ],
+        "label": "Design Title:"
+      },
+      {
+        "type": "text",
+        "id": "ic_tt",
+        "label": "Style 7 icon line-awesome",
+        "default": "gem"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_clpr",
+        "label": "Use icon color primary?",
+        "default": false
+      },
+      {
+        "type": "paragraph",
+        "content": "[Get icons Line awesome](https://icons8.com/line-awesome)"
+      },
+      {
+        "type": "header",
+        "content": "== Design Options"
+      },
+      {
+        "type": "select",
+        "id": "layout",
+        "options": [
+         {
+            "value": "container",
+            "label": "Container"
+         },
+         {
+            "value": "nt_full",
+            "label": "Full Width"
+          }
+        ],
+        "label": "Layout"
+      },
+      {
+        "type": "color",
+        "id": "cl_bg",
+        "label": "Background Color"
+      },
+      {
+        "type": "text",
+        "id": "mg",
+        "label": "Margin",
+        "info":"Margin top, margin right, margin bottom, margin left. If you not use to blank",
+        "default": "50px,,50px,",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd",
+        "label": "Padding",
+        "info":"Padding top, padding right, padding bottom, padding left. If you not use to blank",
+        "placeholder": "50px,,50px,"
+      },
+     {
+        "type": "header",
+        "content": "== Design Mobile Options"
+      },
+      {
+        "type": "text",
+        "id": "mg_mb",
+        "label": "Margin",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd_mb",
+        "label": "Padding",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "header",
+        "content": "== Manually Settings"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "pr",
+        "name": "Product",
+        "settings": [
+          {
+            "type": "product",
+            "id": "product",
+            "label": "Product"
+          },
+          {
+           "type": "text",
+           "id": "countdown",
+           "label": "Data countdown",
+           "default": "2020\/12\/20",
+           "info": "Countdown to the end sale date will be shown.( 2020\/04\/19 )"
+          },
+         {
+           "type": "select",
+           "id": "cd_des",
+           "label": "Countdown Desgin",
+           "default": "dark",
+           "options": [
+             {
+               "value": "dark",
+               "label": "Dark"
+             },
+             {
+               "value": "light",
+               "label": "Light"
+             }
+           ]
+         }
+        ]
+      },
+      {
+        "type": "img",
+        "name": "Banner image 1",
+        "settings": [
+         {
+           "type": "image_picker",
+           "id": "image",
+           "label": "Image"
+         },
+         {
+           "label": "Link to",
+           "id": "url",
+           "type": "url"
+         },
+         {
+            "type": "range",
+            "id": "cap_v_pos",
+            "label": "Caption vertical position",
+            "default": 50,
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "%"
+         },
+         {
+            "type": "range",
+            "id": "cap_h_pos",
+            "label": "Caption horizontal position",
+            "default": 50,
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "%"
+         },
+         {
+           "type": "header",
+           "content": "== Text Settings"
+         },
+         {
+           "type": "text",
+           "id": "title",
+           "label": "Text 1",
+           "default": "VIEW COLLECTIONS"
+         },
+         {
+           "type": "color",
+           "id": "cl_t1",
+           "label": "Color Text 1",
+           "default": "#222222"
+         },
+         {
+           "type": "text",
+           "id": "title2",
+           "label": "Text 2",
+           "default": "LOOKBOOK"
+         },
+         {
+           "type": "color",
+           "id": "cl_t2",
+           "label": "Color Text 2",
+           "default": "#222222"
+         },
+         {
+           "type": "text",
+           "id": "title3",
+           "label": "Text 3",
+           "default": "your world of fashion in numbers"
+         },
+         {
+           "type": "color",
+           "id": "cl_t3",
+           "label": "Color Text 3",
+           "default": "#878787"
+         }
+        ]
+      },
+      {
+        "type": "img2",
+        "name": "Banner image 2",
+        "settings": [
+         {
+           "type": "image_picker",
+           "id": "image",
+           "label": "Image"
+         },
+         {
+           "label": "Link to",
+           "id": "url",
+           "type": "url"
+         },
+         {
+            "type": "range",
+            "id": "cap_v_pos",
+            "label": "Caption vertical position",
+            "info":" <= 50: Top position , > 50 bottom position",
+            "default": 50,
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "%"
+         },
+         {
+            "type": "range",
+            "id": "cap_h_pos",
+            "label": "Caption horizontal position",
+            "info":" <= 50: Left position , > 50 right position",
+            "default": 50,
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "%"
+         },
+         {
+           "type": "select",
+           "id": "txt_align",
+           "label": "Text alignment",
+           "default": "tc",
+           "options": [
+             {
+               "value": "tl",
+               "label": "Left"
+             },
+             {
+               "value": "tc",
+               "label": "Center"
+             },
+             {
+               "value": "tr",
+               "label": "Right"
+             }
+           ]
+         },
+         {
+           "type": "header",
+           "content": "== Text Settings"
+         },
+         {
+           "type": "text",
+           "id": "title",
+           "label": "Text 1",
+           "default": "SUMMER SALE"
+         },
+         {
+           "type": "color",
+           "id": "cl_t1",
+           "label": "Color Text 1",
+           "default": "#222222"
+         },
+         {
+           "type": "text",
+           "id": "title2",
+           "label": "Text 2",
+           "default": "UP TO 70%"
+         },
+         {
+           "type": "color",
+           "id": "cl_t2",
+           "label": "Color Text 2",
+           "default": "#222222"
+         },
+         {
+           "type": "text",
+           "id": "title3",
+           "label": "Button Text",
+           "default": "Shop Now"
+         },
+         {
+           "type": "color",
+           "id": "cl_t3",
+           "label": "Color Button",
+           "default": "#878787"
+         }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "1. Product Countdown Banner",
+        "category": "VIIII. Products",
+        "blocks": [
+          {"type": "img"},
+          {"type": "pr"},
+          {"type": "img2"}
+        ]
+      }
+    ]
+  }
+{% endschema %}

@@ -1,0 +1,85 @@
+<div class="nt_se_{{section.id}} {{section.settings.layout}}"><div class="code_setting">{{ section.settings.code }}</div></div>
+{%- render 'section_css' -%}
+{%- schema -%}
+  {
+    "name": "Custom HTML",
+    "class": "nt_section type_custom_html",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "This is an advanced section. Knowledge of web design languages such as HTML, CSS is required."
+      },
+      {
+        "type": "header",
+        "content": "== General Settings"
+      },
+      {
+        "type": "html",
+        "id": "code",
+        "label": "Content",
+        "default": "<div class=\"tc\">This is an advanced section. Knowledge of web design languages such as HTML, CSS is required.</div>"
+      },
+      {
+        "type": "header",
+        "content": "== Design Options"
+      },
+      {
+        "type": "select",
+        "id": "layout",
+        "options": [
+         {
+            "value": "container",
+            "label": "Container"
+         },
+         {
+            "value": "nt_full",
+            "label": "Full Width"
+          }
+        ],
+        "label": "Layout"
+      },
+      {
+        "type": "color",
+        "id": "cl_bg",
+        "label": "Background Color"
+      },
+      {
+        "type": "text",
+        "id": "mg",
+        "label": "Margin",
+        "info":"Margin top, margin right, margin bottom, margin left. If you not use to blank",
+        "default": "50px,,50px,",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd",
+        "label": "Padding",
+        "info":"Padding top, padding right, padding bottom, padding left. If you not use to blank",
+        "placeholder": "50px,,50px,"
+      },
+     {
+        "type": "header",
+        "content": "== Design Mobile Options"
+      },
+      {
+        "type": "text",
+        "id": "mg_mb",
+        "label": "Margin",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd_mb",
+        "label": "Padding",
+        "placeholder": "50px,,50px,"
+      }
+    ],
+    "presets": [
+      {
+        "name": "4. Custom HTML",
+        "category": "V. Text"
+      }
+    ]
+  }
+{% endschema %}

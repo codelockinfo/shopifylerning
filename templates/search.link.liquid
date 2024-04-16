@@ -1,0 +1,12 @@
+{%- liquid
+	layout none
+	assign limit = 5
+	assign results_count = search.results_count
+	assign search_terms = search.terms |split:'product_type:' | first | strip -%}
+
+{%- if results_count > 0 %}
+{%- paginate search.results by 100 -%}
+   <h4>{{ 'general.search.results_blog_page' | t: terms: search_terms, count: results_count }}</h4>
+   <ul class="ul_none">{%- for item in search.results %}<li><a class="db" href="{{item.url}}">{{item.title | highlight:search_terms}}</a></li>{% endfor -%}</ul>
+{%- endpaginate -%}
+{% endif %}

@@ -1,0 +1,432 @@
+{%- liquid
+  assign sid = section.id
+  assign se_stts = section.settings
+  assign image = se_stts.image
+  assign image_bg = se_stts.image_bg
+  assign routes_local = routes.cart_url |split:'cart' | first -%}
+
+{%- for i in (1..1) -%}
+  {%- if se_stts.cp_code and request.page_type == 'index' and request.design_mode %}<div class="dn tc mt__40 mb__40 cp_cd_js"><input type="text" class="dcp_cd_ip" value='<div class="inc_lz inc_lb_laz" data-include="/search/?section_id={{sid}}"><div class="lds_bginfinity pr"></div></div>'><button class="dcp_cd_btn">Copy Shortcode</button></div>{% endif -%}
+  {%- if se_stts.hidden and request.page_type == 'index' %}{% break %}{% endif -%}
+  <div class="nt_se_{{sid}} {{se_stts.layout}}{% if image_bg != blank %} hide_bgimg_{{se_stts.hide_bgimg}} lazyload se_t4_bg nt_parallax_{{se_stts.use_pr}}{%- endif -%}"{% if image_bg != blank %} data-bgset="{{ image_bg | img_url: '1x1' }}" data-ratio="{{image_bg.aspect_ratio}}" data-sizes="auto" data-parent-fit="cover"{% endif %}>
+     {%- render 'section_title',section:section,section_title:'mb__40' -%}
+     <div class="pin__maker pr"{% if image != blank and se_stts.img_size == '2' %} style="max-width: {{image.width}}px;margin: 0 auto;"{% endif %}>
+      {%- if image != blank -%}{%- assign ratio = image.aspect_ratio -%}
+         <div class="pin__image nt_bg_lz lazyload" data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{ratio}}" data-sizes="auto" style="padding-top:{{ 1 | divided_by: ratio | times: 100}}%;"></div>
+      {%- else -%}
+         <div class="pin__image nt_bg_lz lazyload" data-bg="https://placehold.jp/100/56cfe1/ffffff/1920x1080.png?text=Lookbook Single" style="padding-top:56.25%;"></div>
+      {%- endif -%}
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+         {%- when 'pr' -%}{%- if block.settings.product == blank -%}{%- continue -%}{%- endif -%}
+             <div {{ block.shopify_attributes }} class="pin__type pin__type_{{block.id}} pa op__0 pe_none pin__type_pr pin__size--{{block.settings.pos_size}} pin_ic_{{block.settings.type}}">
+               <span class="zoompin"></span>
+               {%- if block.settings.type != '3' -%}
+                  <span class="pin_tt pin_tt_js dn db_mb"><i class="nav_link_icon"></i></span><span data-opennt="#pin_mfp_{{block.id}}" data-ani='none' data-class='mfp__pin' class="pin_tt mfp_js dn_md"><i class="nav_link_icon"></i></span>
+               {%- else -%}
+                 <span class="pin_tt pin_tt_js dn db_mb"><span class="truncate">{{block.settings.shorttxt}}</span></span><span data-opennt="#pin_mfp_{{block.id}}" data-ani='none' data-class='mfp__pin' class="pin_tt mfp_js dn_md"><span class="truncate">{{block.settings.shorttxt}}</span></span>
+               {%- endif -%}
+               <div id="pin_mfp_{{block.id}}"><div class="pin_lazy_js pin__popup--{{block.settings.pos_pin}} pin__popup--{{block.settings.effect}} lazyload" data-include="{{routes_local}}products/{{block.settings.product}}/?view=lbjs"></div></div>
+             </div>
+          {%- when 'txt' -%}
+             <div {{ block.shopify_attributes }} class="pin__type pin__type_{{block.id}} pa op__0 pe_none pin__type_txt pin__size--{{block.settings.pos_size}} pin_ic_{{block.settings.type}}">
+                  <span class="zoompin"></span>
+                  {%- if block.settings.type != '3' -%}
+                     <span class="pin_tt pin_tt_js dn db_mb"><i class="nav_link_icon"></i></span><span data-opennt="#pin_mfp_{{block.id}}" data-ani='none' data-class='mfp__pin pin__type_txt' class="pin_tt mfp_js dn_md"><i class="nav_link_icon"></i></span>
+                  {%- else -%}
+                    <span class="pin_tt pin_tt_js dn db_mb"><span class="truncate">{{block.settings.shorttxt}}</span></span><span data-opennt="#pin_mfp_{{block.id}}" data-ani='none' data-class='mfp__pin pin__type_txt' class="pin_tt mfp_js dn_md"><span class="truncate">{{block.settings.shorttxt}}</span></span>
+                  {%- endif -%}
+                 <div id="pin_mfp_{{block.id}}"><div class="pin__popup pin__popup--{{block.settings.pos_pin}} pin__popup--{{block.settings.effect}} op__0 pa"><div class="popup__title">{{block.settings.heading}}</div><div class="popup__content">{{block.settings.text}}</div></div></div>
+             </div>
+          {%- else -%}
+             <div {{ block.shopify_attributes }} class="pin__type pin__type_{{block.id}} pa op__0 pe_none pin__type_url pin__size--{{block.settings.pos_size}} pin_ic_{{block.settings.type}}">
+               <span class="zoompin"></span>
+               {%- if block.settings.type != '3' -%}
+                 <a href='{{block.settings.url}}' target="{{block.settings.open_link}}" class="pin_tt cw"><i class="nav_link_icon"></i></a>
+               {%- else -%}
+                 <a href='{{block.settings.url}}' target="{{block.settings.open_link}}" class="pin_tt cw"><span class="truncate">{{block.settings.shorttxt}}</span></a>
+               {%- endif -%}
+             </div>
+        {%- endcase -%}
+        {%- style -%}
+            .pin__type_{{block.id}} {transform: translate(-{{block.settings.pos_l}}%, -{{block.settings.pos_t}}%);top:{{block.settings.pos_t}}%;left:{{block.settings.pos_l}}%}.pin__type_{{block.id}} .pin_tt{background-color: {{block.settings.bg_cl}}}
+        {%- endstyle %}
+      {%- endfor -%}
+     </div>
+  </div>
+  {%- render 'section_css' -%}
+
+{%- endfor -%}
+
+{%- schema -%}
+  {
+    "name": "Lookbook Single",
+    "class": "type_lookbook_img js_lbcl",
+    "max_blocks": 40,
+    "settings": [
+      {
+        "type": "header",
+        "content": "== Title Settings"
+      },
+      {
+        "type": "text","id": "title","label": "Heading"
+      },
+      {
+        "type": "textarea","id": "sub_title","label": "Sub Text"
+      },
+      {
+        "type": "select",
+        "id": "sub_font",
+        "default": "2",
+        "options": [
+         {
+            "value": "1",
+            "label": "Body font"
+         },
+         {
+            "value": "2",
+            "label": "Sub title font"
+          }
+        ],
+        "label": "Sub Text use font:"
+      },
+      {
+        "type": "select","id": "style_title","label": "Style title",
+        "options": [
+          { "value": "title_1", "label": "Style 1"},
+          { "value": "title_2", "label": "Style 2"},
+          { "value": "title_3", "label": "Style 3"},
+          { "value": "title_4", "label": "Style 4"},
+          { "value": "title_5 lazyload", "label": "Style 5"},
+          { "value": "title_6", "label": "Style 6"},
+          { "value": "title_7 +la", "label": "Style 7 (with line-awesome)"},
+          {"value": "title_8","label": "Design 8"},
+          {"value": "title_9","label": "Design 9"},
+         {"value": "title_10","label": "Design 10"},
+          {"value": "title_11","label": "Design 11"},
+          {"value": "title_12","label": "Design 12"},
+         {"value": "title_13","label": "Design 13"}
+        ]
+      },
+      {
+        "type": "text","id": "ic_tt","label": "Style 7 icon line-awesome","default": "gem"
+      },
+      {
+        "type": "checkbox","id": "show_clpr","label": "Use icon color primary?","default": false
+      },
+      {
+        "type": "paragraph","content": "[Get icons Line awesome](https://icons8.com/line-awesome)"
+      },
+      {
+        "type": "header","content": "== Image Lookbook"
+      },
+      {
+        "type": "select","id": "img_size","label": "Image size",
+        "options": [
+          { "value": "1", "label": "Full Screen"},
+          { "value": "2", "label": "Auto"}
+        ]
+      },
+     {
+      "type":"image_picker","id":"image","label":"Choose Image"
+      },
+      {
+        "type": "header","content": "== Design Options"
+      },
+      {
+        "type": "checkbox",
+        "id": "hidden",
+        "label": "Hidden Section?",
+        "default": false,
+        "info": "Hidden section on home page, but still visible on blog posts, product page, pages as shortcode."
+      },
+      {
+        "type": "checkbox",
+        "id": "cp_code",
+        "label": "Show copy shortcode?",
+        "default": false,
+        "info": "Copy shortcode only show on admin editor."
+      },
+      {
+        "type": "select","id": "layout","default": "nt_full","label": "Layout",
+        "options": [
+            { "value": "container", "label": "Container"},
+            { "value": "nt_full", "label": "Full Width"}
+        ]
+      },
+      {
+        "type": "color","id": "cl_bg","label": "Background color","default": "#fff"
+      },
+      {
+        "type": "image_picker",
+        "id": "image_bg",
+        "label": "Background Image"
+      },
+      {
+        "type": "checkbox",
+        "id": "hide_bgimg",
+        "label": "Hide Background Image on mobile?",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "use_pr",
+        "label": "Enable parallax Image scroll?",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "mg",
+        "label": "Margin",
+        "info":"Margin top, margin right, margin bottom, margin left. If you not use to blank",
+        "default": "50px,,50px,",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd",
+        "label": "Padding",
+        "info":"Padding top, padding right, padding bottom, padding left. If you not use to blank",
+        "placeholder": "50px,,50px,"
+      },
+     {
+        "type": "header",
+        "content": "== Design Mobile Options"
+      },
+      {
+        "type": "text",
+        "id": "mg_mb",
+        "label": "Margin",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd_mb",
+        "label": "Padding",
+        "placeholder": "50px,,50px,"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "pr",
+        "name": "Product",
+        "settings": [
+          {
+            "type": "header","content": "== Pin Settings"
+          },
+          {
+            "type":"range","id":"pos_t","min":0,"max":100,"step":1,"unit":"%","label":"Position Top","default":50
+          },
+          {
+            "type":"range","id":"pos_l","min":0,"max":100,"step":1,"unit":"%","label":"Position Left","default":50
+          },
+          {
+             "type": "select","id": "type","label": "Title type",
+             "options": [
+                { "value": "1", "label": "icon 1"},
+                { "value": "2", "label": "icon 2"},
+                { "value": "3", "label": "Short Text"}
+             ]
+          },
+         {
+          "type":"text","id":"shorttxt","label":"Short Text","default":"$59"
+          },
+          {
+           "type": "select","id": "pos_pin","label": "Position pin wrapper","default": "top",
+           "options": [
+              { "value": "top", "label": "Top"},
+              { "value": "bottom", "label": "Bottom"},
+              { "value": "left", "label": "Left"},
+              { "value": "right", "label": "Right"}
+           ]
+          },
+          {
+           "type": "select","id": "pos_size","label": "Position pin size","default": "medium",
+           "options": [
+              { "value": "small", "label": "Small"},
+              { "value": "medium", "label": "Medium"},
+              { "value": "exmedium", "label": "Extra Medium"},
+              { "value": "large", "label": "Large"}
+           ]
+          },
+          {
+           "type": "select","id": "effect","label": "Open pin effect","default": "fade",
+           "options": [
+              { "value": "fade", "label": "Fade"},
+              { "value": "zoom", "label": "Zoom"},
+              { "value": "sup", "label": "Sup"},
+              { "value": "sdown", "label": "Sdown"},
+              { "value": "sleft", "label": "Sleft"},
+              { "value": "sright", "label": "Sright"},
+              { "value": "rotate", "label": "Rotate"}
+           ]
+          },
+          {
+           "type": "color","id": "bg_cl","label": "Background color","default": "#65affa"
+          },
+          {
+            "type": "header","content": "== Product Settings"
+          },
+          {
+             "type": "product","id": "product","label": "Choose product"
+          }
+        ]
+      },
+      {
+        "type": "txt",
+        "name": "Text",
+        "settings": [
+          {
+            "type": "header","content": "== Pin Settings"
+          },
+          {
+            "type":"range","id":"pos_t","min":0,"max":100,"step":1,"unit":"%","label":"Position Top","default":50
+          },
+          {
+            "type":"range","id":"pos_l","min":0,"max":100,"step":1,"unit":"%","label":"Position Left","default":50
+          },
+          {
+             "type": "select","id": "type","label": "Title type",
+             "options": [
+                { "value": "1", "label": "icon 1"},
+                { "value": "2", "label": "icon 2"},
+                { "value": "3", "label": "Short Text"}
+             ]
+          },
+         {
+          "type":"text","id":"shorttxt","label":"Short Text","default":"$59"
+          },
+          {
+           "type": "select","id": "pos_pin","label": "Position pin wrapper","default": "top",
+           "options": [
+              { "value": "top", "label": "Top"},
+              { "value": "bottom", "label": "Bottom"},
+              { "value": "left", "label": "Left"},
+              { "value": "right", "label": "Right"}
+           ]
+          },
+          {
+           "type": "select","id": "pos_size","label": "Position pin size","default": "medium",
+           "options": [
+              { "value": "small", "label": "Small"},
+              { "value": "medium", "label": "Medium"},
+              { "value": "exmedium", "label": "Extra Medium"},
+              { "value": "large", "label": "Large"}
+           ]
+          },
+          {
+           "type": "select","id": "effect","label": "Open pin effect","default": "fade",
+           "options": [
+              { "value": "fade", "label": "Fade"},
+              { "value": "zoom", "label": "Zoom"},
+              { "value": "sup", "label": "Sup"},
+              { "value": "sdown", "label": "Sdown"},
+              { "value": "sleft", "label": "Sleft"},
+              { "value": "sright", "label": "Sright"},
+              { "value": "rotate", "label": "Rotate"}
+           ]
+          },
+          {
+           "type": "color","id": "bg_cl","label": "Background color","default": "#65affa"
+          },
+          {
+            "type": "header","content": "== Content Settings"
+          },
+         {
+          "type":"text","id":"heading","label":"Heading","default":"01 - Water Resistance"
+          },
+         {
+          "type":"richtext","id":"text","label":"Content","default":"<p>With groundbreaking water resistant capabilities, The Mission has the highest waterproof rating of any smartwatch on the market.</p>"
+          }
+         ]
+      },
+      {
+        "type": "url",
+        "name": "Link",
+        "settings": [
+          {
+            "type": "header","content": "== Pin Settings"
+          },
+          {
+            "type":"range","id":"pos_t","min":0,"max":100,"step":1,"unit":"%","label":"Position Top","default":50
+          },
+          {
+            "type":"range","id":"pos_l","min":0,"max":100,"step":1,"unit":"%","label":"Position Left","default":50
+          },
+          {
+             "type": "select","id": "type","label": "Title type",
+             "options": [
+                { "value": "1", "label": "icon 1"},
+                { "value": "2", "label": "icon 2"},
+                { "value": "3", "label": "Short Text"}
+             ]
+          },
+         {
+          "type":"text","id":"shorttxt","label":"Short Text","default":"$59"
+          },
+          {
+           "type": "select","id": "pos_pin","label": "Position pin wrapper","default": "top",
+           "options": [
+              { "value": "top", "label": "Top"},
+              { "value": "bottom", "label": "Bottom"},
+              { "value": "left", "label": "Left"},
+              { "value": "right", "label": "Right"}
+           ]
+          },
+          {
+           "type": "select","id": "pos_size","label": "Position pin size","default": "medium",
+           "options": [
+              { "value": "small", "label": "Small"},
+              { "value": "medium", "label": "Medium"},
+              { "value": "exmedium", "label": "Extra Medium"},
+              { "value": "large", "label": "Large"}
+           ]
+          },
+          {
+           "type": "select","id": "effect","label": "Open pin effect","default": "fade",
+           "options": [
+              { "value": "fade", "label": "Fade"},
+              { "value": "zoom", "label": "Zoom"},
+              { "value": "sup", "label": "Sup"},
+              { "value": "sdown", "label": "Sdown"},
+              { "value": "sleft", "label": "Sleft"},
+              { "value": "sright", "label": "Sright"},
+              { "value": "rotate", "label": "Rotate"}
+           ]
+          },
+          {
+           "type": "color","id": "bg_cl","label": "Background color","default": "#65affa"
+          },
+          {
+            "type": "header","content": "== Link Settings"
+          },
+         {
+          "type":"url","id":"url","label":"Link"
+          },
+          {
+            "type": "select",
+            "id": "open_link",
+            "options": [
+              {
+                "value": "_self",
+                "label": "Current window (_self)"
+              },
+             {
+                "value": "_blank",
+                "label": "New window (_blank)"
+              }
+            ],
+            "label": "Open link in",
+            "default": "_blank"
+          }
+         ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "1. Lookbook Single",
+        "category": "VIII. Lookbook"
+      }
+    ]
+  }
+{% endschema %}

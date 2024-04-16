@@ -1,0 +1,716 @@
+{%- liquid
+  assign se_stts = section.settings
+  assign layout = se_stts.layout
+  assign image = se_stts.image
+  assign sett_equal = se_stts.use_eq_height
+  assign col = se_stts.col_pr
+  assign col_tb = se_stts.col_pr_tb 
+  assign col_mb = ' pr_animated done' | prepend:se_stts.col_pr_mb
+  assign use_pagination = se_stts.use_pagination
+  assign date = se_stts.date
+  assign by = 'blogs.article.by' | t
+  assign on = 'blogs.article.on' | t  
+  assign show_au = se_stts.show_au
+  assign show_dt = se_stts.show_dt
+  assign show_cm = se_stts.show_cm
+  assign show_cnt = se_stts.show_cnt
+  assign show_rm = se_stts.show_rm
+  assign art_des = se_stts.art_des
+  assign sid = section.id
+  assign layout_des = se_stts.layout_des
+  assign is_empty = true
+  if layout == 'wrap'
+   assign html_layout = '<div class="container">__</div>' | split:'__'
+  else
+   assign html_layout = '__' | split:'__'
+  endif -%}
+
+  <div class="nt_se_{{sid}} {{layout}}{%- if image != blank %} hide_bgimg_{{se_stts.hide_bgimg}} lazyload se_t4_bg nt_parallax_{{se_stts.use_pr}}{%- endif -%}"{% if image != blank %} data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{image.aspect_ratio}}" data-sizes="auto" data-parent-fit="cover"{% endif %}>
+    {{-html_layout[0]-}}
+    {%- render 'section_title',section:section,section_title:'mb__30' -%}
+    <div class="articles art_des{{art_des}} nt_products_holder row {{se_stts.image_size}} {{se_stts.image_ratio}} position_{{se_stts.image_position}}{% if sett_equal %} equal_nt{% endif %}{% if layout_des == '2' %} js_carousel nt_slider prev_next_{{se_stts.btn_color}} btn_owl_{{se_stts.btn_owl}} dot_owl_{{se_stts.dot_owl}} dot_color_{{se_stts.dot_color}} btn_vi_{{se_stts.btn_vi}}{% endif %}"{% if layout_des == '2' %} data-flickity='{"imagesLoaded": 0,"adaptiveHeight": 1, "contain": 1, "groupCells": "100%", "dragThreshold" : 5, "cellAlign": "left","wrapAround": {{se_stts.loop}},"prevNextButtons": {{se_stts.button}},"percentPosition": 1,"pageDots": {{se_stts.dot}}, "autoPlay" : {{ se_stts.au_time | times: 1000 }}, "pauseAutoPlayOnHover" : {{se_stts.au_hover}}, "rightToLeft": {{settings.use_rtl}} }'{% endif %}>
+            
+          {%- case art_des -%}
+             {%- when '1' -%}{%- for block in section.blocks %}{% assign article = articles[block.settings.article] %}{% if article.id == blank %}{% continue %}{% endif %}{% assign is_empty = false %}{% render "article_loop",article:article,date:date,by:by,on:on,show_au:show_au,show_dt:show_dt,show_cm:show_cm,col:col,col_tb:col_tb,col_mb:col_mb,sett_equal:sett_equal,show_rm:show_rm,show_cnt:show_cnt -%}{%- endfor -%}
+             {%- when '1 tc' -%}{%- for block in section.blocks %}{% assign article = articles[block.settings.article] %}{% if article.id == blank %}{% continue %}{% endif %}{% assign is_empty = false %}{% render "article_loop",article:article,date:date,by:by,on:on,show_au:show_au,show_dt:show_dt,show_cm:show_cm,col:col,col_tb:col_tb,col_mb:col_mb,sett_equal:sett_equal,show_rm:show_rm,show_cnt:show_cnt -%}{%- endfor -%}
+             {%- when '3' -%}{%- for block in section.blocks %}{% assign article = articles[block.settings.article] %}{% if article.id == blank %}{% continue %}{% endif %}{% assign is_empty = false %}{% render "article_loop2",article:article,date:date,by:by,on:on,show_au:show_au,show_dt:show_dt,show_cm:show_cm,col:col,col_tb:col_tb,col_mb:col_mb,sett_equal:sett_equal,show_rm:show_rm,show_cnt:show_cnt -%}{%- endfor -%}
+             {%- else -%}{%- for block in section.blocks %}{% assign article = articles[block.settings.article] %}{% if article.id == blank %}{% continue %}{% endif %}{% assign is_empty = false %}{% render "article_loop1",article:article,date:date,by:by,on:on,show_au:show_au,show_dt:show_dt,show_cm:show_cm,col:col,col_tb:col_tb,col_mb:col_mb,sett_equal:sett_equal,show_rm:show_rm,show_cnt:show_cnt -%}{%- endfor -%}
+          {%- endcase -%}
+
+          {%- if is_empty -%}
+             {%- for i in (1..3) -%}
+               <article class="post-19041994 post post_nt_loop col-md-4 col-xs-12 mb__40">
+                  <a class="mb__15 db oh bgb" href="/admin/blogs"><img class="w__100 lazyload lz_op_ef" src="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20570%20320%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3C%2Fsvg%3E" data-src="https://placehold.jp/{% cycle '1aada3', '56cfe1', 'b59677' %}/fff/570x320.png?text=Kalles" alt="Kalles Shopify theme"></a>
+                  <div class="post-info mb__10">
+                     <h4 class="mg__0 fs__16 mb__5 ls__0"><a class="cd chp" href="/admin/blogs">Kalles shopify theme</a></h4>
+                     <span class="post-author mr__5">By <span class="cd">Nathan</span></span><span class="post-time">on <span class="cd"><time class="entry-date published updated">April 19, 1994</time></span></span>
+                  </div>
+                  <div class="post-content">Kalles is a feature packed Premium Shopify theme for SP with a modern design, minimal feel, bundled with powerful plugins for creating versatile online stores</div>
+               </article>
+             {%- endfor -%}
+          {%- endif -%}
+          
+    </div>
+    {{-html_layout[1]-}}
+  </div>
+
+{%- render 'section_css' -%}
+{%- schema -%}
+  {
+    "name": "Blog Manual",
+    "class": "nt_section type_manual_blog type_carousel",
+    "max_blocks": 30,
+    "settings": [
+      {
+        "type": "header",
+        "content": "== Title Settings"
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Blog posts"
+      },
+      {
+        "type": "textarea",
+        "id": "sub_title",
+        "label": "Sub Text",
+        "default": "Sub Text"
+      },
+      {
+        "type": "select",
+        "id": "sub_font",
+        "default": "2",
+        "options": [
+         {
+            "value": "1",
+            "label": "Body font"
+         },
+         {
+            "value": "2",
+            "label": "Sub title font"
+          }
+        ],
+        "label": "Sub Text use font:"
+      },
+      {
+        "type": "select",
+        "id": "style_title",
+        "options": [
+         {
+            "value": "title_1",
+            "label": "Design 1"
+         },
+         {
+            "value": "title_2",
+            "label": "Design 2"
+          },
+         {
+            "value": "title_3",
+            "label": "Design 3"
+          },
+         {
+            "value": "title_4",
+            "label": "Design 4"
+          },
+         {
+            "value": "title_5 lazyload",
+            "label": "Design 5"
+          },
+         {
+            "value": "title_6",
+            "label": "Design 6"
+          },
+         {
+            "value": "title_7 +la",
+            "label": "Design 7 (with line-awesome)"
+          },
+         {
+            "value": "title_8",
+            "label": "Design 8"
+          },
+         {
+            "value": "title_9",
+            "label": "Design 9"
+          },
+         {
+            "value": "title_10",
+            "label": "Design 10"
+          },
+         {
+            "value": "title_11",
+            "label": "Design 11"
+          },
+         {
+            "value": "title_12",
+            "label": "Design 12"
+          },
+         {
+            "value": "title_13",
+            "label": "Design 13"
+          }
+        ],
+        "label": "Design Title:"
+      },
+      {
+        "type": "text",
+        "id": "ic_tt",
+        "label": "Style 7 icon line-awesome",
+        "default": "pencil-alt"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_clpr",
+        "label": "Use icon color primary?",
+        "default": false
+      },
+      {
+        "type": "paragraph",
+        "content": "[Get icons Line awesome](https://icons8.com/line-awesome)"
+      },
+      {
+        "type": "header",
+        "content": "== General Settings"
+      },
+      {
+        "type": "select",
+        "id": "layout_des",
+        "options": [
+          {
+            "value": "1",
+            "label": "Grid"
+          },
+          {
+            "value": "2",
+            "label": "Slider"
+          }
+        ],
+        "label": "Layout design",
+        "default": "1"
+      },
+      {
+        "type": "select",
+        "id": "art_des",
+        "options": [
+          {
+            "value": "1",
+            "label": "Design 1"
+          },
+          {
+            "value": "1 tc",
+            "label": "Design 1 (center)"
+          },
+          {
+            "value": "2",
+            "label": "Design 2"
+          },
+          {
+            "value": "2 tc",
+            "label": "Design 2 (center)"
+          },
+          {
+            "value": "3",
+            "label": "Design 3"
+          }
+        ],
+        "label": "Articles design",
+        "default": "1"
+      },
+      {
+        "type": "select",
+        "id": "date",
+        "options": [
+          {
+            "value": "abbreviated_date",
+            "label": "Apr 19, 1994"
+          },
+          {
+            "value": "basic",
+            "label": "4/19/1994"
+          },
+          {
+            "value": "date",
+            "label": "April 19, 1994"
+          }
+        ],
+        "label": "Date format",
+        "info":"different format options display for various languages.",
+        "default": "date"
+      },
+      {
+        "type": "select",
+        "id": "col_pr",
+        "label": "Articles columns",
+        "info": "How many articles you want to show per row",
+        "default": "4",
+        "options": [
+          {
+            "value": "6",
+            "label": "2"
+          },
+          {
+            "value": "4",
+            "label": "3"
+          },
+          {
+            "value": "3",
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_pr_tb",
+        "label": "Articles columns Tablet",
+        "default": "4",
+        "options": [
+          {
+            "value": "6",
+            "label": "2"
+          },
+          {
+            "value": "4",
+            "label": "3"
+          },
+          {
+            "value": "3",
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_pr_mb",
+        "label": "Articles columns Mobile",
+        "default": "12",
+        "options": [
+          {
+            "value": "12",
+            "label": "1"
+          },
+          {
+            "value": "6",
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "show_cnt",
+        "label": "Show short content?",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_au",
+        "label": "Show author?",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_dt",
+        "label": "Show date?",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_cm",
+        "label": "Show comment?",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "show_rm",
+        "label": "Show readmore?",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "== Slider Settings"
+      },
+      {
+        "type": "checkbox",
+        "id": "loop",
+        "label": "Use Loop?",
+        "info": "At the end of cells, wrap-around to the other end for infinite scrolling.",
+        "default": false
+      },
+      {
+        "type": "range",
+        "id": "au_time",
+        "min": 0,
+        "max": 30,
+        "step": 0.5,
+        "label": "Autoplay Speed in second.",
+        "info": "Set is '0' to disable autoplay.",
+        "unit": "sec",
+        "default": 0
+      },
+      {
+        "type": "checkbox",
+        "id": "au_hover",
+        "label": "Pause Autoplay On Hover?",
+        "info": "Auto-playing will pause when the user hovers over the carousel.",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "== Prev Next Button, Page Dot Settings"
+      },
+      {
+        "type": "paragraph",
+        "content": "—————————————————"
+      },
+      {
+        "type": "paragraph",
+        "content": "Prev Next Button:"
+      },
+      {
+        "type": "checkbox",
+        "id": "button",
+        "label": "Enable Prev Next Button?",
+        "info": "Creates and enables previous & next buttons.",
+        "default": false
+      },
+      {
+        "type": "select",
+        "id": "btn_vi",
+        "label": "Visible:",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "always"
+          },
+          {
+            "value": "2",
+            "label": "Only hover"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "btn_owl",
+        "label": "Style",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "Style 1"
+          },
+          {
+            "value": "2",
+            "label": "Style 2"
+          },
+          {
+            "value": "3",
+            "label": "Style 3"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "btn_color",
+        "label": "Color",
+        "default": "0",
+        "options": [
+          {
+            "value": "0",
+            "label": "Transparent"
+          },
+          {
+            "value": "1",
+            "label": "Gray"
+          },
+          {
+            "value": "2",
+            "label": "White"
+          },
+          {
+            "value": "3",
+            "label": "Primary"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": "—————————————————"
+      },
+      {
+        "type": "paragraph",
+        "content": "Page Dot:"
+      },
+      {
+        "type": "checkbox",
+        "id": "dot",
+        "label": "Enable Page Dot?",
+        "info": "Creates and enables page dots.",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "dot_owl",
+        "label": "Style",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "Style 1"
+          },
+          {
+            "value": "2",
+            "label": "Style 2"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "dot_color",
+        "label": "Color",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "Dark"
+          },
+          {
+            "value": "2",
+            "label": "Light"
+          },
+          {
+            "value": "3",
+            "label": "Primary"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "== Design Image"
+      },
+      {
+        "type": "checkbox",
+        "id": "use_eq_height",
+        "label": "Use equal height images?",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "image_ratio",
+        "label": "Aspect Ratio",
+        "default": "ratio4_3",
+        "info": "Aspect Ratio Custom will settings in General panel.",
+        "options": [
+          {
+            "group": "Landscape",
+            "value": "ratio2_1",
+            "label": "2:1"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio16_9",
+            "label": "16:9"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio8_5",
+            "label": "8:5"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio3_2",
+            "label": "3:2"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio4_3",
+            "label": "4:3"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio_nt",
+            "label": "Ratio ASOS"
+          },
+          {
+            "group": "Squared",
+            "value": "ratio1_1",
+            "label": "1:1"
+          },
+          {
+            "group": "Portrait",
+            "value": "ratio2_3",
+            "label": "2:3"
+          },
+          {
+            "group": "Portrait",
+            "value": "ratio1_2",
+            "label": "1:2"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus1",
+            "label": "Ratio Custom 1"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus2",
+            "label": "Ratio Custom 2"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus3",
+            "label": "Ratio Custom 3"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus4",
+            "label": "Ratio Custom 4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "image_size",
+        "label": "Image Size",
+        "default": "nt_cover",
+        "options": [
+          {
+            "value": "nt_cover",
+            "label": "Full"
+          },
+          {
+            "value": "nt_contain",
+            "label": "Auto"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "image_position",
+        "info": "The first value is the horizontal position and the second value is the vertical.",
+        "options": [
+          {
+            "value": "default",
+            "label": "Default"
+          },
+          {
+            "value": "1",
+            "label": "Left Top"
+          },
+          {
+            "value": "2",
+            "label": "Left Center"
+          },
+          {
+            "value": "3",
+            "label": "Left Bottom"
+          },
+          {
+            "value": "4",
+            "label": "Right Top"
+          },
+          {
+            "value": "5",
+            "label": "Right Center"
+          },
+          {
+            "value": "6",
+            "label": "Right Bottom"
+          },
+          {
+            "value": "7",
+            "label": "Center Top"
+          },
+          {
+            "value": "8",
+            "label": "Center Center"
+          },
+          {
+            "value": "9",
+            "label": "Center Bottom"
+          }
+        ],
+        "label": "Image Position",
+        "default": "8"
+      },
+      {
+        "type": "header",
+        "content": "== Design Options"
+      },
+      {
+        "type": "select","id": "layout","default": "wrap","label": "Layout",
+        "options": [
+            { "value": "container", "label": "Container"},
+            { "value": "wrap", "label": "Wrapped Container"},
+            { "value": "nt_full", "label": "Full Width"}
+        ]
+      },
+      {
+        "type": "color","id": "cl_bg","label": "Background color"
+      },
+      {
+        "type": "image_picker","id": "image","label": "Background Image"
+      },
+      {
+        "type": "text",
+        "id": "mg",
+        "label": "Margin",
+        "info":"Margin top, margin right, margin bottom, margin left. If you not use to blank",
+        "default": "50px,,50px,",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd",
+        "label": "Padding",
+        "info":"Padding top, padding right, padding bottom, padding left. If you not use to blank",
+        "placeholder": "50px,,50px,"
+      },
+     {
+        "type": "header",
+        "content": "== Design Mobile Options"
+      },
+      {
+        "type": "text",
+        "id": "mg_mb",
+        "label": "Margin",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd_mb",
+        "label": "Padding",
+        "placeholder": "50px,,50px,"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "article",
+        "name": "Article",
+        "settings": [
+          {
+            "type": "article",
+            "id": "article",
+            "label": "Article"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "2. Blog Manual",
+        "category": "II. Blog",
+        "blocks": [
+          {
+            "type": "article"
+          },
+          {
+            "type": "article"
+          },
+          {
+            "type": "article"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

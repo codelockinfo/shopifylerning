@@ -1,0 +1,572 @@
+{%- liquid
+  assign sid = section.id
+  assign align_text = section.settings.align_text
+  if section.settings.w_img != 0
+    assign w_img = section.settings.w_img
+  endif -%}
+  
+<div class="nt_se_{{sid}} {{section.settings.layout}}">
+  {%- render 'section_title' -%}
+  <div class="mt__30 nt_banner_holder pos_text_{{section.settings.pos_text}} row equal_nt nt_contain position_8 fl_center cat_space_{{section.settings.cat_space}}">
+    {%- for block in section.blocks %}{% assign button_link = block.settings.button_link %}{% assign open_link = block.settings.open_link -%}
+    <div class="cat_space_item col-lg-{{block.settings.col_pr}} col-md-{{block.settings.col_pr_tb}} col-{{block.settings.col_pr_mb}} section_item nt_{{block.id}} {{align_text}} mb__30">
+      {%- if button_link != blank -%}
+          <a href="{{ button_link }}" target="{{open_link}}">
+          {%- if block.settings.enable_image -%}
+             {%- assign image = block.settings.image -%}
+             {%- if image != blank %}{% assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+                  <img src="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20{{image.width}}%20{{image.height}}%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3C%2Fsvg%3E" data-src="{{ img_url }}" data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]" data-sizes="auto" class="lazyload lz_op_ef w__100" alt="{{image.alt}}" style="max-width:{{w_img|default:image.width}}px">
+             {%- else -%}
+                 {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+             {%- endif -%}
+          {%- endif -%}
+          </a>
+          <div class="category-content mb__30">
+            {%- if block.settings.title != blank -%}
+              <h3 class="h4 mg__0"><a href="{{ button_link }}" target="{{open_link}}">{{ block.settings.title | escape }}</a></h3>
+            {%- endif -%}
+
+            {%- if block.settings.text != blank -%}
+              <div class="rte-setting mt__7">{{ block.settings.text }}</div>
+            {%- endif -%}
+
+            {%- if block.settings.button_label != blank -%}
+              {%- capture ariaLabel -%}
+                {{- block.settings.button_label -}}
+                {%- if block.settings.button_link.type == 'frontpage_link' -%}
+                  : {{ 'homepage.general.title' | t -}}
+                {%- elsif block.settings.button_link.type == 'catalog_link' -%}
+                  : {{ 'collections.catalog.title' | t -}}
+                {%- elsif block.settings.button_link.object.title -%}
+                  : {{ block.settings.button_link.object.title -}}
+                {%- endif -%}
+              {%- endcapture -%}
+              <a href="{{ button_link }}" target="{{open_link}}"
+                class="button btn--secondary btn--small btn--style-{{block.settings.btn_style}}"
+                aria-label="{{ ariaLabel | escape }}">
+                {{- block.settings.button_label | escape -}}
+              </a>
+            {%- endif -%}
+          </div>
+
+        {%- else -%}
+
+          {%- if block.settings.enable_image -%}
+             {%- assign image = block.settings.image -%}
+             {%- if image != blank %}{% assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+                  <img src="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20{{image.width}}%20{{image.height}}%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3C%2Fsvg%3E" data-src="{{ img_url }}" data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]" data-sizes="auto" class="lazyload lz_op_ef w__100" alt="{{image.alt}}" style="max-width:{{w_img|default:image.width}}px">
+             {%- else -%}
+                 {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+             {%- endif -%}
+          {%- endif -%}
+          <div class="category-content mb__30">
+            {%- if block.settings.title != blank -%}
+              <h3 class="h4 mg__0">{{ block.settings.title | escape }}</h3>
+            {%- endif -%}
+
+            {%- if block.settings.text != blank -%}
+              <div class="rte-setting mt__7">{{ block.settings.text }}</div>
+            {%- endif -%}
+          </div>
+
+        {%- endif -%}
+    </div>
+    {%- endfor -%}
+   {% if section.blocks.size == 0 %}
+    {% render 'no-blocks' %}
+   {% endif %}
+  </div>
+</div>
+
+{%- render 'section_css' -%}
+{%- style -%}
+.nt_se_{{sid}} .h4,.nt_se_{{sid}} .h4>a {font-size:{{section.settings.fs_hd}}px}.nt_se_{{sid}} .rte-setting,.nt_se_{{sid}} .rte-setting>* {font-size:{{section.settings.fs_txt}}px}
+.nt_se_{{sid}} img,.nt_se_{{sid}} .placeholder-svg,.type_feature_columns .nt_se_{{sid}} .nt_banner_holder .cat_space_item {margin-bottom:{{section.settings.space}}px}.nt_se_{{sid}} .placeholder-svg {display: inline-block;max-width:{{w_img}}px}
+.type_feature_columns a.button {
+    padding: 10px 25px;
+    line-height: 18px;
+}
+.type_feature_columns .rte-setting>p {
+    margin-bottom: 15px;
+}
+.type_feature_columns a.button:not(.btn--style-1) {
+    color: #222;
+    padding: 0;
+    border: 0;
+    min-height: auto;
+    background-color: transparent !important;
+}
+.type_feature_columns a.button.btn--style-2 {
+    border-bottom: 2px solid #DFDFDF;
+}
+.type_feature_columns a.button.btn--style-2:hover {
+    border-color: #C5C5C5;color: #222;
+}
+{%- endstyle -%}
+
+{%- schema -%}
+  {
+    "name": "Text columns with images",
+    "class": "nt_section type_feature_columns type_feature_columns2",
+    "settings": [
+      {
+        "type": "header",
+        "content": "== Title Settings"
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading"
+      },
+      {
+        "type": "textarea",
+        "id": "sub_title",
+        "label": "Sub Text"
+      },
+      {
+        "type": "select",
+        "id": "sub_font",
+        "default": "2",
+        "options": [
+         {
+            "value": "1",
+            "label": "Body font"
+         },
+         {
+            "value": "2",
+            "label": "Sub title font"
+          }
+        ],
+        "label": "Sub Text use font:"
+      },
+      {
+        "type": "select",
+        "id": "style_title",
+        "options": [
+         {
+            "value": "title_1",
+            "label": "Design 1"
+         },
+         {
+            "value": "title_2",
+            "label": "Design 2"
+          },
+         {
+            "value": "title_3",
+            "label": "Design 3"
+          },
+         {
+            "value": "title_4",
+            "label": "Design 4"
+          },
+         {
+            "value": "title_5 lazyload",
+            "label": "Design 5"
+          },
+         {
+            "value": "title_6",
+            "label": "Design 6"
+          },
+         {
+            "value": "title_7 +la",
+            "label": "Design 7 (with line-awesome)"
+          },
+         {
+            "value": "title_8",
+            "label": "Design 8"
+          },
+         {
+            "value": "title_9",
+            "label": "Design 9"
+          },
+         {
+            "value": "title_10",
+            "label": "Design 10"
+          },
+         {
+            "value": "title_11",
+            "label": "Design 11"
+          },
+         {
+            "value": "title_12",
+            "label": "Design 12"
+          },
+         {
+            "value": "title_13",
+            "label": "Design 13"
+          }
+        ],
+        "label": "Design Title:"
+      },
+      {
+        "type": "text",
+        "id": "ic_tt",
+        "label": "Style 7 icon line-awesome",
+        "default": "gem"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_clpr",
+        "label": "Use icon color primary?",
+        "default": false
+      },
+      {
+        "type": "paragraph",
+        "content": "[Get icons Line awesome](https://icons8.com/line-awesome)"
+      },
+      {
+        "type": "header",
+        "content": "== General Settings"
+      },
+     {
+       "type": "select",
+       "id": "cat_space",
+       "options": [
+        {
+           "value": "30",
+           "label": "30"
+         },
+         {
+           "value": "20",
+           "label": "20"
+         },
+         {
+           "value": "10",
+           "label": "10"
+         },
+         {
+           "value": "6",
+           "label": "6"
+         },
+         {
+           "value": "2",
+           "label": "2"
+         },
+         {
+           "value": "0",
+           "label": "0"
+         }
+       ],
+       "label": "Space between section",
+       "default": "30"
+     },
+      {
+        "type": "select",
+        "id": "pos_text",
+        "label": "Position content",
+        "options": [
+          {
+            "value": "default",
+            "label": "Default"
+          },
+          {
+            "value": "alt",
+            "label": "Alternative"
+          }
+        ]
+      },
+      {
+        "type": "range",
+        "id": "space",
+        "min": 10,
+        "max": 60,
+        "step": 1,
+        "label": "Space between bottom image with content",
+        "unit": "px",
+        "default": 20
+      },
+      {
+        "type": "select",
+        "id": "align_text",
+        "label": "Text alignment",
+        "default": "tl",
+        "options": [
+          {
+            "value": "tl",
+            "label": "Left"
+          },
+          {
+            "value": "tc",
+            "label": "Centered"
+          }
+        ]
+      },
+      {
+        "type": "range",
+        "id": "fs_hd",
+        "min": 15,
+        "max": 35,
+        "step": 0.5,
+        "label": "Font size heading",
+        "unit": "px",
+        "default": 22
+      },
+      {
+        "type": "range",
+        "id": "fs_txt",
+        "min": 12,
+        "max": 20,
+        "step": 0.5,
+        "label": "Font size Text",
+        "unit": "px",
+        "default": 14
+      },
+      {
+        "type": "range",
+        "id": "w_img",
+        "min": 0,
+        "max": 500,
+        "step": 5,
+        "label": "Max width image",
+        "info": "Set is '0' to enable auto.",
+        "unit": "px",
+        "default": 0
+      },
+      {
+        "type": "header",
+        "content": "== Design Options"
+      },
+      {
+        "type": "select",
+        "id": "layout",
+        "options": [
+         {
+            "value": "container",
+            "label": "Container"
+         },
+         {
+            "value": "nt_full",
+            "label": "Full Width"
+          }
+        ],
+        "label": "Layout"
+      },
+      {
+        "type": "color",
+        "id": "cl_bg",
+        "label": "Background color"
+      },
+      {
+        "type": "text",
+        "id": "mg",
+        "label": "Margin",
+        "info":"Margin top, margin right, margin bottom, margin left. If you not use to blank",
+        "default": "50px,,50px,",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd",
+        "label": "Padding",
+        "info":"Padding top, padding right, padding bottom, padding left. If you not use to blank",
+        "placeholder": "50px,,50px,"
+      },
+     {
+        "type": "header",
+        "content": "== Design Mobile Options"
+      },
+      {
+        "type": "text",
+        "id": "mg_mb",
+        "label": "Margin",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd_mb",
+        "label": "Padding",
+        "placeholder": "50px,,50px,"
+      }
+    ],
+    "blocks": [{
+    "type": "text_block",
+    "name": "Column",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "enable_image",
+        "label": "Show image?",
+        "default": true
+      },
+      {
+         "type": "image_picker",
+         "id": "image",
+         "label": "Image"
+       },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "Add a title or tagline"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>Share blog posts, products, or promotions with your customers. Use this text to describe products, share details on availability and style, or as a space to display recent reviews or FAQs.</p>"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button label"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button link"
+        },
+      {
+        "type": "select",
+        "id": "open_link",
+        "options": [
+          {
+            "value": "_self",
+            "label": "Current window (_self)"
+          },
+         {
+            "value": "_blank",
+            "label": "New window (_blank)"
+          }
+        ],
+        "label": "Open link in",
+        "default": "_blank"
+      },
+      {
+        "type": "select",
+        "id": "btn_style",
+        "default": "1",
+        "options": [
+         {
+            "value": "1",
+            "label": "Design 1"
+         },
+         {
+            "value": "2",
+            "label": "Design 2"
+          },
+         {
+            "value": "3",
+            "label": "Design 3"
+          }
+        ],
+        "label": "Buttom design:"
+      },
+        {
+          "type": "select",
+          "id": "col_pr",
+          "label": "Block width (desktop)",
+          "default": "4",
+          "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "8",
+              "label": "66,6%"
+            },
+            {
+              "value": "7",
+              "label": "58,3%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            },
+            {
+              "value": "5",
+              "label": "41,6%"
+            },
+            {
+              "value": "4",
+              "label": "33,3%"
+            },
+            {
+              "value": "3",
+              "label": "25%"
+            },
+            {
+              "value": "15",
+              "label": "20%"
+            },
+            {
+              "value": "2",
+              "label": "16,6%"
+            }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "col_pr_tb",
+          "label": "Block width (tablet)",
+          "default": "4",
+          "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "8",
+              "label": "66,6%"
+            },
+            {
+              "value": "7",
+              "label": "58,3%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            },
+            {
+              "value": "5",
+              "label": "41,6%"
+            },
+            {
+              "value": "4",
+              "label": "33,3%"
+            },
+            {
+              "value": "3",
+              "label": "25%"
+            },
+            {
+              "value": "15",
+              "label": "20%"
+            },
+            {
+              "value": "2",
+              "label": "16,6%"
+            }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "col_pr_mb",
+          "label": "Block width (mobile)",
+          "default": "12",
+          "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            }
+          ]
+        }
+      ]
+    }],
+    "presets": [
+      {
+        "name": "9. Text columns with images 2",
+        "category": "III. Image",
+        "blocks": [
+          { "type": "text_block" },
+          { "type": "text_block" },
+          { "type": "text_block" }
+        ]
+      }
+    ]
+  }
+{% endschema %}

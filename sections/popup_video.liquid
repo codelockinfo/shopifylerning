@@ -1,0 +1,396 @@
+{%- liquid 
+  assign sid = section.id
+  assign se_stts = section.settings
+  assign se_height = se_stts.se_height
+  assign url = se_stts.url
+  assign image = se_stts.image
+  assign txt_size = se_stts.text_size | split:","
+  assign design = se_stts.design
+  assign cl_btn = se_stts.cl_btn -%}
+
+<div class="nt_se_{{sid}} {{se_stts.layout}} txt_shadow_{{se_stts.use_shadow}} se_height_{{se_height}} nt_first">
+  <div class="row equal_nt">
+    <div class="col-12">
+      <div class="nt_img_txt oh pr middle center">
+        <a href="/" class="db">
+          {%- if image != blank -%}{%- assign ratio = image.aspect_ratio -%}
+            {%- if se_stts.use_pr -%}
+            <div class="parallax-inner nt_parallax_{{se_stts.use_pr}} pa t__0 l__0 r__0 b__0 lazyload" data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{ratio}}" data-sizes="auto" data-parent-fit="cover"></div><div class="nt_bg_lz lazyload item__position"></div>
+            {%- else -%}
+            <div class="nt_bg_lz lazyload item__position {{se_stts.img_align}}" data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{ratio}}" data-sizes="auto" data-parent-fit="cover"></div>
+            {%- endif -%}
+          {%- else -%}
+            <div class="nt_bg_lz lazyload item__position {{se_stts.img_align}}" data-bg="https://placehold.jp/1/b59677/b59677/1170x400.png?text=1" style="padding-top:51.282051282051285%;"></div>
+          {%- endif -%}
+        </a>
+        <div class="txt_content pa t__0 l__0 b__0 r__0 caption-w-{{se_stts.caption_w}} flex column shadow_wrap {{se_stts.txt_align}}{% if url != blank %} pe_none{% endif %}">
+          <div class="pa pa_txts mb_h_pos{{se_stts.cap_h_pos}} mb_v_pos{{se_stts.cap_v_pos}} h_pos{{se_stts.cap_h_pos}} v_pos{{se_stts.cap_v_pos}}">
+            {%- if design == '1' -%}
+              <h4 class="fs__30 mt__0 tu fs_md_{{txt_size[0]}} mb__20 fwb lh__1 cw">{{se_stts.title}}</h4>
+              <h3 class="fs__15 mt__0 fs_md_{{txt_size[1]}} mb__30 lh__1 cw f__libre">{{se_stts.text}}</h3>
+            {%- else -%}
+              <h3 class="fs__15 mt__0 fs_md_{{txt_size[1]}} tc cw mb__20 lh__1 f__libre">{{se_stts.text}}</h3>
+              <h4 class="fs__30 tu fs_md_{{txt_size[0]}} fwb cw tc mb__20 mt__0 lh__1">{{se_stts.title}}</h4>
+            {%- endif -%} 
+            {%- if url != blank and se_stts.button_label -%}<p class="mg__0"><a class="button button-o-w cw pe_auto btn_style_{{se_stts.btn_style}} nt_mfp_video" href="{{url}}" target="_blank">{{se_stts.button_label}}</a></p>{%- endif -%}
+          </div>
+        </div>
+        {%- if source == '1' %}
+        <div class="pa t__0 l__0 b__0 r__0 flex column tc fl_center pe_none">
+          <button type="button" class="flex fl_center al_center video-control__play"><svg aria-hidden="true" focusable="false" role="presentation" class="icon icon-play" viewBox="0 0 20 40"><path fill-rule="evenodd" clip-rule="evenodd" d="M23.6 16.8L7 1.5C5.6.3 4 .2 2.9.7 1.6 1.4.8 2.7.7 3.8v31.7c0 1.8 1.1 3.3 3.1 3.3 1.5 0 2.5-.5 3.4-1.4l16.4-15.7c1.5-1.4 1.5-3.6 0-4.9z"></path></svg></button>
+        </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+{%- render 'section_css' -%}
+{%- style -%}
+   .nt_se_{{sid}} .nt_img_txt h3{ color: {{se_stts.cl_sub}} } .nt_se_{{sid}} .nt_img_txt h4{ color: {{se_stts.cl_h}} }
+   .nt_se_{{sid}} .nt_img_txt a.btn_style_1:not(:hover){ color: {{cl_btn}};border-color: {{cl_btn}} }
+   .nt_se_{{sid}} .nt_img_txt a.btn_style_2{color:{% if cl_btn == '#fff' %}#222{% else %}#fff{% endif %};background-color: {{cl_btn}};border-color: {{cl_btn}} }  
+   .nt_se_{{sid}} .nt_img_txt>a:after{ background-color: {{se_stts.cl_overlay}};opacity: {{se_stts.cl_opacity | divided_by: 100.00}} }
+ {%- if se_height == 'adapt' and image != blank -%}
+     .nt_se_{{sid}}.se_height_adapt .nt_bg_lz{padding-top:{{ 1 | divided_by: ratio | times: 100}}%}
+ {%- elsif se_height == 'cus_h' -%}
+      .nt_se_{{sid}}.se_height_cus_h .nt_bg_lz{padding-top:{{ se_stts.h_mb | replace:'px','' | strip }}px}
+      @media (min-width: 768px) { .nt_se_{{sid}}.se_height_cus_h .nt_bg_lz{padding-top:{{ se_stts.h_tb | replace:'px','' | strip }}px} }
+      @media (min-width: 1025px) { .nt_se_{{sid}}.se_height_cus_h .nt_bg_lz{padding-top:{{ se_stts.h_des | replace:'px','' | strip }}px} }
+  {%- endif -%}
+{%- endstyle -%}
+
+{%- schema -%}
+  {
+    "name": "Video with popup",
+    "class": "nt_section type_popup_video",
+    "settings": [
+      {
+        "type": "select",
+        "id": "se_height",
+        "label": "Section height",
+        "default": "full",
+        "options": [
+          {
+            "value": "full",
+            "label": "Full screen height"
+          },
+          {
+            "value": "adapt",
+            "label": "Adapt to image"
+          },
+          {
+            "value": "cus_h",
+            "label": "Custom height"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": "Custom height options:"
+      },
+      {
+        "type": "text",
+        "id": "h_des",
+        "label": "Desktop Large",
+        "placeholder": "600px",
+        "default": "600px"
+      },
+      {
+        "type": "text",
+        "id": "h_tb",
+        "label": "Tablet (<= 1024px)",
+        "placeholder": "500px",
+        "default": "500px"
+      },
+      {
+        "type": "text",
+        "id": "h_mb",
+        "label": "Mobile (<= 767px)",
+        "placeholder": "350px",
+        "default": "350px"
+      },
+      {
+        "type": "paragraph",
+        "content": "—————————————————"
+      },
+      {
+         "type": "image_picker",
+         "id": "image",
+         "label": "Image"
+       },
+      {
+        "type": "select",
+        "id": "img_align",
+        "default": "center",
+        "options": [
+         {
+            "value": "top",
+            "label": "Top"
+         },
+         {
+            "value": "center",
+            "label": "Middle"
+         },
+         {
+            "value": "bottom",
+            "label": "Bottom"
+         }
+        ],
+        "label": "Image alignment",
+        "info":"Not active when enable parallax"
+      },
+      {
+        "type": "textarea",
+        "id": "title",
+        "label": "Heading",
+        "default": "SALE OFF UP TO 70%"
+      },
+      {
+        "type": "textarea",
+        "id": "text",
+        "label": "Subheading",
+        "default": "Image with text overlay"
+      },
+      {
+        "type": "text",
+        "id": "button_label",
+        "label": "Button label",
+        "default": "Watch the video"
+      },
+      {
+         "id": "url",
+         "type": "video_url",
+         "label": "Video URL",
+         "accept": ["youtube", "vimeo"],
+         "default": "https://www.youtube.com/watch?v=_9VUPq3SxOc",
+         "info": "Accepts YouTube,vimeo links"
+      },
+      {
+        "type": "select",
+        "id": "btn_style",
+        "default": "1",
+        "options": [
+         {
+            "value": "1",
+            "label": "Style 1"
+         },
+         {
+            "value": "2",
+            "label": "Style 2"
+          }
+        ],
+        "label": "Button Style"
+      },
+      {
+         "type": "header",
+         "content": "== Caption settings"
+       },
+      {
+       "type": "select",
+       "id": "design",
+       "options": [
+        {
+           "value": "1",
+           "label": "Design 1"
+         },
+         {
+           "value": "2",
+           "label": "Design 2"
+         }
+       ],
+       "label": "Banners design",
+       "default": "1"
+      },
+      {
+        "type": "select",
+        "id": "text_size",
+        "label": "Text size",
+        "default": "60,18",
+        "options": [
+          {
+            "value": "30,15",
+            "label": "Small"
+          },
+          {
+            "value": "40,15",
+            "label": "Medium"
+          },
+          {
+            "value": "60,18",
+            "label": "Large"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "caption_w",
+        "default": "2",
+        "options": [
+         {
+            "value": "1",
+            "label": "Container"
+         },
+         {
+            "value": "2",
+            "label": "Full Width"
+          }
+        ],
+        "label": "Caption Width"
+      },
+      {
+         "type": "range",
+         "id": "cap_v_pos",
+         "label": "Caption vertical position",
+         "info":" <= 50: Top position , > 50 bottom position",
+         "default": 50,
+         "min": 0,
+         "max": 100,
+         "step": 1,
+         "unit": "%"
+      },
+      {
+         "type": "range",
+         "id": "cap_h_pos",
+         "label": "Caption horizontal position",
+         "info":" <= 50: Left position , > 50 right position",
+         "default": 50,
+         "min": 0,
+         "max": 100,
+         "step": 1,
+         "unit": "%"
+      },
+      {
+        "type": "select",
+        "id": "txt_align",
+        "label": "Text alignment",
+        "default": "tc",
+        "options": [
+          {
+            "value": "tl",
+            "label": "Left"
+          },
+          {
+            "value": "tc",
+            "label": "Center"
+          },
+          {
+            "value": "tr",
+            "label": "Right"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "== Color"
+      },
+      {
+        "type": "checkbox",
+        "id": "use_shadow",
+        "label": "Use text shadow?",
+        "default": false
+      },
+      {
+        "type": "color",
+        "id": "cl_h",
+        "label": "Heading",
+        "default": "#fff"
+      },
+      {
+        "type": "color",
+        "id": "cl_sub",
+        "label": "Subheading",
+        "default": "#fff"
+      },
+      {
+        "type": "color",
+        "id": "cl_btn",
+        "label": "Button",
+        "default": "#fff"
+      },
+      {
+        "type": "color",
+        "id": "cl_overlay",
+        "label": "Overlay",
+        "default": "#000"
+      },
+      {
+        "type": "range",
+        "id": "cl_opacity",
+        "label": "Overlay opacity",
+        "default": 0,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%"
+      },
+      {
+        "type": "header",
+        "content": "== Design Options"
+      },
+      {
+        "type": "select",
+        "id": "layout",
+        "default": "nt_full",
+        "options": [
+         {
+            "value": "container",
+            "label": "Container"
+         },
+         {
+            "value": "nt_full",
+            "label": "Full Width"
+          }
+        ],
+        "label": "Layout"
+      },
+      {
+        "type": "color",
+        "id": "cl_bg",
+        "label": "Background Color"
+      },
+      {
+        "type": "checkbox",
+        "id": "use_pr",
+        "label": "Enable parallax scroll?",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "mg",
+        "label": "Margin",
+        "info":"Margin top, margin right, margin bottom, margin left. If you not use to blank",
+        "default": "50px,,50px,",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd",
+        "label": "Padding",
+        "info":"Padding top, padding right, padding bottom, padding left. If you not use to blank",
+        "placeholder": "50px,,50px,"
+      },
+     {
+        "type": "header",
+        "content": "== Design Mobile Options"
+      },
+      {
+        "type": "text",
+        "id": "mg_mb",
+        "label": "Margin",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd_mb",
+        "label": "Padding",
+        "placeholder": "50px,,50px,"
+      }
+    ],
+    "presets": [
+      {
+        "name": "2. Video with popup",
+        "category": "IV. Video"
+      }
+    ]
+  }
+{% endschema %}

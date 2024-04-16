@@ -1,0 +1,558 @@
+{%- liquid
+  assign sid = section.id
+  assign se_stts = section.settings
+  assign layout = se_stts.layout
+  assign image = se_stts.image
+  assign ccol = 'col-lg-1x col-md-2x col-3x' | replace: '1x', se_stts.col | replace: '2x', se_stts.col_md | replace: '3x', se_stts.col_mb
+  if layout == 'wrap'
+   assign html_layout = '<div class="container">__</div>' | split:'__'
+  else
+   assign html_layout = '__' | split:'__'
+  endif -%}
+
+<div class="nt_se_{{sid}} {{layout}}{%- if image != blank %} hide_bgimg_{{se_stts.hide_bgimg}} lazyload se_t4_bg nt_parallax_{{se_stts.use_pr}}{%- endif -%}"{% if image != blank %} data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{image.aspect_ratio}}" data-sizes="auto" data-parent-fit="cover"{% endif %}>
+  {{-html_layout[0]-}}
+  {%- render 'section_title' -%}
+  <div class="mt__30 nt_banner_holder brand_hover_{{se_stts.brand_hover}} row equal_nt nt_contain position_8 fl_center cat_space_{{se_stts.cat_space}}{% if se_stts.brand_layout == '2' %} nt_slider js_carousel prev_next_{{se_stts.btn_color}} btn_owl_{{se_stts.btn_owl}} dot_owl_{{se_stts.dot_owl}} dot_color_{{se_stts.dot_color}} btn_vi_{{se_stts.btn_vi}}{% endif %}"{% if se_stts.brand_layout == '2' %} data-flickity='{"imagesLoaded": false, "adaptiveHeight": true, "contain": true, "groupCells": "100%", "dragThreshold" : 5, "cellAlign": "left","wrapAround": {{se_stts.loop}},"prevNextButtons": {{se_stts.button}},"percentPosition": true,"pageDots": {{se_stts.dot}}, "autoPlay" : {% if se_stts.autoplay %}{{ se_stts.au_time | times: 1000 }}{% else %}false{% endif %}, "pauseAutoPlayOnHover" : {{se_stts.au_hover}}, "rightToLeft": {{settings.use_rtl}} }'{% endif %}>
+    {%- for block in section.blocks -%}
+      {%- assign image = block.settings.image -%}{%- assign url = block.settings.url -%}
+      <div class="cat_space_item {{ccol}} brand_item nt_{{block.id}} tc">
+          {%- if url != blank -%}<a href="{{ url }}" class="db" target="{{block.settings.open_link}}">{%- endif -%}
+            {%- if image != blank %}{% assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+              <img src="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20{{image.width}}%20{{image.height}}%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3C%2Fsvg%3E" data-src="{{ img_url }}" data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]" data-sizes="auto" class="lazyload lz_op_ef w__100" alt="{{image.alt}}" style="max-width:{{image.width}}px">
+            {%- else -%}
+              <div class="nt_bg_lz lazyload item__position {{block.settings.img_align}}" data-bg="https://placehold.jp/25/{% cycle 'a8dacc', '56cfe1', 'f99077','c8b09b','efe1ba','a5d0d9','a1a19f' %}/fff/160x160.png?text=Brand+{{forloop.index}}" style="padding-top:100%;"></div>
+            {%- endif -%}
+          {%- if url != blank -%}</a>{%- endif -%}
+      </div>
+    {%- endfor -%}
+  </div>
+  {{-html_layout[1]-}}
+</div>
+
+{%- render 'section_css' -%}
+
+{%- schema -%}
+  {
+    "name": "Brand list",
+    "class": "nt_section type_brand_list type_carousel",
+    "max_blocks": 30,
+    "settings": [
+      {
+        "type": "header",
+        "content": "== Title Settings"
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading"
+      },
+      {
+        "type": "textarea",
+        "id": "sub_title",
+        "label": "Sub Text"
+      },
+      {
+        "type": "select",
+        "id": "sub_font",
+        "default": "2",
+        "options": [
+         {
+            "value": "1",
+            "label": "Body font"
+         },
+         {
+            "value": "2",
+            "label": "Sub title font"
+          }
+        ],
+        "label": "Sub Text use font:"
+      },
+      {
+        "type": "select",
+        "id": "style_title",
+        "options": [
+         {
+            "value": "title_1",
+            "label": "Design 1"
+         },
+         {
+            "value": "title_2",
+            "label": "Design 2"
+          },
+         {
+            "value": "title_3",
+            "label": "Design 3"
+          },
+         {
+            "value": "title_4",
+            "label": "Design 4"
+          },
+         {
+            "value": "title_5 lazyload",
+            "label": "Design 5"
+          },
+         {
+            "value": "title_6",
+            "label": "Design 6"
+          },
+         {
+            "value": "title_7 +la",
+            "label": "Design 7 (with line-awesome)"
+          },
+         {
+            "value": "title_8",
+            "label": "Design 8"
+          },
+         {
+            "value": "title_9",
+            "label": "Design 9"
+          },
+         {
+            "value": "title_10",
+            "label": "Design 10"
+          },
+         {
+            "value": "title_11",
+            "label": "Design 11"
+          },
+         {
+            "value": "title_12",
+            "label": "Design 12"
+          },
+         {
+            "value": "title_13",
+            "label": "Design 13"
+          },
+         {
+            "value": "title_14",
+            "label": "Design 14"
+          }
+        ],
+        "label": "Design Title:"
+      },
+      {
+        "type": "text",
+        "id": "ic_tt",
+        "label": "Style 7 icon line-awesome",
+        "default": "gem"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_clpr",
+        "label": "Use icon color primary?",
+        "default": false
+      },
+      {
+        "type": "paragraph",
+        "content": "[Get icons Line awesome](https://icons8.com/line-awesome)"
+      },
+      {
+        "type": "header",
+        "content": "== General Settings"
+      },
+      {
+      "type": "select",
+      "id": "brand_layout",
+      "options": [
+          {
+             "value": "1",
+             "label": "Grid (Default)"
+           },
+           {
+             "value": "2",
+             "label": "Carousel"
+           }
+         ],
+         "label": "Layout design",
+         "default": "1"
+      },
+     {
+       "type": "select",
+       "id": "cat_space",
+       "options": [
+        {
+           "value": "30",
+           "label": "30"
+         },
+         {
+           "value": "20",
+           "label": "20"
+         },
+         {
+           "value": "10",
+           "label": "10"
+         },
+         {
+           "value": "6",
+           "label": "6"
+         },
+         {
+           "value": "2",
+           "label": "2"
+         },
+         {
+           "value": "0",
+           "label": "0"
+         }
+       ],
+       "label": "Space between Brand",
+       "default": "30"
+     },
+      {
+        "type": "select",
+        "id": "col",
+        "label": "Brand columns",
+        "info": "How many brand you want to show per row",
+        "default": "2",
+        "options": [
+          {
+            "value": "12",
+            "label": "1"
+          },
+          {
+            "value": "6",
+            "label": "2"
+          },
+          {
+            "value": "4",
+            "label": "3"
+          },
+          {
+            "value": "3",
+            "label": "4"
+          },
+          {
+            "value": "15",
+            "label": "5"
+          },
+          {
+            "value": "2",
+            "label": "6"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_md",
+        "label": "Brand columns Tablet",
+        "default": "6",
+        "options": [
+          {
+            "value": "12",
+            "label": "1"
+          },
+          {
+            "value": "6",
+            "label": "2"
+          },
+          {
+            "value": "4",
+            "label": "3"
+          },
+          {
+            "value": "3",
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_mb",
+        "label": "Brand columns Mobile",
+        "default": "6",
+        "options": [
+          {
+            "value": "12",
+            "label": "1"
+          },
+          {
+            "value": "6",
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "brand_hover",
+        "label": "Brand hover effects:",
+        "default": "0",
+        "options": [
+          {
+            "value": "0",
+            "label": "None"
+          },
+          {
+            "value": "1",
+            "label": "Filter"
+          },
+          {
+            "value": "2",
+            "label": "BounceIn"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "== Slider Settings"
+      },
+      {
+        "type": "checkbox",
+        "id": "loop",
+        "label": "Use Loop?",
+        "info": "At the end of cells, wrap-around to the other end for infinite scrolling.",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "autoplay",
+        "label": "Use Autoplay?",
+        "info": "Automatically advances to the next cell.",
+        "default": false
+      },
+      {
+        "type": "range",
+        "id": "au_time",
+        "min": 0,
+        "max": 30,
+        "step": 0.5,
+        "label": "Autoplay Speed in second.",
+        "info": "Set is '0' to disable autoplay.",
+        "unit": "sec",
+        "default": 0
+      },
+      {
+        "type": "checkbox",
+        "id": "au_hover",
+        "label": "Pause Autoplay On Hover?",
+        "info": "Auto-playing will pause when the user hovers over the carousel.",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "== Prev Next Button, Page Dot Settings"
+      },
+      {
+        "type": "paragraph",
+        "content": "—————————————————"
+      },
+      {
+        "type": "paragraph",
+        "content": "Prev Next Button:"
+      },
+      {
+        "type": "checkbox",
+        "id": "button",
+        "label": "Enable Prev Next Button?",
+        "info": "Creates and enables previous & next buttons.",
+        "default": false
+      },
+      {
+        "type": "select",
+        "id": "btn_vi",
+        "label": "Visible:",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "always"
+          },
+          {
+            "value": "2",
+            "label": "Only hover"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "btn_owl",
+        "label": "Style",
+        "default": "2",
+        "options": [
+          {
+            "value": "1",
+            "label": "Style 1"
+          },
+          {
+            "value": "2",
+            "label": "Style 2"
+          },
+          {
+            "value": "3",
+            "label": "Style 3"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "btn_color",
+        "label": "Color",
+        "default": "0",
+        "options": [
+          {
+            "value": "0",
+            "label": "Transparent"
+          },
+          {
+            "value": "1",
+            "label": "Gray"
+          },
+          {
+            "value": "2",
+            "label": "White"
+          },
+          {
+            "value": "3",
+            "label": "Primary"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": "—————————————————"
+      },
+      {
+        "type": "paragraph",
+        "content": "Page Dot:"
+      },
+      {
+        "type": "checkbox",
+        "id": "dot",
+        "label": "Enable Page Dot?",
+        "info": "Creates and enables page dots.",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "dot_owl",
+        "label": "Style",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "Style 1"
+          },
+          {
+            "value": "2",
+            "label": "Style 2"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "dot_color",
+        "label": "Color",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "Dark"
+          },
+          {
+            "value": "2",
+            "label": "Light"
+          },
+          {
+            "value": "3",
+            "label": "Primary"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "== Design Options"
+      },
+      {
+        "type": "select","id": "layout","default": "wrap","label": "Layout",
+        "options": [
+            { "value": "container", "label": "Container"},
+            { "value": "wrap", "label": "Wrapped Container"},
+            { "value": "nt_full", "label": "Full Width"}
+        ]
+      },
+      {
+        "type": "color","id": "cl_bg","label": "Background color"
+      },
+      {
+        "type": "image_picker","id": "image","label": "Background Image"
+      },
+      {
+        "type": "text",
+        "id": "mg",
+        "label": "Margin",
+        "info":"Margin top, margin right, margin bottom, margin left. If you not use to blank",
+        "default": "50px,,50px,",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd",
+        "label": "Padding",
+        "info":"Padding top, padding right, padding bottom, padding left. If you not use to blank",
+        "placeholder": "50px,,50px,"
+      },
+     {
+        "type": "header",
+        "content": "== Design Mobile Options"
+      },
+      {
+        "type": "text",
+        "id": "mg_mb",
+        "label": "Margin",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd_mb",
+        "label": "Padding",
+        "placeholder": "50px,,50px,"
+      }
+    ],
+    "blocks": [{
+    "type": "brand",
+    "name": "Brand",
+    "settings": [
+      {
+         "type": "image_picker",
+         "id": "image",
+         "label": "Image"
+       },
+       {
+        "label": "Link to (Optional)",
+        "id": "url",
+        "type": "url"
+      },
+      {
+        "type": "select",
+        "id": "open_link",
+        "options": [
+          {
+            "value": "_self",
+            "label": "Current window (_self)"
+          },
+         {
+            "value": "_blank",
+            "label": "New window (_blank)"
+          }
+        ],
+        "label": "Open link in",
+        "default": "_blank"
+      }
+      ]
+    }],
+    "presets": [
+      {
+        "name": "4. Brand list",
+        "category": "III. Image",
+        "blocks": [
+          { "type": "brand" },
+          { "type": "brand" },
+          { "type": "brand" },
+          { "type": "brand" },
+          { "type": "brand" },
+          { "type": "brand" }
+        ]
+      }
+    ]
+  }
+{% endschema %}

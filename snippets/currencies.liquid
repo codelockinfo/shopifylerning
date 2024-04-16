@@ -1,0 +1,110 @@
+{%- liquid
+  assign sz = settings.size_currency
+  assign cart_iso_code = cart.currency.iso_code
+  assign currency_type = settings.currency_type
+  assign enabled_currencies = shop.enabled_currencies
+  if settings.flag_currency 
+    assign fl = 'flagst4'
+  endif
+  assign opennt = 'nonet4'
+  assign ckopennt = false
+  if class_2 == 'curt4_fixed'
+    assign opennt = 'opennt'
+    assign id_opennt = 'opennt_1904'
+    assign ckopennt = true
+  endif -%}
+
+{%- if currency_type == '1' and enabled_currencies.size > 1 -%}
+  <div class="nt_currency pr cg currencies sp_currencies wsn dib {{class_2}} cur_stt_{{settings.currency_pos}}">
+        {%- if linklists.currency-the4.links.size > 0 -%}{%- assign ck_iso_code = '#'|append:cart_iso_code -%}{%- assign links_cur = linklists.currency-the4.links | where: "url", ck_iso_code -%}
+          
+          {%- if ckopennt -%}
+
+             <div class="nt_currency__div" data-{{opennt}}="#{{id_opennt}}" data-pos="right" data-remove="true" data-class="popup_filter currencies" data-bg="hide_btn"><span class="current dib {{fl}} lazyload flagst4-{{sz}} flagst4-{{cart_iso_code}}">{{links_cur.first.title|default:cart_iso_code}}</span><i class="facl facl-angle-down ml__5"></i></div>
+             <div id="{{id_opennt}}" class="dn"><h3 class="mg__0 tu bgb cw visible-sm fs__16 pr">{{ 'general.currency' | t }}<i class="close_pp pegk pe-7s-close fs__40 ml__5"></i></h3>
+             <div class="cat_shop_wrap"><div class="cat_fixcl-scroll"><div class="cat_fixcl-scroll-content css_ntbar">
+              <ul class="pa pe_none ts__03 bgbl ul_none tl op__0 z_100 r__0 pt__15 pb__15 pr__15 pl__15">
+                {%- for link_cur in linklists.currency-the4.links -%}{%- assign iso_code = link_cur.url |remove:'#'|remove:' ' -%}
+                      <li><a class="currency-item cg db {{fl}} lazyload flagst4-{{sz}} flagst4-{{iso_code}}{% if iso_code == cart_iso_code %} selected{% endif %}" href="/" data-no-instant rel="nofollow" data-currency="{{iso_code}}">{{link_cur.title}}</a></li>
+                {%- endfor -%}
+              </ul>
+             </div></div></div></div>
+
+          {%- else -%}
+
+             <span class="current dib {{fl}} lazyload flagst4-{{sz}} flagst4-{{cart_iso_code}}">{{links_cur.first.title|default:cart_iso_code}}</span><i class="facl facl-angle-down ml__5"></i>
+            <ul class="pa pe_none ts__03 bgbl ul_none tl op__0 z_100 r__0 pt__15 pb__15 pr__15 pl__15">
+              {%- for link_cur in linklists.currency-the4.links -%}{%- assign iso_code = link_cur.url |remove:'#'|remove:' ' -%}
+                    <li><a class="currency-item cg db {{fl}} lazyload flagst4-{{sz}} flagst4-{{iso_code}}{% if iso_code == cart_iso_code %} selected{% endif %}" href="/" data-no-instant rel="nofollow" data-currency="{{iso_code}}">{{link_cur.title}}</a></li>
+              {%- endfor -%}
+            </ul>
+
+          {%- endif -%}
+
+        {%- else -%}
+          
+          {%- if ckopennt -%}
+
+            <div class="nt_currency__div" data-{{opennt}}="#{{id_opennt}}" data-pos="right" data-remove="true" data-class="popup_filter currencies" data-bg="hide_btn"><span class="current dib {{fl}} lazyload flagst4-{{sz}} flagst4-{{cart_iso_code}}">{{cart_iso_code}}</span><i class="facl facl-angle-down ml__5"></i></div>
+            <div id="{{id_opennt}}" class="dn"><h3 class="mg__0 tu bgb cw visible-sm fs__16 pr">{{ 'general.currency' | t }}<i class="close_pp pegk pe-7s-close fs__40 ml__5"></i></h3>
+            <div class="cat_shop_wrap"><div class="cat_fixcl-scroll"><div class="cat_fixcl-scroll-content css_ntbar">
+              <ul class="pa pe_none ts__03 bgbl ul_none tl op__0 z_100 r__0 pt__15 pb__15 pr__15 pl__15">
+                <li><a class="currency-item cg db {{fl}} lazyload flagst4-{{sz}} flagst4-T4D dn" href="/" data-no-instant rel="nofollow" data-currency="T4D"></a></li>
+                {%- for currency in enabled_currencies -%}{%- assign iso_code = currency.iso_code -%}
+                <li><a class="currency-item cg db {{fl}} lazyload flagst4-{{sz}} flagst4-{{iso_code}}{% if iso_code == cart_iso_code %} selected{% endif %}" href="/" data-no-instant rel="nofollow" data-currency="{{iso_code}}">{{iso_code}}</a></li>
+                {%- endfor -%}
+              </ul>
+            </div></div></div></div>
+
+          {%- else -%}
+
+            <span class="current dib {{fl}} lazyload flagst4-{{sz}} flagst4-{{cart_iso_code}}">{{cart_iso_code}}</span><i class="facl facl-angle-down ml__5"></i>
+            <ul class="pa pe_none ts__03 bgbl ul_none tl op__0 z_100 r__0 pt__15 pb__15 pr__15 pl__15">
+              <li><a class="currency-item cg db {{fl}} lazyload flagst4-{{sz}} flagst4-T4D dn" href="/" data-no-instant rel="nofollow" data-currency="T4D"></a></li>
+              {%- for currency in enabled_currencies -%}{%- assign iso_code = currency.iso_code -%}
+              <li><a class="currency-item cg db {{fl}} lazyload flagst4-{{sz}} flagst4-{{iso_code}}{% if iso_code == cart_iso_code %} selected{% endif %}" href="/" data-no-instant rel="nofollow" data-currency="{{iso_code}}">{{iso_code}}</a></li>
+              {%- endfor -%}
+            </ul>
+
+          {%- endif -%}
+
+        {%- endif -%}
+  </div>
+{%- elsif currency_type == '2' -%}
+  {%- assign supported_codes = settings.supported_currencies | split: '|' -%}
+  <div class="nt_currency pr cg currencies wsn dib {{class_2}} cur_stt_{{settings.currency_pos}}">
+
+    {%- if ckopennt -%}
+
+      <div class="nt_currency__div" data-{{opennt}}="#{{id_opennt}}" data-pos="right" data-remove="true" data-class="popup_filter currencies" data-bg="hide_btn"><span class="current dib {{fl}} lazyload flagst4-{{sz}} flagst4-{{cart_iso_code}}">{{cart_iso_code}}</span><i class="facl facl-angle-down ml__5"></i></div>
+      <div id="{{id_opennt}}" class="dn"><h3 class="mg__0 tu bgb cw visible-sm fs__16 pr">{{ 'general.currency' | t }}<i class="close_pp pegk pe-7s-close fs__40 ml__5"></i></h3>
+      <div class="cat_shop_wrap"><div class="cat_fixcl-scroll"><div class="cat_fixcl-scroll-content css_ntbar">
+       <ul class="pa pe_none ts__03 bgbl ul_none tl op__0 z_100 r__0 pt__15 pb__15 pr__15 pl__15">
+           <li><a class="currency-item cg db {{fl}} lazyload flagst4-{{sz}} flagst4-T4D dn" href="/" data-no-instant rel="nofollow" data-currency="T4D"></a></li>
+          {%- for code in supported_codes -%}
+               {%- assign array_money = code | split: '-' -%}
+               {%- assign data_currency = array_money | first | upcase | strip | remove:' ' -%}
+               {%- assign name_money = array_money | last | strip -%}
+                <li><a class="currency-item cg db {{fl}} lazyload flagst4-{{sz}} flagst4-{{data_currency}}" href="/" data-no-instant rel="nofollow" data-currency="{{data_currency}}">{{name_money}}</a></li>
+          {%- endfor -%}
+       </ul>
+       </div></div></div></div>
+
+    {%- else -%}
+
+       <span class="current dib {{fl}} lazyload flagst4-{{sz}} flagst4-{{cart_iso_code}}">{{cart_iso_code}}</span><i class="facl facl-angle-down ml__5"></i>
+       <ul class="pa pe_none ts__03 bgbl ul_none tl op__0 z_100 r__0 pt__15 pb__15 pr__15 pl__15">
+           <li><a class="currency-item cg db {{fl}} lazyload flagst4-{{sz}} flagst4-T4D dn" href="/" data-no-instant rel="nofollow" data-currency="T4D"></a></li>
+          {%- for code in supported_codes -%}
+               {%- assign array_money = code | split: '-' -%}
+               {%- assign data_currency = array_money | first | upcase | strip | remove:' ' -%}
+               {%- assign name_money = array_money | last | strip -%}
+                <li><a class="currency-item cg db {{fl}} lazyload flagst4-{{sz}} flagst4-{{data_currency}}" href="/" data-no-instant rel="nofollow" data-currency="{{data_currency}}">{{name_money}}</a></li>
+          {%- endfor -%}
+       </ul>
+
+    {%- endif -%}
+
+
+  </div>
+{%- endif -%}

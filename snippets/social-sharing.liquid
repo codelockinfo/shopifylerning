@@ -1,0 +1,90 @@
+{%- liquid
+  assign social_icons = false
+  assign target = '_blank'
+  if nt_tooltip != false
+    assign nt_tooltip = true
+  endif
+  unless follow_social
+    assign follow_social = false
+  endunless
+  unless class_tooltip
+    assign class_tooltip = 'ttip_nt tooltip_top'
+  endunless
+  unless nt_tooltip
+    assign class_tooltip = ''
+  endunless
+  unless follow_social
+    assign _share_permalink = product.url |default:article.url |default:page.url
+    assign _share_permalink2 = shop.url | append:_share_permalink
+    assign permalinkURL = share_permalink |default:_share_permalink2
+    assign _share_title = share_title |default:product.title |default:article.title |default:page.title |default:shop.name
+    assign permaTitle = _share_title | url_param_escape
+    unless share_image
+      assign share_image = product.featured_image |default:article.image |default:settings.share_image | default: page_image | default: settings.logo
+    endunless
+    assign permaImage = share_image | img_url: '1024x1024'
+  else
+    if settings.social_tiktok_link != blank or settings.social_soundcloud_link != blank or settings.social_behance_link != blank or settings.social_youtube_link != blank or settings.social_tumblr_link != blank or settings.social_pinterest_link != blank or settings.social_linkedin_link != blank or settings.social_dribbble_link != blank or settings.social_instagram_link != blank or settings.social_twitter_link != blank or settings.social_facebook_link != blank
+      assign social_icons = true
+    endif
+  endunless
+  if social_icons
+    assign socials = "social_facebook_link social_twitter_link social_instagram_link social_dribbble_link social_linkedin_link social_pinterest_link social_tumblr_link social_youtube_link social_behance_link social_soundcloud_link social_tiktok_link" | split: ' '
+    assign socials_icon = "facebook twitter instagram dribbble linkedin pinterest tumblr youtube-play behance soundcloud tiktok" | split: ' '
+    assign socials_txt = "general.nt_tooltip.follow_fb;general.nt_tooltip.follow_tw;general.nt_tooltip.follow_it;general.nt_tooltip.follow_dr;general.nt_tooltip.follow_ld;general.nt_tooltip.follow_pr;general.nt_tooltip.follow_tu;general.nt_tooltip.follow_yt;general.nt_tooltip.follow_bh;general.nt_tooltip.follow_sc;general.nt_tooltip.follow_tt" | split: ';'  
+  endif -%}
+<div class="nt-social border_{{border_bl}} black_{{black_true}}">
+  {%- unless follow_social -%}  
+    {%- if settings.share_facebook -%}
+     <a data-no-instant rel="noopener noreferrer nofollow" href="https://www.facebook.com/sharer/sharer.php?u={{ permalinkURL }}" target="{{target}}" class="facebook cb {{class_tooltip}}">
+        <span class="tt_txt">{{ 'general.nt_tooltip.share_fb' | t }}</span>
+        <i class="facl facl-facebook"></i>
+     </a>
+    {%- endif -%}
+    {%- if settings.share_twitter -%}
+     <a data-no-instant rel="noopener noreferrer nofollow" href="http://twitter.com/share?text={{ permaTitle }}&amp;url={{ permalinkURL }}" target="{{target}}" class="twitter cb {{class_tooltip}}">
+        <span class="tt_txt">{{ 'general.nt_tooltip.share_tw' | t }}</span>
+        <i class="facl facl-twitter"></i>
+     </a>
+     {%- endif -%}
+     {%- if settings.share_email -%}
+     <a data-no-instant rel="noopener noreferrer nofollow" href="mailto:?subject=Check this {{ permalinkURL }}" target="{{target}}" class="email cb {{class_tooltip}}">
+        <span class="tt_txt">{{ 'general.nt_tooltip.share_em' | t }}</span>
+        <i class="facl facl-mail-alt"></i>
+     </a>
+     {%- endif -%}
+     {%- if permaImage != blank -%}
+        {%- if settings.share_pinterest -%}
+        <a data-no-instant rel="noopener noreferrer nofollow" href="http://pinterest.com/pin/create/button/?url={{ permalinkURL }}&amp;media=http:{{permaImage}}&amp;description={{ permaTitle }}" target="{{target}}" class="pinterest cb {{class_tooltip}}">
+          <span class="tt_txt">{{ 'general.nt_tooltip.share_pr' | t }}</span>
+          <i class="facl facl-pinterest"></i>
+        </a>
+        {%- endif -%}        
+        {%- if settings.share_tumblr -%}
+        <a data-no-instant rel="noopener noreferrer nofollow" data-content="http:{{permaImage}}" href="//tumblr.com/widgets/share/tool?canonicalUrl={{ permalinkURL }}" target="{{target}}" class="tumblr cb {{class_tooltip}}">
+          <span class="tt_txt">{{ 'general.nt_tooltip.share_tu' | t }}</span>
+          <i class="facl facl-tumblr"></i>
+        </a>
+        {%- endif -%}
+      {%- endif -%}
+      {%- if settings.share_telegram -%}
+      <a data-no-instant rel="nofollow" target="{{target}}" class="telegram cb {{class_tooltip}}" href="https://telegram.me/share/url?url={{ permalinkURL }}"> 
+         <span class="tt_txt">{{ 'general.nt_tooltip.share_tl' | t }}</span>
+         <i class="facl facl-telegram"></i>
+      </a>
+      {%- endif -%}
+      {%- if settings.share_whatsapp -%}
+      <a data-no-instant rel="nofollow" target="{{target}}" class="whatsapp cb {{class_tooltip}}" href="https://wa.me/?text={{ permaTitle }}&#x20;{{ permalinkURL }}"> 
+         <span class="tt_txt">{{ 'general.nt_tooltip.share_wa' | t }}</span>
+         <i class="facl facl-whatsapp"></i>
+      </a>
+      {%- endif -%}
+  {%-else-%}
+      {%- if social_icons -%}
+        {%- for social_link in socials %}{% if settings[social_link] != blank -%}
+          <a data-no-instant rel="noopener noreferrer nofollow" href="{{ settings[social_link] | escape }}" target="{{target}}" class="{{socials_icon[forloop.index0] | remove:'-play'}} cb {{class_tooltip}}"><span class="tt_txt">{{socials_txt[forloop.index0] | t }}</span>{% if socials_icon[forloop.index0] == "tiktok" %}{% render 'icon_ticktock' %}{% else %}<i class="facl facl-{{socials_icon[forloop.index0]}}"></i>{% endif %}</a>
+        {%- endif %}{% endfor -%}
+      {%- endif -%}
+  {%-endunless-%}
+</div>
+

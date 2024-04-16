@@ -1,0 +1,40 @@
+{%- liquid
+  assign se_stts = section.settings
+  assign mg = se_stts.mg
+  assign pd = se_stts.pd
+  assign mg_mb = se_stts.mg_mb
+  assign pd_mb = se_stts.pd_mb
+  assign sid = section.id
+  assign DefaultValueMrLR = 'auto'
+  assign DefaultValueMr = 0 
+  assign DefaultValuePd = 0 -%}
+
+{%- capture style -%}
+	{%- if se_stts.cl_bg != blank -%}{% if classbg %}.nt_se_{{sid}}{% else %}#shopify-section-{{sid}}{% endif %} {background-color: {{se_stts.cl_bg}} !important;}{%- endif -%}
+	{%- if mg != blank or pd != blank -%} 
+	.nt_se_{{sid}} {
+	   {%- if mg != blank %}{% assign arr_mg = mg | remove:' ' | split:',' -%}
+		   margin-top: {{arr_mg[0]|default:DefaultValueMr}} !important;margin-right: {{arr_mg[1]|default:DefaultValueMrLR}} !important;margin-bottom: {{arr_mg[2]|default:DefaultValueMr}} !important;margin-left: {{arr_mg[3]|default:DefaultValueMrLR}} !important;
+		   {%- if arr_mg[3] != blank and se_stts.layout == 'nt_full' -%}width: calc(100% - {{arr_mg[3]}} - {{arr_mg[1]}});width: -webkit-calc(100% - {{arr_mg[3]}} - {{arr_mg[1]}});{%- endif -%}
+	   {%- endif -%}
+	   {%- if pd != blank %}{% assign arr_pd = pd | remove:' ' | split:',' -%}
+	       padding-top: {{arr_pd[0]|default:DefaultValuePd}} !important;padding-right: {{arr_pd[1]|default:DefaultValuePd}} !important;padding-bottom: {{arr_pd[2]|default:DefaultValuePd}} !important;padding-left: {{arr_pd[3]|default:DefaultValuePd}} !important;
+	   {%- endif -%}
+	}
+	{%- endif -%}
+	{%- if mg_mb != blank or pd_mb != blank -%} 
+	@media only screen and (max-width: 767px) {
+		.nt_se_{{sid}} {
+		   {%- if mg_mb != blank %}{% assign arr_mg = mg_mb | remove:' ' | split:',' -%}
+			   margin-top: {{arr_mg[0]|default:DefaultValueMr}} !important;margin-right: {{arr_mg[1]|default:DefaultValueMrLR}} !important;margin-bottom: {{arr_mg[2]|default:DefaultValueMr}} !important;margin-left: {{arr_mg[3]|default:DefaultValueMrLR}} !important;
+			   {%- if arr_mg[3] != blank and se_stts.layout == 'nt_full' -%}width: calc(100% - {{arr_mg[3]}} - {{arr_mg[1]}});width: -webkit-calc(100% - {{arr_mg[3]}} - {{arr_mg[1]}});{%- endif -%}
+		   {%- endif -%}
+		   {%- if pd_mb != blank %}{% assign arr_pd = pd_mb | remove:' ' | split:',' -%}
+		       padding-top: {{arr_pd[0]|default:DefaultValuePd}} !important;padding-right: {{arr_pd[1]|default:DefaultValuePd}} !important;padding-bottom: {{arr_pd[2]|default:DefaultValuePd}} !important;padding-left: {{arr_pd[3]|default:DefaultValuePd}} !important;
+		   {%- endif -%}
+		}
+	}
+	{%- endif -%}
+{%- endcapture -%}
+
+{%- style -%}{{ style | strip_newlines | remove:"  "}}{%- endstyle -%}

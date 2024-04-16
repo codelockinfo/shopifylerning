@@ -1,0 +1,1991 @@
+{%- liquid
+  assign no_sold_out = product.available
+  if no_sold_out 
+   assign remove_soldout = settings.remove_sold_out 
+  else 
+   assign remove_soldout = false  
+  endif
+assign pr_variants = product.variants 
+assign variants_size = pr_variants.size 
+assign selected_variant = product.selected_variant
+assign pr_curent = settings.pr_curent
+if pr_curent == '2'  
+  assign current_variant = selected_variant |default: pr_variants.first 
+  if remove_soldout and current_variant.available == false and no_sold_out 
+    assign current_variant = product.first_available_variant 
+  endif
+else 
+  assign current_variant = product.selected_or_first_available_variant 
+endif
+assign default = product.has_only_default_variant
+assign on_sale = false
+if current_variant.compare_at_price > current_variant.price 
+  assign on_sale = true 
+endif
+assign ck_external = false
+assign pr_metafields = product.metafields
+assign pr_metafields_meta = pr_metafields.meta
+assign external = pr_metafields.external 
+assign on_link = external.on_link  
+if on_link != blank 
+  assign ck_external = true 
+  assign title = on_link | split:'|||' | first | strip
+  assign link = on_link | split:'|||' | last | strip 
+elsif external != blank 
+  assign ck_external = true 
+  assign title = external | first | first  
+  assign link = external | first | last 
+endif
+assign ck_inventory = settings.ck_inventory
+if template.suffix == "quick_view" 
+  assign call_cl = '_qv' 
+else 
+  assign call_cl = '_ppr' 
+endif
+assign des_pr_layout = settings.des_pr_layout
+assign pr_incoming_mess = settings.pr_incoming_mess
+assign pid = product.id
+assign hd_up = 'group-' |append:pid
+assign nav_up = linklists[hd_up].links | where:'type','product_link'
+assign nav_up_size = nav_up.size
+assign price_varies = product.price_varies | default:product.compare_at_price_varies
+assign pr_tags = product.tags
+assign style_tag_arr = pr_tags | where:'stylet4_'
+assign style_tag = style_tag_arr | first | remove:'stylet4_'
+assign nav_style = linklists[style_tag].links | where:'type','product_link' 
+assign nav_style_size = nav_style.size
+
+assign inventory_quantity = current_variant.inventory_quantity
+assign inventory_management = current_variant.inventory_management
+if inventory_quantity <= 0  and inventory_management == 'shopify'
+  assign classdn1 = 'dn' 
+  assign classdn2 = ''
+  assign ck_preoder = true
+else 
+  assign classdn1 = '' 
+  assign classdn2 = 'dn'
+  assign ck_preoder = false
+endif
+assign PR_no_pick = false
+if pr_curent == '1' and variants_size > 1 and selected_variant == blank
+  assign PR_no_pick = true
+endif
+assign locale_url = product.url | split:'/products/' | first -%}
+
+{%- for block in section.blocks -%}
+   {%- case block.type -%}
+
+      {%- when 'title' -%}
+        {%- if call_cl == "_ppr" -%}
+        <h1 class="product_title entry-title" style="font-size: {{block.settings.size}}px">{{product.title}}</h1>
+        {%- else -%}
+        <h1 class="product_title entry-title" style="font-size: {{block.settings.size}}px"><a href="{{product.url | within: collection}}">{{product.title}}</a></h1>
+        {%- endif -%}
+
+      {%- when 'pricereview' -%}
+        <div class="flex wrap fl_between al_center price-review mt__15 pb__10 mb__20 price_stock">
+           <p class="price_range" id="price{{call_cl}}">
+            {%- if nav_up_size == 0 and current_variant.unit_price_measurement -%}
+                {%- if price_varies -%}<span class="price_varies">{%- endif -%}
+                {%- if on_sale -%}<del>{{ current_variant.compare_at_price  | money }}</del><ins>{{ current_variant.price | money }}</ins>{%- else -%}{{ current_variant.price | money }}{%- endif -%}
+                {%- if price_varies -%}</span>{%- endif -%}
+               {%- capture unit_price_base_unit -%}
+                <span class="unit_base">
+                  {%- if current_variant.unit_price_measurement -%}
+                    {%- if current_variant.unit_price_measurement.reference_value != 1 -%}
+                      {{- current_variant.unit_price_measurement.reference_value -}}
+                    {%- endif -%}
+                    {{ current_variant.unit_price_measurement.reference_unit }}
+                  {%- endif -%}
+                </span>
+               {%- endcapture -%}
+               <span class="price__unit db"><span class="unit_price">{{ current_variant.unit_price | money }}</span><span>/</span>{{- unit_price_base_unit -}}</span>
+            {%- elsif nav_up_size == 0 -%}
+               {%- if price_varies -%}
+                   {%- if block.settings.price == '1' -%}{{ product.price_min | money }} – {{ product.price_max | money }}
+                   {%- elsif block.settings.price == '2' -%}<span class="cb fwn">{{ 'products.product.from' | t }}</span> {{ product.price_min | money }}
+                   {%- else -%}
+                     {%- if on_sale -%}<span class="price_varies current_price"><del>{{ current_variant.compare_at_price | money }}</del> <ins>{{ current_variant.price | money }}</ins></span><style>.nt_cart_form .price {display: none}</style>
+                   {%- else -%}<span class="price_varies current_price">{{ current_variant.price | money }}</span><style type="text/css">.nt_cart_form .price {display: none}</style>{%- endif -%}
+                     {%- endif -%}
+               {%- elsif on_sale -%}<del>{{ current_variant.compare_at_price | money }}</del> <ins>{{ current_variant.price | money }}</ins>
+               {%- else -%}{{ current_variant.price | money }}{%- endif -%}
+               
+            {%- else -%}
+              {%- if on_sale -%}
+              {{ product.price | money }}–{{ product.compare_at_price | money }}
+              {%- else -%}
+              {{ product.price | money }}
+              {%- endif -%}
+            {%- endif -%}
+           </p>
+
+           {%- if block.settings.show_available -%}
+           <span class="available_wrapper"><span class="available value"><span id="txt_vl_in{{call_cl}}" class="value_in cb{% if no_sold_out == false %} dn{% endif %}"><span class="js_in_stock {{classdn1}}">{{ 'products.product.in_stock' | t }}</span><span class="js_in_stock_pre_oder {{classdn2}}">{{ 'products.product.in_stock_pre_oder' | t }}</span></span><span id="txt_vl_out{{call_cl}}" class="value_out{% if no_sold_out %} dn{% endif %}">{{ 'products.product.outofstock' | t }}</span></span></span>
+           {%- endif -%}
+        </div>
+         {%- if block.settings.rating -%}
+         <a href="#tab_pr_reivew" class="rating_sp_kl{% if call_cl == '_qv' %} pe_none{% endif %}">
+            {%- case settings.app_review -%}              
+                {%- when '1' -%}
+                   <span class="shopify-product-reviews-badge" data-id="{{ pid }}"></span>
+                {%- when '2' -%}
+                   {%- if call_cl == '_qv' -%}
+                   <div class="ryviu-collection star-rating"><ryviu-widget-total collection=1 reviews_data="{{pr_metafields.ryviu.product_reviews_info  | escape  }}" product_id="{{product.id}}" handle="{{product.handle}}"></ryviu-widget-total></div>
+                   {%- else -%}
+                   <div class="review-widget"><ryviu-widget-total reviews_data="{{pr_metafields.ryviu.product_reviews_info  | escape  }}" product_id="{{pid}}" handle="{{product.handle}}"></ryviu-widget-total></div>
+                   {%- endif -%}
+                {%- when '3' -%}
+                   {%- if call_cl == '_qv' -%}<div product-id="{{ pid }}" class="arv-collection arv-collection--{{ pid }}"></div>{%- else -%}<div product-id="{{ pid }}" class="alr-display-review-badge"></div>{%- endif -%}
+                {%- when '4' -%}
+                   <div class="loox-rating" data-id="{{ pid }}" data-rating="{{ pr_metafields.loox.avg_rating }}" data-raters="{{ pr_metafields.loox.num_reviews }}"></div>
+                {%- when '5' -%}
+                   {%- capture the_snippet_review_avg %}{% render 'ssw-widget-avg-rate-profile' %}{% endcapture -%}
+                   {%- unless the_snippet_review_avg contains 'Liquid error' %}{{ the_snippet_review_avg }}{% endunless -%}
+                {%- else -%}
+                  <div class="pr_rating">{%- render 'review_pr_other' -%}</div>
+            {%- endcase -%}
+         </a>
+         {%- endif -%}
+        {%- if cart.taxes_included or shop.shipping_policy.body != blank -%}
+          <div class="product__policies rte cb" data-product-policies>
+            {%- if cart.taxes_included -%}
+              {{ 'products.product.include_taxes' | t }}
+            {%- endif -%}
+            {%- if shop.shipping_policy.body != blank -%}
+              {{ 'products.product.shipping_policy_html' | t: link: shop.shipping_policy.url }}
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+      {%- when 'des' -%}
+        {%- if pr_tags contains 'hidet4_des' %}{% continue %}{% endif -%}
+        {%- if block.settings.des == '1' and settings.des_pr_layout != '1' and call_cl != '_qv' %}{% continue %}{% endif -%}
+        <div class="pr_short_des">
+          {%- assign length = block.settings.length | default: 31 -%}
+          {%- assign page_content = pages[block.settings.page].content -%}
+          {%- capture readm -%}
+            {%- if block.settings.readm and call_cl != "_qv" %}<a class="readm_sp_kl" href="#tab_pr_deskl"> {{block.settings.readm_txt}}</a>{% endif -%}
+          {%- endcapture -%}
+
+           {%- if block.settings.des == '1' -%}
+             {{- product.description -}}
+
+           {%- elsif pr_metafields_meta.description_excerpt != blank -%}
+              <p class="mg__0">{{- pr_metafields_meta.description_excerpt -}}{{readm}}</p>
+           
+           {%- elsif page_content.size > 0 -%}
+               {{- page_content -}}{{readm}}
+           
+           {%-else-%}
+             <p class="mg__0">{{- product.description | strip_html | truncatewords: length -}}{{readm}}</p>
+           
+           {%-endif-%}
+        </div>
+
+     {%- when 'frm' -%}
+        <div class="btn-atc atc-slide btn_full_{{block.settings.btn_atc_full}} PR_no_pick_{{PR_no_pick}} btn_des_{{block.settings.btn_des}} btn_txt_{{block.settings.btn_txt}}">
+           {%- if nav_up_size == 0 -%}
+              <div id="callBackVariant{{call_cl}}" data-js-callback class="nt_{{current_variant.option1 | handle}} nt1_{{current_variant.option2 | handle}} nt2_{{current_variant.option3 | handle}}">
+                 {%- if nav_style_size > 0 %}{% render 'choose_style',call_cl:call_cl,default:default,style_tag_arr:style_tag_arr,style_tag:style_tag,nav_style:nav_style,pid:pid %}{% endif -%}
+
+                 {%- assign id_frm = 'cart-form' | append:call_cl -%}{%- assign cl_frm = 'nt_cart_form variations_form variations_form' | append:call_cl -%}
+                 {%- form 'product', product, id: id_frm, data-productid: pid, class: cl_frm -%}
+                    {{ form | payment_terms }}
+                    {%- if no_sold_out and settings.enable_sub_reCharge %}{% include 'subscription-product' %}{% endif -%} 
+                    {%- if settings.enable_infiniteoptions %}<div id="infiniteoptions-container"></div>{% endif -%} 
+                    {%- if default -%}
+                       <input name="id" data-productid="{{pid}}" value="{{ pr_variants.first.id }}" type="hidden">
+                       <div class="nt_pr_js lazypreload op__0" data-id="{{call_cl}}" data-include="{{locale_url}}/products/{{product.handle}}/?view=js{{call_cl}}"></div>
+                       {%- if pr_incoming_mess and inventory_management and inventory_quantity <= 0 and current_variant.incoming -%}
+                           {%- assign idate = current_variant.next_incoming_date | date: format: settings.date_in -%}
+                           <div id="pr_incoming_mess{{call_cl}}" class="nt_varianqtyss mb__15 cb tu fwsb">{% if current_variant.available %}{{ 'products.product.will_not_ship_until_html' | t: date:idate }}{% else %}{{ 'products.product.will_be_in_stock_after_html' | t: date:idate }}{% endif %}</div>
+                       {%- endif -%}
+                    {%- else -%}
+                       <select name="id" data-productid="{{pid}}" id="product-select{{call_cl}}" class="product-select_pr product-form__variants hide hidden">
+                          {%- for variant in pr_variants -%}
+                              {%- if variant.available -%}
+                                <option {% if variant.id == current_variant.id %} selected="selected" {% endif %} value="{{ variant.id }}">{{ variant.title | escape }}</option>
+                              {%- else -%}
+                                <option value="{{ variant.id }}"{%- if remove_soldout %} disabled="disabled"{%- endif %} class="nt_sold_out">{{ variant.title | escape }}</option>
+                              {%- endif -%}
+                            {%- endfor -%}
+                       </select>
+
+                       {%- case block.settings.swatch_design -%}
+                          {%- when '1' -%}{%- render 'swatch',product:product,block:block,remove_soldout:remove_soldout,call_cl:call_cl,locale_url:locale_url -%}
+                          {%- when '2' -%}{%- render 'swatch_2',product:product,block:block,remove_soldout:remove_soldout,call_cl:call_cl,locale_url:locale_url -%}
+                          {%- when '3' -%}{%- render 'swatch_radio',product:product,block:block,remove_soldout:remove_soldout,call_cl:call_cl,locale_url:locale_url -%}
+                          {%- when '4' -%}{%- render 'swatch_radio_2',product:product,block:block,remove_soldout:remove_soldout,call_cl:call_cl,locale_url:locale_url -%}
+                          {%- when '5' -%}{%- render 'swatch_radio_3',product:product,block:block,remove_soldout:remove_soldout,call_cl:call_cl,locale_url:locale_url -%}
+                          {%- when '6' -%}{%- render 'swatch_radio_4',product:product,block:block,remove_soldout:remove_soldout,call_cl:call_cl,locale_url:locale_url -%}
+                          {%- when '7' -%}{%- render 'swatch_rectangle',product:product,block:block,remove_soldout:remove_soldout,call_cl:call_cl,locale_url:locale_url -%}
+                          {%- when '8' -%}{%- render 'swatch_rectangle_2',product:product,block:block,remove_soldout:remove_soldout,call_cl:call_cl,locale_url:locale_url -%}
+                          {%- when '9' -%}{%- render 'swatch_simple',product:product,block:block,remove_soldout:remove_soldout,call_cl:call_cl,locale_url:locale_url -%}
+                          {%- when '10' -%}{%- render 'swatch_simple_2',product:product,block:block,remove_soldout:remove_soldout,call_cl:call_cl,locale_url:locale_url -%}
+                       {%- endcase -%}
+                        <div class="nt_pr_js lazypreload op__0" data-id="{{call_cl}}" data-include="{{locale_url}}/products/{{product.handle}}/?view=js{{call_cl}}"></div>
+                       {%- if pr_incoming_mess -%}
+                          {%- if inventory_quantity <= 0 and current_variant.incoming and variants_size < 2 and inventory_management  -%}
+                              {%- assign idate = current_variant.next_incoming_date | date: format: settings.date_in -%}
+                              <div id="pr_incoming_mess{{call_cl}}" class="nt_varianqtyss mb__15 cb tu fwsb">{% if current_variant.available %}{{ 'products.product.will_not_ship_until_html' | t: date:idate }}{% else %}{{ 'products.product.will_be_in_stock_after_html' | t: date:idate }}{% endif %}</div>
+                          {%- else -%}
+                              <div id="pr_incoming_mess{{call_cl}}" class="nt_varianqty mb__15 cb tu fwsb dn">{{ 'products.product.will_not_ship_until_html' | t: date:'[19041994]' }}</div>
+                          {%- endif -%}
+                       {%- endif -%}
+                    {%- endif -%}
+
+                   {%- if price_varies and current_variant.unit_price_measurement -%}
+                        <span class="price">
+                           <span class="price_varies">
+                            {%- if on_sale -%}<del>{{ current_variant.compare_at_price  | money }}</del><ins>{{ current_variant.price | money }}</ins>{%- else -%}{{ current_variant.price | money }}{%- endif -%}
+                           </span>
+                           {%- capture unit_price_base_unit -%}
+                            <span class="unit_base">
+                              {%- if current_variant.unit_price_measurement -%}
+                                {%- if current_variant.unit_price_measurement.reference_value != 1 -%}
+                                  {{- current_variant.unit_price_measurement.reference_value -}}
+                                {%- endif -%}
+                                {{ current_variant.unit_price_measurement.reference_unit }}
+                              {%- endif -%}
+                            </span>
+                           {%- endcapture -%}
+                           <span class="price__unit db"><span class="unit_price">{{ current_variant.unit_price | money }}</span><span>/</span>{{- unit_price_base_unit -}}</span>
+                        </span>
+                   {%- elsif price_varies and on_sale -%}<span class="price price_varies"><del>{{ current_variant.compare_at_price | money }}</del> <ins>{{ current_variant.price | money }}</ins></span>
+                   {%- elsif price_varies -%}<span class="price price_varies">{{ current_variant.price | money }}</span>{%- endif -%}
+                    <div class="variations_button in_flex column w__100">
+                       <div class="flex wrap">
+                          {%- if ck_external -%}<a href="{{link}}" rel="nofollow" target="_blank" class="truncate external_btn button">{{title}}</a>{%- render 'nt_add_w',class:"order-3",tooltip:"ttip_nt tooltip_top_left" -%}
+                          {%- elsif no_sold_out == false -%}
+                                <a rel="nofollow" data-no-instant href="#" class="truncate out_stock button pe_none" id="out_stock{{call_cl}}">{{'products.product.outofstock' | t}}</a>
+                                {%- render 'nt_add_w',tooltip:"ttip_nt tooltip_top_left" -%}
+                          {%- else -%}
+                             <div class="quantity pr mr__10 order-1 qty__{{block.settings.show_qty}}" id="sp_qty{{call_cl}}"> 
+                                <input type="number" class="input-text qty text tc qty_pr_js" step="1" min="1" max="{% if ck_preoder %}999{% elsif inventory_management != null %}{{inventory_quantity}}{% else %}9999{% endif %}" name="quantity" value="1" size="4" pattern="[0-9]*" inputmode="numeric">
+                                <div class="qty tc fs__14">
+                                  <button type="button" class="plus db cb pa pd__0 pr__15 tr r__0"><i class="facl facl-plus"></i></button><button type="button" class="minus db cb pa pd__0 pl__15 tl l__0"><i class="facl facl-minus"></i></button>
+                               </div>
+                             </div> 
+                             <a rel="nofollow" data-no-instant href="#" class="single_stt out_stock button pe_none order-2" id="out_stock{{call_cl}}">{{'products.product.outofstock' | t}}</a>
+                             {%- render 'nt_add_w',class:"order-3",tooltip:"ttip_nt tooltip_top_left" -%}
+                             <button type="submit" data-time='{{block.settings.time}}000' data-ani='{{block.settings.ani}}' class="single_add_to_cart_button button truncate js_frm_cart w__100 mt__20 order-4{% if PR_no_pick %} disabled{% endif %}"><span class="txt_add {{classdn1}}">{{'products.product.add_to_cart' | t}}</span><span class="txt_pre {{classdn2}}">{{'products.product.pre_orders' | t}}</span></button>
+                          {%- endif -%}
+                       </div>
+                       {%- if block.settings.enable_payment_btn and ck_external == false and no_sold_out -%}{{- form | payment_button -}}{%- endif -%} 
+                    </div>
+                 {%- endform -%}
+
+                {%- assign uavailable_v = pr_variants | where: "available", false -%}
+                {%- if settings.use_notify_me and uavailable_v.size > 0 -%}
+                 <div class="form-notify single_variation_wrap w_100 frm_notify_pr mt__25 {%- if no_sold_out %} dn{%- endif -%}" id="frm_notify{{call_cl}}">
+                    {%- form 'contact',class:'frm_notify w_100' -%}
+                           {%- assign formId = 'ContactForm'| append:call_cl | append:current_variant.id -%}
+                           {%- assign post_message = 'products.product.success_notify_me' -%}
+                           {%- render 'form-status', form: form, form_id: formId, success_message: post_message -%}
+                           <p class="cd fwsb mt__15 mb__10 fs__16">{{ 'products.product.title_notify_me' | t }}</p>
+                           <div class="row">
+                             {%- if customer and customer.name != blank -%}
+                             <div class="col-12 mb__20 hide hidden">
+                               <input type="text" id="{{ formId }}-name" name="contact[name]" value="{{ customer.name }}">
+                             </div>
+                             {%- endif -%}
+                             <div class="col-12 mb__20">
+                               <label for="{{ formId }}-email">{{ 'products.product.email_address' | t }} <span aria-hidden="true">*</span></label>
+                               <input required="required" type="email" id="{{ formId }}-email" name="contact[email]" autocorrect="off" autocapitalize="off" aria-required="true"{%- if form.errors contains 'email' %} class="input--error"{%- endif -%} value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}">
+                             </div>
+                             <div class="col-12 mb__20 hide hidden">
+                               <label for="{{ formId }}-message">{{ 'contact.form.message' | t }}</label>
+                               <textarea rows="10" id="{{ formId }}-message" name="contact[body]" data-wg-notranslate>
+                                {%- assign shop_url = shop.url | append:product.url -%}
+                                  {%- if variants_size < 2 -%}{{- 'products.product.please_notify_me' | t: title:product.title,variant:'',shop_url:shop_url,url:'' -}}
+                                  {%- else -%}{{- 'products.product.please_notify_me' | t: title:product.title,variant:' ( [variant] )',shop_url:shop_url,url:'[url]' -}}
+                                  {%- endif -%}
+                               </textarea>
+                             </div>
+                           </div>
+                           <input type="hidden" name="challenge" value="false">
+                           <input type="submit" class="add_to_cart_button button" value="{{ 'products.product.send_notify_me' | t }}">
+                    {%- endform -%}
+                 </div>
+                 {%- endif -%}
+
+              </div>
+           {%- else -%}
+              {%- comment %}product group{% endcomment -%}
+              {%- render 'grouped_product',block:block,nav_up:nav_up,call_cl:call_cl,pid:pid -%}
+           {%- endif -%}
+        </div>
+        
+      {%- when 'store_avai' %}{% if no_sold_out == false %}{% continue %}{% endif -%}
+        <div id="store_availability{{call_cl}}" class="product-single__store-availability-container dn" data-store-availability-container
+          data-vid="{{current_variant.id}}" data-product-title="{{ product.title | escape }}" data-has-only-default-variant="{% if variants_size == 1 %}true{% else %}{{ default }}{% endif %}" data-base-url="{{ shop.url }}{{ routes.root_url }}"> 
+        </div>
+
+      {%- when 'size' -%}
+        <div class="extra-link mt__35 fwsb">
+           {%- if block.settings.size_chart != '1' -%}
+              {%- assign ck_s = true -%}
+              {%- assign sc_type = block.settings.sc_type -%}
+              {%- assign handle_size = pr_metafields_meta.page_size_chart | default:collection.metafields.meta.page_size_chart -%}
+              {%- assign page_size = pages[handle_size] -%}
+              {%- assign page_size_2 = pages[block.settings.page] -%}
+              {%- assign img_meta = pr_metafields_meta.img_size_chart | default:collection.metafields.meta.img_size_chart -%}
+              {%- assign image = images[img_meta] -%}
+              {%- assign image_2 = block.settings.image -%}
+
+              {%- if block.settings.size_chart == '2' -%}
+                 {%- assign ck_s = false -%}
+                 {%- assign size_ck = block.settings.size_ck | append:',size,sizes,Größe' -%}{%- assign get_size = size_ck | downcase | replace: ' ,', ',' | replace: ', ', ',' | split: ',' | uniq -%}
+                 {%- for option in product.options_with_values -%}{%- assign name = option.name | downcase -%}{%- if get_size contains name -%}{%- assign ck_s = true -%}{%- break -%}{%- endif -%}{%- endfor -%}
+              {%- endif -%}
+             
+              {%- if sc_type == '1' and ck_s and page_size != blank -%}
+
+                <a class="cd chp ajax_pp_js mr__20" href="#" data-no-instant rel="nofollow" data-id='ps_ajax_pp_js' data-url="{{page_size.url}}/?view=AjaxPopup">{{ 'products.product.product_size_guide' | t }}</a>
+
+              {%- elsif sc_type == '2' and image != blank and ck_s -%}
+
+                <a class="cd chp btn_size_guide mr__20" href="#" data-no-instant rel="nofollow" data-src="{{ image | img_url: 'master' }}" data-width="{{ image.width }}" data-height="{{ image.height }}">{{ 'products.product.product_size_guide' | t }}</a>
+
+              {%- elsif sc_type == '1' and ck_s and page_size_2 != blank -%}
+                
+                <a class="cd chp ajax_pp_js mr__20" href="#" data-no-instant rel="nofollow" data-id='ps_ajax_pp_js' data-url="{{page_size_2.url}}/?view=AjaxPopup">{{ 'products.product.product_size_guide' | t }}</a>
+               
+              {%- elsif sc_type == '2' and ck_s and image_2 != blank -%}
+
+                <a class="cd chp btn_size_guide mr__20" href="#" data-no-instant rel="nofollow" data-src="{{ image_2 | img_url: 'master' }}" data-width="{{ image_2.width }}" data-height="{{ image_2.height }}">{{ 'products.product.product_size_guide' | t }}</a>
+
+              {%- endif -%}
+
+           {%- endif -%}
+
+           {%- assign page_delivery = pages[block.settings.page_dr] %}{% if block.settings.delivery and page_delivery != blank -%}
+           <a class="ajax_pp_js cd chp mr__20" href="#" data-no-instant rel="nofollow" data-id='dl_ajax_pp_js' data-url="{{page_delivery.url}}/?view=AjaxPopup">{{ 'products.product.delivery_return' | t }}</a>
+           {%- endif -%}
+           
+           {%- comment -%}
+           {%- assign page_ask = pages[block.settings.page_ask] %}{% if block.settings.ask and page_ask != blank -%}
+           <a class="ajax_pp_js cd chp" href="#" data-no-instant rel="nofollow" data-id='ask_ajax_pp_js' data-url="{{page_ask.url}}/?view=AjaxContact">{{ 'products.product.ask_question' | t }}</a>
+           {%- endif -%}
+           {%- endcomment -%}
+           {%- if block.settings.ask -%}
+           <a class="ajax_pp_js cd chp" href="#" data-no-instant rel="nofollow" data-id='ask_ajax_pp_js' data-url="{{routes.search_url}}/?view=AjaxContact" data-title='{{product.title | escape}}' data-handle='{{ shop.url }}{{product.url}}'>{{ 'products.product.ask_question' | t }}</a>
+           {%- endif -%}
+           
+        </div>
+
+      {%- when 'meta' -%}
+        {%- assign ck_meta = false -%}
+        {%- capture meta -%}
+          {%- if block.settings.show_pr_vendor and product.vendor != blank -%} {%- assign ck_meta = true -%}
+          <span class="vendor_wrapper">{{ 'products.product.product_vendor' | t }} <span class="vendor value" id="product-vendor{{call_cl}}">{{ product.vendor | link_to_vendor }}</span></span>
+          {%- endif -%}
+          {%- if block.settings.show_sku -%} {%- assign ck_meta = true -%}{%- if current_variant.sku != blank -%}{%-endif-%}
+          <span class="sku_wrapper">{{ 'products.product.product_sku' | t }} <span class="sku value cb{% if current_variant.sku == blank %} dn{% endif %}" id="pr_sku{{call_cl}}">{{current_variant.sku}}</span><span class="sku value{% if current_variant.sku != blank %} dn{% endif %}" id="pr_sku_na{{call_cl}}">{{ 'products.product.na' | t }}</span></span>
+          {%- endif -%}
+          {%- if product.collections.size > 0 and block.settings.show_category_product -%} {%- assign ck_meta = true -%}
+          <span class="posted_in">{{ 'products.product.product_category' | t }}
+          {% for collection in product.collections -%}{{ collection.title | link_to: collection.url }}{%- if forloop.last == false -%}, {% endif -%}{%- endfor -%}
+          </span>
+          {%- endif -%}
+          {%- if pr_tags.size > 0 and block.settings.show_tag_product and product.collections.size > 0 -%} {%- assign ck_meta = true -%}
+          <span class="tagged_as">{{ 'products.product.product_tag' | t }}
+           {% for tag in pr_tags -%}
+             {%- if tag contains 't4_' or tag contains 'badge_' %}{% continue %}{% endif -%}
+             <a href="{%- if collection != blank -%}{{ collection.url }}{%- else -%}{{ product.collections.first.url }}{%- endif -%}/{{ tag | handle }}">{{ tag | remove:'type ' | remove:'Type ' }}</a>{%- unless forloop.last -%}, {% endunless -%}
+           {%- endfor -%}
+          {%- endif -%}
+        {%- endcapture -%}
+        {%- if ck_meta -%}<div class="product_meta">{{- meta -}}</div>{%- endif -%}
+
+      {%- when 'social' %}{% if des_pr_layout == '2' and call_cl == '_ppr' or settings.social_pr == false %}{% continue %}{% endif -%}
+        <div class="social-share {{block.settings.class}}">
+          {%- if settings.share_source == '1' %}{%- render 'social-sharing' -%}
+          {%- elsif settings.share_source == '3' %}
+              {% capture the_snippet_share %}
+                {% render  'ssw-widget-share-links' with 1 %}
+              {% endcapture %}
+              {% unless the_snippet_share contains 'Liquid error' %}
+                {{ the_snippet_share }}
+              {% endunless %}
+          {%- else -%}
+          <div class="nt-social nt__addthis addthis_inline_share_toolbox_icxz"></div>
+          {% endif %}
+        </div>
+      
+      {%- when 'img' -%}
+        <div id="trust_seal{{call_cl}}" class="pr_trust_seal {{block.settings.al}}_md tc">
+          {%- if block.settings.mess -%}<p class="mess_cd cb mb__10 fwm tu" style="font-size: {{block.settings.size}}px">{{block.settings.mess}}</p>{%- endif -%}
+          {%- assign image = block.settings.image -%}
+          {%- if block.settings.source == '1' and image != blank  -%}{%- assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+              <img style="--max-w-img:{{image.width}}px;width: {% if call_cl == '_ppr' %}{{block.settings.wimg}}{% else %}100{% endif %}%" class="lazyload lz_op_ef img_tr_s1" src="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20{{image.width}}%20{{image.height}}%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3C%2Fsvg%3E" data-src="{{ img_url }}" data-widths="[90, 120, 150, 180, 360, 480, 600, 750, 940, 1080, 1296]" data-sizes="auto" alt="{{image.alt}}">
+          {%- else block.settings.svg -%}
+              {%- assign arr = block.settings.svg | remove: ' ' | split:"," -%}
+            <style>.pr_trust_seal img {padding: 2.5px;height: {{block.settings.height}}px;}</style>
+            {%- for img in arr -%}<img class="lazyload img_tr_svg" src="https://cdn.shopify.com/s/assets/payment_icons/generic-dfdcaf09b6731ca14dd7441354c0ad8bc934184eb15ae1fda6a6b9e307675485.svg" data-src="{{ img | payment_type_img_url }}" alt="{{img | replace:'_',' '}}" />{%- endfor -%}
+          {%- endif -%}
+        </div>
+
+      {%- when 'countdown' -%}
+         {%- assign meta = pr_metafields_meta.countdown -%}
+         {%- if meta != blank -%}{%- assign _meta = meta | remove: "/" | remove: ":" | remove: " " -%}
+
+           <div id="nt_countdow{{call_cl}}_txt" class="{{block.settings.al}} cd_style_{{block.settings.cd_style}}">
+             {%- if block.settings.mess != blank -%}
+                <p class="mess_cd cb mb__10 lh__1 dn fwm tu" style="font-size: {{block.settings.size}}px">
+                {%- if block.settings.icon != '1' -%}
+                  {%- if block.settings.icon == '3' and block.settings.img != blank -%}<img class="lazyload img_w25 w__100 mr__5 fading_{{block.settings.fade}}" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ block.settings.img | img_url: '50x' }}" alt="{{settings.img.alt | default:'stock gecko' }}">{%- else -%}<i class="cd mr__5 fading_{{block.settings.fade}} fs__20 las la-{{block.settings.icon_name}}"></i>{%- endif -%}
+                {%- endif -%}
+                {{block.settings.mess}}</p>
+             {%- endif -%}
+             <div class="nt_countdow_page in_flex fl_between lh__1" data-timezone='{{block.settings.timezone}}' data-loop='{{block.settings.loop}}' id="nt_countdow{{call_cl}}" data-time='{{meta}}' data-timej='{{_meta}}'></div>
+             <span class="day dn">{{block.settings.day}}</span><span class="hr dn">{{block.settings.hr}}</span><span class="min dn">{{block.settings.min}}</span><span class="sec dn">{{block.settings.sec}}</span>
+           </div>
+
+         {%- elsif block.settings.stock_time != blank or pr_metafields_meta.countdown_day != blank -%}
+
+           {%- if block.settings.source == '2' -%}{%- unless pr_tags contains 'has_stock_countdown' -%}{%- continue -%}{%- endunless -%}{%- endif -%}
+           <div id="nt_countdow{{call_cl}}_txt" class="{{block.settings.al}} cd_style_{{block.settings.cd_style}}">
+             {%- if block.settings.mess != blank -%}
+                <p class="mess_cd cb mb__10 lh__1 dn fwm tu" style="font-size: {{block.settings.size}}px">
+                {%- if block.settings.icon != '1' -%}
+                  {%- if block.settings.icon == '3' and block.settings.img != blank -%}<img class="lazyload img_w25 w__100 mr__5 fading_{{block.settings.fade}}" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ block.settings.img | img_url: '50x' }}" alt="{{settings.img.alt | default:'stock gecko' }}">{%- else -%}<i class="cd mr__5 fading_{{block.settings.fade}} fs__20 las la-{{block.settings.icon_name}}"></i>{%- endif -%}
+                {%- endif -%}
+                {{block.settings.mess}}</p>
+             {%- endif -%}
+             <div class="nt_countdow_page nt_loop in_flex fl_between lh__1" data-timezone='{{block.settings.timezone}}' data-loop='{{block.settings.loop}}' id="nt_countdow{{call_cl}}" data-time={{ pr_metafields_meta.countdown_day | default:block.settings.stock_time | json }}></div>
+             <span class="day dn">{{block.settings.day}}</span><span class="hr dn">{{block.settings.hr}}</span><span class="min dn">{{block.settings.min}}</span><span class="sec dn">{{block.settings.sec}}</span>
+           </div>
+
+         {%- endif -%}
+
+      {%- when 'stock' -%}
+          {%- if block.settings.mess == blank or no_sold_out == false -%}{%- continue -%}{%- endif -%}
+          {%- assign arr = block.settings.mess | split:'[stock_number]' -%}
+          <div id="nt_stock{{call_cl}}" class="nt_stock_page {{block.settings.al}}" data-type="ATC{% if block.settings.reduce %}_NONE{% endif %}" data-cur="{{inventory_quantity |default:0}}" data-prid="{{pid}}" data-st='{{block.settings.st}}' data-qty='{{block.settings.qty}}' data-total='{{block.settings.total_items}}' data-min='{{block.settings.stock_from}}' data-max='{{block.settings.stock_to}}' data-bgprocess='{{block.settings.stock_bg_process}}' data-bgten='{{block.settings.bgten}}'>
+           <p class="message dn cb mb__10 lh__1 fwm" style="font-size:{{block.settings.size}}px">
+            {%- if block.settings.icon != '1' -%}
+              {%- if block.settings.icon == '3' and block.settings.img != blank -%}<img class="lazyload img_w25 w__100 mr__5 fading_{{block.settings.fade}}" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ block.settings.img | img_url: '50x' }}" alt="{{settings.img.alt | default:'stock gecko' }}">{%- else -%}<i class="cd mr__5 fading_{{block.settings.fade}} fs__20 las la-{{block.settings.icon_name}}"></i>{%- endif -%}
+            {%- endif -%}
+            {{arr[0]}} <span class='count'></span> {{arr[1]}}</p>
+           {%- if block.settings.progress -%}
+           <div class="progressbar progress_bar pr oh dn" style="display:none;background-color:{{block.settings.stock_bg}};width:{{block.settings.wbar}}%"><div style="background-color:{{block.settings.stock_bg_process}};width: 100%;"></div></div>
+           {%- endif -%}
+          </div>
+
+      {%- when 'time' -%}
+        {%- if block.settings.text == blank -%}{%- continue -%}{%- endif -%}
+        <div id="counter{{call_cl}}" class="pr_counter dn cd" data-min="{{block.settings.min}}" data-max="{{block.settings.max}}" data-interval="{{block.settings.time}}000">
+          {%- if block.settings.icon != '1' -%}
+            {%- if block.settings.icon == '3' and block.settings.img != blank -%}<img class="lazyload img_w25 w__100 mr__5 fading_{{block.settings.fade}}" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ block.settings.img | img_url: '50x' }}" alt="{{settings.img.alt | default:'time gecko' }}">{%- else -%}<i class="cd mr__5 fading_{{block.settings.fade}} fs__20 las la-{{block.settings.icon_name}}"></i>{%- endif -%}
+          {%- endif -%}
+          {{ block.settings.text | replace:'[count]','<span class="count clc fwm cd"></span>' }}
+        </div>
+
+      {%- when 'sold' -%}
+        {%- if block.settings.text == blank or no_sold_out == false -%}{%- continue -%}{%- endif -%}
+        <div id="sold{{call_cl}}" data-time="120000" data-id="{{product.id}}" class="pr_flash_sold cb dn" data-mins="{{block.settings.mins}}" data-maxs="{{block.settings.maxs}}" data-mint="{{block.settings.mint}}" data-maxt="{{block.settings.maxt}}">
+          {%- if block.settings.icon != '1' -%}
+            {%- if block.settings.icon == '3' and block.settings.img != blank -%}<img class="lazyload img_w25 w__100 mr__5 fading_{{block.settings.fade}}" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ block.settings.img | img_url: '50x' }}" alt="{{settings.img.alt | default:'sold gecko' }}">{%- else -%}<i class="cd mr__5 fading_{{block.settings.fade}} fs__20 las la-{{block.settings.icon_name}}"></i>{%- endif -%}
+          {%- endif -%}
+          {{ block.settings.text | replace:'[sold]','<span class="nt_pr_sold clc fwm"></span>' | replace:'[hour]','<span class="nt_pr_hrs clc fwm"></span>' }}
+        </div>
+      
+      {%- comment -%}
+      {%- when 'free' -%}
+        <div id="ship{{call_cl}}" class="pr_ship_text dn cb" data-ship="{{ country_option_tags  | strip_html | strip_newlines }}">
+          {%- if block.settings.icon == '2' or block.settings.icon == '3' -%}
+            <span class="fading_{{block.settings.fade}} fs__25 mr__5">{%- if block.settings.icon == '3' and block.settings.img != blank -%}<img class="lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ block.settings.img | img_url: '30x' }}" alt="{{settings.img.alt | default:'fire sale' }}">{%- else -%}<i class="las la-{{block.settings.icon_name}}"></i>{%- endif -%}</span> 
+          {%- endif -%}
+          <span class="has_ship">Free Shipping For Over <span class="clc"><span class="money">$100</span></span> to</span><span class="no_ship">This item no ship to</span> <span class="country_user txt_under in_flex al_center flagst4 flagst4-smn lazyload"></span>
+        </div>
+      {%- endcomment -%}
+
+      {%- comment %}Free Shipping For Over [money] to [country]{% endcomment -%}
+      {%- comment %}This item no ship to [country]{% endcomment -%}
+
+      {%- when 'order' %}{% unless no_sold_out %}{% continue %}{% endunless -%}
+        <div id="delivery{{call_cl}}" class="prt_delivery dn cd" data-timezone="false" data-frm="{{block.settings.frm}}" data-cut="{{block.settings.cut}}" data-ds="{{pr_metafields_meta.estimateStartDate | default:block.settings.ds}}" data-de="{{pr_metafields_meta.estimateEndDate | default:block.settings.de}}" data-time="{{block.settings.time}}">
+          {%- if block.settings.icon == '2' or block.settings.icon == '3' -%}
+            {%- if block.settings.icon == '3' and block.settings.img != blank -%}<img class="lazyload img_w25 w__100 fading_{{block.settings.fade}} mr__5" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ block.settings.img | img_url: '50x' }}" alt="{{block.settings.img.alt | default:'gecko sale' }}">{%- else -%}<i class="las la-{{block.settings.icon_name}} fading_{{block.settings.fade}} fs__20 mr__5"></i>{%- endif -%}
+          {%- endif -%}
+            {{ block.settings.txt | replace:'[hour]','<span class="h_delivery clc"></span>' | replace:'[date_start]','<span class="start_delivery fwm txt_under"></span>' | replace:'[date_end]','<span class="end_delivery fwm txt_under"></span>'}}
+            <span class="dn hr">{{block.settings.hr}}</span><span class="dn min">{{block.settings.min}}</span>
+        </div>
+
+      {%- when 'html' -%}
+        {%- if block.settings.page == blank -%}{%- continue -%}{%- endif -%}
+        <div class="custom_{{block.id}}">{{pages[block.settings.page].content}}</div>
+
+      {%- when 'text' -%}
+        {%- if block.settings.text == blank -%}{%- continue -%}{%- endif -%}
+        <div class="richtext_{{block.id}}">{{block.settings.text}}</div>
+
+      {%- comment -%}
+      {%- when 'metafield' -%}
+        {%- if pr_metafields_meta.option -%}{%- continue -%}{%- endif -%}
+        <div class="meta_{{block.id}}">{{pr_metafields_meta.option}}</div>
+      {%- endcomment -%}
+
+   {%- endcase -%}
+{%- endfor -%}
+{%- if call_cl == "_qv" -%}<a href="{{product.url | within: collection}}" class="btn fwsb detail_link">{{ 'products.product.product_view_details' | t }} <i class="facl facl-right"></i></a> {%- endif -%}
+
+{%- schema -%}
+  {
+    "name": "Product summary",
+    "class": "summary entry-summary mt__30",
+    "max_blocks": 30,
+    "blocks": [
+      {
+        "type": "title",
+        "name": "Product Title",
+        "limit": 1,
+        "settings": [
+            {
+              "type": "range",
+              "id": "size",
+              "min": 10,
+              "max": 60,
+              "step": 1,
+              "label": "Font size",
+              "unit": "px",
+              "default": 16
+            }
+        ]
+      },
+      {
+        "type": "pricereview",
+        "name": "Product Price, reivew",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "select",
+            "id": "price",
+            "options": [
+              {
+                "value": "0",
+                "label": "None"
+              },
+              {
+                "value": "1",
+                "label": "$39.00 – $59.00"
+              },
+              {
+                "value": "2",
+                "label": "From $39.00"
+              }
+            ],
+            "label": "Price varies settings",
+            "default": "0"
+          },
+         {
+           "type": "checkbox",
+           "id": "show_available",
+           "label": "Show product Available?",
+           "default": true
+         },
+          {
+           "type": "checkbox",
+           "id": "rating",
+           "label": "Use Rating?",
+           "default": true
+          }
+        ]
+      },
+      {
+        "type": "des",
+        "name": "Description",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "select",
+            "id": "des",
+            "options": [
+              {
+                "value": "1",
+                "label": "Full description"
+              },
+              {
+                "value": "2",
+                "label": "Short description"
+              }
+            ],
+            "label": "Description mode:",
+            "default": "2"
+          },
+          {
+            "type": "paragraph",
+            "content": "—————————————————"
+          },
+          {
+            "type": "paragraph",
+            "content": "== Short description settings:"
+          },
+          {
+            "type": "page",
+            "id": "page",
+            "label": "Short description page",
+            "info": "This page content will appear. Short description page that will be displayed for each product content if you don't set metafield excerpt for each product content."
+          },
+        {
+          "type": "range",
+          "id": "length",
+          "min": 1,
+          "max": 100,
+          "step": 1,
+          "label": "Excerpt length (integer)",
+          "info": "Number of words that will be displayed for each product content if you don't set short description page or set metafield excerpt for each product content.",
+          "default": 31
+        },
+        {
+         "type": "checkbox",
+         "id": "readm",
+         "label": "Use Read more?",
+         "default": false
+        },
+        {
+         "type": "text",
+         "id": "readm_txt",
+         "label": "Read more title",
+         "default": "Read more"
+        }
+        ]
+      },
+      {
+        "type": "frm",
+        "name": "Product Form",
+        "limit": 1,
+        "settings": [
+         {
+           "type": "select",
+           "id": "ani",
+           "options": [
+             {
+               "value": "none",
+               "label": "None"
+             },
+             {
+               "value": "bounce",
+               "label": "Bounce"
+             },
+             {
+               "value": "tada",
+               "label": "Tada"
+             },
+             {
+               "value": "swing",
+               "label": "Swing"
+             },
+             {
+               "value": "flash",
+               "label": "Flash"
+             },
+             {
+               "value": "fadeIn",
+               "label": "FadeIn"
+             },
+             {
+               "value": "heartBeat",
+               "label": "HeartBeat"
+             },
+             {
+               "value": "shake",
+               "label": "Shake"
+             }
+           ],
+           "label": "Add to cart animation"
+         },
+          {
+            "type": "range",
+            "id": "time",
+            "min": 2,
+            "max": 40,
+            "step": 1,
+            "label": "Loop time (seconnds)",
+            "info": "Loop time add to cart animation",
+            "unit": "sec",
+            "default": 6
+          },
+         {
+           "type": "select",
+           "id": "btn_des",
+           "options": [
+             {
+               "value": "1",
+               "label": "Design 1"
+             },
+             {
+               "value": "2",
+               "label": "Design 2"
+             },
+             {
+               "value": "3",
+               "label": "Design 3"
+             }
+           ],
+           "label": "Button Design"
+         },
+         {
+            "type": "select",
+            "id": "btn_txt",
+            "default": "3",
+            "options": [
+              {
+                "value": "0",
+                "label": "None"
+              },
+              {
+                "value": "1",
+                "label": "Lowercase"
+              },
+              {
+                "value": "2",
+                "label": "Capitalize"
+              },
+              {
+                "value": "3",
+                "label": "Uppercase"
+              }
+            ],
+            "label": "Button transform Text:"
+         },
+         {
+           "type": "header",
+           "content": "Product Swatch"
+         },
+         {
+           "type": "select",
+           "id": "swatch_design",
+           "default": "2",
+           "options": [
+             {
+               "group": "Circle:",
+               "value": "1",
+               "label": "Circle"
+             },
+             {
+               "group": "Circle:",
+               "value": "2",
+               "label": "Circle + color"
+             },
+             {
+               "group": "Radio:",
+               "value": "3",
+               "label": "Radio"
+             },
+             {
+               "group": "Radio:",
+               "value": "4",
+               "label": "Radio + color"
+             },
+             {
+               "group": "Radio:",
+               "value": "5",
+               "label": "Radio full width"
+             },
+             {
+               "group": "Radio:",
+               "value": "6",
+               "label": "Radio full width + color"
+             },
+             {
+               "group": "Rectangle:",
+               "value": "7",
+               "label": "Rectangle"
+             },
+             {
+               "group": "Rectangle:",
+               "value": "8",
+               "label": "Rectangle + color"
+             },
+             {
+               "group": "Simple:",
+               "value": "9",
+               "label": "Simple"
+             },
+             {
+               "group": "Simple:",
+               "value": "10",
+               "label": "Simple + color"
+             }
+           ],
+           "label": "Swatch design setting"
+         },
+         {
+           "type": "select",
+           "id": "style_color",
+           "options": [
+             {
+               "value": "1",
+               "label": "Swatch color circle"
+             },
+             {
+               "value": "2",
+               "label": "Swatch color square"
+             }
+           ],
+           "label": "Swatch color setting for Design"
+         },
+         {
+           "type": "select",
+           "id": "swatch_style",
+           "options": [
+             {
+               "value": "1",
+               "label": "Swatch color (Default or Upload)"
+             },
+             {
+               "value": "2",
+               "label": "Swatch image variant"
+             }
+           ],
+           "label": "Swatch Layout setting for color/img"
+         },
+         {
+           "type": "select",
+           "id": "swatch_size",
+           "options": [
+             {
+               "value": "small",
+               "label": "Small"
+             },
+             {
+               "value": "medium",
+               "label": "Medium"
+             },
+             {
+               "value": "large",
+               "label": "Large"
+             },
+             {
+               "value": "exlarge",
+               "label": "Extra Large"
+             }
+           ],
+           "label": "Swatch color setting for size",
+           "default": "medium"
+         },
+         {
+           "type": "checkbox",
+           "id": "show_qty",
+           "label": "Show quantity selector",
+           "default": true
+         },
+         {
+           "type": "checkbox",
+           "id": "btn_atc_full",
+           "label": "Use Add to cart full width?",
+           "default": false
+         },
+         {
+           "type": "checkbox",
+           "id": "enable_payment_btn",
+           "label": "Show dynamic checkout button",
+           "info": "Lets customers check out directly using a familiar payment method. [Learn more](https:\/\/help.shopify.com\/manual\/using-themes\/change-the-layout\/dynamic-checkout)",
+           "default": false
+         }
+        ]
+      },
+      {
+        "type": "size",
+        "name": "Size Chart, Delivery, Ask",
+        "limit": 1,
+        "settings": [
+         {
+           "type": "header",
+           "content": "== Size Chart"
+         },
+         {
+           "type": "select",
+           "id": "size_chart",
+           "label": "Show Size chart:",
+           "default": "3",
+           "options": [
+             {
+               "value": "1",
+               "label": "None"
+             },
+             {
+               "value": "2",
+               "label": "Only product has variant name 'size'"
+             },
+             {
+               "value": "3",
+               "label": "All product"
+             }
+           ]
+         },
+        {
+          "type": "select",
+          "id": "sc_type",
+          "default": "1",
+          "options": [
+            {
+              "value": "1",
+              "label": "HTML"
+            },
+            {
+              "value": "2",
+              "label": "IMAGE"
+            }
+          ],
+          "label": "Size Chart Type: "
+        },
+        {
+          "type": "paragraph",
+          "content": "—————————————————"
+        },
+        {
+          "type": "page",
+          "id": "page",
+          "label": "HTML Size Chart",
+          "info": "This page content will appear."
+        },
+        {
+          "type": "paragraph",
+          "content": "—————————————————"
+         },
+         {
+           "type": "image_picker",
+           "id": "image",
+           "label": "IMAGE Size Chart"
+         },
+         {
+          "type": "paragraph",
+          "content": "—————————————————"
+         },
+         {
+           "type": "textarea",
+           "id": "size_ck",
+           "label": "Enter variant name you want has size guide",
+           "info": "Eg: size,sizes,Größe"
+         },
+         {
+           "type": "header",
+           "content": "== Delivery & Return"
+         },
+         {
+           "type": "checkbox",
+           "id": "delivery",
+           "label": "Show Delivery & Return?",
+           "default": false
+         },
+         {
+           "type": "page",
+           "id": "page_dr",
+           "label": "Add page Delivery & Return",
+            "info": "This page content will appear."
+         },
+         {
+           "type": "header",
+           "content": "== Ask a question"
+         },
+         {
+           "type": "checkbox",
+           "id": "ask",
+           "label": "Show Ask a question?",
+           "default": false
+         }/*,
+         {
+           "type": "page",
+           "id": "page_ask",
+           "label": "Add page Ask a question"
+         }*/
+        ]
+      },
+      {
+        "type": "meta",
+        "name": "Product meta",
+        "limit": 1,
+        "settings": [
+         {
+           "type": "checkbox",
+           "id": "show_pr_vendor",
+           "label": "Show Product vendors",
+           "default": true
+         },
+         {
+           "type": "checkbox",
+           "id": "show_sku",
+           "label": "Show Sku?",
+           "default": true
+         },
+         {
+           "type": "checkbox",
+           "id": "show_category_product",
+           "label": "Show Category product?",
+           "default": true
+         },
+         {
+           "type": "checkbox",
+           "id": "show_tag_product",
+           "label": "Show product's tags?",
+           "default": true
+         }
+        ]
+      },
+      {
+        "type": "social",
+        "name": "Product social",
+        "limit": 1,
+        "settings": [
+         {
+           "type": "select",
+           "id": "class",
+           "label": "Social align",
+           "default": "tc",
+           "options": [
+             {
+               "value": "tdf",
+               "label": "Default"
+             },
+             {
+               "value": "tc",
+               "label": "Center"
+             }
+           ]
+         }
+         ]
+      },
+      {
+        "type": "countdown",
+        "name": "Countdown Timer",
+        "limit": 1,
+        "settings": [
+         {
+           "type": "paragraph",
+           "content": "Display a countdown timer in your product page."
+         },
+         {
+            "type": "select",
+            "id": "source",
+            "label": "Show Countdown Timer:",
+            "default": "1",
+            "options": [
+              {
+                "value": "1",
+                "label": "All products"
+              },
+              {
+                "value": "2",
+                "label": "Only product had tag 'has_stock_countdown'"
+              }
+            ]
+          },
+         /*{
+           "type": "checkbox",
+           "id": "timezone",
+           "label": "Use General timezone?",
+           "info":"Use to display a countdown accordingly to the General timezone no matter the localtime your computer is.",
+           "default": false
+         },*/
+         {
+           "type": "checkbox",
+           "id": "loop",
+           "label": "Use loop countdown?",
+           "info":"Only for countdown Timer Loop In A Day",
+           "default": false
+         },
+         {
+            "type": "select",
+            "id": "icon",
+            "label": "ICON / IMG:",
+            "default": "2",
+            "options": [
+              {
+                "value": "1",
+                "label": "None"
+              },
+              {
+                "value": "2",
+                "label": "Icon"
+              },
+              {
+                "value": "3",
+                "label": "Image"
+              }
+            ]
+          },
+         {
+           "type": "text",
+           "id": "icon_name",
+           "label": "Icon name",
+           "default": "stopwatch",
+           "info": "[Get name icon](https://icons8.com/line-awesome)"
+         },
+         {
+           "type": "image_picker",
+           "id": "img",
+           "label": "Image",
+           "info": "25x25 recommend"
+         },
+         {
+           "type": "checkbox",
+           "id": "fade",
+           "label": "Use fade animation?",
+           "default": true
+         },
+         {
+            "type": "select",
+            "id": "al",
+            "label": "Text Align",
+            "default": "tc",
+            "options": [
+              {
+                "value": "tl",
+                "label": "Text left"
+              },
+              {
+                "value": "tc",
+                "label": "Text center"
+              },
+              {
+                "value": "tr",
+                "label": "Text right"
+              }
+            ]
+          },
+         {
+           "type": "textarea",
+           "id": "mess",
+           "label": "Message",
+           "default": "Hurry up! Sale Ends in",
+           "placeholder": "Hurry up! Sale Ends in"
+         },
+          {
+            "type": "range",
+            "id": "size",
+            "min": 14,
+            "max": 50,
+            "step": 1,
+            "label": "Font size",
+            "unit": "px",
+            "default": 16
+          },
+         {
+           "type": "textarea",
+           "id": "stock_time",
+           "label": "Countdown Timer Loop In A Day",
+           "default": "8:00:00,16:00:00,23:59:59",
+           "placeholder": "8:00:00,16:00:00,23:59:59"
+         },
+         {
+           "type": "text",
+           "id": "day",
+           "label": "Days",
+           "default": "days",
+           "placeholder": "days"
+         },
+         {
+           "type": "text",
+           "id": "hr",
+           "label": "Hours",
+           "default": "hours",
+           "placeholder": "hours"
+         },
+         {
+           "type": "text",
+           "id": "min",
+           "label": "mins",
+           "default": "mins",
+           "placeholder": "mins"
+         },
+         {
+           "type": "text",
+           "id": "sec",
+           "label": "Secs",
+           "default": "secs",
+           "placeholder": "secs"
+         },
+         {
+           "type": "paragraph",
+           "content": "Hour of the day, 24-hour clock (00..23), Minute of the hour (00..59), Second of the minute (00..59)"
+         },
+         {
+           "type": "select",
+           "id": "cd_style",
+           "label": "Countdown Design",
+           "default": "dark",
+           "options": [
+             {
+               "value": "light",
+               "label": "Light"
+             },
+             {
+               "value": "dark",
+               "label": "Dark"
+             },
+             {
+               "value": "dark_2",
+               "label": "Dark 2"
+             },
+             {
+               "value": "dark_3",
+               "label": "Dark 3"
+             }
+           ]
+         },
+         {
+           "type": "paragraph",
+           "content": "Metafields product countdown, Countdown to the end sale date will be shown. Be sure you have set final date of the product sale price. pr_metafields_meta.countdown ( 2019/08/18 ) or ( 2019/08/18 17:34:56 ) or ( 2019/08/18 07:00:00,2019/08/20 17:34:56,2019/08/25 18:30:25 )"
+         }
+        ]
+      },
+      {
+        "type": "stock",
+        "name": " Inventory Quantity",
+        "limit": 1,
+        "settings": [
+            {
+              "type": "paragraph",
+              "content": "Display the stock level of your product variant."
+            },
+           {
+              "type": "select",
+              "id": "icon",
+              "label": "ICON / IMG:",
+              "default": "2",
+              "options": [
+                {
+                  "value": "1",
+                  "label": "None"
+                },
+                {
+                  "value": "2",
+                  "label": "Icon"
+                },
+                {
+                  "value": "3",
+                  "label": "Image"
+                }
+              ]
+            },
+           {
+             "type": "text",
+             "id": "icon_name",
+             "label": "Icon name",
+             "default": "hourglass-half",
+             "info": "[Get name icon](https://icons8.com/line-awesome)"
+           },
+           {
+             "type": "image_picker",
+             "id": "img",
+             "label": "Image",
+             "info": "25x25 recommend"
+           },
+           {
+             "type": "checkbox",
+             "id": "fade",
+             "label": "Use fade animation?",
+             "default": true
+           },
+           {
+              "type": "select",
+              "id": "st",
+              "label": "== Stock:",
+              "default": "3",
+              "options": [
+                {
+                  "value": "1",
+                  "label": "Only default"
+                },
+                {
+                  "value": "2",
+                  "label": "Only random"
+                },
+                {
+                  "value": "3",
+                  "label": "Default + Random"
+                }
+              ]
+            },
+            {
+              "type": "header",
+              "content": "== Default"
+            },
+            {
+              "type": "range",
+              "id": "qty",
+              "min": 1,
+              "max": 100,
+              "step": 1,
+              "unit": "Qty",
+              "label": "(X) items",
+              "info": "Show when less than (X) items are in stock",
+              "default": 10
+            },
+            {
+              "type": "header",
+              "content": "== Random"
+            },
+            {
+              "type": "range",
+              "id": "total_items",
+              "label": "Total items",
+              "min": 10,
+              "max": 100,
+              "step": 10,
+              "default": 100
+            },
+            {
+              "type": "range",
+              "id": "stock_from",
+              "label": "from",
+              "min": 1,
+              "max": 19,
+              "step": 1,
+              "default": 12
+            },
+            {
+              "type": "range",
+              "id": "stock_to",
+              "label": "to",
+              "min": 20,
+              "max": 70,
+              "step": 1,
+              "default": 20
+            },
+            {
+              "type": "header",
+              "content": "Translate labels"
+            },
+           {
+              "type": "select",
+              "id": "al",
+              "label": "Text Align",
+              "default": "tc",
+              "options": [
+                {
+                  "value": "tl",
+                  "label": "Left"
+                },
+                {
+                  "value": "tc",
+                  "label": "Center"
+                },
+                {
+                  "value": "tr",
+                  "label": "Right"
+                }
+              ]
+            },
+            {
+              "type": "textarea",
+              "id": "mess",
+              "label": "Message (You can leave it blank)",
+              "info": "Hurry! Only [stock_number] left in stock.",
+              "placeholder": "Hurry! Only [stock_number] left in stock.",
+              "default": "HURRY! ONLY [stock_number] LEFT IN STOCK."
+            },
+            {
+              "type": "range",
+              "id": "size",
+              "min": 10,
+              "max": 35,
+              "step": 1,
+              "label": "Font size",
+              "unit": "px",
+              "default": 16
+            },
+            {
+              "type": "paragraph",
+              "content": "—————————————————"
+            },
+            {
+             "type": "checkbox",
+             "id": "reduce",
+             "label": "Enable gradually reduce the amount of inventory?",
+             "default": true
+            },
+            {
+              "type": "paragraph",
+              "content": "—————————————————"
+            },
+            {
+             "type": "checkbox",
+             "id": "progress",
+             "label": "Show progress bar?",
+             "default": true
+            },
+            {
+              "type": "range",
+              "id": "wbar",
+              "min": 40,
+              "max": 100,
+              "step": 1,
+              "unit": "%",
+              "label": "Width progress bar",
+              "default": 100
+            },
+            {
+              "type": "color",
+              "id": "stock_bg_process",
+              "label": "Process color",
+              "default": "#f76b6a"
+            },
+            {
+              "type": "color",
+              "id": "bgten",
+              "label": "Less than 10 color",
+              "default": "#ec0101"
+            },
+            {
+              "type": "color",
+              "id": "stock_bg",
+              "label": "Background color",
+              "default": "#ffe8e8"
+            }
+        ]
+      },
+      {
+        "type": "img",
+        "name": "Trust Badge",
+        "limit": 1,
+        "settings": [
+         {
+           "type": "textarea",
+           "id": "mess",
+           "label": "Message",
+           "default": "Guaranteed Safe Checkout",
+           "placeholder": "Guaranteed Safe Checkout"
+         },
+          {
+            "type": "range",
+            "id": "size",
+            "min": 10,
+            "max": 60,
+            "step": 1,
+            "label": "Font size",
+            "unit": "px",
+            "default": 16
+          },
+         {
+            "type": "select",
+            "id": "source",
+            "label": "Source IMG:",
+            "default": "1",
+            "options": [
+              {
+                "value": "1",
+                "label": "Image"
+              },
+              {
+                "value": "2",
+                "label": "SVG"
+              }
+            ]
+          },
+          {
+            "type": "header",
+            "content": "== Image"
+          },
+         {
+           "type": "image_picker",
+           "id": "image",
+           "label": "Trust seal image"
+         },
+         {
+            "type": "select",
+            "id": "al",
+            "label": "Image Align",
+            "default": "tl",
+            "options": [
+              {
+                "value": "tl",
+                "label": "Left"
+              },
+              {
+                "value": "tc",
+                "label": "Center"
+              },
+              {
+                "value": "tr",
+                "label": "Right"
+              }
+            ]
+          },
+          {
+            "type": "range",
+            "id": "wimg",
+            "min": 40,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "label": "Width image",
+            "default": 60
+          },
+          {
+            "type": "header",
+            "content": "== SVG"
+          },
+         {
+           "type": "textarea",
+           "id": "svg",
+           "label": "SVG list",
+           "default": "amazon_payments,american_express,apple_pay,bitcoin,dankort,diners_club,discover,dogecoin,dwolla,forbrugsforeningen,interac,google_pay,jcb,klarna,klarna-pay-later,litecoin,maestro,master,paypal,shopify_pay,sofort,visa",
+           "info": "amazon_payments,american_express,apple_pay,bitcoin,dankort,diners_club,discover,dogecoin,dwolla,forbrugsforeningen,interac,google_pay,jcb,klarna,klarna-pay-later,litecoin,maestro,master,paypal,shopify_pay,sofort,visa"
+         },
+        {
+          "type": "range",
+          "id": "height",
+          "min": 1,
+          "max": 100,
+          "step": 1,
+          "label": "Height",
+          "unit": "px",
+          "default": 50
+        }
+        ]
+      },
+      {
+        "type": "store_avai",
+        "name": "Pickup availability",
+        "limit": 1,
+        "settings": [
+         {
+            "type": "paragraph",
+            "content":"Engage local shoppers by showing where items are available for pickup — right from the product page."
+         }
+         ]
+      },
+      {
+        "type": "time",
+        "name": "Live view",
+        "limit": 1,
+        "settings": [
+         {
+            "type": "paragraph",
+            "content":"Display fake the number of people viewing your product page."
+         },
+         {
+            "type": "select",
+            "id": "icon",
+            "label": "ICON / IMG:",
+            "default": "2",
+            "options": [
+              {
+                "value": "1",
+                "label": "None"
+              },
+              {
+                "value": "2",
+                "label": "Icon"
+              },
+              {
+                "value": "3",
+                "label": "Image"
+              }
+            ]
+          },
+         {
+           "type": "text",
+           "id": "icon_name",
+           "label": "Icon name",
+           "default": "eye",
+           "info": "[Get name icon](https://icons8.com/line-awesome)"
+         },
+         {
+           "type": "image_picker",
+           "id": "img",
+           "label": "Image",
+           "info": "25x25 recommend"
+         },
+         {
+           "type": "checkbox",
+           "id": "fade",
+           "label": "Use fade animation?",
+           "default": true
+         },
+         {
+           "type": "range",
+           "id": "min",
+           "min": 1,
+           "max": 100,
+           "step": 1,
+           "label": "MIn fake real time Visitor",
+           "default": 1
+         },
+         {
+           "type": "range",
+           "id": "max",
+           "min": 10,
+           "max": 1000,
+           "step": 10,
+           "label": "Max fake real time Visitor",
+           "default": 100
+         },
+         {
+           "type": "range",
+           "id": "time",
+           "min": 1,
+           "max": 20,
+           "step": 1,
+           "unit": "sec",
+           "label": "Interval time",
+           "default": 2
+         },
+         {
+           "type": "textarea",
+           "id": "text",
+           "label": "Text",
+           "default": "[count] <span class=\"cd fwm\">People<\/span> are viewing this right now"
+         }
+        ]
+      },
+      {
+        "type": "sold",
+        "name": "Total sold flash",
+        "limit": 1,
+        "settings": [
+         {
+            "type": "select",
+            "id": "icon",
+            "label": "ICON / IMG:",
+            "default": "2",
+            "options": [
+              {
+                "value": "1",
+                "label": "None"
+              },
+              {
+                "value": "2",
+                "label": "Icon"
+              },
+              {
+                "value": "3",
+                "label": "Image"
+              }
+            ]
+          },
+         {
+           "type": "text",
+           "id": "icon_name",
+           "label": "Icon name",
+           "default": "fire",
+           "info": "[Get name icon](https://icons8.com/line-awesome)"
+         },
+         {
+           "type": "image_picker",
+           "id": "img",
+           "label": "Image",
+           "info": "25x25 recommend"
+         },
+         {
+           "type": "checkbox",
+           "id": "fade",
+           "label": "Use fade animation?",
+           "default": true
+         },
+         {
+           "type": "range",
+           "id": "mins",
+           "min": 1,
+           "max": 100,
+           "step": 1,
+           "unit": "qty",
+           "label": "Min Quantity",
+           "default": 5
+         },
+         {
+           "type": "range",
+           "id": "maxs",
+           "min": 10,
+           "max": 110,
+           "step": 1,
+           "unit": "qty",
+           "label": "Max Quantity",
+           "default": 25
+         },
+         {
+           "type": "range",
+           "id": "mint",
+           "min": 1,
+           "max": 24,
+           "step": 1,
+           "unit": "h",
+           "label": "Min Time",
+           "default": 3
+         },
+         {
+           "type": "range",
+           "id": "maxt",
+           "min": 1,
+           "max": 24,
+           "step": 1,
+           "unit": "h",
+           "label": "Max Time",
+           "default": 24
+         },
+         {
+           "type": "textarea",
+           "id": "text",
+           "label": "Text",
+           "info": "[sold] sold in last [hour] hours",
+           "default": "[sold] sold in last [hour] hours"
+         }
+        ]
+      },
+      /*{
+        "type": "free",
+        "name": "Free Shipping Text",
+        "limit": 1,
+        "settings": [
+         {
+            "type": "select",
+            "id": "icon",
+            "label": "ICON / IMG:",
+            "default": "2",
+            "options": [
+              {
+                "value": "1",
+                "label": "None"
+              },
+              {
+                "value": "2",
+                "label": "Icon"
+              },
+              {
+                "value": "3",
+                "label": "Image"
+              }
+            ]
+          },
+         {
+           "type": "image_picker",
+           "id": "img",
+           "label": "Icon",
+           "info": "15x13 recommend"
+         },
+         {
+           "type": "checkbox",
+           "id": "fade",
+           "label": "Use fade animation?",
+           "default": true
+         },
+         {
+           "type": "color",
+           "id": "color",
+           "label": "Color Primary",
+           "default": "#0076bb"
+         },
+         {
+           "type": "textarea",
+           "id": "text",
+           "label": "Shipping Text",
+           "info":"Free Shipping For Over [money] to [country] [flag]",
+           "default": "Free Shipping For Over $100"
+         }
+        ]
+      },*/
+      {
+        "type": "order",
+        "name": "Delivery Time",
+        "limit": 1,
+        "settings": [
+         {
+            "type": "paragraph",
+            "content":"Display an approximate date of delivery."
+         },
+         {
+            "type": "select",
+            "id": "icon",
+            "label": "ICON / IMG:",
+            "default": "2",
+            "options": [
+              {
+                "value": "1",
+                "label": "None"
+              },
+              {
+                "value": "2",
+                "label": "Icon"
+              },
+              {
+                "value": "3",
+                "label": "Image"
+              }
+            ]
+         },
+         {
+           "type": "text",
+           "id": "icon_name",
+           "label": "Icon name",
+           "default": "truck",
+           "info": "[Get name icon](https://icons8.com/line-awesome)"
+         },
+         {
+           "type": "image_picker",
+           "id": "img",
+           "label": "Image",
+           "info": "25x25 recommend"
+         },
+         {
+           "type": "checkbox",
+           "id": "fade",
+           "label": "Use fade animation?",
+           "default": true
+         },
+         {
+           "type": "textarea",
+           "id": "txt",
+           "label": "Delivery Text",
+           "default": "Order in the next [hour] to get it between [date_start] and [date_end]",
+           "info":"Order in the next [hour] to get this to you between [date_start] and [date_end], Order in the next [hour] to get it by [date_end], Order in the next [hour] to get it soon"
+         },
+         {
+           "type": "range",
+           "id": "ds",
+           "min": 0,
+           "max": 99,
+           "step": 1,
+           "label": "Delivery Start Date",
+           "info": "From Current date",
+           "default": 10
+         },
+         {
+           "type": "range",
+           "id": "de",
+           "min": 0,
+           "max": 99,
+           "step": 1,
+           "label": "Delivery End Date",
+           "info": "From Current date",
+           "default": 15
+         },
+         {
+           "type": "select",
+           "id": "mode",
+           "default": "1",
+           "options": [
+             {
+               "value": "1",
+               "label": "Only Delivery"
+             },
+             {
+               "value": "2",
+               "label": "Shipping + Delivery"
+             }
+           ],
+           "label": "Exclude Days From"
+         },
+         {
+           "type": "text",
+           "id": "cut",
+           "label": "Exclude Days",
+           "default": "SAT,SUN",
+           "info": "Use the 'MON','TUE','WED','THU','FRI','SAT' and 'SUN'. Separate exclude days with a comma (,)."
+         },
+         {
+           "type": "select",
+           "id": "frm",
+           "default": "1",
+           "options": [
+             {
+               "value": "1",
+               "label": "Wednesday, 19th April"
+             },
+             {
+               "value": "2",
+               "label": "Wednesday, 19th April 2019"
+             },
+             {
+               "value": "3",
+               "label": "Wednesday, 19th April, 2019"
+             },
+             {
+               "value": "4",
+               "label": "Wednesday, April 19th, 2019"
+             },
+             {
+               "value": "5",
+               "label": "Wednesday, April 19th"
+             },
+             {
+               "value": "6",
+               "label": "Wednesday, April 19th 2019"
+             },
+             {
+               "value": "7",
+               "label": "Wednesday, April 19"
+             },
+             {
+               "value": "8",
+               "label": "Wednesday, April 19 2019"
+             },
+             {
+               "value": "9",
+               "label": "Wednesday, 04/19/2019"
+             },
+             {
+               "value": "10",
+               "label": "Wednesday, 19/04/2019"
+             },
+             {
+               "value": "20",
+               "label": "Wednesday, 2019/04/19"
+             }
+           ],
+           "label": "Date delivery format"
+         },
+         /*{
+           "type": "checkbox",
+           "id": "timezone",
+           "label": "Use General timezone?",
+           "info":"Use to display a countdown accordingly to the General timezone no matter the localtime your computer is.",
+           "default": false
+         },*/
+         {
+           "type": "text",
+           "id": "time",
+           "label": "Delivery Cut Off",
+           "info": "Number Only(24 Hours Format - 16:00:00 Means 4PM)",
+           "default": "16:00:00"
+         },
+         {
+           "type": "text",
+           "id": "hr",
+           "label": "Text hours",
+           "default": "hours"
+         },
+         {
+           "type": "text",
+           "id": "min",
+           "label": "Text minutes",
+           "default": "minutes"
+         }
+        ]
+      },
+      {
+        "type": "text",
+        "name": "Text",
+        "settings": [
+            {
+            "type": "richtext",
+            "id": "text",
+            "label": "Text",
+            "default": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>"
+            }
+         ]
+      },
+      {
+        "type": "html",
+        "name": "Custom HTML",
+        "settings": [
+          {
+            "type": "page",
+            "id": "page",
+            "label": "Content page",
+            "info": "This page content will appear."
+          }
+        ]
+      }
+   ],
+    "default": {
+      "blocks": [
+        { "type": "title" },{ "type": "pricereview" },{ "type": "des" },{ "type": "frm" },{ "type": "size" },{ "type": "meta" },{ "type": "social" }
+      ]
+    }
+  }
+{% endschema %}

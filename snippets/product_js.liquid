@@ -1,0 +1,110 @@
+{%- if product.variants.size > 1 -%}
+  {%- assign remove_unavailable = true -%}
+  {%- if product.available -%}{%- assign remove_soldout = settings.remove_sold_out -%}{%- else -%}{%- assign remove_soldout = false -%}{%- endif -%}
+  {%- assign pr_variants = product.variants %}{%- assign unavailable_prs = pr_variants | where: "available", false -%}{%- assign options_size = product.options.size -%}{%- assign vls0 = product.options_with_values[0].values.size | default:1 -%}{%- assign vls1 = product.options_with_values[1].values.size | default:1 -%}{%- assign vls2 = product.options_with_values[2].values.size | default:1 -%}{%- assign ntvariants_size = vls0 | times:vls1 | times:vls2 | minus:pr_variants.size -%}
+  {%- assign ntsoldout = false -%}{%- if unavailable_prs.size > 0 and product.available -%}{%- assign ntsoldout = true -%}{%- endif -%}
+  {%- assign unvariants = false -%}{%- if ntvariants_size > 0 -%}{%- assign unvariants = true -%}{%- endif -%}
+  {%- assign ck_so_un = false -%}{%- if ntsoldout or unvariants -%}{%- assign ck_so_un = true -%}{%- endif -%}
+  {%- assign available_prs = pr_variants | where: "available" -%}
+  {%- comment -%}
+   <script type="application/json" id="ProductJson-NT{{key_nt}}">
+   {%- if ck_so_un -%}{%- render 'arr_pr',remove_soldout:remove_soldout,pr_variants:pr_variants -%}{%- else -%}{}{%- endif -%}
+  </script>
+  
+  <script type="application/json" id="ProductJson-template11{{key_nt}}">
+   {%- include 'json_arr' -%}{{ json_arr | strip_newlines | remove:"  "}}
+  </script>
+  {%- endcomment -%}
+  <script type="application/json" id="ProductJson-template{{ key_nt }}">{{ product | json }}</script>
+  {%- capture NTincoming -%}
+  <script type="application/json" id="ProductJson-incoming{{ key_nt }}">
+    {%- assign ck_opv = pr_variants[0].option1 -%}
+    {%- assign ck_av = '' -%}
+    {
+      "size_avai":[
+      {%- for value in product.options_with_values[0].values -%}
+      {%- assign available_ops = available_prs | where: "option1",value -%}
+        {{available_ops.size}}{%- unless forloop.last %},{% endunless -%}
+      {%- endfor -%}
+      ],
+      "tt_size_avai": {{available_prs.size}},
+      "ck_so_un": {{ck_so_un}},
+      "ntsoldout": {{ntsoldout}},
+      "unvariants": {{unvariants}},
+      "remove_soldout": {{remove_soldout}},
+      "variants": [
+
+        {%- for variant in pr_variants -%}{%- assign ck_av = ck_av|append:variant.available -%}
+        {
+        {% if variant.option1 != ck_opv %}"ck_asdssa":"{%if ck_av contains 'true' %}true {% else %}false {% endif %}{% assign ck_av = '' %}",{% endif %}
+        "inventory_quantity": {{variant.inventory_quantity | json}},
+        "mdid": {{variant.featured_media.id | json}},
+        "incoming": {{ variant.incoming }},
+        "next_incoming_date": {{ variant.next_incoming_date | date: format: settings.date_in | json }}
+        }{%- unless forloop.last %},{% endunless -%}
+        {%- endfor -%}
+
+      ]
+    }
+  </script>
+  {%- endcapture -%}
+  {{ NTincoming | strip_newlines | remove: '  ' }} 
+{%- endif -%}
+
+{%- unless product == empty -%}
+ <script type="application/json" id="ModelJson-{{key_nt}}">{{ product.media | where: 'media_type', 'model' | json }}</script>
+{%- endunless -%}
+
+{%- if key_nt == '_ppr' -%}
+
+{%- comment -%}
+framerate: Framerate for the spin animation Default:60
+autoplayDirection: Control the direction of the spin depending on your assets. You can use 1 or -1 Default:1
+navigation: Set false if you don't want default navigation controls. Default:true
+dragging: Set false if you want to disable mouse and touch events on the slider.  Default:true
+disableSpin: Will disable the initial spin on load. Default:false
+{%- endcomment -%}
+{%- assign images_alt = product.images | map: 'alt' -%}
+{%- capture NTsettingspr -%}
+<script type="application/json" id="NTsettingspr_{{key_nt}}">
+{
+     "related_id":{%- if settings.related_products_use == 'id' -%}true{%- else -%}false{%- endif -%},
+     "recently_viewed":{%- if settings.show_recently_products -%}true{%- else -%}false{%- endif -%},
+     "ProductID":{{product.id | json}},
+     "PrHandle":{{product.handle | json}},
+     "cat_handle":{%- if collection -%}{{ '+' |append: collection.handle | json}}{%- else -%}null{%- endif -%},
+     "scrolltop":{{settings.scrolltop | json}},
+     {%- if images_alt contains 't4_360' -%}
+      {%- assign check_360 = false -%}
+      {%- capture _array_view_360 -%}
+         {%- for image in product.images -%}
+             {%- if check_360 -%}
+               {{image.src | img_url: "master" }}{%- if forloop.last == false -%},{%- endif -%}
+            {%- elsif image.alt contains 't4_360' -%}
+               {%- assign image_first = image -%}
+               {{image.src | img_url: "master" }}{%- if forloop.last == false -%},{%- endif -%}
+               {%- assign check_360 = true -%}
+            {%- endif -%}
+         {%- endfor -%}
+      {%- endcapture -%}
+      {%- assign array_view_360 = _array_view_360 | replace: ' ,', ',' | replace: ', ', ',' | split: ',' -%}
+     "ThreeSixty":true,
+     "imgArray": {{array_view_360 | json}},
+     "framerate": 60,
+     "autoplayDirection": 1,
+     "totalFrames": {{array_view_360.size | json }},
+     "endFrame": {{array_view_360.size | json }},
+     "height": 1000,
+     "width": 1000,
+     {%- else -%}
+     "ThreeSixty":false,
+     {%- endif -%}
+     "hashtag":{%- if product.metafields.meta.hashtag != blank -%}{{product.metafields.meta.hashtag | json}}{%- else -%}"none"{%- endif -%},
+     "access_token":{%- if product.metafields.meta.access_token != blank -%}{{product.metafields.meta.access_token | json}}{%- else -%}"none"{%- endif -%},
+     "username":{%- if product.metafields.meta.username != blank -%}{{product.metafields.meta.username | json}}{%- else -%}"none"{%- endif -%}
+}
+</script>
+ {%- endcapture -%}
+{{ NTsettingspr | strip_newlines | remove: '  ' }}
+{%- if images_alt contains 't4_360' -%}<style>{% if image_first.width < 600 %}.pr_360_wrapper {max-width: {{image_first.width}}px;}{% endif %}.threed_id_{{product.id}} {padding-bottom: {{ 1 | divided_by: image_first.aspect_ratio | times: 100}}%}</style>{%- endif -%}
+{%- endif -%}

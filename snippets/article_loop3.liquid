@@ -1,0 +1,31 @@
+{%- assign art_url = article.url -%}
+<article class="post-{{article.id}} post_nt_loop post_2 col-lg-{{col}} col-md-{{col_tb}} col-{{col_mb}} mb__40">
+   <div class="post-thumbnail pr oh">
+      <a class="db oh bgd" href="{{art_url}}">
+         {%- assign image = article.image -%}
+         {%- if image -%}<div class="lazyload nt_bg_lz pr_lazy_img" data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{image.aspect_ratio}}" data-sizes="auto"{% if sett_equal == false %} style="padding-top:{{ 1 | divided_by: image.aspect_ratio | times: 100}}%;"{% endif %}></div>{%- endif -%}
+      </a>
+      <div class="pa inside-thumb tc cg">
+         <div class="post-meta fs__12">
+            {%- if show_au -%}<span class="post-author mr__5">{{ by }} <span class="cw">{{ article.author | replace_first: 'ad clnt', 'admin' }}</span></span>{%- endif -%}
+            {%- if article.tags.size > 0 and show_tg -%}
+            <span class="cat pr">{{ 'blogs.article.in' | t }} 
+              {%- for tag in article.tags limit:5 -%}
+                <a href="{{ blogs[blog.handle].url }}/tagged/{{ tag | handle }}">{{ tag }}</a>{% unless forloop.last %}, {% endunless %}
+              {%- endfor -%}
+             </span>
+            {%- endif -%}
+            {%- if show_cm -%}
+               {%- if article.comments_count > 0 %}{% assign cm_link = '#comments' %}{% else %}{% assign cm_link = '#comment_form' %}{% endif -%}
+               <a href="{{ art_url }}{{cm_link}}"> {{ 'blogs.comments.with_count' | t: count: article.comments_count }}</a>
+            {%- endif -%}
+         </div>
+          <h2 class="post-title fs__14 ls__2 mt__10 mb__5 tu"><a class="chp" href="{{art_url}}">{{article.title}}</a></h2>
+         {%- if show_dt -%}<span class="post-time cg">{{ article.published_at | time_tag: format: date }}</span>{%- endif -%}
+      </div>
+   </div>
+   <div class="post-content">
+      {%- if article.excerpt.size > 0 -%}{{ article.excerpt }}{%- else -%}<p>{{ article.content | strip_html | truncate: 118 }}</p>{%- endif -%}
+      <a href="{{art_url}}" class="more-link">{{read_more}}</a>
+   </div>
+</article>

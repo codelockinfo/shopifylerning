@@ -1,0 +1,25 @@
+{%- liquid 
+layout none
+assign ccount = cart.item_count
+assign c_tt_price = cart.total_price
+assign product = all_products[settings.free_ship_pr]
+assign pr_price = product.price | default:0
+assign gift_wrap_pr = settings.gift_wrap_pr
+assign gift_pr = all_products[gift_wrap_pr]
+assign arr_gift_id = cart.items | where: 'product_id',gift_pr.id
+render 'cart_items',gift_pr_id:gift_pr.id  -%}
+{%- if gift_wrap_pr != blank and gift_pr == blank %}<style>.mini_cart_tool_gift {display: none !important;}</style>{% endif -%}[split_t4nt]
+{%- if pr_price > 0 and product != blank -%}
+   {%- assign num_stt_ship = pr_price -%}
+   {%- if ccount == 0 -%}1,]{{num_stt_ship| money }}
+   {%- elsif num_stt_ship > c_tt_price -%}
+      2,]{{num_stt_ship|minus:c_tt_price| money }}___{{ num_stt_ship | minus: c_tt_price | times: 100.0 | divided_by: num_stt_ship }}
+   {%- else -%}3
+   {%- endif -%}
+{%- else -%}spt4
+{%- endif -%}
+[split_t4nt] 
+{%- if gift_pr != blank -%}{{gift_pr.variants.first.id}},]{{gift_pr.price| money }}
+{%- else -%}spt4
+{%- endif -%}[split_t4nt]
+{%- if arr_gift_id.size > 0 %}1{% else %}0{% endif -%}

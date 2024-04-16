@@ -1,0 +1,193 @@
+{%- for i in (1..1) -%}
+
+{%- liquid
+unless section.settings.shown 
+ break 
+endunless
+assign se_sort = section.settings.sort
+assign se_blocks = section.blocks
+assign cat_handle = collection.handle
+assign ck_cat = true -%}
+ 
+<a rel="nofollow" data-no-instant href="{{collection.url}}" class="has_icon cat_nav_js dib">{{ 'collections.general.categories' | t }}<i class="facl facl-angle-down"></i></a>
+<div class="dn" id="cat_shopify">
+    <ul class="cat_lv_0">
+    {%- if section.settings.source == '1' and collections.size > 0 -%}
+
+            {%- case se_sort -%}
+              {%- when 'products_high' or 'products_low' -%}
+                {%- assign collections = collections | sort: 'all_products_count' -%}
+              {%- when 'date' or 'date_reversed' -%}
+                {%- assign collections = collections | sort: 'published_at' -%}
+            {%- endcase -%}
+
+            {%- if se_sort == 'products_low' or se_sort == 'date' or se_sort == 'alphabetical' -%}
+
+              {%- for category in collections -%}
+                {%- if category.products.size == 0 %}{% continue %}{% endif %}{% assign ck_cat = false -%}
+                <li class="cat-item{% if cat_handle == category.handle %} current-cat{% endif %}"><a class="cat_link dib" href="{{ category.url }}">{{category.title}}</a></li>
+              {%- endfor -%}
+
+            {%- else -%}
+               {%- for category in collections reversed -%}
+                  {%- if category.products.size == 0 %}{% continue %}{% endif %}{% assign ck_cat = false -%}
+                  <li class="cat-item{% if cat_handle == category.handle %} current-cat{% endif %}"><a class="cat_link dib" href="{{ category.url }}">{{category.title}}</a></li>
+               {%- endfor -%}
+            {%- endif -%}
+
+        {%- elsif se_blocks.size > 0 -%}
+            
+            {%- for block in se_blocks %}{% assign category = collections[block.settings.collection] -%}
+              {%- if category.products.size == 0 %}{% continue %}{% endif %}{% assign ck_cat = false -%}
+
+              {%- assign icon = block.settings.icon -%}
+              {%- if icon != blank -%}
+                {%- assign arr_icon = icon | split:',' -%}
+                {%- assign icon_class1 = arr_icon[1] | default:'las' -%}
+              {%- endif -%}
+              <li class="cat-item{% if cat_handle == category.handle %} current-cat{% endif %}"><a class="cat_link dib" href="{{ category.url }}">{% if icon != blank %}<i class="{{arr_icon[1] | default:'las'}} la-{{arr_icon[0]}} fs__30"></i>{% endif %}{{category.title}}</a></li>
+            {%- endfor -%}
+
+            {%- comment -%}
+
+                  {%- assign arr_cats = se_blocks | where:'type','cat1' -%}
+                   {%- if link.links != blank -%}
+                      <li class="cat-item idea_intent has-children menu-item-has-children{% if link.active or link.child_active %} current-cat{% endif %}">
+                        <a class="cat_link dib" href="{{ link.url }}"><i class="las la-male fs__30"></i>{{link.title}}<i class="facl facl-angle-down ml__5"></i></a>
+                        <ul class="sub-menu dn">
+                           <li class="cat-item cat-item-pr"><a class="cat_link dib" href="{{ link.url }}">{{link.title}}</a></li>
+                             {%- for child_link in link.links -%}
+                                {%- if child_link.type == 'collection_link' or child_link.type == 'catalog_link' -%}<li class="cat-item{% if child_link.active %} current-cat{% endif %}"><a class="cat_link dib" href="{{ child_link.url }}">{{child_link.title}}</a></li>{%- endif -%}
+                             {%- endfor -%}
+                        </ul>
+                      </li>
+                    {%- else -%}
+                      <li class="cat-item{% if link.active %} current-cat{% endif %}"><a class="cat_link dib" href="{{ link.url }}"><i class="las la-female fs__30"></i>{{link.title}}</a></li>
+                    {%- endif -%}
+            {%- endcomment -%}
+        {%- endif -%}
+    </ul>
+</div> 
+<style>{% if ck_cat %}.cat-shop{display: none}{% else %}.cat-shop {border-top: 1px solid #dedede}.cat-shop .cat_opened{ margin-bottom:15px}.cat-shop>a{display: block;padding: 10px 15px}@media (min-width: 1025px){.cat-shop .cat_opened{ margin-bottom:0}.cat-shop >a{display: none}}{% endif %}</style>
+{%- endfor -%}
+
+{%- schema -%}
+  {
+    "name": "Top Categories",
+    "class": "cat-shop pr tc",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "shown",
+        "label": "Show Top Categories?",
+        "default": true
+      },
+      {
+        "type": "paragraph",
+        "content": "All of your collections are listed by default. To customize your list, choose 'Selected' and add collections."
+      },
+      {
+        "type": "radio",
+        "id": "source",
+        "label": "Select collections to show",
+        "options": [
+          {
+            "value": "1",
+            "label": "All"
+          },
+          {
+            "value": "2",
+            "label": "Selected"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "sort",
+        "label": "Sort collections by:",
+        "info": "Sorting only applies when 'All' is selected",
+        "default": "alphabetical",
+        "options": [
+          {
+            "value": "products_high",
+            "label": "Product count, high to low"
+          },
+          {
+            "value": "products_low",
+            "label": "Product count, low to high"
+          },
+          {
+            "value": "alphabetical",
+            "label": "Alphabetically, A-Z"
+          },
+          {
+            "value": "alphabetical_reversed",
+            "label": "Alphabetically, Z-A"
+          },
+          {
+            "value": "date",
+            "label": "Date, old to new"
+          },
+          {
+            "value": "date_reversed",
+            "label": "Date, new to old"
+          }
+        ]
+      }
+    ],
+    "blocks": [
+      {
+        "type": "cat",
+        "name": "Collection",
+        "settings": [
+          {
+            "label": "Collection",
+            "type": "collection",
+            "id": "collection"
+          },
+          {
+            "label": "Icon",
+            "type": "text",
+            "id": "icon"
+          }
+        ]
+      }
+      /*{
+        "type": "cat1",
+        "name": "Collection (Parent)",
+        "settings": [
+          {
+            "label": "Collection",
+            "type": "collection",
+            "id": "collection"
+          },
+          {
+            "label": "Icon",
+            "type": "text",
+            "id": "icon"
+          }
+        ]
+      },
+      {
+        "type": "cat2",
+        "name": "Collection (Child)",
+        "settings": [
+          {
+            "label": "Icon",
+            "type": "text",
+            "id": "icon"
+          },
+          {
+            "type": "paragraph",
+            "content": "[Get icons Line awesome](https://icons8.com/line-awesome)"
+          },
+          {
+            "label": "Collection",
+            "id": "collection",
+            "type": "collection"
+          }
+        ]
+      }*/
+    ]
+  }
+{% endschema %}

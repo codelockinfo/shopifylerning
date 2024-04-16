@@ -1,0 +1,28 @@
+{%- if section.blocks.size > 0 and template.name == 'search' and template.suffix == 'meta_ntt4' or template.suffix == 'prd-additional' -%}
+    <!--split-->{%- for block in section.blocks -%}{{block.settings.image}}{% unless forloop.last %};;;{% endunless -%}{%- endfor -%}<!--split-->
+{%- endif -%}
+{%- schema -%} 
+  {
+    "name": "Create List Image",
+    "max_blocks": 100,
+    "settings": [ 
+      {
+        "type": "paragraph",
+        "content": "Create List Image use for Size Chart in Metafield Editor"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "img",
+        "name": "Item Image",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Choose Image"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

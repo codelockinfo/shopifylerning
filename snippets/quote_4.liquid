@@ -1,0 +1,25 @@
+<div class="quote_slide">
+  <div class="quote_texts mt__15">{{block.settings.content}}</div>
+  <div class="quote_infors flex al_center">
+    {%- if block.settings.image -%}<div class="quote_avatar dib mr__20 br__50 oh"><div class="nt_bg_lz lazyload" data-bg="{{ block.settings.image | img_url:'200x' }}"></div></div>{%- endif -%}
+    <div class="quote_au_rev">
+      <div class="quote_author cd fwsb">{{block.settings.title}}</div> 
+      {%- if block.settings.pos != blank -%}<div class="quote_position">{{block.settings.pos}}</div>{%- endif -%} 
+      {%- if rating >= 1 -%}
+      {%- case rating -%}
+        {%- when 1 -%}{% assign class = ', cra2, cra2, cra2, cra2,dn' %}
+        {%- when 1.5 -%}{% assign class = ',-half pr, cra2, cra2, cra2' %}
+        {%- when 2 -%}{% assign class = ',, cra2, cra2, cra2,dn' %}
+        {%- when 2.5 -%}{% assign class = ',,-half pr, cra2, cra2' %}
+        {%- when 3 -%}{% assign class = ',,, cra2, cra2,dn' %}
+        {%- when 3.5 -%}{% assign class = ',,,-half pr, cra2' %}
+        {%- when 4 -%}{% assign class = ',,,, cra2,dn' %}
+        {%- when 4.5 -%}{% assign class = ',,,,-half pr' %}
+        {%- else -%}{% assign class = ',,,,,dn' %}
+      {%- endcase -%}
+      {% assign arr = class | split:',' %}
+    <div class="quote_rating fs__13 fwb mb__10 cra rating_{{rating}}"><i class="facl facl-star{{arr[0]}}"></i><i class="facl facl-star{{arr[1]}}"></i><i class="facl facl-star{{arr[2]}}"></i><i class="facl facl-star{{arr[3]}}"></i><i class="facl facl-star{{arr[4]}}"></i></div>
+    {%- endif -%}
+    </div>
+  </div>
+</div>

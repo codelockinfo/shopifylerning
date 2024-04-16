@@ -1,0 +1,3 @@
+{%- assign arrlt = link_icl.title | split: '[' -%}{%- render 'lb_inc',arrlt:arrlt -%}
+<a href="{{ link_icl.url }}">{%- include 'tt_inc' -%}</a>
+{%- if link_icl.links != blank -%}<ul class="sub-column">{%- for child_link in link_icl.links -%}{%- assign arrlt = child_link.title | split: '[' -%}{%- render 'lb_inc',arrlt:arrlt -%}<li class="menu-item{% if child_link.active %} current{% endif %}"><a href="{{ child_link.url }}">{%- include 'tt_inc' -%}</a></li>{%- endfor -%}</ul>{%- endif -%}

@@ -1,0 +1,65 @@
+{%- liquid
+assign color_ck = settings.color_ck | append:'color,colors,couleur,colour' 
+assign get_color = color_ck | downcase | replace: ' ,', ',' | replace: ', ', ',' | split: ',' | uniq
+assign size = product.options_with_values.size 
+assign ck = true 
+assign has_img = block.settings.swatch_style | default: settings.swatch_style
+if product.available 
+  assign remove_soldout = settings.remove_sold_out 
+else 
+  assign remove_soldout = false 
+endif
+assign select_id = 'nt_select' | append:call_cl 
+assign select_class = 'nt_select'| append:call_cl 
+assign bclass = 'is-selected-none'
+
+assign pr_variants = product.variants 
+assign selected_variant = product.selected_variant
+case settings.pr_curent
+  when '1' 
+	  assign current_variant = selected_variant 
+	  if current_variant != blank 
+	  assign bclass = 'is-selected-nt' 
+	  endif
+  when '2' 
+	assign current_variant = selected_variant |default: pr_variants.first 
+	assign bclass = 'is-selected-nt' 
+	if current_variant.available == false and remove_soldout and product.available 
+	    assign current_variant = product.first_available_variant 
+	endif
+  else 
+	  assign current_variant = product.selected_or_first_available_variant
+	  assign bclass = 'is-selected-nt'
+endcase
+assign choose_an_option = 'products.product.choose_an_option' | t
+if pr_variants.size == 1 
+	assign current_variant = pr_variants.first 
+	assign bclass = 'is-selected' 
+endif -%}
+
+<div class="variations mb__40 style__radio full size_{{block.settings.swatch_size | default:settings.swatch_size }} remove_soldout_{{remove_soldout}}">
+	{%- for option in product.options_with_values -%}{%- assign name = option.name | downcase -%}{%- assign svc = '' -%}{%- assign option_index = forloop.index0 -%}
+		{%- case option_index -%}{%- when 0 -%}{%- assign selected_value = current_variant.option1 |default:choose_an_option -%}{%- when 1 -%}{%- assign selected_value = current_variant.option2 |default:choose_an_option -%}{%- else -%}{%- assign selected_value = current_variant.option3 |default:choose_an_option -%}{%- endcase -%}
+		{%- if get_color contains name -%}
+			<div data-opname="{{option.name | handleize}}" class="{{select_class}}{{ option_index }} swatch is-label{% cycle ' is-ntcolor','','' %}" id="{{select_id}}_{{ option_index }}">
+				<h4 class="swatch__title">{{option.name}}: <span class="nt_name_current">{{selected_value}}</span></h4>
+				<ul class="swatches-select swatch__list_pr" data-id="{{ option_index }}" data-size="{{size}}">
+			   	   {%- for value in option.values -%}
+			   	      {%- assign vh = value | handle -%}{%- assign sclass = '' -%}{%- if selected_value == value -%}{%- assign sclass = bclass -%}{%- endif -%}
+			   		   <li data-index="{{ forloop.index0 }}" data-value='{{ vh }}' class="al_center cb nt-swatch swatch_pr_item pr bg_css_{{ vh }} {{sclass}}" data-escape="{{ value | escape }}"><span class="mr__5 pr dib radio_styled"></span><span class="swatch__value_pr">{{ value }}</span></li>
+			   	   {%- endfor -%}
+				</ul>
+			</div>
+		{%- else -%}
+			<div data-opname="{{option.name | handleize}}" class="{{select_class}}{{ option_index }} swatch is-label is-{{option.name | handleize}}" id="{{select_id}}_{{ option_index }}">
+				<h4 class="swatch__title">{{option.name}}: <span class="nt_name_current">{{selected_value}}</span></h4>
+				<ul class="swatches-select swatch__list_pr" data-id="{{ option_index }}" data-size="{{size}}">
+		   	   {%- for value in option.values -%}
+		   	      {%- assign vh = value | handle -%}{%- assign sclass = '' -%}{%- if selected_value == value -%}{%- assign sclass = bclass -%}{%- endif -%}
+		   		   <li data-index="{{ forloop.index0 }}" data-value='{{ vh }}' class="al_center cb nt-swatch swatch_pr_item pr bg_css_{{ vh }} {{sclass}}" data-escape="{{ value | escape }}"><span class="mr__5 pr dib radio_styled"></span><span class="swatch__value_pr">{{ value }}</span></li>
+		   	   {%- endfor -%}
+				</ul>
+			</div>
+		{%- endif -%}
+	{%- endfor -%}
+</div>

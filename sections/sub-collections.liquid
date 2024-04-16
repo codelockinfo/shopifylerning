@@ -1,0 +1,354 @@
+{%- liquid
+  assign hd_up = 'sub-' |append:collection.id
+  assign nav_up = linklists[hd_up].links | where:'type','collection_link'
+  assign sett_equal = section.settings.use_eq_height
+  assign pr_txt = section.settings.pr_txt
+  assign ccol = 'col-lg-1x col-md-2x col-3x' | replace: '1x', section.settings.col | replace: '2x', section.settings.col_md | replace: '3x', section.settings.col_mb -%}
+
+<div class="container container_cat cat_{{section.settings.layout}} mt__60 mb__60">
+
+
+    <div class="nt_cats_holder row fl_center equal_nt{% if sett_equal %} {{section.settings.image_ratio}}{% else %} ratio1_1{% endif %} cat_space_{{section.settings.cat_space}} cat_design_{{section.settings.cat_design}}">
+
+      {%- for link in nav_up -%}{% assign collection = link.object -%}{% assign image = collection.image |default:collection.products[0].featured_image -%}
+         <div class="cat_grid_item cat_space_item {{ccol}}">
+            <div class="pr oh">
+               <div class="cat_grid_item__content pr oh">
+                  <a href="{{ collection.url }}" class="db cat_grid_item__link">
+                    {%- if image != blank -%}{% assign ratio = image.aspect_ratio -%}
+                      <div class="cat_grid_item__overlay nt_bg_lz lazyload" data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{ratio}}" data-sizes="auto" data-parent-fit="cover"{% unless sett_equal %} style="padding-top:{{ 1 | divided_by: ratio | times: 100}}%;"{% endunless %}></div>
+                    {%- else -%}
+                      <div class="cat_grid_item__overlay nt_bg_lz bglz"></div>
+                    {%- endif -%}
+                  </a>
+               </div>
+               <div class="cat_grid_item__wrapper pe_none">
+                 <div class="cat_grid_item__title h3">{{ collection.title }}</div>
+                 <div class="cat_grid_item__count dn">{{collection.all_products_count}} {{pr_txt}}</div>
+               </div>
+            </div>
+         </div>
+      {%- endfor -%}
+
+    </div>
+</div>
+<style>.bglz{background-color: #f5f5f5}</style>
+
+{%- schema -%}
+{
+  "name": "Collections Sub",
+  "settings": [
+      {
+        "type": "header",
+        "content": "== General Settings"
+      },
+    {
+      "type": "select",
+      "id": "layout",
+      "default": "default",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "wide",
+          "label": "Wide (1600px)"
+        },
+        {
+          "value": "full",
+          "label": "full Width"
+        }
+      ],
+      "label": "Page Width"
+    },
+
+      {
+       "type": "select",
+       "id": "cat_design",
+       "options": [
+        {
+           "value": "1",
+           "label": "Default"
+         },
+         {
+           "value": "2",
+           "label": "Design 2"
+         },
+         {
+           "value": "3",
+           "label": "Design 3"
+         },
+         {
+           "value": "4",
+           "label": "Design 4"
+         },
+         {
+           "value": "5",
+           "label": "Design 5"
+         }
+       ],
+       "label": "Collections design",
+       "default": "5"
+     },
+     {
+       "type": "select",
+       "id": "cat_space",
+       "options": [
+        {
+           "value": "30",
+           "label": "30"
+         },
+         {
+           "value": "20",
+           "label": "20"
+         },
+         {
+           "value": "10",
+           "label": "10"
+         },
+         {
+           "value": "6",
+           "label": "6"
+         },
+         {
+           "value": "2",
+           "label": "2"
+         },
+         {
+           "value": "0",
+           "label": "0"
+         }
+       ],
+       "label": "Space between Collections",
+       "default": "30"
+     },/*
+    {
+      "type": "paragraph",
+      "content": "All of your collections are listed by default. To customize your list, choose 'Selected' and add collections."
+    },
+    {
+      "type": "radio",
+      "id": "display_type",
+      "label": "Select collections to show",
+      "default": "all",
+      "options": [
+        {
+          "value": "all",
+          "label": "All"
+        },
+        {
+          "value": "selected",
+          "label": "Selected"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "sort",
+      "label": "Sort collections by:",
+      "info": "Sorting only applies when 'All' is selected",
+      "default": "alphabetical",
+      "options": [
+        {
+          "value": "products_high",
+          "label": "Product count, high to low"
+        },
+        {
+          "value": "products_low",
+          "label": "Product count, low to high"
+        },
+        {
+          "value": "alphabetical",
+          "label": "Alphabetically, A-Z"
+        },
+        {
+          "value": "alphabetical_reversed",
+          "label": "Alphabetically, Z-A"
+        },
+        {
+          "value": "date",
+          "label": "Date, old to new"
+        },
+        {
+          "value": "date_reversed",
+          "label": "Date, new to old"
+        }
+      ]
+    },*/
+      {
+        "type": "select",
+        "id": "col",
+        "label": "Collections columns",
+        "info": "How many Collections you want to show per row",
+        "default": "3",
+        "options": [
+          {
+            "value": "6",
+            "label": "2"
+          },
+          {
+            "value": "4",
+            "label": "3"
+          },
+          {
+            "value": "3",
+            "label": "4"
+          },
+          {
+            "value": "15",
+            "label": "5"
+          },
+          {
+            "value": "2",
+            "label": "6"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_md",
+        "label": "Collections columns Tablet",
+        "default": "3",
+        "options": [
+          {
+            "value": "6",
+            "label": "2"
+          },
+          {
+            "value": "4",
+            "label": "3"
+          },
+          {
+            "value": "3",
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_mb",
+        "label": "Collections columns Mobile",
+        "default": "6",
+        "options": [
+          {
+            "value": "12",
+            "label": "1"
+          },
+          {
+            "value": "6",
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "id": "pr_txt",
+        "label": "Products Text",
+        "default": "products"
+      },
+      {
+        "type": "header",
+        "content": "== Design Image"
+      },
+      {
+        "type": "checkbox",
+        "id": "use_eq_height",
+        "label": "Use equal height images?",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "image_ratio",
+        "label": "Aspect Ratio",
+        "default": "ratio1_1",
+        "info": "Aspect Ratio Custom will settings in General panel.",
+        "options": [
+          {
+            "group": "Landscape",
+            "value": "ratio2_1",
+            "label": "2:1"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio16_9",
+            "label": "16:9"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio8_5",
+            "label": "8:5"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio3_2",
+            "label": "3:2"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio4_3",
+            "label": "4:3"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio_nt",
+            "label": "Ratio ASOS"
+          },
+          {
+            "group": "Squared",
+            "value": "ratio1_1",
+            "label": "1:1"
+          },
+          {
+            "group": "Portrait",
+            "value": "ratio2_3",
+            "label": "2:3"
+          },
+          {
+            "group": "Portrait",
+            "value": "ratio1_2",
+            "label": "1:2"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus1",
+            "label": "Ratio Custom 1"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus2",
+            "label": "Ratio Custom 2"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus3",
+            "label": "Ratio Custom 3"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus4",
+            "label": "Ratio Custom 4"
+          }
+        ]
+      }
+  ]/*,
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection",
+      "settings": [
+        {
+          "label": "Collection",
+          "id": "collection",
+          "type": "collection"
+        },
+         {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          }
+      ]
+    }
+  ]*/
+}
+{% endschema %}

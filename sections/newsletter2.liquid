@@ -1,0 +1,189 @@
+{%- liquid
+  assign sid = section.id
+  assign image = section.settings.image -%}
+
+
+<div class="nt_se_{{sid}} nt_bg_overlay pr oh cover_norepeat{% if image != blank %} lazyload nt_parallax_{{section.settings.use_pr}}{% endif %}"{% if image != blank %} data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{image.aspect_ratio}}" data-sizes="auto" data-parent-fit="cover"{% endif %}>
+  <div class="newsletter_se {{section.settings.layout}} color_scheme_{{section.settings.color}} newl_des_{{section.settings.newl_des}} pr z_100">
+    <div class="row fl_center al_center tc tl_lg">
+      <div class="col-12 col-lg-6">
+          <h3 class="section-title mb__20">{{section.settings.title}}</h3>
+          <p class="section-subtitle mg__0">{{section.settings.sub_title}}</p>
+      </div>
+      <div class="col-12 col-lg-6 col-new">{%- render 'newsletter',class:'flex',btn_icon:section.settings.btn_icon,newl_des:section.settings.newl_des,sid:sid -%}</div>
+    </div>
+  </div>
+</div>
+{%- render 'section_css' -%}
+{%- style -%}.nt_se_{{sid}}{background-color: {{section.settings.se_bg}} }.nt_se_{{sid}}.nt_bg_overlay:after{ background-color: {{section.settings.cl_overlay}};opacity: {{section.settings.cl_opacity | divided_by: 100.00}} }{%- endstyle -%}
+{%- schema -%}
+  {
+    "name": "Newsletter 2",
+    "class": "nt_section type_newsletter2",
+    "settings": [
+      {
+        "type": "header",
+        "content": "== Title Settings"
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Get Discount 20% Off"
+      },
+      {
+        "type": "textarea",
+        "id": "sub_title",
+        "label": "Sub Heading",
+        "default": "Subscribe to our newsletters now and stay up-to-date<br>with new collections, the latest lookbooks."
+      },
+      {
+        "type": "header",
+        "content": "== General Settings"
+      },
+      {
+        "type": "select",
+        "id": "newl_des",
+        "label": "Newsletter Design:",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "Design 1"
+          },
+          {
+            "value": "2",
+            "label": "Design 2"
+          },
+          {
+            "value": "3",
+            "label": "Design 3"
+          },
+          {
+            "value": "4",
+            "label": "Design 4"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "btn_icon",
+        "label": "Button icon?",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "== Background Options"
+      },
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Background Image"
+      },
+      {
+        "type": "color",
+        "id": "cl_overlay",
+        "label": "Overlay",
+        "default": "#000"
+      },
+      {
+        "type": "range",
+        "id": "cl_opacity",
+        "label": "Overlay opacity",
+        "default": 0,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%"
+      },
+      {
+        "type": "color",
+        "id": "se_bg",
+        "label": "Background color",
+        "default": "#fff"
+      },
+      {
+        "type": "select",
+        "id": "color",
+        "options": [
+         {
+            "value": "dark",
+            "label": "Dark"
+         },
+         {
+            "value": "light",
+            "label": "Light"
+          }
+        ],
+        "label": "Color scheme"
+      },
+      {
+        "type": "header",
+        "content": "== Design Options"
+      },
+      {
+        "type": "checkbox",
+        "id": "use_pr",
+        "label": "Enable parallax scroll?",
+        "default": false
+      },
+      {
+        "type": "select",
+        "id": "layout",
+        "options": [
+         {
+            "value": "container",
+            "label": "Container"
+         },
+         {
+            "value": "nt_full",
+            "label": "Full Width"
+          }
+        ],
+        "label": "Layout"
+      },
+      {
+        "type": "color",
+        "id": "cl_bg",
+        "label": "Background Color"
+      },
+      {
+        "type": "text",
+        "id": "mg",
+        "label": "Margin",
+        "info":"Margin top, margin right, margin bottom, margin left. If you not use to blank",
+        "default": "50px,,50px,",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd",
+        "label": "Padding",
+        "info":"Padding top, padding right, padding bottom, padding left. If you not use to blank",
+        "placeholder": "50px,,50px,"
+      },
+     {
+        "type": "header",
+        "content": "== Design Mobile Options"
+      },
+      {
+        "type": "text",
+        "id": "mg_mb",
+        "label": "Margin",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd_mb",
+        "label": "Padding",
+        "placeholder": "50px,,50px,"
+      }
+    ],
+    "presets": [
+      {
+        "name": "2. Newsletter 2",
+        "category": "VI. Promotional"
+      }
+    ]
+  }
+{% endschema %}

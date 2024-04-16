@@ -1,0 +1,188 @@
+{%- liquid 
+  layout none
+  assign rtl = settings.use_rtl
+  assign default = product.has_only_default_variant
+  assign no_sold_out = product.available
+  if no_sold_out
+     assign remove_soldout = settings.remove_sold_out
+  else
+     assign remove_soldout = false
+  endif
+  assign pr_variants = product.variants
+  assign variants_size = pr_variants.size 
+  assign selected_variant = product.selected_variant
+  assign pr_curent = settings.pr_curent
+  if pr_curent == '2' 
+    assign current_variant = selected_variant |default: pr_variants.first
+    if remove_soldout and current_variant.available == false and no_sold_out 
+     assign current_variant = product.first_available_variant 
+    endif
+  else 
+    assign current_variant = product.selected_or_first_available_variant 
+  endif
+	assign default = product.has_only_default_variant
+	assign on_sale = false 
+	if current_variant.compare_at_price > current_variant.price 
+	   assign on_sale = true  
+	endif 
+   assign call_cl = '_qs'
+   assign values = product.options_with_values | map: 'values' | join: ',' | downcase
+  assign pr_images = product.media | where: "media_type", "image"
+  assign pr_incoming_mess = settings.pr_incoming_mess
+  assign price_varies = product.price_varies | default:product.compare_at_price_varies
+  if price_varies
+   assign cl_price_varies = 'price_varies'
+  endif
+  assign PR_no_pick = false
+  if pr_curent == '1' and variants_size > 1 and selected_variant == blank
+    assign PR_no_pick = true
+  endif
+  assign locale_url = product.url | split:'/products/' | first
+  assign image_0 = settings.placeholder_img -%}
+
+<div class="wrap_qs_pr" id="productqs-{{product.id}}">
+  	<div class="qs_imgs_i row al_center mb__30">
+  		{%- if pr_images.size > 0 -%}
+  		<div class="col-auto cl_pr_img">
+		  	<div class="pr oh qs_imgs_wrap">
+			  	<div class="row equal_nt qs_imgs{% if pr_images.size > 1 %} nt_slider nt_carousel_qs p-thumb_qs{% endif %}" data-flickity='{"fade":false,"cellSelector": ".qs_img_i","cellAlign": "center","wrapAround": true,"autoPlay": false,"prevNextButtons":false,"adaptiveHeight": true,"imagesLoaded": false, "lazyload": 0,"dragThreshold" : 0,"pageDots": false,"rightToLeft": {{rtl}} }'>
+			  		{%- for image in pr_images -%}{%- assign alt = image.alt -%}{%- assign ratio = image.aspect_ratio -%}{%- if image.alt contains 't4_360' -%}{%- break -%}{%- endif -%}{%- assign img_alt = alt | split:'|' | first | strip | downcase -%}
+			  		<div data-mdid="{{image.id}}" data-mdtype="image" class="col-12 js-sl-item qs_img_i nt_img_ratio lazyload nt_bg_lz{% if values contains img_alt %} bc_{{img_alt | handleize }}{% endif %}" data-vid="{{image.variants.first.id}}" id="imgqs_{{image.id}}" data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{ratio}}" data-sizes="auto" style="padding-top:{{ 1 | divided_by: ratio | times: 100}}%;"></div>
+			  		{%- endfor -%}
+			  	</div>
+		   </div>
+  		</div>
+  		{%- elsif image_0 != blank -%}{%- assign ratio = image_0.aspect_ratio -%}
+  		<div class="col-auto cl_pr_img">
+		  	<div class="pr oh qs_imgs_wrap">
+			  	<div class="row equal_nt qs_imgs">
+			  		<div data-mdid="{{image_0.id}}" data-mdtype="image" class="col-12 js-sl-item qs_img_i nt_img_ratio lazyload nt_bg_lz" id="imgqs_{{image_0.id}}" data-bgset="{{ image_0 | img_url: '1x1' }}" data-ratio="{{ratio}}" data-sizes="auto" style="padding-top:{{ 1 | divided_by: ratio | times: 100}}%;"></div>
+			  	</div>
+		   </div>
+  		</div>
+  		{%- endif -%}
+  		<div class="col cl_pr_title tc">
+  			<h3 class="product-title pr fs__16 mg__0 fwm"><a class="cd chp" href="{{product.url |within:collection}}">{{product.title}}</a></h3>
+  			<div id="price_qs">
+
+  		   {%- if current_variant.unit_price_measurement -%}
+               <span class="price_varies">{%- if on_sale -%}<del>{{ current_variant.compare_at_price  | money }}</del><ins>{{ current_variant.price | money }}</ins>{%- else -%}{{ current_variant.price | money }}{%- endif -%}</span>
+               {%- capture unit_price_base_unit -%}
+                <span class="unit_base">
+                  {%- if current_variant.unit_price_measurement -%}
+                    {%- if current_variant.unit_price_measurement.reference_value != 1 -%}
+                      {{- current_variant.unit_price_measurement.reference_value -}}
+                    {%- endif -%}
+                    {{ current_variant.unit_price_measurement.reference_unit }}
+                  {%- endif -%}
+                </span>
+               {%- endcapture -%}
+               <span class="price__unit db"><span class="unit_price">{{ current_variant.unit_price | money }}</span><span>/</span>{{- unit_price_base_unit -}}</span>
+           {%- elsif on_sale -%}<span class="price {{cl_price_varies}}"><del>{{ current_variant.compare_at_price | money }}</del> <ins>{{ current_variant.price | money }}</ins></span>
+           	  {%- if on_sale and settings.use_sale_label -%}{%- if settings.label_sale_style == '1' -%}<span class="qs_label onsale cw"><span>{{ 'products.product.on_sale' | t }}</span></span>{%- else-%}{%- assign save = current_variant.compare_at_price | minus: current_variant.price | times: 100.0 | divided_by: product.compare_at_price | ceil -%}<span class="qs_label onsale cw{% if save >= 50 %} per_50{% endif %}"><span>{{ 'products.product.save_js' | t: saved_amount:save }}</span></span>{%- endif -%}{%- endif -%}
+           {%- else -%}<span class="price {{cl_price_varies}}">{{ current_variant.price | money }}</span>
+              {%- if on_sale and settings.use_sale_label -%}{%- if settings.label_sale_style == '1' -%}<span class="qs_label onsale cw dn"><span>{{ 'products.product.on_sale' | t }}</span></span>{%- else-%}<span class="qs_label onsale cw"><span></span></span>{%- endif -%}{%- endif -%}
+           {%- endif -%}
+  			</div>
+  		</div>
+  	</div>
+  	<div class="qs_info_i tc">
+  		<div class="qs_swatch PR_no_pick_{{PR_no_pick}}">
+	      <div id="callBackVariant{{call_cl}}" class="nt_{{current_variant.option1 | handle}} nt1_{{current_variant.option2 | handle}} nt2_{{current_variant.option3 | handle}}">
+	  			{%- assign id_frm = 'cart-form' | append:call_cl -%}{%- assign cl_frm = 'nt_cart_form variations_form variations_form' | append:call_cl -%}
+	  			{%- form 'product', product, id: id_frm, class: cl_frm -%}
+	           {%- if default -%}
+	              <input name="id" value="{{ pr_variants.first.id }}" type="hidden">
+	              {%- if pr_incoming_mess and current_variant.inventory_management and current_variant.inventory_quantity <= 0 and current_variant.incoming -%}
+	                  {%- assign idate = current_variant.next_incoming_date | date: format: settings.date_in -%}
+	                  <div id="pr_incoming_mess{{call_cl}}" class="nt_varianqtyss mb__15 cb tu fwsb">{{ 'products.product.will_not_ship_until_html' | t: date:idate }}</div>
+	              {%- endif -%}
+	           {%- else -%}
+	              <select name="id" id="product-select{{call_cl}}" class="product-select_pr product-form__variants hide hidden">
+	                 {%- for variant in pr_variants -%}
+	                     {%- if variant.available -%}
+	                       <option {% if variant.id == current_variant.id %} selected="selected" {% endif %} value="{{ variant.id }}">{{ variant.title | escape }}</option>
+	                     {%- else -%}
+	                       <option value="{{ variant.id }}"{%- if remove_soldout %} disabled="disabled"{%- endif %} class="nt_sold_out">{{ variant.title | escape }}</option>
+	                     {%- endif -%}
+	                   {%- endfor -%}
+	              </select>
+	              {%- case settings.swatch_design -%}
+	                 {%- when '1' -%}{%- render 'swatch',product:product,block:block,remove_soldout:remove_soldout,call_cl:call_cl,locale_url:locale_url -%}
+	                 {%- when '2' -%}{%- render 'swatch_2',product:product,block:block,remove_soldout:remove_soldout,call_cl:call_cl,locale_url:locale_url -%}
+	                 {%- when '3' -%}{%- render 'swatch_radio',product:product,block:block,remove_soldout:remove_soldout,call_cl:call_cl,locale_url:locale_url -%}
+	                 {%- when '4' -%}{%- render 'swatch_radio_2',product:product,block:block,remove_soldout:remove_soldout,call_cl:call_cl,locale_url:locale_url -%}
+	                 {%- when '5' -%}{%- render 'swatch_radio_3',product:product,block:block,remove_soldout:remove_soldout,call_cl:call_cl,locale_url:locale_url -%}
+	                 {%- when '6' -%}{%- render 'swatch_radio_4',product:product,block:block,remove_soldout:remove_soldout,call_cl:call_cl,locale_url:locale_url -%}
+	                 {%- when '7' -%}{%- render 'swatch_rectangle',product:product,block:block,remove_soldout:remove_soldout,call_cl:call_cl,locale_url:locale_url -%}
+	                 {%- when '8' -%}{%- render 'swatch_rectangle_2',product:product,block:block,remove_soldout:remove_soldout,call_cl:call_cl,locale_url:locale_url -%}
+	                 {%- when '9' -%}{%- render 'swatch_simple',product:product,block:block,remove_soldout:remove_soldout,call_cl:call_cl,locale_url:locale_url -%}
+	                 {%- when '10' -%}{%- render 'swatch_simple_2',product:product,block:block,remove_soldout:remove_soldout,call_cl:call_cl,locale_url:locale_url -%}
+	              {%- endcase -%}
+	               {%- render 'product_js',key_nt:'_qs' -%}
+	              {%- if pr_incoming_mess -%}
+	                 {%- if current_variant.inventory_quantity <= 0 and current_variant.incoming and variants_size < 2 and current_variant.inventory_management  -%}
+	                     {%- assign idate = current_variant.next_incoming_date | date: format: settings.date_in -%}
+	                     <div id="pr_incoming_mess{{call_cl}}" class="nt_varianqtyss mb__15 cb tu fwsb">{{ 'products.product.will_not_ship_until_html' | t: date:idate }}</div>
+	                 {%- else -%}
+	                     <div id="pr_incoming_mess{{call_cl}}" class="nt_varianqty mb__15 cb tu fwsb dn">{{ 'products.product.will_not_ship_until_html' | t: date:'[19041994]' }}</div>
+	                 {%- endif -%}
+	              {%- endif -%}
+	           {%- endif -%}
+	           <div class="variations_button in_flex column w__100">
+	              <div class="flex al_center column">
+	                 {%- if ck_external -%}<a href="{{link}}" rel="nofollow" target="_blank" class="truncate external_btn button">{{title}}</a>
+	                 {%- elsif no_sold_out == false -%}
+	                       <a rel="nofollow" data-no-instant href="#" class="truncate out_stock button pe_none" id="out_stock{{call_cl}}">{{'products.product.outofstock' | t}}</a>
+	                       {%- render 'nt_add_w',tooltip:"ttip_nt tooltip_top_left" -%}
+	                 {%- else -%}
+	                    <div class="quantity pr mb__15 order-1 qty__{{block.settings.show_qty}}" id="sp_qty{{call_cl}}"> 
+	                       <input type="number" class="input-text qty text tc qty_pr_js" step="1" min="1" max="{% if current_variant.inventory_quantity <= 0  and current_variant.inventory_management == 'shopify' %}999{% elsif current_variant.inventory_management != null %}{{current_variant.inventory_quantity}}{% else %}9999{% endif %}" name="quantity" value="1" size="4" pattern="[0-9]*" inputmode="numeric">
+	                       <div class="qty tc fs__14"><button type="button" class="plus db cb pa pd__0 pr__15 tr r__0"><i class="facl facl-plus"></i></button><button type="button" class="minus db cb pa pd__0 pl__15 tl l__0"><i class="facl facl-minus"></i></button></div>
+	                    </div> 
+	                    <a rel="nofollow" data-no-instant href="#" class="single_stt out_stock button pe_none order-2" id="out_stock{{call_cl}}">{{'products.product.outofstock' | t}}</a>
+	                    {%- if current_variant.inventory_quantity <= 0  and current_variant.inventory_management == 'shopify' %}{% assign classdn1 = 'dn' %}{% assign classdn2 = '' %}{% else %}{% assign classdn1 = '' %}{% assign classdn2 = 'dn' %}{% endif -%}
+	                    <button type="submit" class="single_add_to_cart_button button truncate js_frm_cart w__100 order-4{% if PR_no_pick %} disabled{% endif %}"><span class="txt_add {{classdn1}}">{{'products.product.add_to_cart' | t}}</span><span class="txt_pre {{classdn2}}">{{'products.product.pre_orders' | t}}</span></button>
+	                 {%- endif -%}
+	              </div>
+	              {%- if no_sold_out and settings.use_buy_qs -%}{{- form | payment_button -}}{%- endif -%} 
+	           </div>
+	  			{%- endform -%}
+		       {%- assign uavailable_v = pr_variants | where: "available", false -%}
+		       {%- if settings.use_notify_me and uavailable_v.size > 0 -%}
+		        <div class="form-notify single_variation_wrap w_100 frm_notify_pr mt__25 {%- if no_sold_out %} dn{%- endif -%}" id="frm_notify{{call_cl}}">
+		           {%- form 'contact',class:'frm_notify w_100' -%}
+		                  {%- assign formId = 'ContactForm'| append:call_cl | append:current_variant.id -%}
+		                  {%- assign post_message = 'products.product.success_notify_me' -%}
+		                  {%- render 'form-status', form: form, form_id: formId, success_message: post_message -%}
+		                  <p class="cd fwsb mt__15 mb__10 fs__14">{{ 'products.product.title_notify_me' | t }}</p>
+		                  <div class="row">
+		                    {%- if customer and customer.name != blank -%}
+		                    <div class="col-12 mb__20 hide hidden">
+		                      <input type="text" id="{{ formId }}-name" name="contact[name]" value="{{ customer.name }}">
+		                    </div>
+		                    {%- endif -%}
+		                    <div class="col-12 mb__20">
+		                      <label for="{{ formId }}-email">{{ 'products.product.email_address' | t }} <span aria-hidden="true">*</span></label>
+		                      <input required="required" type="email" id="{{ formId }}-email" name="contact[email]" autocorrect="off" autocapitalize="off" aria-required="true"{%- if form.errors contains 'email' %} class="input--error"{%- endif -%} value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}">
+		                    </div>
+		                    <div class="col-12 mb__20 hide hidden">
+		                      <label for="{{ formId }}-message">{{ 'contact.form.message' | t }}</label>
+		                      <textarea rows="10" id="{{ formId }}-message" name="contact[body]" data-wg-notranslate>
+		                       {%- assign shop_url = shop.url | append:product.url -%}
+		                         {%- if variants_size < 2 -%}{{- 'products.product.please_notify_me' | t: title:product.title,variant:'',shop_url:shop_url,url:'' -}}
+		                         {%- else -%}{{- 'products.product.please_notify_me' | t: title:product.title,variant:' ( [variant] )',shop_url:shop_url,url:'[url]' -}}
+		                         {%- endif -%}
+		                      </textarea>
+		                    </div>
+		                  </div>
+		                  <input type="hidden" name="challenge" value="false">
+		                  <input type="submit" class="add_to_cart_button button" value="{{ 'products.product.send_notify_me' | t }}">
+		           {%- endform -%}
+		        </div>
+		        {%- endif -%}
+	  		</div>
+  		</div><!--qs_swatch-->
+  		<a href="{{product.url | within: collection}}" class="btn fwsb detail_link dib mt__15">{{ 'products.product.product_view_details' | t }} <i class="facl facl-right"></i></a>
+  	</div>
+ </div>

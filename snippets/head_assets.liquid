@@ -1,0 +1,72 @@
+<script>
+var T4stt_str = { 
+  "PleaseChoosePrOptions":{{'products.product.Please_choose_pr_options' | t | json }}, 
+  "will_not_ship":{{'products.product.will_not_ship_until_html' | t | json }},
+  "will_stock_after":{{'products.product.will_be_in_stock_after_html' | t | json }},
+  "added_to_cart": {{ 'products.popup.added_to_cart' | t | json }},
+  "view_cart": {{ 'products.popup.view_cart' | t | json }},
+  "continue_shopping": {{ 'products.popup.continue_shopping' | t | json }},
+  "save_js":{{ 'products.product.save_js' | t: saved_amount:'[sale]' | json}},
+  {%- assign bannerCountdown = 'general.bannerCountdown' | t -%}
+  {%- assign prItemCountdown = 'general.prItemCountdown' | t -%}
+  "bannerCountdown":{{ "%D days %H:%M:%S" | replace:'days',bannerCountdown | json}},
+  "prItemCountdown":{{ "%D days %H:%M:%S" | replace:'days',prItemCountdown | json}},
+  "countdown_days":{{ 'products.grid_items.countdown_days' | t | json}},
+  "countdown_hours":{{ 'products.grid_items.countdown_hours' | t | json}},
+  "countdown_mins":{{ 'products.grid_items.countdown_mins' | t | json}},
+  "countdown_sec":{{ 'products.grid_items.countdown_sec' | t | json}},
+  "multiple_rates": {{ 'cart.general.multiple_rates' | t | json}},
+  "one_rate": {{ 'cart.general.one_rate' | t | json}},
+  "no_rates": {{ 'cart.general.no_rates' | t | json}},
+  "rate_value": {{ 'cart.general.rate_value' | t | json}},
+  "agree_checkout": {{ 'cart.general.agree_checkout' | t | json}},
+  "added_text_cp":{{ 'general.nt_tooltip.added_text_compare' | t | json}}
+};
+</script>
+{%- if settings.timezone != blank %}{% assign vendor_js = 'nt_vendor2.min.js' %}{% else %}{% assign vendor_js = 'nt_vendor.min.js' %}{% endif -%}
+{{- 'pre_theme.min.css' | asset_url | stylesheet_tag -}}
+<link rel="preload" as="script" href="{{ 'lazysizes.min.js' | asset_url }}">
+<link rel="preload" as="script" href="{{ vendor_js | asset_url }}">
+<script>document.documentElement.className = document.documentElement.className.replace('no-js', 'yes-js');const t_name = {{t_name | json}},designMode = {{request.design_mode | json}}, t_cartCount = {{ cart.item_count | json}},ThemeNameT4='gecko',ThemeNameT42='ThemeIdT4Gecko',themeIDt4 = {{theme.id}},ck_hostname = 'gecko5-none',ThemeIdT4 = {{shop.metafields.t4pcc.gecko |json}},SopEmlT4={{shop.email | json}},ThemePuT4 = '#purchase_codet4',t_shop_currency = {{ cart.currency.iso_code | json }}, t_moneyFormat = {{ shop.money_format | json }}, t_cart_url = {{ routes.cart_url | json }},t_cartadd_url = {{ routes.cart_add_url | json }},t_cartchange_url = {{ routes.cart_change_url | json }}, pr_re_url = {{ routes.product_recommendations_url | json }}; try {var T4AgentNT = (navigator.userAgent.indexOf('Chrome-Lighthouse') == -1)}catch(err){var T4AgentNT = true} function onloadt4relcss(_this) {_this.onload=null;if(T4AgentNT){_this.rel='stylesheet'}}{% comment -%} This code is done to force reload the page when the back button is hit (which allows to fix stale data on cart, for instance){% endcomment %} if (performance.navigation.type === 2) {location.reload(true);}</script>
+<link rel="preload" href="{{ 'style.min.css' | asset_url }}" as="style" onload="onloadt4relcss(this)">
+{%- render 'enable_minify' with 'tagcss',nameFile:'theme.css' -%}
+{%- if settings.font_source == '2' -%}
+  {%- liquid 
+  assign fm = settings.fnt_bd2
+  assign fmh = settings.fnt_heading2 |default:fm
+  assign fmsub = settings.fnt_sub_tt2 |default:fm -%}
+  {%- capture font_var -%}
+    {{fm | strip | replace: ' ', '+'}}:300,300i,400,400i,500,500i,600,600i,700,700i,800,800i
+    {%- if fm != fmh %}|{{fmh | strip | replace: ' ', '+'}}:300,300i,400,400i,500,500i,600,600i,700,700i,800,800i{% endif -%}
+    {%- if fmsub != fm and fmsub != fmh %}|{{fmsub | strip | replace: ' ', '+'}}:300,300i,400,400i,500,500i{% endif -%}
+  {%- endcapture -%}
+  <link rel="preload" href="https://fonts.googleapis.com/css?family={{font_var}}&display=swap" as="style" onload="onloadt4relcss(this)">
+{%- endif -%}
+<link id="sett_clt4" rel="preload" href="{%- render 'enable_minify' with 'css',nameFile:'sett_cl.css' -%}" as="style" onload="onloadt4relcss(this)">
+{%- if settings.custom_css %}<link rel="preload" as="style" href="{%- render 'enable_minify' with 'css',nameFile:'custom.css' -%}">{%- render 'enable_minify' with 'tagcss',nameFile:'custom.css' -%}{% endif -%}
+{%- if settings.colors_css %}<link rel="preload" as="style" href="{%- render 'enable_minify' with 'css',nameFile:'colors.css' -%}">{%- render 'enable_minify' with 'tagcss',nameFile:'colors.css' -%}{% endif -%} 
+<link rel="preload" href="{{ 'line-awesome.min.css' | asset_url }}" as="style" onload="onloadt4relcss(this)">
+<script id="js_lzt4" src="{{ 'lazysizes.min.js' | asset_url }}" defer="defer"></script>
+<script src="{{ vendor_js | asset_url }}" defer="defer" id="js_ntt4"
+  data-theme='{{ "nt_theme.min.js" | asset_url }}'
+  data-stt='{%- render "enable_minify" with "js",nameFile:"nt_settings.js" -%}'
+  data-cat='{{ "cat.min.js" | asset_url }}' 
+  data-sw='{{ "swatch.min.js" | asset_url }}'
+  data-prjs='{{ "produc.min.js" | asset_url }}' 
+  data-mail='{{ "platform_mail.min.js" | asset_url }}'
+  data-my='{{ "my.js" | asset_url }}'
+  {%- if settings.show_multiple_currencies and settings.currency_type == '2' %} data-cusp='https://cdn.shopify.com/s/javascripts/currencies.js' data-cur='{{ "nt_currencies.min.js" | asset_url }}' {% else %} data-cusp='{{ "my.js" | asset_url }}' data-cur='{{ "my.js" | asset_url }}' {% endif -%} 
+  data-mdl='{{ "module.min.js" | asset_url }}'
+  data-map='{{ "maplace.min.js" | asset_url }}'
+  data-time='{{ "spacetime.min.js" | asset_url }}'
+  data-ins='{{ "nt_instagram.min.js" | asset_url }}'
+  data-user='{{ "interactable.min.js" | asset_url }}'
+  data-add='{% if settings.share_source == '2' %}//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-56efaa05a768bd19{% else %}{{ "my.js" | asset_url }}{% endif %}'
+  data-klaviyo='//www.klaviyo.com/media/js/public/klaviyo_subscribe.js'
+  data-font='iconKalles , fakalles , Pe-icon-7-stroke , Font Awesome 5 Free:n9'
+  data-fm='{{fm}}'
+  data-spcmn='{{ 'shopify_common.js' | shopify_asset_url }}'
+  data-cust='{{ "customerclnt.min.js" | asset_url }}'
+  data-cusjs='{%- if settings.custom_js %}{%- render "enable_minify" with "js",nameFile:"custom.js" -%}{% else %}none{% endif %}'
+  data-desadm='{{ "des_adm.min.js" | asset_url }}'
+  data-otherryv='{%- render "enable_minify" with "js",nameFile:"reviewOther.js" -%}'></script>

@@ -1,0 +1,178 @@
+{%- liquid
+  assign se_stts = section.settings
+  assign se_stts_txt = se_stts.text
+  assign se_dayx = se_stts.dayx
+  assign array_txt = se_stts_txt |remove:'<p>' |remove:'</p>' | split:';;;' | compact -%}
+
+<div class="h__banner bgp pt__10 pb__10 fs__14 flex fl_center al_center pr oh show_icon_{{se_stts.show_icon}}" data-ver='{{se_stts.ver}}' data-date='{{se_stts.date}}'><div class="container">
+   <div class="row al_center">
+      {%- capture cap_btn -%}{%- if se_stts.show_close -%}<div class="col-auto"><a data-no-instant rel="nofollow" href="#" class="h_banner_close pr pl__10 cw z_index">{{se_stts.txt_btn}}</a></div>{%- endif -%}{%- endcapture -%}
+      {{-cap_btn-}}
+      {%- capture cap_date %}<span id="hbanner_cd" data-hbanner_cd data-loop="{% if se_dayx > 0 %}true{% else %}false{% endif %}" data-date="{{se_stts.countdown}}" data-dayl="{{se_dayx}}"></span>{% endcapture -%}
+      {%- if se_stts.link != blank -%}<a href="{{se_stts.link}}" class="pa t__0 l__0 r__0 b__0 z_100"></a>{%- endif -%}
+      {%- if array_txt.size > 1 -%}
+       <div class="col h_banner_wrap tc cw row nt_slider js_carousel" data-flickity='{ "fade":{{ se_stts.effect }},"cellAlign": "center","imagesLoaded": 0,"lazyLoad": 0,"freeScroll": 0,"wrapAround": true,"autoPlay" : {{ se_stts.au_time | times: 1000 }},"pauseAutoPlayOnHover" : true, "rightToLeft": false, "prevNextButtons": false,"pageDots": false, "contain" : 1,"adaptiveHeight" : 1,"dragThreshold" : 5,"percentPosition": 1 }'>
+         {%- for txt in array_txt %}<div class="col-12 item_slide_ht">{{txt | strip_newlines | replace:'[countdown]',cap_date }}</div>{% endfor -%}
+       </div>
+      {%- else -%}
+        <div class="col h_banner_wrap tc cw">{{se_stts_txt | replace:'[countdown]',cap_date }}</div>
+      {%- endif -%}
+      {{-cap_btn | replace:'z_index','z_100' -}}
+   </div>
+</div></div>
+{%- style -%}
+{%- assign bg_op = se_stts.bg_op | divided_by: 100.0 -%}
+.h__banner { background-color: {{ se_stts.bg | color_modify: 'alpha', bg_op }};min-height:{{se_stts.height}}px;font-size:{{se_stts.fontsize}}px;}.h_banner_wrap {color:{{se_stts.cl}} }.h_banner_close,.h_banner_close:hover,.h_banner_close:focus {color:{{se_stts.cl_btn}} !important }.h_banner_close:after, .h_banner_close:before {background-color:{{se_stts.cl_btn}} }
+{%- endstyle -%}
+{%- schema -%}
+  {
+    "name": "Promo Bar",
+    "class": "type_carousel tp_se_cdth",
+    "settings": [
+      {
+        "type": "url",
+        "id": "link",
+        "label": "Banner link"
+      },
+      {
+        "type": "textarea",
+        "id": "text",
+        "label": "Banner content",
+        "default": "Today deal sale off 70%. End in [countdown]. Hurry Up!!",
+        "info": "Place here text you want to see in the header banner. You can use shortocdes: [countdown]. Use ';;;' to creat a text slider, eg: text slide 1;;; text slide 2;;; text slide 3."
+      },
+      {
+        "type": "text",
+        "id": "countdown",
+        "label": "Data countdown",
+        "default": "2021\/12\/20",
+        "info": "Countdown to the end sale date will be shown.( 2020\/04\/19 )"
+      },
+      {
+        "type": "range",
+        "id": "dayx",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "label": "Reset countdown every x days from an initial date.",
+        "info": "Set is '0' to disable reset countdown.",
+        "unit": "day",
+        "default": 0
+      },
+      {
+        "type": "select",
+        "id": "effect",
+        "label": "Effect Slider",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "Fade"
+          },
+          {
+            "value": "0",
+            "label": "Slide"
+          }
+        ]
+      },
+      {
+        "type": "range",
+        "id": "au_time",
+        "min": 0,
+        "max": 30,
+        "step": 0.5,
+        "label": "Autoplay Speed in second.",
+        "info": "Set is '0' to disable autoplay.",
+        "unit": "sec",
+        "default": 3.5
+      },
+      {
+        "type": "range",
+        "id": "height",
+        "label": "Min Height",
+        "default": 41,
+        "min": 20,
+        "max": 120,
+        "step": 1,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "fontsize",
+        "label": "Font size",
+        "default": 12,
+        "min": 12,
+        "max": 18,
+        "step": 0.5,
+        "unit": "px"
+      },
+      {
+        "type": "color",
+        "id": "cl",
+        "label": "Text Color",
+        "default": "#fff"
+      },
+      {
+        "type": "color",
+        "id": "bg",
+        "label": "Background Color",
+        "default": "#e91e63"
+      },
+      {
+        "type": "range",
+        "id": "bg_op",
+        "label": "Background opacity",
+        "default": 100,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_close",
+        "label": "Show close button?",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "show_icon",
+        "label": "Show only icon close?",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "txt_btn",
+        "label": "Button close Text",
+        "default": "close"
+      },
+      {
+        "type": "color",
+        "id": "cl_btn",
+        "label": "Button close Color",
+        "default": "#fff"
+      },
+      {
+        "type": "range",
+        "id": "ver",
+        "min": 1,
+        "max": 101,
+        "step": 1,
+        "label": "Header banner version",
+        "info": "If you change your header banner you can increase its version to show the header banner to all visitors again.",
+        "default": 1
+      },
+      {
+        "type": "range",
+        "id": "date",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "day",
+        "label": "Header banner expires",
+        "info": "You will be able to specify when to expire the cookie. Once you click the \"CLOSE\" button",
+        "default": 60
+      }
+    ]
+  }
+{% endschema %}

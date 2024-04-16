@@ -1,0 +1,26 @@
+{%- section 'acc_heading' -%}
+<div class="container mt__60 mb__60">
+  <div class="row">
+     <div class="col-12 offset-md-3 col-md-6 divActivateForm login-form tc">
+        {%- form 'activate_customer_password' -%}
+          <p>{{ 'customer.activate_account.subtext' | t }}</p>
+          {%- if form.errors -%}
+            <div class="form-message form-message--error">
+              {{ form.errors | default_errors }}
+            </div>
+          {%- endif -%}
+          <p class="form-row tl">          
+          <label for="CustomerPassword" class="label--hidden">{{ 'customer.activate_account.password' | t }}</label>
+          <input type="password" value="" name="customer[password]" id="CustomerPassword" placeholder="{{ 'customer.activate_account.password' | t }}">
+          </p>
+          <p class="form-row tl">
+          <label for="CustomerPasswordConfirmation" class="label--hidden">{{ 'customer.activate_account.password_confirm' | t }}</label>
+          <input type="password" value="" name="customer[password_confirmation]" id="CustomerPasswordConfirmation" placeholder="{{ 'customer.activate_account.password_confirm' | t }}">
+          </p>
+          <input type="submit" class="btn js_add_ld" value="{{ 'customer.activate_account.submit' | t }}">
+          <br>
+          <input type="submit" name="decline" class="mt__20 btn js_add_ld" value="{{ 'customer.activate_account.cancel' | t }}">
+        {%- endform -%}
+     </div>
+  </div>
+</div>

@@ -1,0 +1,75 @@
+{%- liquid
+	assign current_variant = product.selected_or_first_available_variant 
+   assign pid = product.id
+   assign hd_up = 'group-' |append:pid
+   assign nav_up = linklists[hd_up].links | where:'type','product_link'
+   assign nav_up_size = nav_up.size -%}
+   
+{%- if nav_up_size == 0 -%}
+   {%- liquid
+   	assign stt_qs = settings.use_quickshop
+
+    assign ck_external = false
+	assign external = product.metafields.external 
+	assign on_link = external.on_link  
+	if on_link != blank 
+	  assign ck_external = true 
+	  assign title = on_link | split:'|||' | first | strip
+	  assign link = on_link | split:'|||' | last | strip
+	elsif external != blank 
+	  assign ck_external = true 
+	  assign title = external | first | first  
+	  assign link = external | first | last 
+	endif
+
+	assign sold_out = true
+	if product.available 
+	  assign sold_out = false
+	endif
+
+	assign mt_option = false
+	if product.metafields.meta.option 
+	  assign mt_option = true 
+	endif -%}
+
+	   {%- if product.variants.size > 1 or product.selling_plan_groups.size > 0 -%}
+	      {%- if sold_out -%}
+	         <a href="{{ url_last }}" class="pr_atc pa l__0 r__0 b__0 op__0 pe_none tc dib read-more {{tooltip}} truncate" rel="nofollow"><span class="tt_txt">{{'products.grid_items.read_more'|t}}</span><i class="iccl iccl-info"></i><span>{{ 'products.grid_items.read_more' | t }}</span></a>
+	      {%- elsif mt_option -%}
+	         <a href="{{ url_last }}" class="pr_atc pa l__0 r__0 b__0 op__0 pe_none tc dib {{tooltip}} truncate" rel="nofollow"><span class="tt_txt">{{'products.grid_items.select_option'|t}}</span><i class="iccl iccl-moreh"></i><span>{{ 'products.grid_items.select_option' | t }}</span></a>
+	      {%- elsif ck_external -%}
+	         <a href="{{ link }}" class="pr_atc pa l__0 r__0 b__0 op__0 pe_none tc dib external {{tooltip}} truncate" rel="nofollow"><span class="tt_txt">{{title}}</span><i class="iccl iccl-link2"></i><span>{{ title }}</span></a>
+	      {%- elsif stt_qs -%}
+	         <a href="{{ url_last }}" data-id="{{product.id}}" class="pr_atc pa l__0 r__0 b__0 op__0 pe_none tc dib js__qs {{tooltip}} truncate" rel="nofollow"><span class="tt_txt">{{ 'products.grid_items.quick_shop' | t }}</span><i class="iccl iccl-cart"></i><span>{{ 'products.grid_items.quick_shop' | t }}</span></a>
+	      {%- else -%}
+	         <a href="{{ url_last }}" class="pr_atc pa l__0 r__0 b__0 op__0 pe_none tc dib {{tooltip}} truncate" rel="nofollow"><span class="tt_txt">{{'products.grid_items.select_option'|t}}</span><i class="iccl iccl-moreh"></i><span>{{ 'products.grid_items.select_option' | t }}</span></a>
+	      {%- endif -%}
+	   {%- else -%}
+	      {%- if sold_out -%}
+	         <a href="{{ url_last }}" class="pr_atc pa l__0 r__0 b__0 op__0 pe_none tc dib {{tooltip}} truncate read-more" rel="nofollow"><span class="tt_txt">{{'products.grid_items.read_more'|t}}</span><i class="iccl iccl-info"></i><span>{{ 'products.grid_items.read_more' | t }}</span></a>
+	      {%- elsif mt_option -%}
+	         <a href="{{ url_last }}" class="pr_atc pa l__0 r__0 b__0 op__0 pe_none tc dib {{tooltip}} truncate" rel="nofollow"><span class="tt_txt">{{'products.grid_items.select_option'|t}}</span><i class="iccl iccl-moreh"></i><span>{{ 'products.grid_items.select_option' | t }}</span></a>
+	      {%- elsif ck_external -%}
+	         <a href="{{ link }}" class="pr_atc pa l__0 r__0 b__0 op__0 pe_none tc dib external {{tooltip}} truncate" rel="nofollow"><span class="tt_txt">{{ title }}</span><i class="iccl iccl-link2"></i><span>{{ title }}</span></a>
+	      {%- else -%}{%- assign variant = product.variants.first -%}
+
+	         {%- if variant.inventory_quantity <= 0  and variant.inventory_management == 'shopify' -%}{%- assign txt = 'products.product.pre_orders' | t -%}{%- else -%}{%- assign txt = 'products.product.add_to_cart' | t -%}{%- endif -%}
+	         {%- if settings.use_qty -%}
+	         <div class="pr_atc flex pr_qty_atc pa l__0 r__0 b__0 op__0 pe_none">
+	            <div class="quantity pr qty__true"> 
+	               <input type="number" class="input-text qty text tc qty_pr_js" step="1" min="1" max="{% if current_variant.inventory_quantity <= 0  and current_variant.inventory_management == 'shopify' %}999{% elsif current_variant.inventory_management != null %}{{current_variant.inventory_quantity}}{% else %}9999{% endif %}" name="quantity" value="1" size="4" pattern="[0-9]*" inputmode="numeric">
+	               <div class="qty tc fs__14">
+	                  <button type="button" class="plus db cb pa pd__0 pr__15 tr r__0"><i class="facl facl-plus"></i></button><button type="button" class="minus db cb pa pd__0 pl__15 tl l__0"><i class="facl facl-minus"></i></button>
+	               </div>
+	            </div>
+	            <a href="{{ url_last }}" class="pr_atc_ tc dib js_addtc {{tooltip}} truncate" data-id="{{ variant.id }}" rel="nofollow"><span class="tt_txt">{{txt}}</span><i class="iccl iccl-cart"></i><span>{{txt}}</span></a>
+	         </div>
+	         {%- else -%}
+	            <a href="{{ url_last }}" class="pr_atc pa l__0 r__0 b__0 op__0 pe_none tc dib js_addtc {{tooltip}} truncate" data-id="{{ variant.id }}" rel="nofollow"><span class="tt_txt">{{txt}}</span><i class="iccl iccl-cart"></i><span>{{txt}}</span></a>
+	         {%- endif -%}
+	      {%- endif -%}
+	   {%- endif -%} 
+
+{%- else -%}
+<a href="{{ url_last }}" class="pr_atc pa l__0 r__0 b__0 op__0 pe_none tc dib {{tooltip}} truncate"><span class="tt_txt">{{'products.grid_items.view'|t}}</span><i class="iccl iccl-link"></i><span>{{'products.grid_items.view'|t}}</span></a>
+{%- endif -%}

@@ -1,0 +1,57 @@
+{%- liquid
+  assign checkbox_mail = settings.checkbox_mail
+  if newl_des == '1'
+    assign class_email = 'col'
+    assign class_btn = 'col-auto' 
+    assign class_ip = ''
+  else
+    assign class_email = 'col-md col-12'
+    assign class_btn = 'col-md-auto col-12'
+    assign class_ip = 'class_ip'
+  endif -%}
+
+{%- case settings.platform_email -%}
+  {%- when '3' -%}
+      <form id="klaviyo_frm_{{section.id}}" class="js_mail_agree mc4wp-form klaviyo_sub_frm pr z_100{%- if settings.ajax_klaviyo and settings.klaviyo_list_id != blank %} nt_ajax_klsp{%- endif -%}" action="//manage.kmail-lists.com/subscriptions/subscribe" data-ajax-submit="//manage.kmail-lists.com/ajax/subscriptions/subscribe" method="GET">
+        <input type="hidden" name="g" value="{{settings.klaviyo_list_id}}">
+            <div class="mc4wp-form-fields">
+               <div class="signup-newsletter-form row no-gutters pr oh {{class}}">
+                  <div class="{{class_email}} col_email"><input type="email" name="email" placeholder="{{ 'general.newsletter_form.email_placeholder' | t }}"  value="{% if customer %}{{ customer.email }}{% endif %}" class="{{class_ip}} input-text" required="required"></div>
+                  <div class="{{class_btn}}"><button type="submit" class="css_add_ld btn_new_icon_{{btn_icon}} w__100 submit-btn truncate klaviyo_btn{% if checkbox_mail %} mail_agree pr{% endif %}"><span>{{ 'general.newsletter_form.submit' | t }}</span></button></div>
+               </div>
+               {%- if checkbox_mail -%}{%- render 'conditions_mail',html:'p',margin:'mt__15',stt_link:settings.link_mail,sid:sid -%}{%- endif -%}
+            </div>
+           <div class="mc4wp-response klaviyo_messages">
+             <div class="shopify-message success_message dn"><i class="las la-check"></i>{{ 'general.newsletter_form.confirmation' | t }}</div>
+             <div class="shopify-error error_message dn"></div>
+           </div>
+      </form>
+
+  {%- when '4' -%}
+     <form id="mc4wp-form-{{section.id}}" role="form" action="{%- if settings.ajax_mailChimp -%}{{ settings.action_mailchimp | replace: '/post?u', '/post-json?u' }}{%- else -%}{{ settings.action_mailchimp }}{%- endif -%}" class="js_mail_agree pr z_100 mc4wp-form mc4wp-form-{{section.id}}{%- if settings.ajax_mailChimp and settings.action_mailchimp != blank %} nt_ajax_mcsp{%- endif -%}" method="post">
+        <div class="mc4wp-form-fields">
+           <div class="signup-newsletter-form row no-gutters pr oh {{class}}">
+              <div class="{{class_email}} col_email"><input type="email" name="EMAIL" placeholder="{{ 'general.newsletter_form.email_placeholder' | t }}"  value="{% if customer %}{{ customer.email }}{% endif %}" class="{{class_ip}} input-text" required="required"></div>
+              <div class="{{class_btn}}"><button type="submit" class="css_add_ld btn_new_icon_{{btn_icon}} w__100 submit-btn truncate{% if checkbox_mail %} mail_agree pr{% endif %}"><span>{{ 'general.newsletter_form.submit' | t }}</span></button></div>
+           </div>
+             {%- if checkbox_mail -%}{%- render 'conditions_mail',html:'p',margin:'mt__15',stt_link:settings.link_mail,sid:sid -%}{%- endif -%}
+        </div>
+        <div class="mc4wp-response"><div class="shopify-message success_message dn"><i class="las la-check"></i>{{ 'general.newsletter_form.confirmation' | t }}</div><div class="shopify-warning dn"><i class="las la-exclamation-triangle"></i><span class="error_message"></span></div></div>
+     </form>
+
+  {%- else -%}
+     {%- form 'customer', class:'js_mail_agree mc4wp-form pr z_100' -%}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        <div class="mc4wp-form-fields">
+           <div class="signup-newsletter-form row no-gutters pr oh {{class}}">
+              <div class="{{class_email}} col_email"><input type="email" name="contact[email]" placeholder="{{ 'general.newsletter_form.email_placeholder' | t }}"  value="{% if customer %}{{ customer.email }}{% endif %}" class="{{class_ip}} input-text" required="required"></div>
+              <div class="{{class_btn}}"><button type="submit" class="btn_new_icon_{{btn_icon}} w__100 submit-btn truncate{% if checkbox_mail %} mail_agree pr{% endif %}"><span>{{ 'general.newsletter_form.submit' | t }}</span></button></div>
+           </div>
+          {%- if checkbox_mail -%}{%- render 'conditions_mail',html:'p',margin:'mt__15',stt_link:settings.link_mail,sid:sid -%}{%- endif -%}
+        </div>
+         <div class="mc4wp-response">
+            {%- if form.posted_successfully? -%}<div class="shopify-message"><i class="las la-check"></i>{{ 'general.newsletter_form.confirmation' | t }}</div>{%- elsif form.errors -%}<div class="shopify-error"><i class="las la-exclamation-triangle"></i>{{ form.errors | default_errors }}</div>{%- endif -%}
+         </div>
+     {%- endform -%}
+
+{%- endcase -%}

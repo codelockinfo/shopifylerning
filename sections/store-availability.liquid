@@ -1,0 +1,98 @@
+{%- liquid 
+  assign id_pp = 'store_avai_canvas' |append:product_variant.id
+  assign pick_up_availabilities = product_variant.store_availabilities | where: 'pick_up_enabled', true -%}
+
+<div class="store-availability-container">
+  {%- if pick_up_availabilities.size > 0 -%}
+    {%- comment %}<style>.is_sticky .theiaStickySidebar{will-change: auto;}</style>{% endcomment -%}
+    <div class="store-availability-information">
+      {%- assign closest_location = pick_up_availabilities.first -%}
+        {%- if closest_location.available -%} {% render 'icon-in-stock' %}{%- else -%} {% render 'icon-out-of-stock' %} {%- endif -%}
+        <div class="store-availability-information-container">
+          {%- if closest_location.available -%}
+            <p class="store-availability-information__title">
+              {{ 'store_availability.general.pick_up_available_at_html' | t: location_name: closest_location.location.name }}
+            </p>
+            <p class="store-availability-information__stock store-availability-small-text">
+              {{ closest_location.pick_up_time }}
+            </p>
+            <button data-opennt="#{{id_pp}}" data-pos="right" data-remove="false" data-class="store-availability-container" data-bg="hide_btn" class="store-availability-information__button store-availability-small-text" data-store-availability-modal-open aria-haspopup="dialog">
+              {%- if pick_up_availabilities.size == 1 -%}
+                {{ 'store_availability.general.view_store_info' | t }}
+              {%- else -%}
+                {{ 'store_availability.general.check_other_stores' | t }}
+              {%- endif -%}
+            </button>
+          {%- else -%}
+            <p class="store-availability-information__title">
+              {{ 'store_availability.general.pick_up_unavailable_at_html' | t: location_name: closest_location.location.name }}
+            </p>
+            {%- if pick_up_availabilities.size > 1 -%}
+              <button data-opennt="#{{id_pp}}" data-pos="right" data-remove="false" data-class="store-availability-container" data-bg="hide_btn" class="store-availability-information__button store-availability-small-text" data-store-availability-modal-open aria-haspopup="dialog">
+                {{ 'store_availability.general.check_other_stores' | t }}
+              </button>
+            {%- endif -%}
+        {%- endif -%}
+        </div>
+    </div>
+    <div id="{{id_pp}}" class="mfp-hide"><div class="nt_fk_canvas dn store_availabilities_modal">
+      <div class="nt_mini_cart flex column h__100">
+        <div class="mini_cart_header flex fl_between al_center">
+          <div class="h3 widget-title tu fs__16 mg__0 truncate">
+            <div class="store-availabilities-modal__product-information truncate">
+              <h2 id="StoreAvailabilitiesModalProductTitle" class="truncate store-availabilities-modal__product-title" data-store-availability-modal-product-title></h2>
+              <p class="truncate store-availabilities-modal__variant-title store-availability-small-text" data-store-availability-modal-variant-title>{{ product_variant.title }}</p>
+            </div>
+          </div>
+          <i class="close_pp pegk pe-7s-close ts__03 cd"></i>
+        </div>
+        <div class="mini_cart_wrap">
+          <div class="mini_cart_content fixcl-scroll">
+            <div class="fixcl-scroll-content">
+              <ul class="store-availabilities-list" role="list">
+                {%- for availability in pick_up_availabilities -%}
+                  <li class="store-availability-list__item">
+                    <h3 class="store-availability-list__location">
+                      {{availability.location.name}}
+                    </h3>
+                    <div class="store-availability-list__stock store-availability-small-text">
+                      {%- if availability.available -%}
+                        {% render 'icon-in-stock' %} {{ 'store_availability.general.pick_up_available' | t }}, {{ availability.pick_up_time | downcase }}
+                      {%- else -%}
+                        {% render 'icon-out-of-stock' %} {{ 'store_availability.general.pick_up_currently_unavailable' | t }}
+                      {%- endif -%}
+                    </div>
+                    {%- assign address = availability.location.address -%}
+                    <address class="store-availability-list__address">
+                      {{ address | format_address }}
+                    </address>
+                    {%- if address.phone.size > 0 -%}
+                      <p class="store-availability-list__phone store-availability-small-text">
+                        {{ address.phone }}<br>
+                      </p>
+                    {%- endif -%}
+                    {%- unless availability.location.latitude and availability.location.longitude -%}
+                      <p class="store-availability-list__confirm-address store-availability-small-text">
+                        {% render 'icon-unverified-address' %} {{ 'store_availability.general.confirm_address' | t }}
+                      </p>
+                    {%- endunless -%}
+                    <a href="https://maps.google.com?daddr={{ address.street | escape }} {{ address.province | escape }} {{ address.country | escape }}"
+                     class="store-map-btn txt_under mt__5 dib"
+                     target="_blank" rel="noopener"
+                     aria-describedby="a11y-new-window-external-message"><i class="las la-map-marker-alt fs__18"></i> {{check_map}}</a>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+  {%- endif -%}
+</div>
+{% schema %}
+{
+  "name": {},
+  "settings": []
+}
+{% endschema %}

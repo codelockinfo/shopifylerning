@@ -1,0 +1,691 @@
+{%- comment %}<h3 class="mg__0 tu bgb cw visible-sm fs__16 pr">{{ 'collections.general.sidebar' | t }}<i class="close_pp pegk pe-7s-close fs__40 ml__5"></i></h3>{% endcomment -%}
+<div class="cat_shop_wrap mb__60">
+<div class="cat_fixcl-scroll">
+<div class="cat_fixcl-scroll-content css_ntbar">
+<div class="row wrap_filter">{%- assign col_class= '12' -%}
+{%- assign ck_hide_all = true -%}
+{%- if section.blocks.size > 0 -%}
+  {%- for block in section.blocks -%}
+     {%- case block.type -%}
+        {%- when 'category' -%}{%- assign top_link_list = block.settings.cat_link_list -%}
+
+            <div class="col-12 col-md-{{col_class}} widget widget_product_categories cat_count_{{block.settings.count}} nt_filter_block">
+               <h5 class="widget-title">{{ block.settings.title }}</h5>
+               {%- if top_link_list == blank %}<p class="mg__0 mb__30">{{ 'homepage.onboarding.no_content' | t }}</p></div>{% continue %}{% endif -%}
+               <ul class="product-categories">
+                    {%- for link in linklists[top_link_list].links -%}
+                      {%- if link.type != 'blog_link' %}{% continue %}{% endif -%}
+                      {%- assign ck_hide_all = false -%}
+                      <li class="cat-item{%- if link.active %} current-cat{%- endif -%}"><a href="{{ link.url }}">{{link.title}} <span class="cat_count">({{ link.object.articles_count}})</a></span></li>
+                    {%- endfor -%}
+               </ul>
+            </div>
+        {%- when 'collection' -%}
+            {%- liquid
+             assign on_sale_txt = 'products.product.on_sale' | t
+             assign save_js = 'products.product.save_js' | t: saved_amount:'saved_amount' -%}
+            <div class="col-12 col-md-{{col_class}} widget widget_product_list">
+               <h5 class="widget-title">{{ block.settings.title }}</h5>
+               {%- if block.settings.collection == blank -%}
+                  <p class="mg__0 mb__30">{{ 'homepage.onboarding.no_content' | t }}</p>
+               {%- else -%}{%- assign ck_hide_all = false -%}
+               <div class="product_list_widget">
+                  {%- for product in collections[block.settings.collection].products limit: block.settings.limit -%}
+                     {%- render 'pr_group_loop',product:product,c:collections[block.settings.collection],on_sale_txt:on_sale_txt,save_js:save_js -%}
+                  {%- endfor -%}
+               </div>
+               {%- endif -%}
+            </div>
+        {%- when 'post' -%}{%- assign date = block.settings.date -%}
+            <div class="col-12 col-md-{{col_class}} widget widget_post_list">
+               <h5 class="widget-title">{{ block.settings.title }}</h5>
+               {%- if block.settings.blog == blank -%}
+                  <p class="mg__0 mb__30">{{ 'homepage.onboarding.no_content' | t }}</p>
+               {%- else -%}{%- assign ck_hide_all = false -%}{%- assign date = block.settings.date -%}
+               <div class="post_list_widget">
+                  {%- for article in blogs[block.settings.blog].articles limit: block.settings.limit -%}
+                     {%- render 'ar_group_loop',article:article,date:date -%}
+                  {%- endfor -%}
+               </div>
+               {%- endif -%}
+            </div>
+        {%- when 'instagram' -%}{%- assign ck_hide_all = false -%}{%- assign col = block.settings.col_pr -%}{%- assign col_tb = block.settings.col_pr_tb -%}{%- assign col_mb = block.settings.col_pr_mb -%}
+            <div class="col-12 col-md-{{col_class}} widget widget_instagram">
+               <h5 class="widget-title">{{ block.settings.title }}</h5>
+               <div class="nt_instagram_wrap row equal_nt ins_spaces_{{block.settings.space}} ins_rounded_{{block.settings.rounded_ins}} nt_cover ratio1_1 position_8 js_nt_ist" data-id='{{col}}{{col_tb}}{{col_mb}}{{block.settings.limit}}{{block.settings.open_link}}' data-cl='{{col}}' data-cltb='{{col_tb}}' data-clmb='{{col_mb}}' data-acc='{{block.settings.acc2 | default:settings.global_acc}}' data-limit='{{block.settings.limit }}' data-target='{{block.settings.open_link}}'><div class="lds_bginfinity pr"></div></div>
+            </div>
+        {%- when 'instagram2' -%}{%- assign ck_hide_all = false -%}{%- assign col = block.settings.col_pr -%}{%- assign col_tb = block.settings.col_pr_tb -%}{%- assign col_mb = block.settings.col_pr_mb -%}
+            <div class="col-12 col-md-{{col_class}} widget widget_instagram">
+               <h5 class="widget-title">{{ block.settings.title }}</h5>
+               <div class="nt_instagram_wrap row equal_nt ins_spaces_{{block.settings.space}} ins_rounded_{{block.settings.rounded_ins}} nt_cover ratio1_1 position_8 js_nt_ist" data-id='{{col}}{{col_tb}}{{col_mb}}{{block.settings.limit}}{{block.settings.open_link}}' data-cl='{{col}}' data-cltb='{{col_tb}}' data-clmb='{{col_mb}}' data-acc='ins_19041994' data-limit='{{block.settings.limit }}' data-target='{{block.settings.open_link}}'><div class="lds_bginfinity pr"></div></div>
+            </div>
+        {%- when 'shipping' -%}{%- assign ck_hide_all = false -%}
+            <div class="col-12 col-md-{{col_class}} widget widget_shipping">
+               <h5 class="widget-title">{{ block.settings.title }}</h5>
+               {%- for i in (1..6) -%}
+                  {%- assign shipping = 'shipping_' | append:i -%}
+                  {%- assign shipping_id = block.settings[shipping] -%}
+                  {%- if shipping_id != blank -%}
+                     {%- assign shipping = shipping_id | replace: ' ,', ',' | replace: ', ', ',' | split: ',' -%}
+                        <div class="row no-gutters nt_shipping tl clearfix mt__30">
+                           {%- if shipping[0] != blank -%}<div class="icon medium cd col-auto"><i class="{%- if shipping[0] contains 'pe-' -%}pegk {{shipping[0]}}{%- else -%}las la-{{shipping[0]}}{%- endif -%}"></i></div>{%- endif -%}
+                           <div class="content col">
+                              <h3 class="title cd tu fs__14 mg__0 mb__5">{{shipping[1]}}</h3>
+                              <p class="mg__0">{{shipping[2]}}</p>
+                           </div>
+                        </div>
+                  {%- endif -%}
+               {%- endfor -%}
+            </div> 
+        {%- when 'html' -%}{%- assign ck_hide_all = false -%}
+            <div class="col-12 col-md-{{col_class}} widget widget_html">
+               <h5 class="widget-title">{{ block.settings.title }}</h5>
+               {%- if block.settings.page != blank -%}{{pages[block.settings.page].content}}{%- endif -%}
+            </div>
+        {%- when 'text' -%}{%- assign ck_hide_all = false -%}
+            <div class="col-12 col-md-{{col_class}} widget widget_text">
+               <h5 class="widget-title">{{ block.settings.title }}</h5>
+               {%- if block.settings.text != blank -%}{{block.settings.text}}{%- endif -%}
+            </div>
+        {%- when 'tags' -%}
+
+            {%- if blog.all_tags.size < 1 %}{% continue %}{% endif -%}
+            {%- assign ck_hide_all = false -%}{%- assign blog_handle = blog.handle -%}
+            <div class="col-12 col-md-{{col_class}} widget widget_text">
+              <h5 class="widget-title">{{ block.settings.title }}</h5>
+              <div class="loke_scroll">
+                 <ul class="nt_filter_block nt_filter_styletag blg_count_{{block.settings.count}}">
+                    {%- for tag in blog.all_tags -%}
+                        {%- if current_tags contains tag -%}
+                              <li class="active"><a class="chosen" href="/blogs/{{blog_handle}}">{{ tag }} <span class="blg_count">({{ tag.total_count }})</span></a></li>
+                        {%- else -%}
+                              <li><a href="/blogs/{{blog_handle}}/tagged/{{ tag | handleize }}">{{ tag }} <span class="blg_count">({{ tag.total_count }})</span></a></li>
+                        {%- endif -%}
+                    {%- endfor -%}
+                 </ul>
+              </div>
+            </div>
+     {%- endcase -%}
+  {%- endfor -%}
+
+{%- else -%}
+<div class="tc">{%- include 'no_blocks'-%}</div>   
+{%- endif -%}
+</div>
+</div>
+</div>
+</div>
+<style>.btn_sidebar {opacity: 1} .type_toolbar_sidebar{display: block}{%- if ck_hide_all -%}.cat_sidebar {opacity: 0;pointer-events: none;}.type_toolbar_sidebar.dn{display: none}{%- endif -%}</style>
+{%- schema -%}
+  {
+    "name": "Sidebar Articles",
+    "class": "type_instagram",
+    "max_blocks": 56,
+    "blocks": [
+      {
+        "type": "category",
+        "name": "Categories",
+        "limit": 1,
+        "settings": [
+         { 
+          "type":"text",
+          "id":"title",
+          "label":"Categories",
+          "default":"Blog Categories"
+          },
+          {
+           "type": "link_list",
+           "id": "cat_link_list",
+           "label": "Choose a link list"
+         },
+          {
+            "type": "checkbox",
+            "id": "count",
+            "label": "Show count?",
+            "default": true
+          }
+        ]
+      },
+      {
+        "type": "collection",
+        "name": "Featured Products",
+        "settings": [
+         {
+          "type":"text",
+          "id":"title",
+          "label":"Title",
+          "default":"Sale Products"
+          },
+          {
+           "type": "collection",
+           "id": "collection",
+           "label": "Collection to use"
+         },
+          {
+            "type": "range",
+            "id": "limit",
+            "min": 1,
+            "max": 20,
+            "step": 1,
+            "label": "Number of products to show",
+            "default": 3
+          }
+        ]
+      },
+      {
+        "type": "post",
+        "name": "Recent Post",
+        "settings": [
+         {
+          "type":"text",
+          "id":"title",
+          "label":"Title",
+          "default":"Recent Post"
+          },
+          {
+           "type": "blog",
+           "id": "blog",
+           "label": "Blog to use"
+         },
+        {
+          "type": "select",
+          "id": "date",
+          "options": [
+            {
+              "value": "abbreviated_date",
+              "label": "Apr 19, 1994"
+            },
+            {
+              "value": "basic",
+              "label": "4/19/1994"
+            },
+            {
+              "value": "date",
+              "label": "April 19, 1994"
+            }
+          ],
+          "label": "Date format",
+          "info":"different format options display for various languages.",
+          "default": "date"
+        },
+          {
+            "type": "range",
+            "id": "limit",
+            "min": 1,
+            "max": 20,
+            "step": 1,
+            "label": "Number of products to show",
+            "default": 3
+          }
+        ]
+      },
+      {
+        "type": "instagram",
+        "name": "Instagram feed",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Instagram"
+          },
+          {
+            "type": "text",
+            "id": "acc2",
+            "label": "User's photos via GraphQL (New Instagram API):",
+            "info":"If none is set, General Instagram Access Token is used. [How to get your Instagram Access Token via GraphQL API.](https://gecko5-docs.the4.co/installation/how-to-get-instagram-access-token)"
+          },
+          {
+            "type": "range",
+            "id": "limit",
+            "min": 1,
+            "max": 25,
+            "step": 1,
+            "unit": "img",
+            "label": "Number of photos",
+            "default": 9
+          },
+          {
+            "type": "select",
+            "id": "open_link",
+            "options": [
+              {
+                "value": "_self",
+                "label": "Current window (_self)"
+              },
+             {
+                "value": "_blank",
+                "label": "New window (_blank)"
+              }
+            ],
+            "label": "Open link in",
+            "default": "_blank"
+          },
+          {
+           "type": "select",
+           "id": "space",
+           "options": [
+             {
+               "value": "6",
+               "label": "6"
+             },
+             {
+               "value": "3",
+               "label": "3"
+             },
+             {
+               "value": "2",
+               "label": "2"
+             },
+             {
+               "value": "0",
+               "label": "0"
+             }
+           ],
+           "label": "spaces between photos",
+           "default": "2"
+          },
+          {
+            "type": "select",
+            "id": "rounded_ins",
+            "label": "Rounded corners for images",
+            "default": "0",
+            "options": [
+              {
+                "value": "0",
+                "label": "Disable"
+              },
+              {
+                "value": "1",
+                "label": "Style 1"
+              },
+              {
+                "value": "2",
+                "label": "Style 2"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "col_pr",
+            "label": "Photos per row",
+            "info": "How many photos you want to show per row",
+            "default": "4",
+            "options": [
+              {
+                "value": "6",
+                "label": "2"
+              },
+              {
+                "value": "4",
+                "label": "3"
+              },
+              {
+                "value": "3",
+                "label": "4"
+              },
+              {
+                "value": "15",
+                "label": "5"
+              },
+              {
+                "value": "2",
+                "label": "6"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "col_pr_tb",
+            "label": "Photos per row Tablet",
+            "default": "4",
+            "options": [
+              {
+                "value": "6",
+                "label": "2"
+              },
+              {
+                "value": "4",
+                "label": "3"
+              },
+              {
+                "value": "3",
+                "label": "4"
+              },
+              {
+                "value": "15",
+                "label": "5"
+              },
+              {
+                "value": "2",
+                "label": "6"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "col_pr_mb",
+            "label": "Photos per row Mobile",
+            "default": "4",
+            "options": [
+              {
+                "value": "12",
+                "label": "1"
+              },
+              {
+                "value": "6",
+                "label": "2"
+              },
+              {
+                "value": "4",
+                "label": "3"
+              },
+              {
+                "value": "3",
+                "label": "4"
+              },
+              {
+                "value": "15",
+                "label": "5"
+              },
+              {
+                "value": "2",
+                "label": "6"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "instagram2",
+        "name": "Instagram feed via APP",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "paragraph",
+            "content": "Firstly, you need to install [Section Feed App](https://apps.shopify.com/section-feed-by-maestrooo) to use this section"
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Instagram"
+          },
+          {
+            "type": "range",
+            "id": "limit",
+            "min": 1,
+            "max": 25,
+            "step": 1,
+            "unit": "img",
+            "label": "Number of photos",
+            "default": 9
+          },
+          {
+            "type": "select",
+            "id": "open_link",
+            "options": [
+              {
+                "value": "_self",
+                "label": "Current window (_self)"
+              },
+             {
+                "value": "_blank",
+                "label": "New window (_blank)"
+              }
+            ],
+            "label": "Open link in",
+            "default": "_blank"
+          },
+          {
+           "type": "select",
+           "id": "space",
+           "options": [
+             {
+               "value": "6",
+               "label": "6"
+             },
+             {
+               "value": "3",
+               "label": "3"
+             },
+             {
+               "value": "2",
+               "label": "2"
+             },
+             {
+               "value": "0",
+               "label": "0"
+             }
+           ],
+           "label": "spaces between photos",
+           "default": "2"
+          },
+          {
+            "type": "select",
+            "id": "rounded_ins",
+            "label": "Rounded corners for images",
+            "default": "0",
+            "options": [
+              {
+                "value": "0",
+                "label": "Disable"
+              },
+              {
+                "value": "1",
+                "label": "Style 1"
+              },
+              {
+                "value": "2",
+                "label": "Style 2"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "col_pr",
+            "label": "Photos per row",
+            "info": "How many photos you want to show per row",
+            "default": "4",
+            "options": [
+              {
+                "value": "6",
+                "label": "2"
+              },
+              {
+                "value": "4",
+                "label": "3"
+              },
+              {
+                "value": "3",
+                "label": "4"
+              },
+              {
+                "value": "15",
+                "label": "5"
+              },
+              {
+                "value": "2",
+                "label": "6"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "col_pr_tb",
+            "label": "Photos per row Tablet",
+            "default": "4",
+            "options": [
+              {
+                "value": "6",
+                "label": "2"
+              },
+              {
+                "value": "4",
+                "label": "3"
+              },
+              {
+                "value": "3",
+                "label": "4"
+              },
+              {
+                "value": "15",
+                "label": "5"
+              },
+              {
+                "value": "2",
+                "label": "6"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "col_pr_mb",
+            "label": "Photos per row Mobile",
+            "default": "4",
+            "options": [
+              {
+                "value": "12",
+                "label": "1"
+              },
+              {
+                "value": "6",
+                "label": "2"
+              },
+              {
+                "value": "4",
+                "label": "3"
+              },
+              {
+                "value": "3",
+                "label": "4"
+              },
+              {
+                "value": "15",
+                "label": "5"
+              },
+              {
+                "value": "2",
+                "label": "6"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "shipping",
+        "name": "SHIPPING DELIVERY",
+        "limit": 1,
+        "settings": [
+         {
+          "type":"text",
+          "id":"title",
+          "label":"Title",
+          "default":"Shipping & Delivery"
+         },
+        {
+          "type": "paragraph",
+          "content": "Example: pe-7s-car,Save up to 20%,limited time [Get icons Pe icon](http://themes-pixeden.com/font-demos/7-stroke/index.html)"
+        },
+        {
+          "type": "paragraph",
+          "content": "Example: phone,Save up to 20%,limited time [Get icons Line awesome](https://icons8.com/line-awesome)"
+        },
+         {
+           "type": "textarea",
+           "id": "shipping_1",
+           "label":"Shipping Block 1",
+           "default":"truck,FREE SHIPPING,Free shipping for all US order"
+         },
+         {
+           "type": "textarea",
+           "id": "shipping_2",
+           "label":"Shipping Block 2",
+           "default":"headset,SUPPORT 24/7,We support 24 hours a day"
+         },
+         {
+           "type": "textarea",
+           "id": "shipping_3",
+           "label":"Shipping Block 3",
+           "default":"exchange-alt,30 DAYS RETURN,You have 30 days to return"
+         },
+         {
+           "type": "textarea",
+           "id": "shipping_4",
+           "label":"Shipping Block 4"
+         },
+         {
+           "type": "textarea",
+           "id": "shipping_5",
+           "label":"Shipping Block 5"
+         },
+         {
+           "type": "textarea",
+           "id": "shipping_6",
+           "label":"Shipping Block 6"
+         }
+        ]
+      },
+      {
+        "type": "html",
+        "name": "Custom HTML",
+        "settings": [
+         {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Custom HTML"
+          },
+          {
+            "type": "page",
+            "id": "page",
+            "label": "Content page"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "name": "Text",
+        "settings": [
+            {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Talk about your brand"
+            },
+            {
+            "type": "richtext",
+            "id": "text",
+            "label": "Text",
+            "default": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>"
+            }
+         ]
+      },
+      {
+        "type": "tags",
+        "name": "Blog Tags",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Blog Tags"
+          },
+          {
+            "type": "checkbox",
+            "id": "count",
+            "label": "Show count?",
+            "default": true
+          }
+        ]
+      }
+    ],
+    "default": {
+      "blocks": [
+        { "type": "category" },{ "type": "post" },{ "type": "instagram" },{ "type": "collection" },{ "type": "tags" }
+      ]
+    }
+  }
+{% endschema %}

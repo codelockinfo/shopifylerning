@@ -1,0 +1,11 @@
+{%- if img_variants.size > 0 -%}
+  {%- for color in color_variants -%}{%- assign img_arr = img_variants | where: nt_option, color -%}{%- assign cl_handle = color | handle -%}
+        {%- if img_arr.size > 0 -%}{%- assign image = img_arr[0].featured_image -%}{%- assign ratio = image.aspect_ratio -%}{%- assign iw = image.width -%}
+           <span data-id="{{image.id}}" data-vid="{{img_arr[0].id}}" data-bgset="{%- include 'bgsetpr' -%}" class="nt_swatch_on_bg swatch__list--item pr {{tooltip}} js__{{ cl_handle }}"><span class="tt_txt">{{color}}</span><span class="swatch__value bg_color_{{ cl_handle }} lazyload"></span></span>
+        {%- else -%}
+           <span class="swatch__list--item pr {{tooltip}}"><span class="tt_txt">{{color}}</span><span class="swatch__value bg_color_{{ color | handle }} lazyload"></span></span>
+        {%- endif -%}
+  {%- endfor -%}
+{%- else -%}
+  {%- for color in color_variants -%}<span class="swatch__list--item pr {{tooltip}}"><span class="tt_txt">{{color}}</span><span class="swatch__value bg_color_{{ color | handle }} lazyload"></span></span>{%- endfor -%}
+{%- endif -%}

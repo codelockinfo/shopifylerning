@@ -1,0 +1,22 @@
+<div class="quote_slide tc">
+  {%- if block.settings.image -%}<div class="quote_avatar dib mb__15 br__50 oh"><div class="nt_bg_lz lazyload" data-bg="{{ block.settings.image | img_url:'200x' }}"></div></div>{%- endif -%}
+  <div class="quote_content">
+    {%- if rating >= 1 -%}
+      {%- case rating -%}
+        {%- when 1 -%}{% assign class = ', cra2, cra2, cra2, cra2,dn' %}
+        {%- when 1.5 -%}{% assign class = ',-half pr, cra2, cra2, cra2' %}
+        {%- when 2 -%}{% assign class = ',, cra2, cra2, cra2,dn' %}
+        {%- when 2.5 -%}{% assign class = ',,-half pr, cra2, cra2' %}
+        {%- when 3 -%}{% assign class = ',,, cra2, cra2,dn' %}
+        {%- when 3.5 -%}{% assign class = ',,,-half pr, cra2' %}
+        {%- when 4 -%}{% assign class = ',,,, cra2,dn' %}
+        {%- when 4.5 -%}{% assign class = ',,,,-half pr' %}
+        {%- else -%}{% assign class = ',,,,,dn' %}
+      {%- endcase -%}
+      {% assign arr = class | split:',' %}
+    <div class="quote_rating fs__13 fwb mb__10 cra rating_{{rating}}"><i class="facl facl-star{{arr[0]}}"></i><i class="facl facl-star{{arr[1]}}"></i><i class="facl facl-star{{arr[2]}}"></i><i class="facl facl-star{{arr[3]}}"></i><i class="facl facl-star{{arr[4]}}"></i></div>
+    {%- endif -%}
+    {{block.settings.content}}
+    <div class="quote_author cd fwsb">{{block.settings.title}}</div>
+  </div>
+</div>

@@ -1,0 +1,156 @@
+{%- liquid
+  if settings.show_first_img 
+   assign featured_media = product.featured_media
+  else 
+   assign featured_media = product.selected_or_first_available_variant.featured_media | default: product.featured_media
+  endif
+  assign rtl = settings.use_rtl
+  if rtl 
+    assign ltr = false
+  else 
+    assign ltr = true 
+  endif
+  assign fade = false
+  assign fade_num = 1
+  assign dragThreshold = 6
+  assign values = product.options_with_values | map: 'values' | join: ',' | downcase
+  assign drag = ">1"
+  assign groupCells = true
+  assign pr_media_size = pr_media.size
+  if pr_media_size > 4
+    assign groupCells = 3
+  endif
+  assign media_img = pr_media | where: "media_type", "image"
+  if settings.ratio_img_main == 'ratio_img1'
+     assign ratio = pr_media.first.preview_image.aspect_ratio
+  endif
+  if settings.ratio_img_thumb == 'ratio_img1'
+     assign ratio_nav = ratio | default:pr_media.first.preview_image.aspect_ratio
+  endif
+  assign ops_name = product.options_with_values | map:'name'
+  assign ops_name_1 = product.options_by_name[ops_name[0]].values
+  assign ops_name_2 = product.options_by_name[ops_name[1]].values
+  assign ops_name_3 = product.options_by_name[ops_name[2]].values
+  if sett_pr == '7'
+    capture col_str
+      if pr_media_size < 3
+         echo 'col-md-12'
+      elsif pr_media_size == 3
+         echo 'col-md-12,col-md-6,col-md-6'
+      elsif pr_media_size == 5
+         echo 'col-md-6,col-md-6,col-md-12,col-md-6,col-md-6'
+      else
+         echo 'col-md-4,col-md-4,col-md-4,col-md-12,col-md-6,col-md-6,col-md-12'
+      endif
+    endcapture
+    assign col_arr = col_str | split:','
+    assign col_arr_last = col_arr | last                      
+  endif -%}
+{%- comment -%}
+  assign media_img_size = media_img | size
+  if pr_media_size != media_img_size 
+    assign drag = ">1"
+  endif
+  
+group color config: color_sliver | alt tag
+group color config: opnt4_all | alt tag
+
+support multilingual: number start 0 https://tppr.me/bcOGn
+group color config: t4option0_1 | alt tag
+
+Use alt to fix image color solid in safari 
+  imgt4_colorsolid 
+
+Alt full config:
+  opnt4_all | imgt4_colorsolid | alt tag
+{%- endcomment -%}
+{%- case sett_pr -%}
+  {%- when '7' -%}
+    <div class="col-12 col_thumb">
+       <div class="only_owl_mb row p-thumb fade_flick_{{fade_num}} p-thumb{{se_id |default:call_cl}} images sp-pr-gallery equal_nt {{settings.img_size_main}} {{settings.ratio_img_main}} position_{{settings.img_pos_main}} pr_carousel" 
+       data-prmasonry='{"transitionDuration": 0,"selector":".p-item:not(.is_varhide)","filter": ".p-item:not(.is_varhide)", "layoutMode":"fitRows","originLeft": {{ltr}} }' 
+       data-flickity='{"watchCSS": true,"initialIndex": ".media_id_{{featured_media.id}}","cellSelector": ".p-item:not(.is_varhide)","draggable":"{{drag}}","fade":{{fade}},"cellAlign": "center","wrapAround": true,"autoPlay": false,"prevNextButtons":true,"adaptiveHeight": true,"imagesLoaded": false, "lazyLoad": 0,"dragThreshold" : {{dragThreshold}},"pageDots": false,"rightToLeft": {{rtl}} }'>
+         {%- for media in pr_media -%}{%- assign alt = media.alt -%}
+            {%- if alt contains 't4_360' -%}{%- break -%}{%- endif -%}{%- assign col = col_arr[forloop.index0] |default:col_arr_last -%}
+            {%- render 'media2',media:media,alt:alt,eq_imgtb:eq_imgtb,values:values,col:col,ops_name:ops_name,ops_name_1:ops_name_1,ops_name_2:ops_name_2,ops_name_3:ops_name_3 -%}
+         {%- endfor -%}
+       </div>
+       {%- render 'product_labels',on:'singe' -%}
+       {%- render 'p_group_btns',pr_media:pr_media -%}
+    </div>
+  {%- when '2' -%}
+    <div class="col-12 col_thumb">
+       <div class="only_owl_mb row p-thumb fade_flick_{{fade_num}} p-thumb{{se_id |default:call_cl}} images sp-pr-gallery equal_nt {{settings.img_size_main}} {{settings.ratio_img_main}} position_{{settings.img_pos_main}} pr_carousel" 
+       data-prmasonry='{"transitionDuration": 0,"selector":".p-item:not(.is_varhide)","filter": ".p-item:not(.is_varhide)", "layoutMode":"masonry","originLeft": {{ltr}} }' 
+       data-flickity='{"watchCSS": true,"initialIndex": ".media_id_{{featured_media.id}}","cellSelector": ".p-item:not(.is_varhide)","draggable":"{{drag}}","fade":{{fade}},"cellAlign": "center","wrapAround": true,"autoPlay": false,"prevNextButtons":true,"adaptiveHeight": true,"imagesLoaded": false, "lazyLoad": 0,"dragThreshold" : {{dragThreshold}},"pageDots": false,"rightToLeft": {{rtl}} }'>
+         {%- for media in pr_media -%}{%- assign alt = media.alt -%}
+            {%- if alt contains 't4_360' -%}{%- break -%}{%- endif -%}
+            {%- render 'media2',media:media,alt:alt,eq_imgtb:eq_imgtb,values:values,col:'col-md-6',ops_name:ops_name,ops_name_1:ops_name_1,ops_name_2:ops_name_2,ops_name_3:ops_name_3 -%}
+         {%- endfor -%}
+       </div>
+       {%- render 'product_labels',on:'singe' -%}
+       {%- render 'p_group_btns',pr_media:pr_media -%}
+    </div>
+  {%- when '3' -%}
+      <div class="col-12 col_thumb">
+         <div class="only_owl_mb row p-thumb fade_flick_{{fade_num}} p-thumb{{se_id |default:call_cl}} images sp-pr-gallery equal_nt {{settings.img_size_main}} {{settings.ratio_img_main}} position_{{settings.img_pos_main}} pr_carousel" 
+         data-prmasonry='{"transitionDuration": 0,"selector":".p-item:not(.is_varhide)", "layoutMode":"masonry","originLeft": {{ltr}} }' 
+         data-flickity='{"watchCSS": true,"initialIndex": ".media_id_{{featured_media.id}}","cellSelector": ".p-item:not(.is_varhide)","draggable":"{{drag}}","fade":{{fade}},"cellAlign": "center","wrapAround": true,"autoPlay": false,"prevNextButtons":true,"adaptiveHeight": true,"imagesLoaded": false, "lazyLoad": 0,"dragThreshold" : {{dragThreshold}},"pageDots": false,"rightToLeft": {{rtl}} }'>
+            {%- for media in pr_media -%}{%- assign alt = media.alt -%}
+               {%- if alt contains 't4_360' -%}{%- break -%}{%- endif -%}
+               {%- render 'media2',media:media,alt:alt,eq_imgtb:eq_imgtb,values:values,col:'col-md-12',ops_name:ops_name,ops_name_1:ops_name_1,ops_name_2:ops_name_2,ops_name_3:ops_name_3 -%}
+            {%- endfor -%}
+         </div>
+       {%- render 'product_labels',on:'singe' -%}
+       {%- render 'p_group_btns',pr_media:pr_media -%}
+      </div>
+  {%- when '4' -%}
+      <div class="col-12 col_thumb">
+         <div class="p-thumb fade_flick_{{fade_num}} p-thumb{{se_id |default:call_cl}} images sp-pr-gallery equal_nt {{settings.img_size_main}} {{settings.ratio_img_main}} position_{{settings.img_pos_main}} nt_slider pr_carousel" data-flickity='{"initialIndex": ".media_id_{{featured_media.id}}","fade":{{fade}},"draggable":"{{drag}}","cellSelector": ".p-item:not(.is_varhide)","cellAlign": "center","wrapAround": true,"autoPlay": false,"prevNextButtons":true,"adaptiveHeight": true,"imagesLoaded": false, "lazyLoad": 0,"dragThreshold" : {{dragThreshold}},"pageDots": false,"rightToLeft": {{rtl}} }'>
+               {%- for media in pr_media -%}{%- assign alt = media.alt -%}
+                  {%- if alt contains 't4_360' -%}{%- break -%}{%- endif -%}
+                  {%- render 'media',media:media,alt:alt,eq_imgtb:eq_imgtb,values:values,ops_name:ops_name,ops_name_1:ops_name_1,ops_name_2:ops_name_2,ops_name_3:ops_name_3 -%}
+               {%- endfor -%}
+         </div>
+       {%- render 'product_labels',on:'singe',product:product -%}
+       {%- render 'p_group_btns',pr_media:pr_media,se_id:se_id -%}
+
+      </div>
+      <div class="col-12 col_nav nav_{{settings.nav_img_pr}}">
+         <div class="p-nav {{e_imgnv}} row equal_nt {{settings.img_size_thumb}} {{settings.ratio_img_thumb}} position_{{settings.img_pos_thumb}} nt_slider pr_carousel" data-flickityjs='{"initialIndex": ".media_id_{{featured_media.id}}","cellSelector": ".n-item:not(.is_varhide)","cellAlign": "left","asNavFor": ".p-thumb{{se_id}}","wrapAround": true,"draggable": "{{drag}}","autoPlay": 0,"prevNextButtons": 0,"percentPosition": 1,"imagesLoaded": 0,"pageDots": 0,"groupCells": {{groupCells}},"rightToLeft": {{rtl}},"contain":  1,"freeScroll": 0}'><div class="n-item col-3"><img class="w__100 nt_bg_lz" src="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20{{media_img.first.width}}%20{{media_img.first.height}}%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3C%2Fsvg%3E" alt="{{product.title | escape}}"></div></div>
+      </div>
+  {%- when '6' -%}
+      <div class="col-12">
+         <div class="p-thumb fade_flick_{{fade_num}} p-thumb{{se_id |default:call_cl}} images sp-pr-gallery equal_nt {{settings.img_size_main}} {{settings.ratio_img_main}} position_{{settings.img_pos_main}} nt_slider pr_carousel" data-flickity='{"initialIndex": ".media_id_{{featured_media.id}}","fade":{{fade}},"draggable":"{{drag}}","cellSelector": ".p-item:not(.is_varhide)","cellAlign": "center","wrapAround": true,"autoPlay": false,"prevNextButtons":true,"adaptiveHeight": true,"imagesLoaded": false, "lazyLoad": 0,"dragThreshold" : {{dragThreshold}},"pageDots": false,"rightToLeft": {{rtl}} }'>
+               {%- for media in pr_media -%}{%- assign alt = media.alt -%}
+                  {%- if alt contains 't4_360' -%}{%- break -%}{%- endif -%}
+                  {%- render 'media',media:media,alt:alt,eq_imgtb:eq_imgtb,values:values,ops_name:ops_name,ops_name_1:ops_name_1,ops_name_2:ops_name_2,ops_name_3:ops_name_3 -%}
+               {%- endfor -%}
+         </div>
+       {%- render 'product_labels',on:'singe',product:product -%}
+       {%- render 'p_group_btns',pr_media:pr_media,se_id:se_id -%}
+      </div>
+  {%- else -%}
+      <div class="col-12 col-lg col_thumb">
+         <div class="p-thumb fade_flick_{{fade_num}} p-thumb{{se_id |default:call_cl}} images sp-pr-gallery equal_nt {{settings.img_size_main}} {{settings.ratio_img_main}} position_{{settings.img_pos_main}} nt_slider pr_carousel" data-flickity='{"initialIndex": ".media_id_{{featured_media.id}}","fade":{{fade}},"draggable":"{{drag}}","cellSelector": ".p-item:not(.is_varhide)","cellAlign": "center","wrapAround": true,"autoPlay": false,"prevNextButtons":true,"adaptiveHeight": true,"imagesLoaded": false, "lazyLoad": 0,"dragThreshold" : {{dragThreshold}},"pageDots": false,"rightToLeft": {{rtl}} }'>
+               {%- for media in pr_media -%}{%- assign alt = media.alt -%}
+                  {%- if alt contains 't4_360' -%}{%- break -%}{%- endif -%}
+                  {%- render 'media',media:media,alt:alt,eq_imgtb:eq_imgtb,values:values,ops_name:ops_name,ops_name_1:ops_name_1,ops_name_2:ops_name_2,ops_name_3:ops_name_3 -%}
+               {%- endfor -%}
+         </div>
+         {%- render 'product_labels',on:'singe',product:product -%}
+         {%- render 'p_group_btns',pr_media:pr_media,se_id:se_id -%}
+      </div>
+      <div class="col-12 col-lg-auto col_nav nav_{{settings.nav_img_pr}}"><div class="p-nav {{e_imgnv}} row equal_nt {{settings.img_size_thumb}} {{settings.ratio_img_thumb}} position_{{settings.img_pos_thumb}} nt_slider pr_carousel" data-flickityjs='{"initialIndex": ".media_id_{{featured_media.id}}","cellSelector": ".n-item:not(.is_varhide)","cellAlign": "left","asNavFor": ".p-thumb{{se_id}}","wrapAround": true,"draggable": "{{drag}}","autoPlay": 0,"prevNextButtons": 0,"percentPosition": 1,"imagesLoaded": 0,"pageDots": 0,"groupCells": {{groupCells}},"rightToLeft": {{rtl}},"contain":  1,"freeScroll": 0}'><div class="col-3 col-lg-12"><img class="w__100" src="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20{{media_img.first.width}}%20{{media_img.first.height}}%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3C%2Fsvg%3E" alt="{{product.title | escape}}"></div></div><button type="button" aria-label="Previous" class="btn_pnav_prev pe_none"><i class="las la-angle-up"></i></button><button type="button" aria-label="Next" class="btn_pnav_next pe_none"><i class="las la-angle-down"></i></button></div>
+{%- endcase -%}
+
+{%- if ratio != blank or ratio_nav != blank -%}
+<style>
+{%- if ratio != blank -%}
+.p-thumb.equal_nt.ratio_img1 .nt_bg_lz {padding-top: {{ 1 | divided_by:ratio | times: 100 }}%;}
+{%- endif -%}
+{%- if ratio_nav != blank -%}
+.p-nav.equal_nt.ratio_img1 .nt_bg_lz {padding-top: {{ 1 | divided_by:ratio_nav | times: 100 }}%;}
+{%- endif -%}
+</style>
+{%- endif -%}

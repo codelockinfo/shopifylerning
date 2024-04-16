@@ -1,0 +1,578 @@
+{%- liquid
+  assign se_stts = section.settings
+  assign sett_equal = se_stts.use_eq_height
+  assign col = se_stts.col_pr
+  assign col_tb = se_stts.col_pr_tb
+  assign cl_mb = se_stts.col_pr_mb 
+  assign col_mb = '' | prepend:cl_mb
+  assign limit = se_stts.limit
+  assign use_pagination = se_stts.use_pagination
+  assign shop_des = se_stts.shop_des
+  assign source = se_stts.source
+  assign sid = section.id -%}
+
+{%- paginate blog.articles by limit -%}
+{%- if paginate.current_page > 1 and use_pagination != 'default' -%}{%- assign col_mb = ' pr_animated done' | prepend:cl_mb -%}
+    {%- capture min_html -%}<!--split-->
+       {%- for article in blog.articles -%}{%- assign image = article.image -%}
+          <div class="post-{{article.id}} portfolio-item ptf_nt_loop col-lg-{{col}} col-md-{{col_tb}} col-{{col_mb}} mb__30">
+            {%- if image -%}
+              <a href="{{article.url}}" class="mask db pr chp"><div class="lazyload nt_bg_lz pr_lazy_img" data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{image.aspect_ratio}}" data-sizes="auto"{% if sett_equal == false %} style="padding-top:{{ 1 | divided_by: image.aspect_ratio | times: 100}}%;"{% endif %}></div></a>
+              <div class="pa tc ts__03 portfolio-title">
+                  <h4 class="fs__14 tu mg__0"><a class="cd chp" href="{{article.url}}">{{article.title}}</a></h4>
+                  {%- if article.tags.size > 0 -%}<span class="nt_filter_block">
+                    {%- for tag in article.tags limit:5 -%}
+                      <a class="cd chp" href="{{ blogs[blog.handle].url }}/tagged/{{ tag | handle }}">{{ tag }}</a>{% unless forloop.last %}, {% endunless %}
+                    {%- endfor -%}
+                  </span>{%- endif -%}
+              </div>
+            {%- else -%}                      
+              <div class="tc portfolio-title">
+                  <h4 class="fs__14 tu mg__0"><a class="cd chp" href="{{article.url}}">{{article.title}}</a></h4>
+                  {%- if article.tags.size > 0 -%}<span class="nt_filter_block">
+                    {%- for tag in article.tags limit:5 -%}
+                      <a class="cd chp" href="{{ blogs[blog.handle].url }}/tagged/{{ tag | handle }}">{{ tag }}</a>{% unless forloop.last %}, {% endunless %}
+                    {%- endfor -%}
+                  </span>{%- endif -%}
+              </div>
+            {%- endif -%}
+          </div>
+       {%- endfor -%}<!--split-->
+      {{ blog.articles.size | plus:paginate.current_offset }}<!--split-->
+      {%- if paginate.next.is_link -%}{{ paginate.next.url }}{%- else -%}no_prs{%- endif -%}<!--split-->
+      {%- if paginate.previous.is_link -%}{{ paginate.previous.url }}{%- else -%}no_prs{%- endif -%}
+    {%- endcapture -%}
+    {{min_html | strip_newlines | remove: "  "}}
+{%- else -%}
+    <div class="container container_cat cat_{{se_stts.ptf_layout}} mt__100 mb__100">
+         {%- if source != '0' and blog.all_tags.size > 0 -%}{%- assign blog_handle = blog.handle -%}
+            {%- if source == '1' -%}
+                 <div class="nt_filter_block portfolio_filter blg_count_{{se_stts.count}} fwm tc mb__25">
+                    <a class="dib cg chp br__40{% unless current_tags %} selected{% endunless %}" href="/blogs/{{blog_handle}}">{{ 'blogs.portfolio.filter_all' | t }}</a>
+                    {%- for tag in blog.all_tags -%}
+                        {%- if current_tags contains tag -%}
+                              <a class="dib cg chp br__40 selected" href="/blogs/{{blog_handle}}">{{ tag }} <span class="blg_count">({{ tag.total_count }})</span></a>
+                        {%- else -%}
+                              <a class="dib cg chp br__40" href="/blogs/{{blog_handle}}/tagged/{{ tag | handleize }}">{{ tag }} <span class="blg_count">({{ tag.total_count }})</span></a>
+                        {%- endif -%}
+                    {%- endfor -%}
+                 </div>
+            {%- elsif section.blocks.size > 0 -%}{%- assign all_tags = blog.all_tags -%}
+                 <div class="nt_filter_block portfolio_filter fwm tc mb__25">
+                    <a class="dib cg chp br__40{% unless current_tags %} selected{% endunless %}" href="/blogs/{{blog_handle}}">{{ 'blogs.portfolio.filter_all' | t }}</a>
+                    {%- for block in section.blocks -%}
+                        {%- assign tag = block.settings.title -%}
+                        {%- if current_tags contains tag -%}
+                              <a class="dib cg chp br__40 selected" href="/blogs/{{blog_handle}}">{{ tag }}</a>
+                        {%- elsif all_tags contains tag -%}
+                              <a class="dib cg chp br__40" href="/blogs/{{blog_handle}}/tagged/{{ tag | handleize }}">{{ tag }}</a>
+                        {%- endif -%}
+                    {%- endfor -%}
+                 </div>
+            {%- endif -%}
+         {%- endif -%}
+         <div class="nt_svg_loader dn"></div>
+         {%- if shop_des == 'masonry' -%}{%- assign rtl = settings.use_rtl -%}
+    	     <div class="articles products nt_products_holder row des_cnt_{{se_stts.des_cnt}} {{se_stts.image_size}} {{se_stts.image_ratio}} position_{{se_stts.image_position}}{% if sett_equal %} equal_nt{% endif %} js_isotope nt_isotope" data-isotope='{ "itemSelector": ".portfolio-item", "layoutMode": "masonry","columnWidth":".grid-sizer","rtl": {{rtl}} }'>
+    	     	   <div class="col-lg-{{col}} col-md-{{col_tb}} col-{{col_mb}} grid-sizer"></div>
+               {%- for article in blog.articles -%}{%- assign image = article.image -%}
+                  <div class="post-{{article.id}} portfolio-item ptf_nt_loop col-lg-{{col}} col-md-{{col_tb}} col-{{col_mb}} mb__30">
+                    {%- if image -%}
+                      <a href="{{article.url}}" class="mask db pr chp"><div class="lazyload nt_bg_lz pr_lazy_img" data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{image.aspect_ratio}}" data-sizes="auto"{% if sett_equal == false %} style="padding-top:{{ 1 | divided_by: image.aspect_ratio | times: 100}}%;"{% endif %}></div></a>
+                      <div class="pa tc ts__03 portfolio-title">
+                          <h4 class="fs__14 tu mg__0"><a class="cd chp" href="{{article.url}}">{{article.title}}</a></h4>
+                          {%- if article.tags.size > 0 -%}<span class="nt_filter_block">
+                            {%- for tag in article.tags limit:5 -%}
+                              <a class="cd chp" href="{{ blogs[blog.handle].url }}/tagged/{{ tag | handle }}">{{ tag }}</a>{% unless forloop.last %}, {% endunless %}
+                            {%- endfor -%}
+                          </span>{%- endif -%}
+                      </div>
+                    {%- else -%}                      
+                      <div class="tc portfolio-title">
+                          <h4 class="fs__14 tu mg__0"><a class="cd chp" href="{{article.url}}">{{article.title}}</a></h4>
+                          {%- if article.tags.size > 0 -%}<span class="nt_filter_block">
+                            {%- for tag in article.tags limit:5 -%}
+                              <a class="cd chp" href="{{ blogs[blog.handle].url }}/tagged/{{ tag | handle }}">{{ tag }}</a>{% unless forloop.last %}, {% endunless %}
+                            {%- endfor -%}
+                          </span>{%- endif -%}
+                      </div>
+                    {%- endif -%}
+                  </div>
+               {%- endfor -%}<!--split-->
+    	     </div>
+         {%- else -%}
+    	     <div class="articles products nt_products_holder row des_cnt_{{se_stts.des_cnt}} {{se_stts.image_size}} {{se_stts.image_ratio}} position_{{se_stts.image_position}}{% if sett_equal %} equal_nt{% endif %}">
+               {%- for article in blog.articles -%}{%- assign image = article.image -%}
+                  <div class="post-{{article.id}} portfolio-item ptf_nt_loop col-lg-{{col}} col-md-{{col_tb}} col-{{col_mb}} mb__30">
+                    {%- if image -%}
+                      <a href="{{article.url}}" class="mask db pr chp"><div class="lazyload nt_bg_lz pr_lazy_img" data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{image.aspect_ratio}}" data-sizes="auto"{% if sett_equal == false %} style="padding-top:{{ 1 | divided_by: image.aspect_ratio | times: 100}}%;"{% endif %}></div></a>
+                      <div class="pa tc ts__03 portfolio-title">
+                          <h4 class="fs__14 tu mg__0"><a class="cd chp" href="{{article.url}}">{{article.title}}</a></h4>
+                          {%- if article.tags.size > 0 -%}<span class="nt_filter_block">
+                            {%- for tag in article.tags limit:5 -%}
+                              <a class="cd chp" href="{{ blogs[blog.handle].url }}/tagged/{{ tag | handle }}">{{ tag }}</a>{% unless forloop.last %}, {% endunless %}
+                            {%- endfor -%}
+                          </span>{%- endif -%}
+                      </div>
+                    {%- else -%}                      
+                      <div class="tc portfolio-title">
+                          <h4 class="fs__14 tu mg__0"><a class="cd chp" href="{{article.url}}">{{article.title}}</a></h4>
+                          {%- if article.tags.size > 0 -%}<span class="nt_filter_block">
+                            {%- for tag in article.tags limit:5 -%}
+                              <a class="cd chp" href="{{ blogs[blog.handle].url }}/tagged/{{ tag | handle }}">{{ tag }}</a>{% unless forloop.last %}, {% endunless %}
+                            {%- endfor -%}
+                          </span>{%- endif -%}
+                      </div>
+                    {%- endif -%}
+                  </div>
+               {%- endfor -%}
+    	     </div>
+    	 {%- endif -%}
+        {%- if paginate.pages > 1 -%}
+        <div class="products-footer tc mt__40 mb__60">
+          {%- if paginate.next.is_link and use_pagination != 'default' -%}
+          {%- if se_stts.use_bar_lm -%}{%- assign results_count = blog.articles_count -%}
+              <div class="js_progress_bar" data-tt='{{results_count}}'>
+                {%- assign current_pr_size = blog.articles.size | plus:paginate.current_offset -%}
+             <p class="mg__0 progress_txt fs__15">{{ 'collections.general.bar_with_count_html' | t:current_count:current_pr_size,total_count:results_count}}</p>
+            <div class="progress_bar pr oh"><div class="current_bar pa t__0 r__0 l__0 b__0" style="width: {{current_pr_size | times:100.0 | divided_by: results_count}}%"></div></div>
+          </div>
+          {%- endif -%}
+          <a data-get='{{ paginate.next.url }}' href="{{ blog.url }}" data-id="{{section.id}}" class="pr nt_cat_lm button button_{{se_stts.btn_style}} br_rd_{{se_stts.btn_rd}} btn_icon_{{se_stts.btn_icon}}">{{ 'blogs.section.load_more' | t }}</a>
+          {%- else -%}
+          {%- render 'pagination', paginate: paginate,class:'paginate_ajax',style:'style_2' -%}
+          {%- endif -%}
+        </div>
+        {%- endif -%}
+
+        <style>
+          .nt_single_ptf .ptf_nt_loop {margin-bottom: {{se_stts.space}}px;}
+          .portfolio_filter a {
+            height: 40px;
+            line-height: 40px;
+            border: 1px solid transparent;
+            padding: 0 20px;
+          }
+          .portfolio_filter a:focus,.portfolio_filter a:hover {
+            color: #222;
+          }
+          .portfolio_filter a.selected {
+            color: #222;border-color: #222;
+          }
+          .blg_count_false .blg_count{display: none}
+          .portfolio-item .mask:before {
+              content: '';
+              position: absolute;
+              background: rgba(246,246,246,.9);
+              left: 0;
+              top: 50%;
+              width: 100%;
+              height: 0;
+              opacity: 0;
+              transition: all .3s;
+              z-index: 1;
+          }
+          .portfolio-item .portfolio-title.pa {
+              top: 50%;
+              left: 50%;
+              opacity: 0;
+              width: 100%;
+              padding: 0 30px;
+              -webkit-transform: translate(-50%,-120%);
+              -ms-transform: translate(-50%,-120%);
+              -o-transform: translate(-50%,-120%);
+              transform: translate(-50%,-120%);
+              z-index: 2;
+          }
+          .portfolio-item:hover .mask:before {
+              top: 0;
+              height: 100%;
+              opacity: 1;
+          }
+          .portfolio-item:hover .portfolio-title.pa {
+              opacity: 1;
+              -webkit-transform: translate(-50%,-50%);
+              -ms-transform: translate(-50%,-50%);
+              -o-transform: translate(-50%,-50%);
+              transform: translate(-50%,-50%);
+          }
+        </style> 
+    </div>
+
+{%- endif -%}
+{%- endpaginate -%}
+
+{%- schema -%}
+  {
+    "name": "Portfolio",
+    "class": "nt_section nt_single_ptf type_isotope",
+    "settings": [
+      {
+        "type": "header",
+        "content": "== General Settings"
+      },
+      {
+        "type": "select",
+        "id": "ptf_layout",
+        "default": "default",
+        "options": [
+          {
+            "value": "default",
+            "label": "Default"
+          },
+          {
+            "value": "wide",
+            "label": "Wide (1600px)"
+          },
+          {
+            "value": "full",
+            "label": "full Width"
+          }
+        ],
+        "label": "Portfolio Width"
+      },
+      {
+        "type": "select",
+        "id": "shop_des",
+        "options": [
+          {
+            "value": "default",
+            "label": "Default"
+          },
+          {
+            "value": "masonry",
+            "label": "Masonry"
+          }
+        ],
+        "label": "Layout design",
+        "default": "masonry"
+      },
+      {
+        "type": "range",
+        "id": "limit",
+        "min": 1,
+        "max": 50,
+        "step": 1,
+        "label": "Portfolio per page",
+        "info": "Number of portfolio per page",
+        "default": 5
+      },
+      {
+        "type": "range",
+        "id": "space",
+        "min": 30,"max": 100,"step": 5,
+        "unit": "px",
+        "label": "Space between portfolio",
+        "default": 30
+      },
+      {
+        "type": "select",
+        "id": "use_pagination",
+        "label": "Pagination",
+        "default": "default",
+        "options": [
+          {
+            "value": "default",
+            "label": "Default"
+          },
+          {
+            "value": "more",
+            "label": "Load more button"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "use_bar_lm",
+        "label": "Show progress bar?",
+        "info": "Only active when you use 'Load more'",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "btn_rd",
+        "label": "Button pagination radius?",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "btn_style",
+        "label": "Button pagination style",
+        "default": "default",
+        "options": [
+          {
+            "value": "default",
+            "label": "Default"
+          },
+          {
+            "value": "primary",
+            "label": "Primary"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_pr",
+        "label": "Portfolio columns (desktop)",
+        "info": "How many portfolio you want to show per row",
+        "default": "6",
+        "options": [
+          {
+            "value": "12",
+            "label": "1"
+          },
+          {
+            "value": "6",
+            "label": "2"
+          },
+          {
+            "value": "4",
+            "label": "3"
+          },
+          {
+            "value": "3",
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_pr_tb",
+        "label": "Portfolio columns (tablet)",
+        "default": "6",
+        "options": [
+          {
+            "value": "12",
+            "label": "1"
+          },
+          {
+            "value": "6",
+            "label": "2"
+          },
+          {
+            "value": "4",
+            "label": "3"
+          },
+          {
+            "value": "3",
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_pr_mb",
+        "label": "Portfolio columns (mobile)",
+        "default": "12",
+        "options": [
+          {
+            "value": "12",
+            "label": "1"
+          },
+          {
+            "value": "6",
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "== Design Image"
+      },
+      {
+        "type": "checkbox",
+        "id": "use_eq_height",
+        "label": "Use equal height images?",
+        "default": false
+      },
+      {
+        "type": "select",
+        "id": "image_ratio",
+        "label": "Aspect Ratio",
+        "default": "ratio_nt",
+        "info": "Aspect Ratio Custom will settings in General panel.",
+        "options": [
+          {
+            "group": "Landscape",
+            "value": "ratio2_1",
+            "label": "2:1"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio16_9",
+            "label": "16:9"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio8_5",
+            "label": "8:5"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio3_2",
+            "label": "3:2"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio4_3",
+            "label": "4:3"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio_nt",
+            "label": "Ratio ASOS"
+          },
+          {
+            "group": "Squared",
+            "value": "ratio1_1",
+            "label": "1:1"
+          },
+          {
+            "group": "Portrait",
+            "value": "ratio2_3",
+            "label": "2:3"
+          },
+          {
+            "group": "Portrait",
+            "value": "ratio1_2",
+            "label": "1:2"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus1",
+            "label": "Ratio Custom 1"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus2",
+            "label": "Ratio Custom 2"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus3",
+            "label": "Ratio Custom 3"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus4",
+            "label": "Ratio Custom 4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "image_size",
+        "label": "Image Size",
+        "default": "nt_cover",
+        "options": [
+          {
+            "value": "nt_cover",
+            "label": "Full"
+          },
+          {
+            "value": "nt_contain",
+            "label": "Auto"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "image_position",
+        "info": "The first value is the horizontal position and the second value is the vertical.",
+        "options": [
+          {
+            "value": "default",
+            "label": "Default"
+          },
+          {
+            "value": "1",
+            "label": "Left Top"
+          },
+          {
+            "value": "2",
+            "label": "Left Center"
+          },
+          {
+            "value": "3",
+            "label": "Left Bottom"
+          },
+          {
+            "value": "4",
+            "label": "Right Top"
+          },
+          {
+            "value": "5",
+            "label": "Right Center"
+          },
+          {
+            "value": "6",
+            "label": "Right Bottom"
+          },
+          {
+            "value": "7",
+            "label": "Center Top"
+          },
+          {
+            "value": "8",
+            "label": "Center Center"
+          },
+          {
+            "value": "9",
+            "label": "Center Bottom"
+          }
+        ],
+        "label": "Image Position",
+        "default": "8"
+      },
+      {
+        "type": "header",
+        "content": "== Show filter by tag"
+      },
+      {
+        "type": "radio",
+        "id": "source",
+        "default": "1",
+        "label": "Show all \/ Manually block",
+        "options": [
+          {
+            "value": "0",
+            "label": "Disable"
+          },
+          {
+            "value": "1",
+            "label": "Show all"
+          },
+          {
+            "value": "2",
+            "label": "Manually block"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "count",
+        "label": "Show count?",
+        "info": "Count only show all. not working manually block",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "== Manually block:"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "tag",
+        "name": "Tag",
+        "limit": 10,
+        "settings": [
+           {
+             "type": "text",
+             "id": "title",
+             "label": "Tag Name"
+           }
+         ]
+       }
+    ]
+  }
+{% endschema %}

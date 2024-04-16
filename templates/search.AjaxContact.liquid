@@ -1,0 +1,51 @@
+{%- liquid layout none
+  assign formId = 'ContactFormAsk' -%}
+
+{%- form 'contact', id: formId -%}
+  {%- render 'form-status', form: form, form_id: formId -%}
+  
+  <h3 class="tc mg__0 mb__20">{{ 'products.product.ask_question' | t }}</h3>
+  <p>
+      <label for="{{ formId }}-name">{{ 'contact.form.name' | t }}</label>
+      <input type="text" id="{{ formId }}-name" name="contact[name]" required="required" value="{% if form[name] %}{{ form[name] }}{% elsif customer %}{{ customer.name }}{% endif %}">
+  </p>
+  <p>
+      <label for="{{ formId }}-email">{{ 'contact.form.email' | t }}</label>
+      <input
+        type="email"
+        id="{{ formId }}-email"
+        name="contact[email]"
+        autocorrect="off"
+        autocapitalize="off"
+        value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
+        aria-required="true"
+        required="required"
+        {%- if form.errors contains 'email' -%}
+          class="input--error"
+          aria-invalid="true"
+          aria-describedby="{{ formId }}-email-error"
+        {%- endif -%}
+        >
+      {%- if form.errors contains 'email' -%}
+        <span id="{{ formId}}-email-error" class="input-error-message"><i class="facl facl-attention cr mr__5"></i>{{ form.errors.translated_fields['email'] | capitalize }} {{ form.errors.messages['email'] }}.</span>
+      {%- endif -%}
+   </p>
+
+  {%- unless page.content contains 'no_phone' -%}
+  <p>
+  <label for="{{ formId }}-phone">{{ 'contact.form.phone' | t }}</label>
+  <input type="tel" id="{{ formId }}-phone" name="contact[phone]" pattern="[0-9\-]*" value="{% if form[phone] %}{{ form[phone] }}{% elsif customer %}{{ customer.phone }}{% endif %}">
+  </p>
+  {%- endunless -%}
+  
+  <p class="hide hidden">
+  <label for="{{ formId }}-product">Product</label>
+  <textarea rows="20" id="{{ formId }}-product" name="contact[product]" required="required"></textarea>
+  </p>
+  <p>
+  <label for="{{ formId }}-message">{{ 'contact.form.message' | t }}</label>
+  <textarea rows="20" id="{{ formId }}-message" name="contact[body]" required="required">{% if form.body %}{{ form.body }}{% endif %}</textarea>
+  </p>
+  <input type="submit" class="button w__100" value="{{ 'contact.form.submit' | t }}">
+
+{%- endform -%}

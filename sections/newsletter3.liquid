@@ -1,0 +1,597 @@
+{%- liquid
+  assign sid = section.id
+  assign image = section.settings.image
+  assign se_blocks = section.blocks
+  assign b_new =  se_blocks | where: "type", "3" | first -%}
+
+<div class="newsletter_se {{section.settings.layout}} content_pos_{{section.settings.pos}} newl_des_{{b_new.settings.newl_des}}">
+  <div class="nt_se_{{sid}} nt_bg_overlay pr oh cover_norepeat tc {{section.settings.pos}}_md{%- if image != blank %} lazyload nt_parallax_{{section.settings.use_pr}}{%- endif -%}"{% if image != blank %} data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{image.aspect_ratio}}" data-sizes="auto" data-parent-fit="cover"{% endif %}>
+      <div class="container nt_img_txt pd__0_ pr z_100">
+
+          {%- for block in se_blocks -%}
+            {%- case block.type -%}
+               {%- when '1' -%}<h3 class="mt__0 mg__0 lh__1">{{block.settings.title}}</h3>
+               {%- when '2' -%}<h4 class="mt__0 mg__0 lh__1 {{block.settings.font}}">{{block.settings.title}}</h4>
+               {%- when '4' -%}<div id="b_{{block.id}}" class="dib w__100 space_banner"></div>
+               {%- when '5' -%}{{block.settings.html}}
+               {%- when '6' -%}<div id="b_{{block.id}}" class="imtt4_space"></div>
+               {%- else -%}{%- render 'newsletter',class:'in_flex',btn_icon:block.settings.btn_icon,newl_des:block.settings.newl_des,sid:sid -%}
+            {%- endcase -%}
+          {%- endfor -%}
+      </div>
+  </div>
+</div>
+{%- render 'section_css' -%}
+{%- style -%}
+.nt_se_{{sid}}{
+  color:{{section.settings.cl_all}};
+}
+.nt_se_{{sid}} {background-color: {{section.settings.se_bg}};}
+.nt_se_{{sid}}.nt_bg_overlay:after{ background-color: {{section.settings.cl_overlay}};opacity: {{section.settings.cl_opacity | divided_by: 100.00}} }
+{%- for block in se_blocks -%}{%- assign bid = block.id -%}
+    {%- case block.type -%}
+      {%- when '1' -%}
+      .nt_se_{{sid}} .nt_img_txt h3{ {% if block.settings.ls_mb_text != 0 %}letter-spacing:{{block.settings.ls_mb_text}}px;{% endif %}{% if block.settings.lh_mb_text != 0 %}line-height:{{block.settings.lh_mb_text}}px;{% endif %}font-size: {{block.settings.fs_mb_text}}px;font-weight: {{block.settings.fw_text}};color: {{block.settings.color}} }
+      @media (min-width: 768px) {.nt_se_{{sid}} .nt_img_txt h3 { {% if block.settings.ls_text != 0 %}letter-spacing:{{block.settings.ls_text}}px;{% endif %}{% if block.settings.lh_text != 0 %}line-height: {{block.settings.lh_text}}px;{% endif %}font-size: {{block.settings.fs_text}}px}}
+        
+      {%- when '2' -%}
+      .nt_se_{{sid}} .nt_img_txt h4{ {% if block.settings.ls_mb_text != 0 %}letter-spacing:{{block.settings.ls_mb_text}}px;{% endif %}{% if block.settings.lh_mb_text != 0 %}line-height:{{block.settings.lh_mb_text}}px;{% endif %}font-size: {{block.settings.fs_mb_text}}px;font-weight: {{block.settings.fw_text}};color: {{block.settings.color}} }
+      @media (min-width: 768px) {.nt_se_{{sid}} .nt_img_txt h4 { {% if block.settings.ls_text != 0 %}letter-spacing:{{block.settings.ls_text}}px;{% endif %}{% if block.settings.lh_text != 0 %}line-height: {{block.settings.lh_text}}px;{% endif %}font-size: {{block.settings.fs_text}}px}}
+
+      {%- when '4' -%}
+      #b_{{bid}} {max-width: {{block.settings.w}}px;height: {{block.settings.h}}px;background-color: {{block.settings.color}}}
+
+      {%- when '6' -%}
+      #b_{{bid}} {height: {{block.settings.sp_mb}}px}
+      @media (min-width: 768px) {#b_{{bid}} { height:{{block.settings.sp}}px} }
+
+      {%- when '3' -%}
+        .nt_se_{{sid}} .signup-newsletter-form,.nt_se_{{sid}} .signup-newsletter-form input.input-text {
+            border-color: {{block.settings.cl_bd}};
+        }
+        .nt_se_{{sid}} .signup-newsletter-form input.input-text {
+            color:{{block.settings.cl_ip}};
+        }
+        .nt_se_{{sid}} .signup-newsletter-form .submit-btn {
+            color:{{block.settings.cl_btn}};
+            background-color: {{block.settings.bg_btn}};
+        }
+
+    {%- endcase -%}
+{%- endfor -%}
+
+@media (min-width: 768px) {.newsletter_se.newl_des_3 .signup-newsletter-form {margin: 0 -10px;}}
+{%- endstyle -%}
+{%- schema -%}
+  {
+    "name": "Newsletter 3",
+    "class": "nt_section type_newsletter type_newsletter3",
+    "settings": [
+      {
+        "type": "header",
+        "content": "== General Settings"
+      },
+      {
+        "type": "select",
+        "id": "pos",
+        "label": "Content Position:",
+        "default": "tc",
+        "options": [
+          {
+            "value": "tl",
+            "label": "Left"
+          },
+          {
+            "value": "tc",
+            "label": "Center"
+          },
+          {
+            "value": "tr",
+            "label": "Right"
+          }
+        ]
+      },
+      /*{
+        "type": "select",
+        "id": "newl_des",
+        "label": "Newsletter Design:",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "Design 1"
+          },
+          {
+            "value": "2",
+            "label": "Design 2"
+          },
+          {
+            "value": "3",
+            "label": "Design 3"
+          },
+          {
+            "value": "4",
+            "label": "Design 4"
+          },
+          {
+            "value": "5",
+            "label": "Design 5"
+          },
+          {
+            "value": "6",
+            "label": "Design 6"
+          }
+        ]
+      },*/
+      {
+        "type": "header",
+        "content": "== Background Options"
+      },
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Background Image"
+      },
+      {
+        "type": "color",
+        "id": "cl_overlay",
+        "label": "Overlay",
+        "default": "#000"
+      },
+      {
+        "type": "range",
+        "id": "cl_opacity",
+        "label": "Overlay opacity",
+        "default": 0,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%"
+      },
+      {
+        "type": "color",
+        "id": "se_bg",
+        "label": "Background color"
+      },
+      /*{
+        "type": "select",
+        "id": "color",
+        "options": [
+         {
+            "value": "dark",
+            "label": "Dark"
+         },
+         {
+            "value": "light",
+            "label": "Light"
+          }
+        ],
+        "label": "Color scheme"
+      },*/
+      {
+        "type": "header",
+        "content": "== Design Options"
+      },
+      {
+        "type": "checkbox",
+        "id": "use_pr",
+        "label": "Enable parallax scroll?",
+        "default": false
+      },
+      {
+        "type": "select",
+        "id": "layout",
+        "options": [
+         {
+            "value": "container",
+            "label": "Container"
+         },
+         {
+            "value": "nt_full",
+            "label": "Full Width"
+          }
+        ],
+        "label": "Layout"
+      },
+      {
+        "type": "text",
+        "id": "mg",
+        "label": "Margin",
+        "info":"Margin top, margin right, margin bottom, margin left. If you not use to blank",
+        "default": "50px,,50px,",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd",
+        "label": "Padding",
+        "info":"Padding top, padding right, padding bottom, padding left. If you not use to blank",
+        "placeholder": "50px,,50px,"
+      },
+     {
+        "type": "header",
+        "content": "== Design Mobile Options"
+      },
+      {
+        "type": "text",
+        "id": "mg_mb",
+        "label": "Margin",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd_mb",
+        "label": "Padding",
+        "placeholder": "50px,,50px,"
+      }
+    ],
+    "blocks": [
+      {
+      "type": "1",
+      "name": "Heading",
+      "limit": 1,
+      "settings": [
+          {
+            "type": "textarea",
+            "id": "title",
+            "label": "Heading",
+            "default": "Get Daily Offer & Exclusive Deal"
+          },
+          {
+            "type": "color",
+            "id": "color",
+            "label": "Color Text",
+            "default": "#222"
+          },
+          {
+            "type": "range",
+            "id": "fw_text",
+            "min": 400,
+            "max": 800,
+            "step": 100,
+            "label": "Font weight",
+            "default": 600
+          },
+          {
+            "type": "range",
+            "id": "fs_text",
+            "min": 20,
+            "max": 70,
+            "step": 0.5,
+            "label": "Font size",
+            "unit": "px",
+            "default": 30
+          },
+          {
+            "type": "range",
+            "id": "lh_text",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "label": "Line Height",
+            "info": "set is '0' use to default",
+            "unit": "px",
+            "default": 0
+          },
+          {
+            "type": "range",
+            "id": "ls_text",
+            "min": 0,
+            "max": 10,
+            "step": 0.1,
+            "label": "Letter spacing",
+            "info": "set is '0' use to default",
+            "unit": "px",
+            "default": 0
+          },
+          {
+            "type": "range",
+            "id": "fs_mb_text",
+            "min": 10,
+            "max": 50,
+            "step": 0.5,
+            "label": "Font size (mobile)",
+            "unit": "px",
+            "default": 15
+          },
+          {
+            "type": "range",
+            "id": "lh_mb_text",
+            "min": 0,
+            "max": 50,
+            "step": 0.5,
+            "label": "Line Height (mobile)",
+            "info": "set is '0' use to default",
+            "unit": "px",
+            "default": 0
+          },
+          {
+            "type": "range",
+            "id": "ls_mb_text",
+            "min": 0,
+            "max": 10,
+            "step": 0.1,
+            "label": "Letter spacing",
+            "info": "set is '0' use to default",
+            "unit": "px",
+            "default": 0
+          }
+        ]
+      },
+      {
+      "type": "2",
+      "name": "Content",
+      "limit": 1,
+      "settings": [
+          {
+            "type": "select",
+            "id": "font",
+            "default": "f_body",
+            "options": [
+             {
+                "value": "f_body",
+                "label": "Body font"
+             },
+             {
+                "value": "f_heading",
+                "label": "Heading font"
+             },
+             {
+                "value": "f__libre",
+                "label": "Sub title font"
+              }
+            ],
+            "label": "Sub Heading use font:"
+          },
+          {
+            "type": "textarea",
+            "id": "title",
+            "label": "Content"
+          },
+          {
+            "type": "color",
+            "id": "color",
+            "label": "Color Text",
+            "default": "#878787"
+          },
+          {
+            "type": "range",
+            "id": "fw_text",
+            "min": 400,
+            "max": 800,
+            "step": 100,
+            "label": "Font weight",
+            "default": 400
+          },
+          {
+            "type": "range",
+            "id": "fs_text",
+            "min": 10,
+            "max": 50,
+            "step": 0.5,
+            "label": "Font size",
+            "unit": "px",
+            "default": 14
+          },
+          {
+            "type": "range",
+            "id": "lh_text",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "label": "Line Height",
+            "info": "set is '0' use to default",
+            "unit": "px",
+            "default": 0
+          },
+          {
+            "type": "range",
+            "id": "ls_text",
+            "min": 0,
+            "max": 10,
+            "step": 0.1,
+            "label": "Letter spacing",
+            "info": "set is '0' use to default",
+            "unit": "px",
+            "default": 0
+          },
+          {
+            "type": "range",
+            "id": "fs_mb_text",
+            "min": 10,
+            "max": 50,
+            "step": 0.5,
+            "label": "Font size (mobile)",
+            "unit": "px",
+            "default": 14
+          },
+          {
+            "type": "range",
+            "id": "lh_mb_text",
+            "min": 0,
+            "max": 50,
+            "step": 0.5,
+            "label": "Line Height (mobile)",
+            "info": "set is '0' use to default",
+            "unit": "px",
+            "default": 0
+          },
+          {
+            "type": "range",
+            "id": "ls_mb_text",
+            "min": 0,
+            "max": 10,
+            "step": 0.1,
+            "label": "Letter spacing",
+            "info": "set is '0' use to default",
+            "unit": "px",
+            "default": 0
+          },
+          {
+            "type": "checkbox",
+            "id": "hide",
+            "label": "Hidden on mobile?",
+            "default": false
+          }
+        ]
+      },
+      {
+      "type": "3",
+      "name": "Newsletter",
+      "limit": 1,
+      "settings": [
+          {
+            "type": "color",
+            "id": "cl_all",
+            "label": "Color Text",
+            "default": "#878787"
+          },
+          {
+            "type": "color",
+            "id": "cl_bd",
+            "label": "Border Color",
+            "default": "#222"
+          },
+          {
+            "type": "color",
+            "id": "cl_ip",
+            "label": "Input Color",
+            "default": "#222"
+          },
+          {
+            "type": "color",
+            "id": "cl_btn",
+            "label": "Button Color",
+            "default": "#fff"
+          },
+          {
+            "type": "color",
+            "id": "bg_btn",
+            "label": "Button Background Color",
+            "default": "#222"
+          },
+          {
+            "type": "select",
+            "id": "newl_des",
+            "label": "Newsletter Design:",
+            "default": "1",
+            "options": [
+              {
+                "value": "1",
+                "label": "Design 1"
+              },
+              {
+                "value": "2",
+                "label": "Design 2"
+              },
+              {
+                "value": "3",
+                "label": "Design 3"
+              },
+              {
+                "value": "4",
+                "label": "Design 4"
+              },
+              {
+                "value": "5",
+                "label": "Design 5"
+              },
+              {
+                "value": "6",
+                "label": "Design 6"
+              }
+            ]
+          },
+          {
+            "type": "checkbox",
+            "id": "btn_icon",
+            "label": "Button icon?",
+            "default": false
+          }
+        ]
+      },
+      {
+        "type": "5",
+        "name": "HTML",
+        "settings": [
+            {
+              "type": "html",
+              "id": "html",
+              "label": "Custom HTMl",
+              "default": "<h3>Image with text overlay<\/h3>"
+            }
+          ]
+      },
+      {
+      "type": "4",
+      "name": "Space HTML",
+      "limit": 4,
+      "settings": [
+          {
+            "type": "color",
+            "id": "color",
+            "label": "Color",
+            "default": "#222"
+          },
+          {
+            "type": "range",
+            "id": "w",
+            "min": 50,
+            "max": 150,
+            "step": 10,
+            "label": "Width",
+            "default": 140
+          },
+          {
+            "type": "range",
+            "id": "h",
+            "min": 1,
+            "max": 5,
+            "step": 0.5,
+            "label": "Height",
+            "default": 3
+          }
+        ]
+      },
+      {
+        "type": "6",
+        "name": "Space between",
+        "settings": [
+            {
+              "type": "range",
+              "id": "sp",
+              "min": 5,
+              "max": 105,
+              "step": 1,
+              "label": "Space",
+              "unit": "px",
+              "default": 10
+            },
+            {
+              "type": "range",
+              "id": "sp_mb",
+              "min": 0,
+              "max": 50,
+              "step": 0.5,
+              "label": "Space (mobile)",
+              "unit": "px",
+              "default": 10
+            }
+          ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "3. Newsletter 3",
+        "category": "VI. Promotional",
+        "blocks": [
+          { "type": "1" },
+          { "type": "6" },
+          { "type": "2" },
+          { "type": "6" },
+          { "type": "3" }
+        ]
+      }
+    ]
+  }
+{% endschema %}

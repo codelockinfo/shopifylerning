@@ -1,0 +1,165 @@
+  <div class="footer__bot_wrap pt__20 pb__20">
+   <div class="container pr tc">
+      <div class="row">{%- assign col = section.settings.layout -%}
+         {%- for block in section.blocks -%}
+         <div class="col-lg-{{col}} col-md-12 col-12 col_{{forloop.index}}">
+            {%- case block.type -%}
+
+               {%- when 'copy' -%}
+                  {%- assign now_y = 'now' | date:'%Y' -%}
+                  {{- block.settings.text | replace:"[year]",now_y -}}
+
+               {%- when 'menu' -%}
+                  {%- assign menu = block.settings.menu -%}
+                  {%- if menu != blank -%}
+                    <ul id="footer-menu" class="clearfix">
+                       {%- for link in linklists[menu].links -%}<li class="menu-item{% if link.active %} current-menu-item{% endif %}"><a href="{{ link.url }}">{{ link.title | split: '[' | first }}</a></li>{%- endfor -%}
+                    </ul>
+                  {%- else -%}Pick a linked list to show here.
+                  {%- endif -%}
+               {%- else -%}
+
+                  {%- assign image = block.settings.image -%}
+                   {%- if block.settings.source == '1' and image -%}
+                       <div class="dib"><img class="lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{image | img_url:'master'}}" alt="{{image.alt}}"></div>
+                   {%- elsif block.settings.source == '2' and block.settings.svg -%}
+                     {%- assign arr = block.settings.svg | remove: ' ' | split:"," -%}
+                     <style>.bot_footer_svg img {padding: 2.5px;height: {{block.settings.height}}px;}</style>
+                     <div class="dib bot_footer_svg">{%- for img in arr -%}<img class="lazyload" src="https://cdn.shopify.com/s/assets/payment_icons/generic-dfdcaf09b6731ca14dd7441354c0ad8bc934184eb15ae1fda6a6b9e307675485.svg" data-src="{{ img | payment_type_img_url }}" alt="{{img | replace:'_',' '}}" />{%- endfor -%}</div>
+                   {%- endif -%}
+            {%- endcase -%}
+         </div>
+         {%- endfor -%}
+      </div>
+   </div>
+</div>
+{%- style -%}
+.footer__bot_wrap a:hover{color: {{section.settings.cl_hover}}}.footer__bot_wrap {background-color: {{section.settings.bg}};color:{{section.settings.cl}}}.footer__bot a:not(:hover) { color: {{section.settings.cl_a}} }
+{%- endstyle -%}
+{%- schema -%}
+  {
+    "name": "Footer Bottom",
+    "class": "footer__bot",
+    "max_blocks": 2,
+    "settings": [
+      {
+        "type": "select",
+        "id": "layout",
+        "options": [
+          {
+            "value": "12",
+            "label": "Centered"
+          },
+          {
+            "value": "6",
+            "label": "Two columns"
+          }
+        ],
+        "label": "Copyrights layout",
+        "default": "6"
+      },
+      {
+        "type": "color",
+        "id": "bg",
+        "label": "Background Color",
+        "default": "#fff"
+      },
+      {
+        "type": "color",
+        "id": "cl",
+        "label": "Color Text",
+        "default": "#878787"
+      },
+      {
+        "type": "color",
+        "id": "cl_a",
+        "label": "Color Link",
+        "default": "#878787"
+      },
+      {
+        "type": "color",
+        "id": "cl_hover",
+        "label": "Color Hover Link",
+        "default": "#b59677"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "copy",
+        "name": "Copyrights",
+        "settings": [
+            {
+              "type": "html",
+              "id": "text",
+              "label": "Copyrights",
+              "info": "Place here text you want to see in the copyrights area.",
+              "default": "Copyright © [year] <span class=\"cp\">Gecko<\/span> all rights reserved. Powered by <a href=\"https:\/\/the4.co\">The4<\/a>"
+            }
+        ]
+      },
+      {
+        "type": "menu",
+        "name": "Menu",
+        "settings": [
+         {
+           "type": "link_list",
+           "id": "menu",
+           "label": "Add menu"
+         }
+        ]
+      },
+      {
+        "type": "payment",
+        "name": "Payment",
+        "settings": [
+         {
+            "type": "select",
+            "id": "source",
+            "label": "Source IMG:",
+            "default": "1",
+            "options": [
+              {
+                "value": "1",
+                "label": "Image"
+              },
+              {
+                "value": "2",
+                "label": "SVG"
+              }
+            ]
+          },
+          {
+            "type": "header",
+            "content": "== Image"
+          },
+         {
+           "type": "image_picker",
+           "id": "image",
+           "label": "Trust seal image"
+         },
+          {
+            "type": "header",
+            "content": "== SVG"
+          },
+         {
+           "type": "textarea",
+           "id": "svg",
+           "label": "SVG list",
+           "default": "amazon_payments,american_express,apple_pay,bitcoin,dankort,diners_club,discover,dogecoin,dwolla,forbrugsforeningen,interac,google_pay,jcb,klarna,klarna-pay-later,litecoin,maestro,master,paypal,shopify_pay,sofort,visa",
+           "info": "amazon_payments,american_express,apple_pay,bitcoin,dankort,diners_club,discover,dogecoin,dwolla,forbrugsforeningen,interac,google_pay,jcb,klarna,klarna-pay-later,litecoin,maestro,master,paypal,shopify_pay,sofort,visa"
+         },
+         {
+          "type": "range",
+          "id": "height",
+          "min": 1,
+          "max": 100,
+          "step": 1,
+          "label": "Height",
+          "unit": "px",
+          "default": 30
+         }
+        ]
+      }
+    ]
+  }
+{% endschema %}

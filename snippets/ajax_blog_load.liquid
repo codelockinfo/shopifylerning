@@ -1,0 +1,15 @@
+{%- capture min_html -%}<!--split-->
+   {%- if art_des == '1' or art_des == '1 tc' -%}
+	   {%- for article in arr_results -%}{%- render "article_loop",article:article,date:date,by:by,on:on,show_au:show_au,show_dt:show_dt,show_cm:show_cm,col:col,col_tb:col_tb,col_mb:col_mb,sett_equal:sett_equal,show_rm:show_rm,show_cnt:show_cnt -%}{%- endfor -%}<!--split-->
+   {%- elsif art_des == '2' or art_des == '2 tc' -%}
+       {%- for article in arr_results -%}{%- render "article_loop1",article:article,date:date,by:by,on:on,show_au:show_au,show_dt:show_dt,show_cm:show_cm,col:col,col_tb:col_tb,col_mb:col_mb,sett_equal:sett_equal,show_rm:show_rm,show_cnt:show_cnt -%}{%- endfor -%}<!--split-->
+   {%- elsif art_des == '4' -%}
+       {%- for article in arr_results -%}{%- render "article_loop3",article:article,date:date,by:by,on:on,show_au:show_au,show_dt:show_dt,show_cm:show_cm,col:col,col_tb:col_tb,col_mb:col_mb,sett_equal:sett_equal,show_rm:show_rm,show_cnt:show_cnt,read_more:read_more,show_tg:show_tg -%}{%- endfor -%}<!--split-->
+   {%- else -%}
+	   {%- for article in arr_results -%}{%- render "article_loop2",article:article,date:date,by:by,on:on,show_au:show_au,show_dt:show_dt,show_cm:show_cm,col:col,col_tb:col_tb,col_mb:col_mb,sett_equal:sett_equal,show_rm:show_rm,show_cnt:show_cnt -%}{%- endfor -%}<!--split-->
+   {%- endif -%}
+  {{ arr_results.size | plus:paginate.current_offset }}<!--split-->
+  {%- if paginate.next.is_link -%}{{ paginate.next.url }}{%- else -%}no_prs{%- endif -%}<!--split-->
+  {%- if paginate.previous.is_link -%}{{ paginate.previous.url }}{%- else -%}no_prs{%- endif -%}
+{%- endcapture -%}
+{{min_html | strip_newlines | remove: "  "}}

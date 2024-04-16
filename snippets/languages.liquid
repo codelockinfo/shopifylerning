@@ -1,0 +1,41 @@
+{%- liquid
+  assign current_locale = request.locale
+  assign current_locale_iso_code = current_locale.iso_code
+  if settings.flag_currency 
+    assign fl = 'flagst4'
+  endif
+  assign opennt = 'nonet4'
+  assign ckopennt = false
+  if class_2 == 'curt4_fixed'
+    assign opennt = 'opennt'
+    assign id_opennt = 'opennt_2808'
+    assign ckopennt = true
+  endif -%}
+
+<div class="nt_currency pr cg languages sp_languages wsn dib {{class_2}} cur_stt_{{settings.lang_pos}}">
+{%- if ckopennt -%}
+
+  <div class="nt_currency__div" data-{{opennt}}="#{{id_opennt}}" data-pos="right" data-remove="true" data-class="popup_filter languages" data-bg="hide_btn"><span class="current dib {{fl}} lazyload flagst4-{{sz}} flagst4-{{current_locale_iso_code}}">{{current_locale.endonym_name}}</span><i class="facl facl-angle-down ml__5"></i></div>
+  <div id="{{id_opennt}}" class="dn"><h3 class="mg__0 tu bgb cw visible-sm fs__16 pr">{{ 'general.language' | t }}<i class="close_pp pegk pe-7s-close fs__40 ml__5"></i></h3>
+  <div class="cat_shop_wrap"><div class="cat_fixcl-scroll"><div class="cat_fixcl-scroll-content css_ntbar">
+    <ul class="pa pe_none ts__03 bgbl ul_none tl op__0 z_100 r__0 pt__15 pb__15 pr__15 pl__15">
+      <li><a class="lang-item cg db {{fl}} lazyload flagst4-{{sz}} flagst4-T4D dn" href="/" data-no-instant rel="nofollow" data-currency="T4D"></a></li>
+      {%- for locale in shop.published_locales -%}{%- assign iso_code = locale.iso_code -%}
+      <li><a class="lang-item cg db {{fl}} lazyload flagst4-{{sz}} flagst4-{{iso_code}}{% if iso_code == current_locale_iso_code %} selected{% endif %}" href="/" data-no-instant rel="nofollow" data-currency="{{iso_code}}">{{locale.endonym_name}}</a></li>
+      {%- endfor -%}
+    </ul>
+  </div></div></div></div>
+
+{%- else -%}
+
+
+  <span class="current dib {{fl}} lazyload flagst4-{{sz}} flagst4-{{current_locale_iso_code}}">{{current_locale.endonym_name}}</span><i class="facl facl-angle-down ml__5"></i>
+  <ul class="pa pe_none ts__03 bgbl ul_none tl op__0 z_100 r__0 pt__15 pb__15 pr__15 pl__15">
+    <li><a class="lang-item cg db {{fl}} lazyload flagst4-{{sz}} flagst4-T4D dn" href="/" data-no-instant rel="nofollow" data-currency="T4D"></a></li>
+    {%- for locale in shop.published_locales -%}{%- assign iso_code = locale.iso_code -%}
+    <li><a class="lang-item cg db {{fl}} lazyload flagst4-{{sz}} flagst4-{{iso_code}}{% if iso_code == current_locale_iso_code %} selected{% endif %}" href="/" data-no-instant rel="nofollow" data-currency="{{iso_code}}">{{locale.endonym_name}}</a></li>
+    {%- endfor -%}
+  </ul>
+
+{%- endif -%}
+</div>

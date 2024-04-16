@@ -1,0 +1,138 @@
+{%- assign enable_ck_pp = settings.enable_ck_pp -%}
+<div class="popup_cookies_wrap container-fluid pl__0 pr__0" data-stt='{ "day_next": {{section.settings.day_next}},"pp_version":{{section.settings.pp_version}} }'>
+   <div class="row al_center fl_center tc tl_md">
+     <div class="col-12 col-md popup_cookies_text">{{section.settings.text}}</div>
+     <div class="col-12 col-md-auto popup_cookies_btns">
+        {%- if section.settings.links != blank -%}<a href="{{ section.settings.links }}" class="pp_cookies_more_btn tu dib">{{section.settings.more}}</a>{%- endif -%}
+        <a href="#" data-no-instant rel="nofollow" class="pp_cookies_accept_btn tu dib">{{section.settings.accept}}</a>
+     </div>
+   </div>
+</div>
+
+{%- style -%}
+#shopify-section-cookies_law {
+    position: fixed;
+    top: auto;
+    z-index: 999;
+    padding: 15px 35px;
+    box-shadow: 0 0 9px rgba(0,0,0,.14);
+    transition: -webkit-transform .35s ease;
+    transition: transform .35s ease;
+    transition: transform .35s ease,-webkit-transform .35s ease;
+    -webkit-transform: translate3d(0,100%,0);
+    transform: translate3d(0,100%,0);
+}
+#shopify-section-cookies_law.pp_onshow {
+    -webkit-transform: none;
+    transform: none;
+}
+#shopify-section-cookies_law.pp_onhide {
+    -webkit-transform: translate3d(0,100%,0);
+    transform: translate3d(0,100%,0);
+}
+a.pp_cookies_more_btn {
+    border-bottom: 2px solid #f6f6f8;
+    color: #222;
+    font-weight: 500;
+    font-size: 13px;
+    margin-right: 20px;
+    transition: all .25s ease;
+}
+a.pp_cookies_more_btn:focus, a.pp_cookies_more_btn:hover {
+    opacity: .7;
+}
+a.pp_cookies_accept_btn {
+    font-weight: 500;
+    padding: 10px 14px;
+    font-size: 12px;
+    background-color: {{section.settings.cl_btn}};
+    color: #fff;
+    transition: all .25s ease;
+}
+a.pp_cookies_accept_btn:focus, a.pp_cookies_accept_btn:hover {
+    background-color: {{section.settings.cl_btn_hover}};
+}
+@media (max-width: 767px) {
+  .popup_cookies_text {
+      margin-bottom: 15px;
+  }
+}
+{%- endstyle -%}
+
+{%- schema -%} 
+  {
+    "name": "Cookie Law Info",
+    "class":"pf b__0 r__0 l__0 bgw",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Config enable/disable on Theme settings: General settings ---> SHOP SECTION SETTINGS"
+      },
+      {
+        "type": "paragraph",
+        "content": "Under EU privacy regulations, websites must make it clear to visitors what information about them is being stored. This specifically includes cookies. Turn on this option and user will see info box at the bottom of the page that your web-site is using cookies."
+      },
+      {
+        "type": "html",
+        "id": "text",
+        "label": "Text",
+        "default": "We use cookies to improve your experience on our website. By browsing this website, you agree to our use of cookies."
+      },
+      {
+        "type": "text",
+        "id": "accept",
+        "label": "Button text 'Accept'",
+        "default": "Accept"
+      },
+      {
+        "type": "text",
+        "id": "more",
+        "label": "Button text 'More info'",
+        "default": "More info"
+      },
+      {
+        "type": "url",
+        "id": "links",
+        "label": "Link 'More info'",
+        "info": "Choose page that will contain detailed information about your Privacy Policy"
+      },
+      {
+        "type": "range",
+        "id": "pp_version",
+        "min": 1,
+        "max": 100,
+        "step": 1,
+        "label": "Cookies version",
+        "info": "If you change your cookie policy information you can increase their version to show the popup to all visitors again.",
+        "default": 1
+      },
+      {
+        "type": "range",
+        "id": "day_next",
+        "min": 1,
+        "max": 100,
+        "step": 1,
+        "unit": "day",
+        "label": "Day next show (n)",
+        "info": "if user verify, next show will be after 'n' days",
+        "default": 30
+      },
+      {
+        "type": "header",
+        "content": "== Design Options"
+      },
+      {
+        "type": "color",
+        "id": "cl_btn",
+        "default":"#56cfe1",
+        "label": "Background color 'Accept'"
+      },
+      {
+        "type": "color",
+        "id": "cl_btn_hover",
+        "default":"#007e91",
+        "label": "Background color 'Accept' hover"
+      }
+    ]
+  }
+{% endschema %}

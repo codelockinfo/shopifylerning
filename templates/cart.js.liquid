@@ -1,0 +1,35 @@
+{%- liquid
+  layout none
+  assign ccount = cart.item_count
+  assign c_tt_price = cart.total_price
+  assign product = all_products[settings.free_ship_pr]
+  assign pr_price = product.price | default:0
+  assign gift_wrap_pr = settings.gift_wrap_pr
+  assign gift_pr = all_products[gift_wrap_pr]
+  assign arr_gift_id = cart.items | where: 'product_id',gift_pr.id -%}
+{{ccount}}<!--split-->
+{%- if pr_price > 0 and product != blank -%}
+   {%- assign num_stt_ship = pr_price -%}
+   {%- if ccount == 0 -%}1,]{{num_stt_ship | money }}
+   {%- elsif num_stt_ship > c_tt_price -%}
+      2,]{{num_stt_ship|minus:c_tt_price | money }}___{{ num_stt_ship | minus: c_tt_price | times: 100.0 | divided_by: num_stt_ship }}
+   {%- else -%}3
+   {%- endif -%}
+{%- else -%}spt4
+{%- endif -%}<!--split-->
+{%- if gift_wrap_pr != blank and gift_pr == blank %}<style>.mini_cart_tool_gift {display: none !important;}</style>{% endif -%}
+{%- render 'cart_items',gift_pr_id:gift_pr.id -%}<!--split--> 
+{%- if cart.cart_level_discount_applications != blank -%}
+   <ul class="cart_discounts ul_none">
+   {%- for discount_application in cart.cart_level_discount_applications -%}<li class="order_cart_discounts"><i class="facl facl-tags"></i> {{- discount_application.title -}} (-{{ discount_application.total_allocated_amount | money }})</li>{%- endfor -%}
+   </ul>
+{%- endif -%}<!--split-->
+{%- if cart.total_discount > 0 -%}
+<div class="cart_ori_price">{{ cart.original_total_price | money }}</div>
+<div class="cart_dis_price">-{{ cart.total_discount | money }}</div>
+{%- elsif compare_tt_price > cart.total_price and none -%}
+<div class="cart_ori_price">{{ compare_tt_price | money }}</div>
+<div class="cart_dis_price">-{{ compare_tt_price|minus:cart.total_price | money }}</div>
+{%- endif -%}
+<div class="cart_tot_price">{{ cart.total_price | money }}</div><!--split-->
+{%- if arr_gift_id.size > 0 %}1{% else %}0{% endif -%}

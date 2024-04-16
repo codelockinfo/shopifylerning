@@ -1,0 +1,1044 @@
+{
+  "general": {
+    "meta": {
+      "tags": "Ditandai \"{{ tags }}\"",
+      "page": "Halaman {{ page }}",
+      "wishlist": "Halaman Wishlist Saya"
+    },
+    "404": {
+      "title": "404",
+      "subtext": "404 Halaman tidak ditemukan.",
+      "link_html": "Halaman yang Kaka\/Nona minta tidak tersedia. Klik <a href=\"{{ link }}\"> di sini <\/a> untuk melanjutkan berbelanja."
+    },
+    "mobile_menu": {
+      "menu": "Menu",
+      "categories": "Kategori",
+      "wishlist": "Wishlist",
+      "search": "Cari",
+      "login_register": "Login \/ Daftar",
+      "my_account": "Akun saya"
+    },
+    "password_page": {
+      "opening_soon": "Segera dibuka",
+      "login_form_heading": "Masukkan password",
+      "login_form_password_label": "Password",
+      "login_form_password_placeholder": "Password Kaka\/Nona",
+      "login_form_submit": "Enter",
+      "signup_form_success": "We will send you an email right before we open!",
+      "admin_link_html": "Apakah Kaka\/Nona pemilik toko? <a href=\"\/admin\" class=\"text-link\">Log in disini<\/a>",
+      "password_link": "Masuk menggunakan password"
+    },
+    "account_text": {
+      "login_title": "Login",
+      "register_title": "Daftar",
+      "recover_pass_title": "Pulihkan password",
+      "dashboard": "Dashboard",
+      "addresses": "Daftar Alamat",
+      "logout": "Logout",
+      "new_customer": "Pelanggan baru?",
+      "create_account": "Buat akun Kaka\/Nona",
+      "lost_pass": "Lupa password?",
+      "recover_pass": "Pulihkan password",
+      "remembered_pass": "Ingat password Kaka\/Nona?",
+      "back_login": "Kembali ke login",
+      "have_acc": "Sudah memiliki akun?",
+      "login_here": "Login disini"
+    },
+    "currency": "Select your currency",
+    "breadcrumbs": {
+      "home": "Beranda"
+    },
+    "nt_tooltip": {
+      "login_to_wishlist": "Login untuk mengakses Wishlist",
+      "add_to_wishlist": "Masukkan ke Wishlist",
+      "remove_wishlist": "Hapus Wishlist",
+      "browse_wishlist": "Telusuri Wishlist",
+      "compare": "Bandingkan",
+      "quick_view": "Lihat sekilas",
+      "select_options": "Pilih opsi",
+      "read_more": "Pelajari lebih lanjut",
+      "view": "Masukkan ke troli",
+      "add_to_cart": "Add to cart",
+      "share_fb": "Bagikan di Facebook",
+      "share_tw": "Bagikan di Twitter",
+      "share_em": "Bagikan di Email",
+      "share_pr": "Bagikan di Pinterest",
+      "share_tu": "Bagikan di Tumblr",
+      "share_tl": "Bagikan di Telegram",
+      "follow_fb": "Follow Facebook",
+      "follow_tw": "Follow Twitter",
+      "follow_it": "Follow Instagram",
+      "follow_dr": "Follow Dribbble",
+      "follow_ld": "Follow Linkedin",
+      "follow_pr": "Follow Pinterest",
+      "follow_tu": "Follow Tumblr",
+      "follow_yt": "Follow YouTube",
+      "follow_bh": "Follow Behance",
+      "follow_sc": "Follow Soundcloud"
+    },
+    "catelog": {
+      "title": "Waktu saat ini {{now_count}}",
+      "info": "Maaf, tetapi Kaka\/Nona mencoba membeli di luar jam operasional kami.",
+      "info_2": "Harap kembali lagi antara Senin-Jumat : 17:00 - 21:00 dan Sabtu - Minggu : 12:00 - 23:00",
+      "btn": "Oke, saya akan coba lagi nanti"
+    },
+    "newsletter_form": {
+      "newsletter_email": "Berlangganan newsletter kami dan dapatkan diskon 10% dari pembelian pertama Kaka\/Nona",
+      "email_placeholder": "Alamat email Kaka\/Nona",
+      "submit": "Langganan",
+      "subscribing": "Berlangganan ...",
+      "confirmation": "Terima kasih telah berlangganan"
+    },
+    "agree_mail": {
+      "conditions": "Kaka\/Nona harus menyetujui syarat dan ketentuan untuk mendaftar.",
+      "link_conditions_html": "Saya setuju dengan <a href=\"{{link}}\" class=\"text-link\">syarat dan ketentuan<\/a>.",
+      "link_conditions_emty": "Saya setuju dengan syarat dan ketentuan"
+    },
+    "search": {
+      "heading": {
+        "one": "Hasil pencarian",
+        "other": "Hasil pencarian"
+      },
+      "no_prs_results": "Tidak ada produk yang ditemukan sesuai dengan pilihan Kaka\/Nona.",
+      "no_results": "Tidak menemukan hasil pencarian yang cocok",
+      "results_html": {
+        "zero": "Hasil pencarian untuk: \"{{ terms }}\"",
+        "one": "Hasil pencarian untuk: \"{{ terms }}\"",
+        "other": "Hasil pencarian untuk: \"{{ terms }}\""
+      },
+      "results_with_count": {
+        "zero": "Hasil pencarian untuk: \"{{ terms }}\"",
+        "one": "{{ count }} Hasil pencarian untuk: \"{{ terms }}\"",
+        "other": "{{ count }} Hasil pencarian untuk: \"{{ terms }}\""
+      },
+      "title": "Cari di situs kami",
+      "placeholder": "Cari produk",
+      "all_cat": "Semua kategori",
+      "placeholder2": "Saya ingin berbelanja ....",
+      "btn": "Cari",
+      "suggest": "Butuh inspirasi?",
+      "result": "Hasil pencarian:",
+      "results": "Hasil pencarian:",
+      "results_product": {
+        "one": "{{ count }} Produk untuk \"{{ terms }}\"",
+        "other": "{{ count }} Produk untuk \"{{ terms }}\""
+      },
+      "results_blog_page": {
+        "one": "{{ count }} Halaman untuk \"{{ terms }}\"",
+        "other": "{{ count }} Halaman untuk \"{{ terms }}\""
+      },
+      "view_all": "Lihat semua"
+    },
+    "wishlist": {
+      "title": "WISHLIST",
+      "empty": "Tidak ada Wishlist",
+      "empty_html": "Kaka\/Nona belum memiliki produk di wishlist. <br \/> Kaka\/Nona akan menemukan banyak produk menarik di halaman beranda toko kami."
+    }
+  },
+  "collections": {
+    "general": {
+      "categories": "Kategori",
+      "previous": "Sebelumnya",
+      "next": "Berikutnya",
+      "sidebar": "Sidebar",
+      "filter": "Filter",
+      "clear_filter": "Hapus semua Filter",
+      "no_matches": "Maaf, tidak ada produk di koleksi ini.",
+      "bar_with_count_html": "Kaka\/Nona telah melihat <span class = \"js_current_bar\"> {{current_count}} <\/span> dari total {{total_count}} produk",
+      "results_with_count_html": {
+        "zero": "<span class=\"cp\">0<\/span> Produk ditemukan",
+        "one": "<span class=\"cp\">1<\/span> Produk ditemukan",
+        "other": "<span class=\"cp\">{{count}}<\/span> Produk ditemukan"
+      }
+    },
+    "sorting": {
+      "title": "Urut berdasarkan",
+      "close": "Tutup",
+      "featured": "Unggulan",
+      "best_selling": "Penjualan terbaik",
+      "az": "Menurut alfabet, A-Z",
+      "za": "Menurut alfabet, Z-A",
+      "price_ascending": "Harga rendah ke tinggi",
+      "price_descending": "Harga tinggi ke rendah",
+      "date_descending": "Date, new to old",
+      "date_ascending": "Date, old to new"
+    }
+  },
+  "products": {
+    "popup": {
+      "continue_shopping": "Lanjutkan berbelanja",
+      "info_wishlist": "Login untuk menyinkronkan Item Tersimpan Kaka\/Nona di semua perangkat.",
+      "login": "Login",
+      "view_cart": "Lihat troli",
+      "added_to_cart": "Produk berhasil ditambahkan ke troli Anda."
+    },
+    "nt_extra": {
+      "flash_sold": "sold in last",
+      "flash_hours": "hours",
+      "estimateTimer_1": "Order in the next",
+      "estimateTimer_2": "to get it by"
+    },
+    "grid_items": {
+      "quick_view": "Lihat sekilas",
+      "quick_shop": "Langsung belanja",
+      "select_option": "Pilih opsi",
+      "read_more": "Pelajari lebih lanjut",
+      "view": "Lihat produk",
+      "compare": "Bandingkan",
+      "load_more": "Muat lebih banyak",
+      "view_more": "Lihat lebih banyak",
+      "offer_end_in": "Penawaran Berakhir:",
+      "countdown_days": "hari",
+      "countdown_hours": "jam",
+      "countdown_mins": "menit",
+      "countdown_sec": "detik"
+    },
+    "fbt": {
+      "title": "Sering Dibeli secara Bersamaan",
+      "tt_price": "Total harga:",
+      "add_tc": "Tambahkan produk terpilih ke troli",
+      "this_item": "Produk ini:"
+    },
+    "product": {
+      "choose_an_option": "Pilih opsi",
+      "back_to": "Kembali ke {{title}}",
+      "new": "Baru",
+      "hot": "Hot",
+      "sold_out": "Habis terjual",
+      "on_sale": "Sale",
+      "save_js": "-{{ saved_amount }}%",
+      "from": "dari",
+      "pick_a": "pilih {{option}}",
+      "in_stock": "Tersedia",
+      "outofstock": "Habis terjual",
+      "add_to_cart": "Masukkan ke troli",
+      "pre_orders": "Pre-order",
+      "product_vendor": "Vendor:",
+      "product_sku": "SKU:",
+      "na": "N\/A",
+      "available": "Ketersediaan :",
+      "product_category": "Kategori:",
+      "product_tag": "Tags:",
+      "product_share": "Bagikan",
+      "product_view_details": "Lihat detail lengkap",
+      "product_size_guide": "Panduan Ukuran",
+      "delivery_return": "Pengiriman & Pengembalian",
+      "ask_question": "Tanyakan sesuatu",
+      "view_in_space": "View in your space",
+      "view_in_space_label": "View in your space, loads item in augmented reality window",
+      "view_360": "360 product view",
+      "click_zoom": "klik untuk memperbesar",
+      "instagram_intro_html": "Tag your photos with <span>{{has_tag}}<\/span> on Instagram.",
+      "order_dayNames": "Minggu,Senin,Selasa,Rabu,Kamis,Jumat,Sabtu",
+      "order_monthNames": "Januari,Februari,Maret,April,Mei,Juni,Juli,Agustus,September,Oktober,November,Desember",
+      "notice_only_stock": "Produk yang tersedia tidak mencukupi. Hanya tersisa {{maks}}.",
+      "will_not_ship_until_html": "Wll not ship until <span class=\"jsnt\">{{date}}<\/span>",
+      "will_be_in_stock_after_html": "Will be in stock after <span class=\"jsnt\">{{date}}<\/span>",
+      "only_left_html": " Hurry, there are only <span class=\"jsnt\">{{count}}<\/span> item(s) left!",
+      "low_stock_message_html": "Hurry, there are only <span class=\"jsnt\">{{quantity}}<\/span> item(s) left!",
+      "title_notify_me": "Notify me when this product is available:",
+      "email_address": "Email address",
+      "please_notify_me": "Please notify me when {{title}}{{variant}} becomes available - {{shop_url}}{{url}}",
+      "success_notify_me": "Thanks! We will notify you when this product becomes available!",
+      "send_notify_me": "Email me when available"
+    }
+  },
+  "cart": {
+    "general": {
+      "title": "Troli belanja",
+      "remove": "Hapus",
+      "note": "Masukkan catatan pesanan",
+      "edit_note": "Ubah catatan pesanan",
+      "placeholder_note": "Catatan khusus bagi penjual",
+      "estimate_ship": "Estimasi ongkos kirim",
+      "calculate_ship": "Hitung ongkos kirim",
+      "subtotal": "Subtotal:",
+      "taxes_and_shipping_at_checkout": "Ongkos kirim dan potongan diskon akan dihitung saat checkout",
+      "taxes_and_shipping_policy_at_checkout_html": "<a href=\"{{ link }}\" target=\"_blank\">Ongkos kirim<\/a> akan dihitung saat checkout",
+      "taxes_included_but_shipping_at_checkout": "Ongkos kirim akan dihitung saat checkout",
+      "taxes_included_and_shipping_policy_html": "<a href=\"{{ link }}\" target=\"_blank\">Ongkos kirim<\/a> akan dihitung saat checkout",
+      "taxes_discounts_and_shipping_at_checkout": "Ongkos kirim dan potongan diskon akan dihitung saat checkout",
+      "taxes_discounts_and_shipping_policy_at_checkout_html": "<a href=\"{{ link }}\" target=\"_blank\">Ongkos kirim<\/a> dan diskon akan dihitung saat checkout",
+      "taxes_included_discounts_but_shipping_at_checkout": "Ongkos kirim dan potongan diskon akan dihitung saat checkout",
+      "taxes_included_discounts_and_shipping_policy_html": "<a href=\"{{ link }}\" target=\"_blank\">Ongkos kirim<\/a> dan diskon akan dihitung saat checkout",
+      "terms_and_conditions_html": "Saya setuju dengan <a href=\"{{link}}\" target=\"_blank\">syarat dan ketentuan<\/a>.",
+      "terms_and_conditions": "Saya setuju dengan syarat dan ketentuan.",
+      "update": "Update Troli",
+      "checkout": "Check Out",
+      "view": "Lihat troli",
+      "empty": "Troli Anda kosong.",
+      "close_cart": "Tutup Troli",
+      "savings": "Kaka\/Nona menghemat",
+      "cookies_required": "Aktifkan cookie untuk menggunakan troli belanja",
+      "edit_item": "Ubah produk ini",
+      "remove_item": "Hapus produk ini",
+      "save": "Simpan",
+      "cancel": "Batal",
+      "agree_checkout": "Anda harus menyetujui syarat dan ketentuan belanja untuk check out.",
+      "multiple_rates": "Kami menemukan [number_of_rates] tatif pengiriman yang tersedia untuk tujuan [address], mulai dari [rate].",
+      "one_rate": "Kami menemukan 1 tarif pengiriman yang tersedia untuk tujuan [address].",
+      "no_rates": "Maaf, kami belum dapat melakukan pengiriman untuk tujuan ini.",
+      "rate_value": "[rate_title] sebesar [rate]",
+      "coupon": "Kupon:",
+      "add_coupon": "Masukkan kupon",
+      "info_coupon": "Coupon code will work on checkout page",
+      "placeholder_coupon": "Kode kupon",
+      "gift_wrap_html": "<span class=\"cd\">Do you want a gift wrap?<\/span> Only {{ money }}",
+      "add_gift_wrap": "Add A Gift Wrap",
+      "countdown_text": "Due To HIGH Demand, Cart Expires In:"
+    },
+    "cart_page": {
+      "empty": "Troli Kaka\/Nona kosong",
+      "empty_html": "Sebelum melanjutkan untuk checkout, Kaka\/Nona harus menambahkan beberapa produk ke troli belanja. <br \/> Kaka\/Nona akan menemukan banyak produk menarik di beranda Toko kami."
+    },
+    "shipping_threshold": {
+      "text_1_html": "Free Shipping for all orders over <span class=\"cr fwm mn_thres_js\">{{ money }}<\/span>",
+      "text_2_html": "Almost there, add <span class=\"cr fwm mn_thres_js\">{{ money }}<\/span> more to get <span class=\"cr fwm\">FREE SHIPPING!<\/span>",
+      "text_3": "Congratulations! You've got free shipping!"
+    },
+    "label": {
+      "product": "Produk",
+      "price": "Harga",
+      "quantity": "Jumlah",
+      "total": "Total"
+    }
+  },
+  "blogs": {
+    "section": {
+      "view_all": "View All",
+      "load_more": "Load More Posts",
+      "bar_with_count_html": "You've viewed <span class=\"js_current_bar\">{{current_count}}<\/span> of {{total_count}} posts"
+    },
+    "blog": {
+      "blog_title_html": "Archive by Category \"{{ blog_title }}\"",
+      "breadcrumbs_article": "Blog"
+    },
+    "article": {
+      "by": "By",
+      "on": "on",
+      "in": "In",
+      "read_more": "Continue Reading",
+      "back_to": "Back to {{title}}",
+      "view_all": "View more",
+      "by_author": "By {{ author }}"
+    },
+    "portfolio": {
+      "filter_all": "All",
+      "category": "Category:",
+      "author": "Author:",
+      "tags": "Tags:"
+    },
+    "comments": {
+      "title": "Leave a comment",
+      "comments_note_html": "Your email address will not be published. Required fields are marked <span class=\"required\">*<\/span>",
+      "name": "Name",
+      "email": "Email",
+      "message": "Comment",
+      "post": "Post Comment",
+      "moderated": "Please note, comments must be approved before they are published",
+      "success_moderated": "Your comment was posted successfully. We will publish it in a little while, as our blog is moderated.",
+      "success": "Your comment was posted successfully! Thank you!",
+      "unapproved": "The email address provided is not approved for posting comments.",
+      "with_count": {
+        "zero": "0 comment",
+        "one": "1 comment",
+        "other": "{{ count }} comments"
+      },
+      "with_count_2": {
+        "zero": "Leave a comment",
+        "one": "1 comment",
+        "other": "{{ count }} comments"
+      },
+      "comments_title_html": {
+        "zero": "0 thought on “<span>{{title}}<\/span>”",
+        "one": "1 thought on “<span>{{title}}<\/span>”",
+        "other": "{{ count }} thoughts on “<span>{{title}}<\/span>”"
+      }
+    }
+  },
+  "contact": {
+    "form": {
+      "title": "TULIS PESAN KAKA\/NONA DISINI",
+      "name": "Nama (required)",
+      "email": "Email (required)",
+      "phone": "Nomor Telepon",
+      "message": "Pesan Kaka\/Nona",
+      "submit": "Kirim",
+      "post_success": "Terima kasih telah menghubungi kami. Kami akan menghubungi Kaka\/Nona sesegera mungkin.",
+      "error_heading": "Silakan sesuaikan kembali :"
+    }
+  },
+  "customer": {
+    "create_account": "Pelanggan baru? Yuk buat akun terlebih dahulu",
+    "login_here": "Kaka\/Nona sudah memiliki akun? Login disini",
+    "make_order": "Buat pesanan pertama Kaka\/Nona",
+    "account": {
+      "hello_html": "Halo! <strong>{{name}}<\/strong> (bukan <strong>{{name}}<\/strong>? <a href=\"{{link}}\">Log out<\/a>)",
+      "title": "Akun Saya",
+      "dashboard": "Dashboard",
+      "wishlist": "Wishlist",
+      "details": "Detail Akun :",
+      "log_out": "Logout",
+      "name": "Nama:",
+      "email": "Email:",
+      "address": "Alamat:",
+      "address_2": "Alamat 2:",
+      "country": "Negara:",
+      "zip": "Kode pos:",
+      "phone": "Telepon:",
+      "company": "Perusahaan:"
+    },
+    "activate_account": {
+      "title": "Aktifkan Akun",
+      "subtext": "Buat kata sandi Kaka\/Nona untuk mengaktifkan akun.",
+      "password": "Password",
+      "password_confirm": "konfirmasi Password",
+      "submit": "Aktifkan Akun",
+      "cancel": "Tolak Undangan"
+    },
+    "addresses": {
+      "title": "Daftar Alamat",
+      "default": "Utama",
+      "add_new": "Add a New Address",
+      "edit_address": "Edit alamat",
+      "first_name": "Nama Depan",
+      "last_name": "Nama Belakang",
+      "company": "Perusahaan",
+      "address1": "Alamat",
+      "address2": "Apartment, suite, dll.",
+      "city": "Kota",
+      "country": "Negara",
+      "province": "Provinsi",
+      "zip": "Kode pos",
+      "phone": "Telepon",
+      "set_default": "Atur sebagai alamat utama",
+      "add": "Tambah alamat",
+      "update": "Update alamat",
+      "cancel": "Batal",
+      "edit": "Edit",
+      "delete": "Hapus",
+      "delete_confirm": "Kaka\/Nona yakin ingin menghapus alamat ini?"
+    },
+    "login": {
+      "title": "Login",
+      "email": "Email",
+      "password": "Password",
+      "forgot_password": "Lupa password Kaka\/Nona?",
+      "sign_in": "Masuk",
+      "guest_title": "Lanjutkan checkout tanpa membuat akun?",
+      "guest_continue": "Lanjutkan"
+    },
+    "orders": {
+      "title": "Riwayat pesanan",
+      "order_number": "Pesanan",
+      "order_number_link": "Nomor Pesanan {{ number }}",
+      "date": "Tanggal",
+      "payment_status": "Status pembayaran",
+      "fulfillment_status": "Status pesanan",
+      "total": "Total",
+      "none": "Kaka\/Nona belum memesan apa pun."
+    },
+    "order": {
+      "title": "Pesanan {{ name }}",
+      "date_html": "Dipesan pada tanggal {{ date }}",
+      "cancelled_html": "Pesanan dibatalkan pada tanggal {{ date }}",
+      "cancelled_reason": "Alasan: {{ reason }}",
+      "billing_address": "Alamat Penagihan",
+      "payment_status": "Status Pembayaran",
+      "shipping_address": "Alamat Penerima",
+      "fulfillment_status": "Status Pesanan",
+      "discount": "Diskon",
+      "shipping": "Pengiriman",
+      "tax": "Pajak",
+      "product": "Produk",
+      "sku": "SKU",
+      "price": "Harga",
+      "quantity": "Jumlah",
+      "total": "Total",
+      "fulfilled_at_html": "Diproses pada {{ date }}",
+      "subtotal": "Subtotal",
+      "track_shipment": "Lacak pengiriman",
+      "gift_note": "Gift message",
+      "note": "Instruksi khusus untuk penjual"
+    },
+    "recover_password": {
+      "title": "Reset password Kaka\/Nona",
+      "email": "Alamat Email",
+      "submit": "Reset Password",
+      "save": "Simpan",
+      "cancel": "Batal",
+      "subtext": "Lupa atau hilang password? Silakan masukkan alamat email Kaka\/Nona. Kaka\/Nona akan menerima link untuk membuat kpassword baru melalui email.",
+      "success": "Kami telah mengirim email dengan link untuk memperbarui password Kaka\/Nona.",
+      "content_success": "Email reset password telah dikirim ke alamat email akun Kaka\/Nona, tetapi mungkin perlu beberapa menit untuk muncul di inbox Kaka\/Nona. Harap tunggu setidaknya 10 menit sebelum mencoba mengatur ulang kembali. Hubungi Customer Service kami jika Kaka\/Nona tidak menerima email ini."
+    },
+    "reset_password": {
+      "title": "Reset password akun",
+      "subtext": "Masukkan password baru untuk {{ email }}",
+      "password": "Password",
+      "password_confirm": "konfirmasi Password",
+      "submit": "Reset Password"
+    },
+    "register": {
+      "title": "Daftar",
+      "first_name": "Nama Depan",
+      "last_name": "Nama Belakang",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Daftar",
+      "privacy_policy": "Data pribadi Kaka\/Nona akan digunakan untuk mendukung pengalaman Kaka\/Nona di seluruh situs web ini, untuk mengelola akses ke akun Kaka\/Nona, dan untuk tujuan lain yang dijelaskan dalam kebijakan privasi kami.",
+      "privacy_policy_html": "Data pribadi Kaka\/Nona akan digunakan untuk mendukung pengalaman Kaka\/Nona di seluruh situs web ini, untuk mengelola akses ke akun Kaka\/Nona, dan untuk tujuan lain yang dijelaskan dalam <a href=\"{{link}}\" class=\"privacy-policy-link fwm\" target=\"_blank\">kebijakan privasi<\/a> kami."
+    }
+  },
+  "homepage": {
+    "onboarding": {
+      "product_title": "Your product's name",
+      "product_description": "This area is used to describe your product’s details. Tell customers about the look, feel, and style of your product. Add details on color, materials used, sizing, and where it was made.",
+      "collection_title": "Collection Title",
+      "no_content": "This section doesn’t currently include any content. Add content to this section using the sidebar."
+    }
+  },
+  "gift_cards": {
+    "issued": {
+      "title_html": "Here's your {{ value }} gift card for {{ shop }}!",
+      "subtext": "Your gift card",
+      "gift_card_code": "Gift card code",
+      "disabled": "Disabled",
+      "expired": "Expired on {{ expiry }}",
+      "active": "Expires on {{ expiry }}",
+      "redeem_html": "Use this code at checkout to redeem your {{ value }} gift card",
+      "shop_link": "Start shopping",
+      "print": "Print this gift card",
+      "remaining_html": "{{ balance }} left",
+      "add_to_apple_wallet": "Add to Apple Wallet",
+      "qr_image_alt": "QR code — scan to redeem gift card"
+    }
+  },
+  "date_formats": {
+    "1": "%B %d, %Y",
+    "2": "%d\/%m\/%y",
+    "3": "%d\/%m\/%Y",
+    "4": "%e\/%m\/%Y",
+    "5": "%b %y",
+    "6": "%m\/%d\/%Y",
+    "7": "%A %d\/%m\/%Y",
+    "8": "%a %d\/%m\/%Y",
+    "month_day_year": "%B %d, %Y",
+    "full_day": "%A %d\/%m\/%Y"
+  },
+  "shopify": {
+    "sentence": {
+      "two_words_connector": "dan",
+      "last_word_connector": ", dan"
+    },
+    "checkout": {
+      "general": {
+        "cart": "Troli",
+        "back_to_cart": "Kembali ke troli",
+        "skip_to_content": "Lewati",
+        "continue_button_label": "Lanjutkan",
+        "complete_purchase_button_label": "Buat pesanan",
+        "pay_now_button_label": "Bayar sekarang",
+        "authenticate_purchase_button_label": "Otentikasi pembayaran",
+        "close_modal_label": "Tutup",
+        "close_notice_label": "Tutup",
+        "expand_notice_label": "Lihat lebih banyak",
+        "continue_to_shipping_method": "Lanjutkan",
+        "continue_to_payment_method": "Lanjutkan",
+        "continue_to_review": "Cek kembali pesanan Kaka\/Nona",
+        "back_to_contact_information": "Kembali ke informasi kontak",
+        "back_to_shipping_method": "Kembali ke informasi pengiriman",
+        "back_to_payment_method": "Kembali ke informasi pembayaran",
+        "choose_shipping_method": "Pilih metode pengiriman",
+        "choose_payment_method": "Pilih metode pembayaran",
+        "choose_billing_address": "Pilih informasi pengirim",
+        "contact_us_html": "Hubungi kami untuk informasi lebih lanjut",
+        "autocomplete_title": "Saran",
+        "autocomplete_single_item": "1 item tersedia",
+        "autocomplete_multi_item": "{{number}} item tersedia",
+        "autocomplete_selection": "{{number}} dari {{total}}",
+        "autocomplete_close": "Tutup saran",
+        "tooltip_accessibility_label": "Informasi lainnya",
+        "forwarding_indicator": {
+          "new_window": "Buka di tab baru",
+          "external": "Buka website eksternal",
+          "external_and_new_window": "Buka website eksternal di tab baru"
+        },
+        "checkout_context": {
+          "step_one": "{{shop_name}}  - checkout"
+        }
+      },
+      "contact": {
+        "title": "Informasi",
+        "address_title": "Alamat",
+        "shipping_address_title": "Alamat penerima",
+        "delivery_option_title": "Metode pengiriman",
+        "contact_method_title": "Informasi kontak",
+        "stored_addresses_label": "Alamat tersimpan",
+        "new_address_label": "Gunakan alamat baru",
+        "first_name_label": "Nama depan",
+        "optional_first_name_label": "Nama depan (opsional)",
+        "last_name_label": "Nama belakang",
+        "company_label": "Perusahaan",
+        "optional_company_label": "Perusahaan (opsional)",
+        "address1_label": "Alamat",
+        "address2_label": "Apartemen, suite, dll",
+        "optional_address2_label": "Apartemen, suite, dll (opsional)",
+        "city_label": "Kota",
+        "country_label": "Negara",
+        "country_code": "Kode negara",
+        "province_label": "Provinsi",
+        "province_placeholder": "Provinsi",
+        "county_label": "Negara",
+        "county_placeholder": "Negara",
+        "phone_label": "Nomor Telepon",
+        "optional_phone_label": "Nomor Telepon (opsional)",
+        "phone_placeholder": "Nomor Telepon 08xxx-xxxx-xxxx",
+        "phone_tooltip": "Jika dibutuhkan, kami akan menghubungi Kaka\/Nona melalui nomor ini.",
+        "zip_code_label": "Kode pos",
+        "zip_code_placeholder": "Kode pos",
+        "postal_code_label": "Kode pos",
+        "postal_code_placeholder": "Kode pos",
+        "postcode_label": "Kode pos",
+        "postcode_placeholder": "Kode pos",
+        "pincode_label": "Kode PIN",
+        "pincode_placeholder": "Kode PIN"
+      },
+      "delivery_options": {
+        "free_total_label": "Gratis"
+      },
+      "customer_account": {
+        "not_user_label": "Bukan {{first_name}}?",
+        "have_an_account_label": "Sudah memiliki akun?",
+        "save_my_information_label": "Simpan informasi ini untuk checkout berikutnya",
+        "sign_out_link_label": "Keluar"
+      },
+      "stock": {
+        "page_title": "Masalah persediaan",
+        "title": "Tidak tersedia",
+        "items_unavailable_notice": "Beberapa item sudah tidak tersedia, keranjang Anda sudah di-update",
+        "product_column_header": "Produk",
+        "quantity_column_header": "Jumlah",
+        "price_column_header": "Harga",
+        "status_column_header": "Status",
+        "removed_from_cart_notice": "Dihapus dari troli",
+        "reduced_label": "Berkurang",
+        "sold_out_label": "Habis terjual",
+        "reduced_with_quantity_label": "Hanya tersedia {{quantity_available}}",
+        "remove_from_cart_button_label": "Hapus dari troli",
+        "continue_shopping_button_label": "Lanjutkan",
+        "go_back_to_cart_button_label": "Kembali ke troli"
+      },
+      "order_summary": {
+        "title": "Ringkasan Pesanan",
+        "order_name_label": "Pesanan {{name}}",
+        "shopping_cart_label": "Keranjang Belanja",
+        "discount_title": "Diskon",
+        "discount_label": "Kode Kupon",
+        "discount_placeholder": "Kode Kupon",
+        "remove_discount_label": "Hapus diskon",
+        "free_shipping_discount_label": "Gratis ongkos kirim",
+        "apply_discount_button_label": "Masukkan",
+        "applied_discount_message": "{{amount}} dari total harga pesanan",
+        "discount_has_been_applied": "Diskon telah dimasukkan",
+        "discount_has_been_removed": "Diskon telah dihapus",
+        "discount_already_applied": "1 kode kupon telah dimasukkan dalam pesanan ini, Kaka\/Nona tidak dapat memasukkan kode kupon baru",
+        "cart_does_not_meet_discount_requirements_notice": "Kode kupon <strong>{{code}}<\/strong> tidak berlaku untuk produk yang ada di troli Kaka\/Nona.",
+        "discount_requires_customer_notice": "Masukkan informasi pengiriman untuk memasukkan kode kupon <strong>{{code}}<\/strong>",
+        "customer_does_not_meet_discount_requirements_notice": "Kode kupon <strong>{{code}}<\/strong> saat ini belum tersedia\/belum dapat digunakan",
+        "shipping_information_does_not_meet_discount_requirements_notice": "Kode kupon <strong>{{code}}<\/strong> tidak berlaku untuk alamat pengiriman Kaka\/Nona",
+        "customer_already_used_once_per_customer_discount_notice": "Kode kupon {{code}} telah Kaka\/Nona gunakan sebelumnya",
+        "shipping_label": "Pengiriman",
+        "calculating_shipping": "Menghitung...",
+        "shipping_default_value": "Dihitung di langkah selanjutnya",
+        "shipping_pending_message": "Masih belum tersedia",
+        "shipping_policy_link": "Ongkos kirim",
+        "taxes_label": "Pajak",
+        "estimated_taxes_label": "Pajak (estimasi)",
+        "total_outstanding_label": "Jumlah yang harus dibayar",
+        "free_total_label": "Gratis",
+        "paid_label": "Sudah dibayar",
+        "payment_due_label": "Tanggal jatuh tempo pembayaran",
+        "vat_label_html": "Termasuk pajak sebesar {{amount}} ",
+        "discount_and_gift_card_savings_notice": "Setelah diskon {{discount_amount}} dan potongan gift card {{gift_card_amount}}",
+        "discount_savings_notice": "Setelah diskon {{discount_amount}}",
+        "gift_card_savings_notice": "Setelah potongan gift card {{gift_card_amount}}",
+        "cost_table_title": "Rangkuman harga",
+        "description_label": "Deskripsi",
+        "price_label": "Harga",
+        "quantity_label": "Jumlah",
+        "product_change_label": "Ubah",
+        "product_image_label": "Foto produk",
+        "scroll_order_summary": "Scroll untuk melihat semua produk",
+        "expand_order_summary": "Lihat rangkuman pesanan",
+        "collapse_order_summary": "Sembunyikan rangkuman pesanan",
+        "total_updated_label": "Total harga yang telah di-update",
+        "total_already_paid_label": "Telah dibayar",
+        "order_total_updated_label": "Total terupdate"
+      },
+      "shipping": {
+        "title": "Pengiriman",
+        "shipping_method_title": "Metode pengiriman",
+        "waiting_on_rate_notice": "Menunggu data pengiriman yang tersedia...",
+        "waiting_on_pickup_location_notice": "Menunggu informasi lokasi pickup yang tersedia...",
+        "no_rates_for_cart_or_destination_notice": "Tidak ada metode pengiriman yang tersedia untuk produk yang Kaka\/Nona pesan atau alamat tujuan yang Kaka\/Nona masukkan.",
+        "no_pickup_location_notice": "Setidaknya satu dari produk yang Anda pesan tidak tersedia untuk di-pickup",
+        "no_rates_for_country_notice": "Kami tidak menyediakan pengiriman ke {{country}}",
+        "no_rates_contact_notice": "Hubungi kami untuk informasi lebih lanjut",
+        "free_rate_label": "Gratis",
+        "cheapest_rate_label": "Termurah",
+        "please_enter_your_shipping_information_notice": "Silahkan masukkan informasi pengiriman Kaka\/Nona.",
+        "estimated_delivery_date_range": "{{minimum}} sampai {{maximum}} hari kerja.",
+        "shipping_line_phone_label": "Nomor telepon (wajib diisi)",
+        "shipping_line_phone": "Kurir pengiriman mungkin akan menghubungi Kaka\/Nona melalui nomor ini.",
+        "shipping_rate_discounted_amount": "Awal : {{original_ammount}}. Saat ini : {{amount}}",
+        "estimated_delivery_date": {
+          "one": "1 hari kerja",
+          "other": "{{count}} hari kerja"
+        },
+        "other_method": {
+          "zero": "Tidak ada metode yang tersedia",
+          "one": "1 metode lain tersedia",
+          "other": "{{count}} metode lain tersedia"
+        }
+      },
+      "field_errors": {
+        "handle_phone_invalid": "Masukkan nomor telepon yang valid",
+        "handle_email_invalid": "Masukkan email yang valid",
+        "email_invalid": "Masukkan email yang valid",
+        "email_or_phone_blank": "Masukkan email atau nomor telepon",
+        "email_or_phone_invalid": "Masukkan email atau nomor telepon",
+        "address_first_name_blank": "Masukkan nama depan",
+        "address_last_name_blank": "Masukkan nama belakang",
+        "address_address1_blank": "Masukkan alamat",
+        "address_address2_blank": "Masukkan apartemen, suites, dll",
+        "address_city_blank": "Masukkan kota",
+        "address_country_blank": "Pilih negara",
+        "address_country_not_supported": "Saat ini kami belum menyediakan pengiriman ke negara\/wilayah ini. Masukkan informasi alamat pengiriman baru dan coba lagi.",
+        "address_province_blank": "Pilih provinsi",
+        "address_company_blank": "Masukkan nama perusahaan",
+        "address_phone_blank": "Masukkan nomor telepon yang valid",
+        "address_zip_blank": "Masukkan kode pos",
+        "address_zip_invalid_for_country": "Masukkan kode pos yang valid untuk negara {{country}}",
+        "address_zip_invalid_for_country_and_province": "Masukkan kode pos yang valid untuk {{province}}, {{country}}",
+        "credit_card_name_blank": "Masukkan nama Anda persis seperti yang tertera dalam kartu Anda",
+        "credit_card_name_invalid": "Masukkan nama Anda persis seperti yang tertera dalam kartu Anda"
+      },
+      "shipping_errors": {
+        "shipping_method_not_available_generic": {
+          "one": "Troli Kaka\/Nona telah diperbaharui dan biaya pengiriman yang tertera sudah tidak valid. Mohon masukkan kembali biaya pengiriman yang baru.",
+          "other": "Troli Kaka\/Nona telah diperbaharui dan satu atau beberapa produk yang Kaka\/Nona masukkan tidak dapat dikirim ke alamat Kaka\/Nona. Hapus produk tersebut untuk melanjutkan pesanan Kaka\/Nona"
+        }
+      },
+      "alternative_payment_method": {
+        "button_html": "Checkout dengan : {{method}}",
+        "button_label": "Checkout dengan : {{method}}"
+      },
+      "alternative_payment_method_banner": {
+        "or": "ATAU"
+      },
+      "processing": {
+        "redirecting_page_title": "Mengarahkan...",
+        "redirecting_title": "Mengarahkan...",
+        "redirecting_notice": "Mohon menunggu, kami akan mengarahkan Kaka\/Nona",
+        "complete_your_purchase_title": "Selesaikan pembelian Kaka\/Nona",
+        "continue_to_payment_gateway_notice": "Lanjutkan ke pembayaran untuk memasukkan informasi pembayaran Kaka\/Nona",
+        "continue_to_payment_gateway_button_label": "Lanjutkan ke pembayaran",
+        "complete_your_purchase_title_error": "Perbaiki informasi pembayaran Kaka\/Nona",
+        "continue_to_payment_gateway_notice_error": "informasi pembayaran Kaka\/Nona tidak dapat diverifikasi",
+        "continue_to_payment_gateway_button_label_error": "Perbaharui informasi pembayaran",
+        "page_title": "Memproses pesanan",
+        "title": "Memproses pesanan",
+        "your_order_has_been_received_title": "Terima kasih sudah memesan di Se'i Lamalera",
+        "you_will_receive_confirmation": "Saat ini kami sedang menerima banyak pesanan. Kaka\/Nona seharusnya menerima konfirmasi pesanan lewat email. Jika Kaka\/Nona belum menerimanya dalam 1 jam, mohon hubungi kami",
+        "you_will_not_be_charged": "Kaka\/Nona belum dikenakan tagihan apapun",
+        "wait": {
+          "short": "Pesanan Kaka\/Nona sedang diproses",
+          "long": "Kaka\/Nona akan menerima email sesaat setelah pesanan diproses. Saat ini volume pesanan sedang tinggi",
+          "no_auto_refresh_html": "Jika Kaka\/Nona tidak diarahkan secara otomatis, {{link}}",
+          "refresh_this_page": "Refresh halaman ini",
+          "medium": {
+            "one": "Pesanan Kaka\/Nona sedang diproses. Mohon tunggu sekitar 1 menit",
+            "other": "Pesanan Kaka\/Nona sedang diproses. Mohon tunggu sekitar {{count}} menit"
+          }
+        }
+      },
+      "failed_payment": {
+        "page_title": "Pembayaran tidak dapat diproses",
+        "title": "Pembayaran tidak dapat diproses",
+        "payment_not_processed_title": "Pembayaran Kaka\/Nona tidak dapat diproses",
+        "payment_not_processed_text": "Kaka\/Nona belum melakukan perubahan. Mohon kembali ke troli dan selesaikan pembelian Kaka\/Nona",
+        "return_to_cart_button_label": "Kembali ke troli"
+      },
+      "thank_you": {
+        "title": "Terima kasih atas pembelian Kaka\/Nona!",
+        "confirmation_email_sent_text": "Email konfirmasi telah dikirim ke {{email}}",
+        "return_to_store_link_label": "Lanjutkan belanja",
+        "print_link_label": "Print tanda terima",
+        "payment_information_title": "Informasi pembayaran",
+        "shipping_information_title": "Informasi pengiriman",
+        "page_title": "Terima kasih {{display_name}}",
+        "page_title_no_name": "Terima kasih!",
+        "cancelled_page_title": "Pesanan dibatalkan",
+        "customer_information_title": "Informasi pelanggan",
+        "contact_information_title": "Informasi kontak",
+        "billing_address_title": "Alamat penagihan",
+        "shipping_address_title": "Alamat penerima",
+        "shipping_address_map_title": "Google map menunjukkan titik alamat penerima: {{address}}",
+        "payment_method_title": "Metode pembayaran",
+        "shipping_method_title": "Metode pengiriman",
+        "tracking_number": "Nomor resi:",
+        "company_tracking_number": "nomor resi {{company}}:",
+        "estimated_arrival": "Estimasi lama pengiriman:",
+        "re-order": "Pesan ulang produk yang sama",
+        "confirmed": "Terkonfirmasi",
+        "thank_you_title": "Pesanan Kaka\/Nona telah dikonfirmasi",
+        "thank_you_confirmed_order_with_email": "Kaka\/Nona akan menerima email konfirmasi dengan nomor pesanan Anda sebentar lagi",
+        "thank_you_confirmed_order_with_phone": "Kaka\/Nona akan menerima SMS konfirmasi dengan nomor pesanan Anda sebentar lagi",
+        "thank_you_confirmed_order_with_email_and_phone": "Kaka\/Nona akan menerima email dan SMS konfirmasi dengan nomor pesanan Anda sebentar lagi",
+        "thank_you_confirmed_order_with_email_pick_up": "Kaka\/Nona akan menerima email saat pesanan Anda siap untuk di-pickup",
+        "thank_you_confirmed_order_with_phone_pick_up": "Kaka\/Nona akan menerima email saat pesanan Anda siap untuk di-pickup",
+        "thank_you_confirmed_order_with_email_and_phone_pick_up": "Kaka\/Nona akan menerima email saat pesanan Anda siap untuk di-pickup",
+        "thank_you_confirmed_order_with_missing": "Hubungi kami melalui email atau telepon untuk menerima konfirmasi pesanan",
+        "order_status_confirmed_order_with_email": "Kaka\/Nona akan menerima email konfirmasi jika pesanan Kaka\/Nona telah siap",
+        "order_status_confirmed_order_with_phone": "Kaka\/Nona akan menerima SMS konfirmasi jika pesanan Kaka\/Nona telah siap",
+        "order_status_confirmed_order_with_email_and_phone": "Kaka\/Nona akan menerima Email & SMS konfirmasi jika pesanan Kaka\/Nona telah siap",
+        "order_status_confirmed_order_with_email_pick_up": "Kaka\/Nona akan menerima email konfirmasi jika pesanan Kaka\/Nona telah siap di-pickup",
+        "order_status_confirmed_order_with_phone_pick_up": "Kaka\/Nona akan menerima SMS konfirmasi jika pesanan Kaka\/Nona telah siap di-pickup",
+        "order_status_confirmed_order_with_email_and_phone_pick_up": "Kaka\/Nona akan menerima email & SMS konfirmasi jika pesanan Kaka\/Nona telah siap di-pickup",
+        "confirmed_description": "kami telah menerima pesanan Kaka\/Nona, dan kami akan menyiapkan pesanan ini. Kembali ke halaman ini untuk menerima update terkait status pengiriman Kaka\/Nona.",
+        "confirmed_title": "Pesanan Kaka\/Nona terlah terkonfirmasi!",
+        "ready_for_pickup_title": "Pesanan Kaka\/Nona siap untuk di-pickup",
+        "order_updates_title": "Update pesanan",
+        "order_updates_description_html": "info update akan dikirim ke {{customer_contact}}",
+        "order_updates_current_step_prefix": "Langkah saat ini:",
+        "order_updates_past_step_prefix": "Langkah sebelumnya:",
+        "order_updates_upcoming_step_prefix": "Langkah selanjutnya:",
+        "in_transit": "Dalam perjalanan",
+        "in_transit_title": "Pesanan Kaka\/Nona sedang dalam perjalanan",
+        "in_transit_description": "Kembali ke halaman ini untuk menerima update terkait status pengiriman Kaka\/Nona",
+        "no_tracking_number": "Tidak ada nomor resi untuk pengiriman ini",
+        "delivered": "Telah sampai tujuan",
+        "delivered_title": "Pesanan Anda telah sampai tujuan",
+        "delivered_description_html": "Pesanan Kaka\/Nona telah sampai tujuan ke alamat yang tuju. Jika belum menerimanya, atau jika mengalami masalah, mohon {{contact_us}}",
+        "contact_us": "Hubungi kami",
+        "contact_us_lowercase": "hubungi kami",
+        "contact_us_html": "Butuh bantuan? {{contact_us}}",
+        "updated_time": "Telah diupdate {{time_ago}} yang lalu",
+        "failure": "Gagal diterima",
+        "failed_title": "Telah diupdate {{time_ago}} yang lalu",
+        "non_shippable_title": "Pesanan Kaka\/Nona telah selesai",
+        "login_title": "Log in untuk melihat seluruh detail pesanan",
+        "login_description": "Kaka\/Nona dapat menemukan nomor pesanan di tanda terima yang telah Kaka\/Nona terima lewat email",
+        "login_not_customer_html": "Bukan {{name}}? Kaka\/Nona dapat {{link}}",
+        "customer_information_hidden_fields_message": "Log in untuk melihat semua informasi pelanggan",
+        "cancelled_title": "Pesanan Kaka\/Nona telah dibatalkan",
+        "cancelled_description": "Pesanan Kaka\/Nona telah dibatalkan pada {{date}}. Hubungi kami jika memiliki pertanyaan",
+        "order_number_label": "Nomor pesanan",
+        "customer_validation_error": "Masukkan email atau nomor pesanan yang valid",
+        "customer_validation_error_phone": "Masukkan nomor telepon atau nomor pesanan yang valid",
+        "unfulfilled_items_title": "Menyiapkan pengiriman",
+        "unfulfilled_items_description": "Saat ini kami sedang menyiapkan pesanan ini untuk dikirim",
+        "order_updates_description_missing": "Kaka\/Nona tidak menerima update pengiriman",
+        "order_updates_subscribe_to_email_notifications": "Dapatkan update pengiriman lewat email",
+        "order_updates_subscribe_to_email_or_phone_notifications": "Dapatkan update pengiriman lewat email atau SMS",
+        "order_updates_subscribe_to_phone_notifications": "Dapatkan update pengiriman lewat SMS",
+        "track_shipment": "Lacak pengiriman",
+        "other_options": "Opsi lain",
+        "login_reorder_link_text": {
+          "one": "Beli produk ini juga",
+          "other": "Beli produk ini juga"
+        },
+        "marker": {
+          "current": "Lokasi pengiriman saat ini",
+          "shipping": "Alamat penerima"
+        },
+        "pick_up_in_store_marker": {
+          "current": "Lokasi pengiriman saat ini",
+          "shipping": "Lokasi pick up"
+        },
+        "fulfillment": {
+          "fulfilled_table_title": "Produk dalam pengiriman ini",
+          "unfulfilled_table_title": "Produk yang sedang disiapkan untuk dikirim",
+          "product_image_label": "Foto Produk",
+          "description_label": "Deskripsi",
+          "quantity_label": "Jumlah"
+        }
+      },
+      "review": {
+        "review_title": "Review pesanan",
+        "checkout_as_guest": "Checkout sebagai tamu",
+        "blocks": {
+          "contact_method_title": "Kontak",
+          "billing_address_title": "Penagihan",
+          "shipping_address_title": "Dikirim ke",
+          "shipping_method_title": "Metode",
+          "payment_method_title": "Pembayaran",
+          "change_link_label": "Ubah",
+          "change_contact_method_link_label": "Ubah informasi kontak",
+          "change_billing_address_link_label": "Ubah alamat penagihan",
+          "change_shipping_address_link_label": "Ubah alamat penerima",
+          "change_shipping_method_link_label": "Ubah metode pengiriman",
+          "change_payment_method_link_label": "Ubah metode pembayaran",
+          "pick_up_in_store_shipping_method_html": "Pick up di toko {{location_name}}"
+        }
+      },
+      "marketing": {
+        "accept_marketing_checkbox_label": "Selalu informasikan ke saya tentang berita atau tawaran eksklusif dari Se'i Lamalera",
+        "unsubscribe": {
+          "title": "Kaka\/Nona telah berhenti berlangganan",
+          "description": "Kaka\/Nona tidak akan menerima lagi informasi ini dari kami"
+        }
+      },
+      "shop_policies": {
+        "refund_policy": "Kebijakan Refund",
+        "privacy_policy": "Kebijakan Privacy",
+        "terms_of_service": "Ketentuan layanan",
+        "shipping_policy": "Kebijakan pengiriman",
+        "subscription_policy": "Kebijakan berlangganan"
+      },
+      "payment": {
+        "same_billing_address_label": "Sama dengan informasi alamat penerima",
+        "different_billing_address_label": "Gunakan informasi pengirim yang berbeda",
+        "billing_address_title": "Informasi Pengirim",
+        "title": "Pembayaran",
+        "billing_address_description": "*Khusus Dropship : Gunakan alamat pengirim yang berbeda",
+        "card_security_notice": "Seluruh transaksi aman dan terenkripsi."
+      },
+      "payment_summary": {
+        "billing_address_title": "Alamat Penagihan"
+      }
+    },
+    "pagination": {
+      "previous": "Sebelumnya",
+      "next": "Berikutnya"
+    },
+    "links": {
+      "powered_by_shopify": "seilamalera.com",
+      "learn_more": "Pelajari lebih lanjut"
+    },
+    "attributes": {
+      "password_confirmation": "Konfirmasi password",
+      "first_name": "Nama depan",
+      "last_name": "Nama belakang"
+    },
+    "addresses": {
+      "zip_code": "Kode pos",
+      "postal_code": "Kode pos",
+      "postcode": "Kode pos",
+      "pincode": "Kode PIN",
+      "province": "Provinsi",
+      "county": "Negara",
+      "confirm": "Apakah Kaka\/Nona ingin menghapus alamat ini?"
+    },
+    "collections": {
+      "sorting": {
+        "manual": "Sedang tren",
+        "best_selling": "Penjualan terbaik",
+        "az": "alfabet, A-Z",
+        "za": "lfabet, Z-A",
+        "price_ascending": "Harga, rendah ke tinggi",
+        "price_descending": "Harga, tinggi ke rendah",
+        "date_ascending": "Tanggal, lama ke baru",
+        "date_descending": "Tanggal, baru ke lama"
+      }
+    },
+    "errors": {
+      "blank": "Wajib diisi, tidak dapat dikosongkan",
+      "credit_card_session_expired": "Otorisasi kartu kredit telah berakhir, silakan masukkan kembali informasi pembayaran kaka\/Nona. Kartu ini belum ditagih.",
+      "empty": "Wajib diisi, tidak dapat dikosongkan",
+      "invalid_email": "Wajib alamat email yang valid",
+      "discount_disabled": "Diskon ini sudah tidak berlaku",
+      "discount_expired": "Diskon ini sudah tidak valid",
+      "discount_limit_reached": "Diskon ini sudah mencapai batas limit",
+      "discount_not_found": "Gagal menemukan diskon yang sesuai dengan kode yang dimasukkan",
+      "customer_already_used_once_per_customer_discount_notice": "Diskon ini telah mencapai batas limit",
+      "gift_card_already_applied": "Kode baru saja digunakan di checkout Kaka\/Nona",
+      "gift_card_code_invalid": "Kode tidak valid",
+      "gift_card_currency_mismatch": "{{gift_card_currency}} gift card tidak dapat digunakan di pesanan {{checkout_currency}}",
+      "gift_card_depleted": "Tidak ada saldo yang tersisa di gift card ini",
+      "invalid": "tidak valid",
+      "gift_card_expired": "Gift card sudah kadaluarsa",
+      "gift_card_disabled": "Tidak ada saldo yang tersisa di gift card ini",
+      "bad_domain": "berisi nama domain yang tidak valid",
+      "taken": "Sudah diambil",
+      "contains_html_tags": "Tidak dapat berisi HTML tags",
+      "too_short": "Terlalu pendek (minimum karakter : {{count}} karakter)",
+      "too_long": "Terlalu panjang (maksimal karakter : {{count}} karakter)",
+      "password_mismatch": "Harus cocok dengan password yang diberikan",
+      "email_domain_invalid": "provider tidak support",
+      "invalid_for_country": "Tidak valid untuk {{country}}",
+      "invalid_for_country_and_province": "Tidak valid untuk {province}} dan {{country}}",
+      "invalid_province_in_country": "Tidak valid untuk provinsi di {{country}}",
+      "invalid_region_in_country": "Tidak valid untuk wilayah di {{country}}",
+      "not_supported": "tidak support",
+      "full_name_required": "Masukkan nama depan dan nama belakang",
+      "invalid_for_card_type": "Tidak valid",
+      "invalid_type": "Maaf, kami belum dapat menerima tipe kartu ini",
+      "invalid_format": "Format tidak valid",
+      "expired": "Sudah kadaluarsa",
+      "invalid_expiry_year": "Dibutuhkan start date atau issue number yang valid",
+      "verify_email": "Alamat email ini sudah terasosiasi dengan akun lain. Jika akun ini milik Kaka\/Nona, Kaka\/Nona dapat <a href=\"\/account\/login#recover\"> mereset password<\/a>"
+    },
+    "notices": {
+      "customer": {
+        "no_account_found": "Tidak ada akun yang ditemukan dari email ini",
+        "password_reset_error": "Error saat mereset password",
+        "invalid_credentials": "Email atau password salah"
+      },
+      "address": {
+        "updated": "Berhasil memperbaharui alamat",
+        "error_updating": "Gagal memperbaharui alamat",
+        "created": "Berhasil membuat alamat",
+        "error_creating": "Gagal membuat alamat",
+        "deleted": "Berhasil menghapus alamat",
+        "error_deleting": "Gagal menghapus alamat"
+      },
+      "order": {
+        "not_available": "Pesanan ini belum tersedia",
+        "cancel_reason": {
+          "declined": "Pembayaran ditolak",
+          "inventory": "Item tidak tersedia",
+          "fraud": "Pesanan terindikasi penipuan",
+          "customer": "Pelanggan merubah\/membatalkan pesanan",
+          "other": "Lainnya"
+        }
+      },
+      "cart": {
+        "only_n_items_available": "Kaka\/Nona hanya dapat memasukkan {{count}} {{name}} ke troli",
+        "all_items_in_cart": "Kaka\/Nona tidak dapat memasukkan lebih banyak {{name}} ke troli",
+        "empty_update": "Tidak dapat memperbaharui troli yang kosong",
+        "generic_error": "Troli mengalami gangguan",
+        "too_many_line_items_error": "Troli Kaka\/Nona tidak boleh berisi lebih dari {{max}} produk",
+        "link_expired": "Link kadaluarsa",
+        "link_no_longer_exists": "Link tidak lagi tersedia",
+        "changed": "1 atau lebih item tidak lagi tersedia. Kami menyediakan <a href='{{link}}'>troli (terupdate)<\/a>",
+        "items_changed": "1 atau lebih item telah dirubah",
+        "variant_not_found": "Produk '{{name}}' telah habis terjual",
+        "shipping_address_not_required": "Troli ini tidak membutuhkan pengiriman",
+        "shipping_address_invalid": "Terjadi masalah dalam perhitungan biaya pengiriman. Lanjut ke checkout untuk memilih biaya pengiriman sebelum Kaka\/Nona menyelesaikan pesanan ini."
+      },
+      "storefront": {
+        "invalid_password": "Password salah, mohon ulangi kembali"
+      }
+    },
+    "page_titles": {
+      "products": "Produk",
+      "shopping_cart": "Troli belanja Kaka\/Nona",
+      "account": "Akun",
+      "create_account": "Buat Akun",
+      "reset_account": "Reset Akun",
+      "addresses": "Daftar alamat",
+      "order": "Pesanan {{name}}",
+      "search": "Cari",
+      "collections": "Koleksi",
+      "not_found": "404 tidak ditemukan"
+    },
+    "cart": {
+      "discounts_with_count": "{[count}} diskon berhasil digunakan"
+    },
+    "challenge": {
+      "message": "Untuk melanjutkan, mohon beritahu kami bahwa Kaka\/Nona bukan robot",
+      "error": "Jawaban Kaka\/Nona belum tepat, silahkan mengulang kembali"
+    }
+  }
+}

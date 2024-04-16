@@ -1,0 +1,443 @@
+{%- liquid
+  assign sid = section.id
+  assign rtl = settings.use_rtl
+  if rtl 
+    assign ltr = false 
+  else 
+    assign ltr = true  
+  endif -%}
+  
+<div class="nt_se_{{sid}} {{section.settings.layout}}">
+  {%- render 'section_title' -%}
+  <div class="mt__30 nt_banner_holder row fl_center js_packery hoverz_{{section.settings.hoverz}} cat_space_{{section.settings.cat_space}}" data-packery='{ "itemSelector": ".cat_space_item","gutter": 0,"percentPosition": true,"originLeft": {{ltr}} }'> 
+    <div class="grid-sizer"></div>
+    {%- for block in section.blocks -%}{% assign bk_stts = block.settings %}{%- assign image = bk_stts.image -%}
+      <div class="cat_space_item col-lg-{{bk_stts.col_pr}} col-md-{{bk_stts.col_pr_tb}} col-{{bk_stts.col_pr_mb}} pr_animated done" id="bk_{{block.id}}">
+        <div class="banner_hzoom nt_promotion oh pr">
+          {%- if image != blank -%}
+            <div class="nt_bg_lz pr_lazy_img lazyload item__position {{bk_stts.img_align}}" data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{image.aspect_ratio}}" data-sizes="auto" data-parent-fit="cover"></div>
+          {%- else -%}
+            {%- capture cl -%}{% cycle 'a8dacc', '56cfe1' %}{%- endcapture -%}
+            <div class="nt_bg_lz pr_lazy_img lazyload item__position {{bk_stts.img_align}}" data-bg="https://placehold.jp/1/{{cl}}/{{cl}}/530x600.png?text=1" style="padding-top:52.63157894736842%"></div>
+          {%- endif -%}
+          <a href="{{ bk_stts.url }}" target="{{bk_stts.open_link}}" class="pa t__0 l__0 r__0 b__0{% if bk_stts.url == blank %} pe_none{% endif %}"></a>
+          <div class="nt_promotion_html pa pa_txts mb_h_pos{{bk_stts.cap_h_pos}} mb_v_pos{{bk_stts.cap_v_pos}} h_pos{{bk_stts.cap_h_pos}} v_pos{{bk_stts.cap_v_pos}} t__0 l__0 {{bk_stts.txt_align}} pe_none">{{bk_stts.html}}</div>
+        </div>
+      </div>
+    {%- endfor -%}
+  </div>
+</div>
+
+{%- render 'section_css' -%}
+{%- style -%}
+    {%- for block in section.blocks %}{% assign bk_stts = block.settings %}{% assign bid = block.id %}{% assign image = bk_stts.image -%}
+      #bk_{{bid}} .nt_promotion_html {
+         {%- assign cap_h_pos = bk_stts.cap_h_pos -%}
+         {%- assign cap_v_pos = bk_stts.cap_v_pos -%}
+         top:{{cap_v_pos}}%;
+         {%- if cap_v_pos == 50 and cap_h_pos == 50 -%}width:100%;{%- endif -%}
+         {%- if cap_h_pos > 50 -%}
+          right:{{100|minus:cap_h_pos}}%;
+          transform: translate({{100|minus:cap_h_pos}}%, -{{cap_v_pos}}%);
+         {%- else -%}
+          left:{{cap_h_pos}}%;
+          transform: translate(-{{cap_h_pos}}%, -{{cap_v_pos}}%);
+         {%- endif -%}
+      }
+      #bk_{{bid}} .nt_promotion_html,#bk_{{bid}} .nt_promotion_html>*,#bk_{{bid}} .nt_promotion_html .btn_icon_true:after{ color: {{bk_stts.cl_txt}} }
+      #bk_{{bid}} .nt_promotion>a:after{ background-color: {{bk_stts.cl_overlay}};opacity: {{bk_stts.cl_opacity | divided_by: 100.00}} }
+      {%- if image == blank %}{% continue %}{% endif -%}
+      #bk_{{bid}} .nt_bg_lz {padding-top:{{ 1 | divided_by: image.aspect_ratio | times: 100}}%;}
+    {%- endfor -%}
+{%- endstyle -%}
+
+
+{%- schema -%}
+  {
+    "name": "Banner Custom",
+    "class": "nt_section type_banner2 type_packery",
+    "max_blocks": 30,
+    "settings": [
+      {
+        "type": "header",
+        "content": "== Title Settings"
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading"
+      },
+      {
+        "type": "textarea",
+        "id": "sub_title",
+        "label": "Sub Text"
+      },
+      {
+        "type": "select",
+        "id": "sub_font",
+        "default": "2",
+        "options": [
+         {
+            "value": "1",
+            "label": "Body font"
+         },
+         {
+            "value": "2",
+            "label": "Sub title font"
+          }
+        ],
+        "label": "Sub Text use font:"
+      },
+      {
+        "type": "select",
+        "id": "style_title",
+        "options": [
+         {
+            "value": "title_1",
+            "label": "Style 1"
+         },
+         {
+            "value": "title_2",
+            "label": "Style 2"
+          },
+         {
+            "value": "title_3",
+            "label": "Style 3"
+          },
+         {
+            "value": "title_4",
+            "label": "Style 4"
+          },
+         {
+            "value": "title_5 lazyload",
+            "label": "Style 5"
+          },
+         {
+            "value": "title_6",
+            "label": "Style 6"
+          },
+         {
+            "value": "title_7 +la",
+            "label": "Style 7 (with line-awesome)"
+          }
+        ],
+        "label": "Style title"
+      },
+      {
+        "type": "text",
+        "id": "ic_tt",
+        "label": "Style 7 icon line-awesome",
+        "default": "gem"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_clpr",
+        "label": "Use icon color primary?",
+        "default": false
+      },
+      {
+        "type": "paragraph",
+        "content": "[Get icons Line awesome](https://icons8.com/line-awesome)"
+      },
+      {
+        "type": "header",
+        "content": "== General Settings"
+      },
+     {
+       "type": "select",
+       "id": "cat_space",
+       "options": [
+        {
+           "value": "30",
+           "label": "30"
+         },
+         {
+           "value": "20",
+           "label": "20"
+         },
+         {
+           "value": "10",
+           "label": "10"
+         },
+         {
+           "value": "6",
+           "label": "6"
+         },
+         {
+           "value": "2",
+           "label": "2"
+         },
+         {
+           "value": "0",
+           "label": "0"
+         }
+       ],
+       "label": "Space between Banners",
+       "default": "30"
+     },
+      {
+        "type": "checkbox",
+        "id": "hoverz",
+        "label": "Enable zoom image on hover?",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "== Design Options"
+      },
+      {
+        "type": "select",
+        "id": "layout",
+        "options": [
+         {
+            "value": "container",
+            "label": "Container"
+         },
+         {
+            "value": "nt_full",
+            "label": "Full Width"
+          }
+        ],
+        "label": "Layout"
+      },
+      {
+        "type": "color",
+        "id": "cl_bg",
+        "label": "Background color"
+      },
+      {
+        "type": "text",
+        "id": "mg",
+        "label": "Margin",
+        "info":"Margin top, margin right, margin bottom, margin left. If you not use to blank",
+        "default": "50px,,50px,",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd",
+        "label": "Padding",
+        "info":"Padding top, padding right, padding bottom, padding left. If you not use to blank",
+        "placeholder": "50px,,50px,"
+      },
+     {
+        "type": "header",
+        "content": "== Design Mobile Options"
+      },
+      {
+        "type": "text",
+        "id": "mg_mb",
+        "label": "Margin",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd_mb",
+        "label": "Padding",
+        "placeholder": "50px,,50px,"
+      }
+    ],
+    "blocks": [{
+    "type": "image",
+    "name": "Image",
+    "settings": [
+      {
+         "type": "image_picker",
+         "id": "image",
+         "label": "Image"
+       },
+       {
+        "label": "Link to (Optional)",
+        "id": "url",
+        "type": "url"
+      },
+      {
+        "type": "select",
+        "id": "open_link",
+        "options": [
+          {
+            "value": "_self",
+            "label": "Current window (_self)"
+          },
+         {
+            "value": "_blank",
+            "label": "New window (_blank)"
+          }
+        ],
+        "label": "Open link in",
+        "default": "_self"
+      },
+      {
+        "type": "select",
+        "id": "col_pr",
+        "label": "Banner width (desktop)",
+        "default": "6",
+        "options": [
+          {
+            "value": "12",
+            "label": "100%"
+          },
+          {
+            "value": "8",
+            "label": "66,6%%"
+          },
+          {
+            "value": "6",
+            "label": "50%"
+          },
+          {
+            "value": "4",
+            "label": "33,3%"
+          },
+          {
+            "value": "3",
+            "label": "25%"
+          },
+          {
+            "value": "15",
+            "label": "20%"
+          },
+          {
+            "value": "2",
+            "label": "16,6%"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_pr_tb",
+        "label": "Banner width (tablet)",
+        "default": "6",
+        "options": [
+          {
+            "value": "12",
+            "label": "100%"
+          },
+          {
+            "value": "8",
+            "label": "66,6%%"
+          },
+          {
+            "value": "6",
+            "label": "50%"
+          },
+          {
+            "value": "4",
+            "label": "33,3%"
+          },
+          {
+            "value": "3",
+            "label": "25%"
+          },
+          {
+            "value": "15",
+            "label": "20%"
+          },
+          {
+            "value": "2",
+            "label": "16,6%"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_pr_mb",
+        "label": "Banner width (mobile)",
+        "default": "6",
+        "options": [
+          {
+            "value": "12",
+            "label": "100%"
+          },
+          {
+            "value": "6",
+            "label": "50%"
+          }
+        ]
+      },
+       {
+         "type": "header",
+         "content": "== Content Settings"
+       },
+      {
+        "type": "html",
+        "id": "html",
+        "label": "Content HTML:",
+        "default": "<h3 class=\"fs__30 mg__0 lh__1 cw mb__10\">lighting collections<\/h3><h4 class=\"fs__16 mg__0 cw\">Explorer<\/h4>"
+      },
+     {
+        "type": "range",
+        "id": "cap_v_pos",
+        "label": "Content vertical position",
+        "default": 50,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%"
+     },
+     {
+        "type": "range",
+        "id": "cap_h_pos",
+        "label": "Content horizontal position",
+        "default": 50,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%"
+     },
+      {
+       "type": "select",
+       "id": "txt_align",
+       "options": [
+        {
+           "value": "tl",
+           "label": "Left"
+         },
+         {
+           "value": "tc",
+           "label": "Center"
+         },
+         {
+           "value": "tr",
+           "label": "Right"
+         }
+       ],
+       "label": "Text alignment",
+       "default": "tc"
+      },
+      {
+        "type": "color",
+        "id": "cl_txt",
+        "label": "Text",
+        "default": "#fff"
+      },
+      {
+        "type": "color",
+        "id": "cl_overlay",
+        "label": "Overlay",
+        "default": "#000"
+      },
+      {
+        "type": "range",
+        "id": "cl_opacity",
+        "label": "Overlay opacity",
+        "default": 0,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%"
+      }
+      ]
+    }],
+    "presets": [
+      {
+        "name": "2. Banner Custom",
+        "category": "III. Image",
+        "blocks": [
+          { "type": "image" },
+          { "type": "image" }
+        ]
+      }
+    ]
+  }
+{% endschema %}

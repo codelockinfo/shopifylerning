@@ -1,0 +1,21 @@
+{%- liquid
+  assign collection = collections[block.settings.collection]
+  assign image = block.settings.image | default:collection.image
+  assign home_t = 'homepage.onboarding.collection_title' | t  | append:' #' | append:for_i -%}
+
+<div id="bk_{{block.id}}" class="cat_grid_item cat_space_item cat_grid_item_{{for_i}} {{ccol}}" {{ block.shopify_attributes }}>
+  <div class="cat_grid_item__content pr oh">
+    <a href="{{ block.settings.url | default:collection.url }}" class="db cat_grid_item__link">
+      {%- if image != blank -%}
+        <div class="cat_grid_item__overlay item__position nt_bg_lz lazyload {{block.settings.img_align}}" data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{image.aspect_ratio}}" data-sizes="auto" data-parent-fit="width"{% if cat_grid_item %} style="padding-top:{{ 1 | divided_by: image.aspect_ratio | times: 100}}%;"{% endif %}></div>
+      {%- else -%}
+        <div class="cat_grid_item__overlay item__position nt_bg_lz lazyload {{block.settings.img_align}}" data-bg="{{cimg}}"{% if cat_grid_item %} style="padding-top:100%;"{% endif %}></div>
+      {%- endif -%}
+    </a>
+    <div class="cat_grid_item__wrapper pe_none">
+      <div class="cat_grid_item__title h3">{{ block.settings.title | default:collection.title | default:home_t }}</div>
+      {%- if spn_txt != blank %}<div class="cat_grid_item__btn dn f__libre wrap al_center">{{spn_txt}} <i class="las la-long-arrow-alt-right"></i></div>{% endif -%}
+      {%- if pr_txt != blank %}<div class="cat_grid_item__count dn">{{collection.all_products_count}} {{pr_txt}}</div>{% endif -%}
+    </div>
+  </div>
+</div>

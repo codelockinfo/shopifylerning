@@ -1,0 +1,660 @@
+<div class="nt_se_{{section.id}} {{section.settings.layout}}">
+   <div class="row al_center fl_center tc">
+       {%- if section.blocks.size > 0 -%}
+          {%- for block in section.blocks %}{% assign bk_stts = block.settings -%}
+            {%- case block.type -%}
+               {%- when 'heading' -%}
+                    <div class="block_id_{{block.id}} col-12">{%- render 'block_title',block:block,block_title:'mb__25' -%}</div>
+               {%- when 'image' -%}{%- assign image = bk_stts.image -%}
+                  <div class="block_id_{{block.id}} col-lg-{{bk_stts.cl}} col-md-{{bk_stts.cl_tb}} col-{{bk_stts.cl_mb}}">
+                     <div class="tc pr oh">
+                      {%- if image != blank -%} 
+                        {%- assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+                        <img src="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20{{image.width}}%20{{image.height}}%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3C%2Fsvg%3E" data-src="{{ img_url }}" data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]" data-sizes="auto" class="lazyload lz_op_ef w__100" alt="{{image.alt}}" style="max-width:{{bk_stts.wid |default:image.width}}px">
+                      {%- else -%}
+                        <img class="lz_op_ef lazyload w__100" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" style="max-height: 400px" data-src="https://cdn.shopify.com/s/files/1/0259/8538/4520/files/shopping-gift-wrap_1x1.jpg?v=1572830468" alt="">
+                      {%- endif -%}
+                    </div>
+                   </div>
+                {%- when 'space' -%}
+                  <div id="b_{{block.id}}" class="slt4_space col-12" style="height:{{bk_stts.sp}}px"></div>
+                {%- when 'html' -%}
+                  <div class="block_id_{{block.id}} col-lg-{{bk_stts.cl}} col-md-{{bk_stts.cl_tb}} col-{{bk_stts.cl_mb}}"><div id="b_{{block.id}}" class="slt4_html pt__5 pl__15 pr__15">{{bk_stts.html}}</div></div>
+                {%- when 'btn' -%}
+                  <div class="block_id_{{block.id}} col-lg-{{bk_stts.cl}} col-md-{{bk_stts.cl_tb}} col-{{bk_stts.cl_mb}}" id="b_{{block.id}}">
+                    {%- if bk_stts.btn_link != blank and bk_stts.title -%}<a class="imtt4_btn button round_{{bk_stts.btn_round}} btn_icon_{{bk_stts.btn_icon}}" href="{{bk_stts.btn_link}}" target="{{bk_stts.open_link}}">{{bk_stts.title}}</a>{%- endif -%}
+                  </div>
+                  {%- style -%}
+                     #b_{{block.id}} .imtt4_btn {
+                       font-weight: {{bk_stts.fw_text}};min-height:{{bk_stts.h}}px;
+                       color: {{bk_stts.cl_txt}};background-color: {{bk_stts.cl_bg}};border-color: {{bk_stts.cl_bd}}
+                     }
+                     #b_{{block.id}} .imtt4_btn.btn_icon_true:after {color: {{bk_stts.cl_txt}} }
+                  {%- endstyle -%}
+                {%- else -%}
+                  <div class="block_id_{{block.id}} col-lg-{{bk_stts.cl}} col-md-{{bk_stts.cl_tb}} col-{{bk_stts.cl_mb}}"><div class="mb__15 about_us_txt pt__5 pl__15 pr__15">{{bk_stts.text}}</div></div>
+            {%- endcase -%}
+          {%- endfor -%}
+       {%- else -%}
+       <div class="tc">{%- render 'no_blocks'-%}</div>   
+       {%- endif -%}
+   </div>
+</div>
+{%- render 'section_css' -%}
+{%- schema -%}
+  {
+    "name": "Custom Section",
+    "class": "type_custom_section",
+    "max_blocks": 20,
+    "settings": [
+      {
+        "type": "header","content": "== Design Options"
+      },
+      {
+        "type": "select","id": "layout","default": "nt_full","label": "Layout",
+        "options": [
+            { "value": "container", "label": "Container"},
+            { "value": "nt_full", "label": "Full Width"}
+        ]
+      },
+      {
+        "type": "color","id": "cl_bg","label": "Background color","default": "#fff"
+      },
+      {
+        "type": "text",
+        "id": "mg",
+        "label": "Margin",
+        "info":"Margin top, margin right, margin bottom, margin left. If you not use to blank",
+        "default": "50px,,20px,",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd",
+        "label": "Padding",
+        "info":"Padding top, padding right, padding bottom, padding left. If you not use to blank",
+        "placeholder": "50px,,50px,"
+      },
+     {
+        "type": "header",
+        "content": "== Design Mobile Options"
+      },
+      {
+        "type": "text",
+        "id": "mg_mb",
+        "label": "Margin",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd_mb",
+        "label": "Padding",
+        "placeholder": "50px,,50px,"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "heading",
+        "name": "Heading",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text","id": "title","label": "Heading","default":"Custom title"
+          },
+          {
+            "type": "textarea","id": "sub_title","label": "Sub Text","default":"wellcome to gecko"
+          },
+          {
+            "type": "select",
+            "id": "sub_font",
+            "default": "2",
+            "options": [
+             {
+                "value": "1",
+                "label": "Body font"
+             },
+             {
+                "value": "2",
+                "label": "Sub title font"
+              }
+            ],
+            "label": "Sub Text use font:"
+          },
+          {
+            "type": "select","id": "style_title","label": "Design Title:",
+            "options": [
+                { "value": "title_1", "label": "Design 1"},
+                { "value": "title_2", "label": "Design 2"},
+                { "value": "title_3", "label": "Design 3"},
+                { "value": "title_4", "label": "Design 4"},
+                { "value": "title_5 lazyload", "label": "Design 5"},
+                { "value": "title_6", "label": "Design 6"},
+                { "value": "title_7 +la", "label": "Design 7 (with line-awesome)"},
+               {
+                  "value": "title_8",
+                  "label": "Design 8"
+                },
+               {
+                  "value": "title_9",
+                  "label": "Design 9"
+                },
+               {
+                  "value": "title_10",
+                  "label": "Design 10"
+                },
+               {
+                  "value": "title_11",
+                  "label": "Design 11"
+                },
+               {
+                  "value": "title_12",
+                  "label": "Design 12"
+                },
+               {
+                  "value": "title_13",
+                  "label": "Design 13"
+                }
+            ]
+          },
+          {
+            "type": "text","id": "ic_tt","label": "Style 7 icon line-awesome","default": "gem"
+          },
+          {
+            "type": "checkbox","id": "show_clpr","label": "Use icon color primary?","default": false
+          },
+          {
+            "type": "paragraph","content": "[Get icons Line awesome](https://icons8.com/line-awesome)"
+          }
+        ]
+      },
+      {
+        "type": "image",
+        "name": "Image",
+        "settings": [
+         {
+          "type":"image_picker","id":"image","label":"Image"
+          },
+          {
+            "type": "text","id": "wid","label": "Max width:","info": "integer, eg: 500"
+          },
+         {
+           "type": "select",
+           "id": "cl",
+           "label": "Container width",
+           "default": "6",
+           "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "10",
+              "label": "83.33%"
+            },
+            {
+              "value": "8",
+              "label": "66%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            },
+            {
+              "value": "4",
+              "label": "33%"
+            },
+            {
+              "value": "3",
+              "label": "25%"
+            },
+            {
+              "value": "15",
+              "label": "20%"
+            },
+            {
+              "value": "2",
+              "label": "16.66%"
+            }
+           ]
+         },
+          {
+            "type": "select",
+            "id": "cl_tb",
+            "label": "Container width tablet",
+            "default": "6",
+            "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "10",
+              "label": "83.33%"
+            },
+            {
+              "value": "8",
+              "label": "66%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            },
+            {
+              "value": "4",
+              "label": "33%"
+            },
+            {
+              "value": "3",
+              "label": "25%"
+            }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "cl_mb",
+            "label": "Container width mobile",
+            "default": "12",
+            "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "name": "Content",
+        "settings": [
+         {
+          "type":"richtext","id":"text","label":"Content","default":"<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>"
+          },
+         {
+           "type": "select",
+           "id": "cl",
+           "label": "Container width",
+           "default": "6",
+           "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "10",
+              "label": "83.33%"
+            },
+            {
+              "value": "8",
+              "label": "66%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            },
+            {
+              "value": "4",
+              "label": "33%"
+            },
+            {
+              "value": "3",
+              "label": "25%"
+            },
+            {
+              "value": "15",
+              "label": "20%"
+            },
+            {
+              "value": "2",
+              "label": "16.66%"
+            }
+           ]
+         },
+          {
+            "type": "select",
+            "id": "cl_tb",
+            "label": "Container width tablet",
+            "default": "6",
+            "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "10",
+              "label": "83.33%"
+            },
+            {
+              "value": "8",
+              "label": "66%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            },
+            {
+              "value": "4",
+              "label": "33%"
+            },
+            {
+              "value": "3",
+              "label": "25%"
+            }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "cl_mb",
+            "label": "Container width mobile",
+            "default": "12",
+            "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "html",
+        "name": "HTML",
+        "settings": [
+            {
+              "type": "html",
+              "id": "html",
+              "label": "Custom HTMl",
+              "default": "<h3>Best shopify theme 2020<\/h3>"
+            },
+         {
+           "type": "select",
+           "id": "cl",
+           "label": "Container width",
+           "default": "6",
+           "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "10",
+              "label": "83.33%"
+            },
+            {
+              "value": "8",
+              "label": "66%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            },
+            {
+              "value": "4",
+              "label": "33%"
+            },
+            {
+              "value": "3",
+              "label": "25%"
+            },
+            {
+              "value": "15",
+              "label": "20%"
+            },
+            {
+              "value": "2",
+              "label": "16.66%"
+            }
+           ]
+         },
+          {
+            "type": "select",
+            "id": "cl_tb",
+            "label": "Container width tablet",
+            "default": "6",
+            "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "10",
+              "label": "83.33%"
+            },
+            {
+              "value": "8",
+              "label": "66%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            },
+            {
+              "value": "4",
+              "label": "33%"
+            },
+            {
+              "value": "3",
+              "label": "25%"
+            }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "cl_mb",
+            "label": "Container width mobile",
+            "default": "12",
+            "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            }
+            ]
+          }
+          ]
+      },
+      {
+        "type": "btn",
+        "name": "Button",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Button label",
+            "default": "Shop Now"
+          },
+          {
+            "type": "url",
+            "id": "btn_link",
+            "label": "Button link (Optional)"
+          },
+          {
+            "type": "select",
+            "id": "open_link",
+            "options": [
+              {
+                "value": "_self",
+                "label": "Current window (_self)"
+              },
+             {
+                "value": "_blank",
+                "label": "New window (_blank)"
+              }
+            ],
+            "label": "Open link in"
+          },
+{
+            "type": "checkbox",
+            "id": "btn_round",
+            "label": "Button round?",
+            "default": true
+          },
+          {
+            "type": "checkbox",
+            "id": "btn_icon",
+            "label": "Button icon?",
+            "default": false
+          },
+          {
+            "type": "color",
+            "id": "cl_txt",
+            "label": "Text color",
+            "default": "#fff"
+          },
+          {
+            "type": "color",
+            "id": "cl_bg",
+            "label": "Background color",
+            "default": "#222"
+          },
+          {
+            "type": "color",
+            "id": "cl_bd",
+            "label": "Border color",
+            "default": "#222"
+          },
+          {
+            "type": "range",
+            "id": "fw_text",
+            "min": 400,
+            "max": 600,
+            "step": 100,
+            "label": "Font weight",
+            "default": 500
+          },
+          { 
+            "type": "range",
+            "id": "h",
+            "min": 40,
+            "max": 60,
+            "step": 0.5,
+            "label": "Min height button",
+            "default": 40
+          },
+         {
+           "type": "select",
+           "id": "cl",
+           "label": "Container width",
+           "default": "12",
+           "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "10",
+              "label": "83.33%"
+            },
+            {
+              "value": "8",
+              "label": "66%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            },
+            {
+              "value": "4",
+              "label": "33%"
+            },
+            {
+              "value": "3",
+              "label": "25%"
+            },
+            {
+              "value": "15",
+              "label": "20%"
+            },
+            {
+              "value": "2",
+              "label": "16.66%"
+            }
+           ]
+         },
+          {
+            "type": "select",
+            "id": "cl_tb",
+            "label": "Container width tablet",
+            "default": "12",
+            "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "10",
+              "label": "83.33%"
+            },
+            {
+              "value": "8",
+              "label": "66%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            },
+            {
+              "value": "4",
+              "label": "33%"
+            },
+            {
+              "value": "3",
+              "label": "25%"
+            }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "cl_mb",
+            "label": "Container width mobile",
+            "default": "12",
+            "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            }
+            ]
+          }
+          ]
+      },
+      {
+        "type": "space",
+        "name": "Space between",
+        "settings": [
+            {
+              "type": "range",
+              "id": "sp",
+              "min": 5,
+              "max": 105,
+              "step": 1,
+              "label": "Space",
+              "unit": "px",
+              "default": 40
+            }
+          ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "7. Custom Section",
+        "category": "V. Text",
+        "blocks": [{"type": "heading"},{"type": "image"},{"type": "text"}]
+      }
+    ]
+  }
+{% endschema %}

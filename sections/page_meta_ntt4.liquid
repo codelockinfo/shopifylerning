@@ -1,0 +1,28 @@
+{%- if section.blocks.size > 0 and template.name == 'search' and template.suffix == 'meta_ntt4' or template.suffix == 'prd-additional' -%}
+    <!--split-->{%- for block in section.blocks -%}{{block.settings.page}}{% unless forloop.last %};;;{% endunless -%}{%- endfor -%}<!--split-->
+{%- endif -%}
+{%- schema -%} 
+  {
+    "name": "Create List Page",
+    "max_blocks": 50,
+    "settings": [ 
+      {
+        "type": "paragraph",
+        "content": "Create List Page use for Size Chart in Metafield Editor"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "page",
+        "name": "Item Page",
+        "settings": [
+          {
+            "type": "page",
+            "id": "page",
+            "label": "Choose Page"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

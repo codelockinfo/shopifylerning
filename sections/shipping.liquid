@@ -1,0 +1,397 @@
+{%- liquid
+  assign sid = section.id
+  assign se_stts = section.settings
+  assign layout = se_stts.layout
+  assign image = se_stts.image
+  assign col = se_stts.col_pr
+  assign col_tb = se_stts.col_pr_tb
+  assign source = se_stts.source
+  assign icon_des = se_stts.icon_des
+  assign icon_size = se_stts.icon_size
+  assign icon_align = se_stts.icon_align
+  assign col_mb = se_stts.col_mb
+  if col_mb == 'fl_wrap'
+     assign cl_mb = 'col-12'
+  else 
+    assign cl_mb = 'col-9'
+  endif
+  if icon_des == 'circle'
+    if icon_size == 'small'
+      assign img_size = '120x'
+    elsif icon_size == 'medium'
+      assign img_size = '160x'
+    else 
+      assign img_size = '240x'
+    endif
+  else
+    if icon_size == 'small'
+      assign img_size = '80x'
+    elsif icon_size == 'medium'
+      assign img_size = '100x'
+    else 
+      assign img_size = '120x'
+    endif
+  endif
+  if layout == 'wrap'
+   assign html_layout = '<div class="container">__</div>' | split:'__'
+  else
+   assign html_layout = '__' | split:'__'
+  endif -%}
+
+<div class="nt_se_{{sid}} {{layout}}{%- if image != blank %} hide_bgimg_{{se_stts.hide_bgimg}} lazyload se_t4_bg nt_parallax_{{se_stts.use_pr}}{%- endif -%}"{% if image != blank %} data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{image.aspect_ratio}}" data-sizes="auto" data-parent-fit="cover"{% endif %}>
+  {{-html_layout[0]-}}
+  <div class="row {{col_mb}} fl_wrap_md oah use_border_{{se_stts.border}}">
+    {%- if section.blocks.size > 0 -%}
+      {%- for block in section.blocks %}{% assign bk_stts = block.settings %}{% assign image = bk_stts.image -%}
+        <div class="{{cl_mb}} col-md-{{col_tb}} col-lg-{{col}} mb__25 bl_{{block.id}}">
+          <div class="nt_shipping nt_icon_{{icon_des}} {{icon_align}} row no-gutters al_center_">
+            {%- if image != blank -%}
+              <div class="col-auto icon {{icon_size}} ship_img lazyload nt_bg_lz" data-bg="{{image| img_url:img_size}}"></div>
+            {%- elsif source == 'pegk' -%}
+              <div class="col-auto icon {{icon_size}} csi"><i class="{{source}} {{bk_stts.icon}}"></i></div>
+            {%- else -%}
+              {%- assign icon = bk_stts.icon -%}
+                {%- if icon != blank -%}
+                  {%- assign arr_icon = icon | split:',' -%}
+                  {%- assign icon_class1 = arr_icon[1] | default:'las' -%}
+                {%- endif  -%}
+              <div class="col-auto icon {{icon_size}} csi"><i class="{{arr_icon[1] | default:'las'}} la-{{arr_icon[0]}}"></i></div>
+            {%- endif -%}
+            <div class="col content">
+              <h3 class="title cd fs__14 mg__0 mb__5">{{bk_stts.title}}</h3>
+              <p class="mg__0">{{bk_stts.text}}</p>
+            </div>
+          </div>
+        </div>
+      {%- endfor -%}
+    {%- endif -%}
+  </div>
+  {{-html_layout[1]-}}
+</div>
+
+{%- render 'section_css',classbg:false -%}
+{%- style -%}
+.nt_se_{{sid}} .use_border_true .nt_shipping:after {border-color:{{se_stts.cl_bd}} }
+.nt_se_{{sid}} .icon {color:{{se_stts.cl_ic}} }.nt_se_{{sid}} .content {color:{{se_stts.cl_cot}} }.nt_se_{{sid}} .content h3 {color:{{se_stts.cl_hd}} }
+{%- endstyle -%}
+
+{%- schema -%}
+  {
+    "name": "Shipping",
+    "class": "nt_section type_shipping",
+    "max_blocks": 30,
+    "settings": [
+      {
+        "type": "header",
+        "content": "== General Settings"
+      },
+      {
+        "type": "select",
+        "id": "source",
+        "label": "Source icon",
+        "default": "pegk",
+        "options": [
+          {
+            "value": "pegk",
+            "label": "Pe icon 7 stroke"
+          },
+          {
+            "value": "laic",
+            "label": "Line awesome"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": "[Get icons Pe icon](http://themes-pixeden.com/font-demos/7-stroke/index.html)"
+      },
+      {
+        "type": "paragraph",
+        "content": "[Get icons Line awesome](https://icons8.com/line-awesome)"
+      },
+      {
+        "type": "select",
+        "id": "icon_des",
+        "label": "Icon Design",
+        "default": "deafult",
+        "options": [
+         {
+            "label": "Deafult",
+            "value": "deafult"
+          },
+          {
+            "label": "Circle",
+            "value": "circle"
+          }
+        ]
+      },
+     {
+      "type": "select",
+      "id": "icon_align",
+      "label": "Icon align",
+      "default": "tl",
+      "options": [
+        {
+          "label": "Left",
+          "value": "tl"
+        },
+        {
+          "label": "Center",
+          "value": "tc"
+        },
+        {
+          "label": "Right",
+          "value": "tr"
+        }
+      ]
+    },
+      {
+        "type": "select",
+        "id": "icon_size",
+        "label": "Icon size",
+        "default": "medium",
+        "options": [
+         {
+            "label": "Small",
+            "value": "small"
+          },
+          {
+            "label": "Medium",
+            "value": "medium"
+          },
+          {
+            "label": "Large",
+            "value": "large"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_pr",
+        "label": "Shipping columns",
+        "default": "3",
+        "options": [
+          {
+            "value": "6",
+            "label": "2"
+          },
+          {
+            "value": "4",
+            "label": "3"
+          },
+          {
+            "value": "3",
+            "label": "4"
+          },
+          {
+            "value": "15",
+            "label": "5"
+          },
+          {
+            "value": "2",
+            "label": "6"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_pr_tb",
+        "label": "Shipping columns Tablet",
+        "default": "6",
+        "options": [
+          {
+            "value": "6",
+            "label": "2"
+          },
+          {
+            "value": "4",
+            "label": "3"
+          },
+          {
+            "value": "3",
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_mb",
+        "label": "Shipping columns Mobile",
+        "default": "fl_nowrap",
+        "options": [
+          {
+            "value": "fl_wrap",
+            "label": "Default"
+          },
+          {
+            "value": "fl_nowrap",
+            "label": "Modern"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "== Design Options"
+      },
+      {
+        "type": "select","id": "layout","default": "wrap","label": "Layout",
+        "options": [
+            { "value": "container", "label": "Container"},
+            { "value": "wrap", "label": "Wrapped Container"},
+            { "value": "nt_full", "label": "Full Width"}
+        ]
+      },
+      {
+        "type": "color","id": "cl_bg","label": "Background color"
+      },
+      {
+        "type": "image_picker","id": "image","label": "Background Image"
+      },
+      {
+        "type": "checkbox",
+        "id": "border",
+        "label": "Use border?",
+        "default": false
+      },
+      {
+        "type": "color",
+        "id": "cl_bd",
+        "label": "Border color",
+        "default": "#ddd"
+      },
+      {
+        "type": "color",
+        "id": "cl_ic",
+        "label": "Icon color",
+        "default": "#9e9e9e"
+      },
+      {
+        "type": "color",
+        "id": "cl_hd",
+        "label": "Heading color",
+        "default": "#222222"
+      },
+      {
+        "type": "color",
+        "id": "cl_cot",
+        "label": "Content color",
+        "default": "#878787"
+      },
+      {
+        "type": "text",
+        "id": "mg",
+        "label": "Margin",
+        "info":"Margin top, margin right, margin bottom, margin left. If you not use to blank",
+        "default": "50px,,,",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd",
+        "label": "Padding",
+        "info":"Padding top, padding right, padding bottom, padding left. If you not use to blank",
+        "placeholder": "50px,,50px,"
+      },
+     {
+        "type": "header",
+        "content": "== Design Mobile Options"
+      },
+      {
+        "type": "text",
+        "id": "mg_mb",
+        "label": "Margin",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd_mb",
+        "label": "Padding",
+        "placeholder": "50px,,50px,"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "shipping",
+        "name": "Shipping",
+        "settings": [
+          {
+            "type": "header",
+            "content": "== IMG Options"
+          },
+          {
+             "type": "image_picker",
+             "id": "image",
+             "label": "Choose Image",
+             "info": "if image chosened icon set be disable"
+           },
+          {
+            "type": "header",
+            "content": "== Icon Options"
+          },
+          {
+             "type": "text",
+             "id": "icon",
+             "label": "Icons name",
+             "default": "pe-7s-car"
+          },
+          {
+            "type": "header",
+            "content": "== Text Options"
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Add a title"
+          },
+          {
+             "type": "textarea",
+             "id": "text",
+             "label": "Text",
+             "default": "Use this text to describe."
+           }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "1. Shipping",
+        "category": "V. Text",
+        "blocks": [
+          {
+            "type": "shipping",
+            "settings": {
+              "icon": "pe-7s-car",
+              "title": "FREE SHIPPING",
+              "text": "Free shipping on all US order or order above $100"
+            }
+          },
+          {
+            "type": "shipping",
+            "settings": {
+              "icon": "pe-7s-help2",
+              "title": "SUPPORT 24\/7",
+              "text": "Contact us 24 hours a day, 7 days a week"
+            }
+          },
+          {
+            "type": "shipping",
+            "settings": {
+              "icon": "pe-7s-refresh",
+              "title": "30 DAYS RETURN",
+              "text": "Simply return it within 30 days for an exchange."
+            }
+          },
+          {
+            "type": "shipping",
+            "settings": {
+              "icon": "pe-7s-door-lock",
+              "title": "100% PAYMENT SECURE",
+              "text": "We ensure secure payment with PEV"
+            }
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

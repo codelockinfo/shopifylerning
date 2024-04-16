@@ -1,0 +1,52 @@
+<div id="stamped-main-widget" 
+data-widget-style="standard"
+data-product-id="{{ product.id }}" 
+data-name="{{ product.title | escape }}" 
+data-url="{{ shop.url }}{{ product.url }}" 
+data-image-url="{{ product.featured_image | product_img_url: "large" |replace: '?', '%3F' | replace: '&','%26'}}" 
+data-description="{{ product.description | escape }}" 
+data-product-sku="{{product.handle}}"
+data-product-type="{{product.type}}"> 
+{{ product.metafields.stamped.reviews }} 
+</div>
+
+{%- comment -%}
+DOCUMENT https://kalles-docs.the4.co/features/custom-review-app#custom-review-apps
+
+1. Judge.me Product Reviews https://support.judge.me/support/solutions/articles/44001699621-judge-me-manual-installation-guide
+
+  {%- render 'judgeme_widgets', widget_type: 'judgeme_review_widget', concierge_install: true -%}
+
+2. stamped.io https://apps.shopify.com/product-reviews-addon
+
+  <div id="stamped-main-widget" 
+  data-widget-style="standard"
+  data-product-id="{{ product.id }}" 
+  data-name="{{ product.title | escape }}" 
+  data-url="{{ shop.url }}{{ product.url }}" 
+  data-image-url="{{ product.featured_image | product_img_url: "large" |replace: '?', '%3F' | replace: '&','%26'}}" 
+  data-description="{{ product.description | escape }}" 
+  data-product-sku="{{product.handle}}"
+  data-product-type="{{product.type}}"> 
+  {{ product.metafields.stamped.reviews }} 
+  </div>
+
+3. Yotpo: Photo & Product Reviews https://apps.shopify.com/yotpo-social-reviews 
+
+  <div class="yotpo yotpo-main-widget" data-product-id="{{ product.id }}" data-name="{{ product.title | escape }}" data-url="{{ shop.url }}{{ product.url }}" data-image-url="{{ product.featured_image | product_img_url: "large" |replace: '?', '%3F' | replace: '&','%26'}}" data-description="{{ product.description | escape }}"></div>
+
+4. rivyo-product-review https://apps.shopify.com/rivyo-product-review 
+
+  <div id="wc_review_section" class="wc_review_main_content" data-url="{{ shop.url }}" data-handle="{{ product.handle }}" data-product_id="{{ product.id }}" data-limit="0"></div>
+
+5. aliexpress-reviews-importer
+
+  <div id="shopbooster-ali" product-id="{{ product.id }}"></div>
+
+6. Areviews - Reviews Importer
+  Note: You must change data-shop, data-shopId
+
+  <div id="aliexpress-review-wrapper-sp" style="float: left; clear: both; width: 100%" data-id="{{product.id}}" data-shop="teststore1318.myshopify.com" data-shopId="41259"></div> 
+  <div id='Areviewsapp' class='page-full'>{% render 'aliexpress_reviews' %}</div>
+
+{%- endcomment -%}

@@ -1,0 +1,54 @@
+{%- liquid
+  assign pr_id = product.id
+  assign ck_pr = product.has_only_default_variant
+  assign color_count = 0
+  if ck_pr == false and show_color
+    assign color_ck = settings.color_ck | append:',color,colors,couleur,colour'
+    assign get_color = color_ck | downcase | replace: ' ,', ',' | replace: ', ', ',' | split: ',' | uniq
+    for option in product.options_with_values
+      assign name = option.name | downcase
+      if get_color contains name
+        assign color_count = option.values.size
+        assign pr_option = forloop.index
+          if show_cl_type == '2'
+            assign nt_option = 'option'| append:pr_option
+            assign color_variants = product.variants | where: "available" | map:nt_option | uniq
+            assign color_count = color_variants.size
+          endif
+          break
+      endif
+    endfor
+  endif
+  assign countdown = time_meta| default:product.metafields.meta.countdown
+  assign pr_hdl = product.handle
+  assign product_url = product.url
+  assign images_0 = product.images[0] | default:settings.placeholder_img
+  assign get_locale = product_url | split:'/products/' | first -%}
+  {%- capture pr_url %}{{get_locale}}{{url_cat}}/products/{{pr_hdl}}{% endcapture -%}
+
+<div class="col-lg-{{col}} col-md-{{col_tb}} col-{{col_mb}} mt__10 pr_grid_item product nt_pr desgin__1">
+   <div class="product-inner pr">
+      <div class="product-image pr oh lazyload" data-include="{{pr_url}}/?view=img{{sett_equal}}"><div class="nt_bg_lz nt_fk_lz"{% unless sett_equal %} style="padding-top:{{ 1 | divided_by: images_0.aspect_ratio | times: 100}}%;"{% endunless %}></div></div>
+      <div class="product-info mb__15">
+         {%- if product.vendor.size > 0 and show_vendor -%}<div class="product-brand"><a class="cg chp" href="{{ product.vendor | url_for_vendor }}">{{ product.vendor }}</a></div>{%- endif -%}
+         <h3 class="product-title pr fs__14 mg__0 fwm"><a class="cd chp" href="{{product.url | within: collection}}">{{product.title}}</a></h3>
+         <span class="price dib mb__5">{%- render 'product_price',product:product,inc_price:inc_price -%}</span>
+         {%- if use_rating -%}{%- render 'rating',product:product,inc_rating:inc_rating -%}{%- endif -%}
+         {%- if color_count > 0 -%}
+         <div class="swatch__list_js swatch__list lh__1 nt_swatches_on_grid lazyload" data-colorCount="{{color_count}}" data-include="{{pr_url}}/?view=sw{{sett_equal}}"></div>
+         {%- endif -%}
+      </div>
+      {%- if show_stock_bar -%}
+         {%- assign sold = total | minus: available | times: 100 | divided_by: total | ceil -%}
+         <div class="loop-product-stock">
+            <div class="status-bar">
+               <div class="sold-bar" style="width: {{sold}}%"></div>
+            </div>
+            <div class="product-stock-status flex wrap">
+               <div class="sold"> <span class="label">{{txt_sold}} </span> <span class="value">{{total | minus: available}}<span></span></span></div>
+               <div class="available"> <span class="label">{{txt_avai}} </span> <span class="value">{{available}}<span></span></span></div>
+            </div>
+         </div>
+      {%- endif -%}
+   </div>
+</div>

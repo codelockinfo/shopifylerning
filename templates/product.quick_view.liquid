@@ -1,0 +1,84 @@
+{%- liquid
+  layout none
+  assign image_0 = settings.placeholder_img
+  assign rtl = settings.use_rtl
+  assign eq_imgtb = settings.ratio_img_main
+  assign values = product.options_with_values | map: 'values' | join: ',' | downcase
+  assign images = product.media | where: "media_type", "image"
+  assign ops_name = product.options_with_values | map:'name'
+  assign ops_name_1 = product.options_by_name[ops_name[0]].values
+  assign ops_name_2 = product.options_by_name[ops_name[1]].values
+  assign ops_name_3 = product.options_by_name[ops_name[2]].values
+  if settings.ratio_img_main == 'ratio_img1'
+     assign ratio = pr_media.first.preview_image.aspect_ratio
+  endif -%} 
+
+<div class="product-quickview single-product-content img_action_zoom" data-featured-product-se data-id="_qv" id="productqv-{{product.id}}">
+  <div class="row product-image-summary">
+    <div class="col-lg-7 col-md-6 col-12 product-images pr oh">
+      {%- render 'product_labels',product:product -%}
+      <div class="images">
+        <div class="product-images-slider tc equal_nt{% if product.images.size > 1 %} nt_slider nt_carousel_qv p-thumb_qv{% endif %} {{settings.img_size_main}} {{settings.ratio_img_main}} position_{{settings.img_pos_main}}" data-flickity='{"fade":true,"cellSelector": ".q-item:not(.is_varhide)","cellAlign": "center","wrapAround": true,"autoPlay": false,"prevNextButtons":true,"adaptiveHeight": true,"imagesLoaded": false, "lazyLoad": 0,"dragThreshold" : 0,"pageDots": true,"rightToLeft": {{rtl}} }'>
+           {%- if images.size > 0 -%}
+             {%- for image in images -%}
+                {%- liquid
+                  assign alt = image.alt
+                  if alt contains 't4_360'
+                    break
+                  endif
+
+                  if alt contains '_' or alt contains '|'
+                   assign img_alt = alt | split:'|' | first | strip | downcase
+                   
+                    if img_alt contains 't4option' 
+
+                       assign alt_arr0 = img_alt |remove:'t4option'| split:'_'
+                       assign index_alt = alt_arr0 | first | plus:0
+                       assign index_alt2 = alt_arr0 | last | plus:0
+                       if index_alt == 0
+                         assign ops_name_arr = ops_name_1
+                       elsif index_alt == 1
+                         assign ops_name_arr = ops_name_2
+                       else
+                         assign ops_name_arr = ops_name_3
+                       endif
+                       assign alt_arr = ops_name[index_alt] | append:'_' | append:ops_name_arr[index_alt2] | split:'_'
+                     
+                    else
+                      assign alt_arr = img_alt | split:'_'
+                    endif
+                    assign txt_alt = alt | split:'|' | last | escape | strip
+                    
+                  else
+                   assign alt_arr = 'not4 ntt4' | split:' ' 
+                   assign txt_alt = alt
+                  endif
+                  assign ratio = image.aspect_ratio -%}
+
+                <div data-grname="{{alt_arr | first | handleize }}" data-grpvl="{{alt_arr | last | handleize}}" class="js-sl-item q-item sp-pr-gallery__img w__100{%- if values contains img_alt %} bc_{{img_alt | handleize }}{%- endif %}" data-mdid="{{image.id}}" data-mdtype="image">
+                   <span class="nt_bg_lz lazyload" data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{ratio}}" data-sizes="auto"{% if eq_imgtb == 'ratio_imgtrue' or images.size == 1 %} style="padding-top:{{ 1 | divided_by: ratio | times: 100}}%;"{% endif %}></span>
+                </div>
+             {%- endfor -%}
+           {%- elsif image_0 != blank -%}{%- assign ratio = image_0.aspect_ratio -%}
+
+                <div class="js-sl-item q-item sp-pr-gallery__img w__100" data-mdid="{{image_0.id}}" data-mdtype="image">
+                   <span class="nt_bg_lz lazyload" data-bgset="{{ image_0 | img_url: '1x1' }}" data-ratio="{{ratio}}" data-sizes="auto" style="padding-top:{{ 1 | divided_by: ratio | times: 100}}%;"></span>
+                </div>
+                
+           {%- else -%}
+
+                <img src="https://placehold.jp/1/f5f5f5/f5f5f5/870x1110.png" alt="Gecko shopify placehold">
+
+           {%- endif -%} 
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-5 col-md-6 col-12 summary entry-summary pr">
+      <div class="summary-inner gecko-scroll-quick"><div class="gecko-scroll-content-quick">{%- section 'pr_summary' -%}</div></div><!-- .summary -->
+      {%- render 'product_js',key_nt:'_qv' -%}
+    </div>
+  </div>
+</div>
+{%- if ratio != blank -%}
+<style>.nt_carousel_qv.equal_nt.ratio_img1 .nt_bg_lz {padding-top: {{ 1 | divided_by:ratio | times: 100 }}%;}</style>
+{%- endif -%}

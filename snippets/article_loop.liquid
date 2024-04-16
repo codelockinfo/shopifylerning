@@ -1,0 +1,18 @@
+{%- assign art_url = article.url %}{% assign IsDotShown = false -%}
+<article class="post-{{article.id}} post_nt_loop post_1 col-lg-{{col}} col-md-{{col_tb}} col-{{col_mb}} mb__40"> 
+   <a class="mb__15 db pr oh" href="{{art_url}}">
+      {%- assign image = article.image -%}
+      {%- if image -%}<div class="lazyload nt_bg_lz pr_lazy_img" data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{image.aspect_ratio}}" data-sizes="auto"{% if sett_equal == false %} style="padding-top:{{ 1 | divided_by: image.aspect_ratio | times: 100}}%;"{% endif %}></div>{%- endif -%}
+   </a>
+   <div class="post-info mb__10">
+      <h4 class="mg__0 fs__16 mb__5 ls__0"><a class="cd chp open" href="{{art_url}}">{{article.title}}</a></h4>
+      {%- if show_au -%}<span class="post-author mr__5">{{ by }} <span class="cd">{{ article.author | replace_first: 'ad clnt', 'admin' }}</span></span>{%- endif -%}
+      {%- if show_dt -%}<span class="post-time">{{ on }} <span class="cd">{{ article.published_at | time_tag: format: date }}</span></span>{%- endif -%}
+      {%- if show_cm -%}
+         {%- if article.comments_count > 0 %}{% assign cm_link = '#comments' %}{% else %}{% assign cm_link = '#comment_form' %}{% endif -%}
+         {%- if IsDotShown %}.{% endif %}<a href="{{ art_url }}{{cm_link}}"> {{ 'blogs.comments.with_count' | t: count: article.comments_count }}</a>
+      {%- endif -%}
+   </div>
+   {%- if show_cnt %}<div class="post-content">{%- if article.excerpt.size > 0  -%}{{ article.excerpt | strip_html }}{%- else -%}{{ article.content | strip_html | truncate: 118 }}{%- endif -%}</div>{% endif -%}
+   {%- if show_rm %}<a href="{{art_url}}" class="post-readmore dib mt__5">{{ 'blogs.section.read_more' | t }}</a>{% endif -%}
+</article>

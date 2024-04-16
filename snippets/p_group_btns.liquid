@@ -1,0 +1,39 @@
+{%- liquid
+  assign images_alt = product.images | map: 'alt'
+  assign first_3d_model = pr_media | where: "media_type", "model" | first -%}
+
+{%- if se_id != blank and first_3d_model -%}
+<div class="p_group_btns pa flex">
+          <button 
+            aria-label="{{ 'products.product.view_in_space_label' | t }}"
+            class="pr__view-in-space ttip_nt tooltip_top_left"
+            data-shopify-xr
+            data-shopify-model3d-id="{{ first_3d_model.id }}"
+            data-shopify-title="{{ product.title | escape }}"
+            data-shopify-xr-hidden>
+            <i class="las la-cube"></i><span class='product-single__view-in-space-text tt_txt'>{{ 'products.product.view_in_space' | t }}</span>
+          </button>
+</div>
+
+{%- elsif se_id == blank -%}  
+
+<div class="p_group_btns pa flex">
+  {%- if images_alt contains 't4_360' -%}
+    <button data-id="#pr_360_mfp" class="br__40 tc flex al_center fl_center bghp_ nt_mfp_360 ttip_nt tooltip_top_left op__0"><i class="las la-street-view"></i><span class="tt_txt">{{ 'products.product.view_360'| t }}</span></button>
+	<div id="pr_360_mfp" class="pr_360_wrapper pr mfp-hide"><div class="threesixty threed_id_{{product.id}} pr"><div class="spinner"><span>0%</span></div><ul class="threesixty_imgs"></ul></div></div> 
+  {%- endif -%}
+  {%- if settings.main_click == 'zoom' and settings.show_zoom_img and product.images.size > 0 -%}<button class="br__40 tc flex al_center fl_center bghp_ show_btn_pr_gallery ttip_nt tooltip_top_left"><i class="las la-expand-arrows-alt"></i><span class="tt_txt">{{ 'products.product.click_zoom'| t }}</span></button>{%- endif -%}
+
+        {%- if first_3d_model -%}
+          <button 
+            aria-label="{{ 'products.product.view_in_space_label' | t }}"
+            class="pr__view-in-space ttip_nt tooltip_top_left"
+            data-shopify-xr
+            data-shopify-model3d-id="{{ first_3d_model.id }}"
+            data-shopify-title="{{ product.title | escape }}"
+            data-shopify-xr-hidden>
+            <i class="las la-cube"></i><span class='product-single__view-in-space-text tt_txt'>{{ 'products.product.view_in_space' | t }}</span>
+          </button>
+        {%- endif -%}  
+</div>
+{%- endif -%}  

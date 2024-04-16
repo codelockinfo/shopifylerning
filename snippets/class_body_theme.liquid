@@ -1,0 +1,14 @@
+class="gecko-5_0_0 lazy_icons min_cqty_{{settings.min_qty}} btnt4_style_{{settings.btnt4_style}} zoom_tp_{{settings.zoom_tp}} css_scrollbar template-{{ t_name | handle}} js_search_{{settings.ajax_search}} cart_pos_{{settings.cart_pos}} gecko_toolbar_{{settings.enable_toolbar}} hover_img{{settings.hover_img}} swatch_style_{{settings.swatch_style_settings}} swatch_list_size_{{settings.swatch_home_size}} label_style_{{settings.label_settings}} wrapper_{{settings.general_layout}} header_full_{{settings.full_header}} header_sticky_{{settings.sticky_header}} hide_scrolld_{{settings.scroll_header}} des_header_{{settings.header_design}} h_transparent_{{settings.h_transparent}} h_tr_top_{{settings.h_tr_top}} h_banner_{{settings.h_banner}} top_bar_{{settings.h_topbar}} catalog_mode_{{settings.catalog_mode}} cat_sticky_{{settings.cat_sticky}} prs_bordered_grid_{{settings.bordered_grid2}} prs_sw_limit_{{settings.sw_limit}} search_pos_{{settings.search_pos}} t4_compare_{{settings.enable_compe}}
+ dark_mode_{{settings.dark}} {%- if t_name == 'page' %} page_id_{{page.id}}{%- endif -%}{%- if customer %} logged-in{%- endif -%}{%- if body_img != blank %} lazyload nt_bg_lz{% else %} lazyload{%- endif -%}{%- if settings.filter_type_search and shop.types.size > 0 %} js_search_type{%- endif -%}
+{%- liquid
+	assign use_rtl = settings.use_rtl
+	if settings.list_rtl != blank
+		assign locale_iso_code = request.locale.iso_code
+		assign arr_list_rtl = settings.list_rtl | remove:' ' | split:';' 
+		if arr_list_rtl contains locale_iso_code
+		  assign use_rtl = true
+		else
+		  assign use_rtl = false
+		endif
+	endif %} rtl_{{use_rtl -}}
+"{% if body_img != blank %} data-bgset="{{ body_img | img_url: '1x1' }}" data-ratio="{{body_img.aspect_ratio}}" data-sizes="auto"{% endif -%} 

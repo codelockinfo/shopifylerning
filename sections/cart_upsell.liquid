@@ -1,0 +1,424 @@
+{%- assign collection = collections[section.settings.collection] -%}
+{%- if section.settings.show_section and collection != blank -%}
+   
+   {%- assign sett_equal = section.settings.use_eq_height -%}{%- include 'settings_pr' -%}
+   {%- assign show_vendor = section.settings.show_vendor -%}
+   {%- assign inc_pr = section.settings.pr_des -%}
+   {%- assign limit = section.settings.limit -%}
+   {%- assign col = ' pr_animated done' | prepend:section.settings.col_pr -%}{%- assign col_tb = section.settings.col_pr_tb -%}{%- assign col_mb = section.settings.col_pr_mb -%}
+   {%- assign prs_id = cart.items | map: 'product_id' -%}
+   {%- assign counter = 0 -%}
+  {%- paginate collection.products by 100 -%}
+  <div class="related product-extra mt__60" id="upsell_cart_wrap">
+     <div class="container">
+       {%- render 'section_title',section:section -%}
+       <div class="products nt_products_holder nt_slider row row_pr_{{inc_pr}} {{section.settings.image_size}} {{section.settings.image_ratio}} position_{{section.settings.image_position}} space_{{section.settings.space_cat}}{% if sett_equal %} equal_nt{% endif %}" data-flickity='{"imagesLoaded": 0, "contain": 1, "groupCells": true, "dragThreshold" : 5, "cellAlign": "center","wrapAround": 0,"prevNextButtons": 1,"percentPosition": 1,"pageDots": 0, "rightToLeft": {{settings.use_rtl}}, "autoPlay":0 }'>
+            {%- if inc_pr == '1' or inc_pr == '1 tc' -%}
+            {%- for product in collection.products -%}{%- unless prs_id contains product.id or product.available == false -%}{%- render 'pr_loop_grid_1',product:product, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}{% assign counter = counter | plus:1 %}{%- endunless -%}{% if counter == limit %}{% break %}{% endif %}{%- endfor -%}
+            {%- else -%}
+            {%- for product in collection.products -%}{%- unless prs_id contains product.id or product.available == false -%}{%- render 'pr_loop_grid_2',product:product, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}{% assign counter = counter | plus:1 %}{%- endunless -%}{% if counter == limit %}{% break %}{% endif %}{%- endfor -%}
+            {%- endif -%}
+       </div>
+     </div>
+  </div>
+  {%- endpaginate -%}
+  {%- if counter == 0 %}{% style %}#shopify-section-cart_upsell{display:none}{% endstyle %}{% endif -%}
+
+{%- endif -%}
+{%- schema -%}
+{
+  "name": "Product upsell",
+  "settings": [
+    {      
+      "type": "paragraph", 
+      "content": "Show additional products to encourage customers to buy more."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_section",
+      "label": "Show product upsell?",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "== Title Settings"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Complete your cart"
+    },
+    {
+      "type": "textarea",
+      "id": "sub_title",
+      "label": "Sub Text"
+    },
+    {
+      "type": "select",
+      "id": "style_title",
+      "options": [
+       {
+          "value": "title_1",
+          "label": "Style 1"
+       },
+       {
+          "value": "title_2",
+          "label": "Style 2"
+        },
+       {
+          "value": "title_3",
+          "label": "Style 3"
+        },
+       {
+          "value": "title_4",
+          "label": "Style 4"
+        },
+       {
+          "value": "title_5 lazyload",
+          "label": "Style 5"
+        },
+       {
+          "value": "title_6",
+          "label": "Style 6"
+        },
+         {
+            "value": "title_7 +la",
+            "label": "Style 7 (with line-awesome)"
+          }
+        ],
+        "label": "Style title"
+      },
+      {
+        "type": "text",
+        "id": "ic_tt",
+        "label": "Style 7 icon line-awesome",
+        "default": "gem"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_clpr",
+        "label": "Use icon color primary?",
+        "default": false
+      },
+      {
+        "type": "paragraph",
+        "content": "[Get icons Line awesome](https://icons8.com/line-awesome)"
+      },
+     {
+       "type": "header",
+       "content": "== General Configuration"
+     },
+      {
+        "id": "collection",
+        "type": "collection",
+        "label": "Collection",
+        "info": "Products already in cart or sold out will be hidden."
+      },
+      {
+        "type": "range",
+        "id": "limit",
+        "label": "Number of Products to display",
+        "min": 1,
+        "max": 20,
+        "step": 1,
+        "default": 6
+      },
+      {
+        "type": "select",
+        "id": "space_cat",
+        "options": [
+          {
+            "value": "50",
+            "label": "50"
+          },
+          {
+            "value": "40",
+            "label": "40"
+          },
+          {
+            "value": "30",
+            "label": "30"
+          },
+          {
+            "value": "20",
+            "label": "20"
+          }
+        ],
+        "label": "Space between products",
+        "default": "30"
+      },
+      {
+        "type": "select",
+        "id": "col_pr",
+        "label": "Products columns",
+        "info": "How many products you want to show per row",
+        "default": "3",
+        "options": [
+          {
+            "value": "6",
+            "label": "2"
+          },
+          {
+            "value": "4",
+            "label": "3"
+          },
+          {
+            "value": "3",
+            "label": "4"
+          },
+          {
+            "value": "15",
+            "label": "5"
+          },
+          {
+            "value": "2",
+            "label": "6"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_pr_tb",
+        "label": "Products columns Tablet",
+        "default": "3",
+        "options": [
+          {
+            "value": "6",
+            "label": "2"
+          },
+          {
+            "value": "4",
+            "label": "3"
+          },
+          {
+            "value": "3",
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_pr_mb",
+        "label": "Products columns Mobile",
+        "default": "6",
+        "options": [
+          {
+            "value": "12",
+            "label": "1"
+          },
+          {
+            "value": "6",
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "pr_des",
+        "label": "Design product",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "Design 1"
+          },
+          {
+            "value": "1 tc",
+            "label": "Design 1 (center)"
+          },
+          {
+            "value": "2",
+            "label": "Design 2"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "show_vendor",
+        "label": "Show product vendors",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "sale_countdown",
+        "default": false,
+        "label": "Use Sale countdown",
+        "info": "Countdown to the end sale date will be shown. Be sure you have set final date of the product sale price. product.metafields.meta.countdown ( 2017\/08\/17 )"
+      },
+      {
+        "type": "select",
+        "id": "collection_countdown_style",
+        "label": "Countdown style",
+        "default": "dark",
+        "options": [
+          {
+            "value": "default",
+            "label": "Countdown timer default"
+          },
+          {
+            "value": "light",
+            "label": "Countdown timer light"
+          },
+          {
+            "value": "light_2",
+            "label": "Countdown timer light 2"
+          },
+          {
+            "value": "dark",
+            "label": "Countdown timer dark"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "== Design Image"
+      },
+      {
+        "type": "checkbox",
+        "id": "use_eq_height",
+        "label": "Use equal height images?",
+        "default": false
+      },
+      {
+        "type": "select",
+        "id": "image_ratio",
+        "label": "Aspect Ratio",
+        "default": "ratio_nt",
+        "info": "Aspect Ratio Custom will settings in General panel.",
+        "options": [
+          {
+            "group": "Landscape",
+            "value": "ratio2_1",
+            "label": "2:1"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio16_9",
+            "label": "16:9"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio8_5",
+            "label": "8:5"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio3_2",
+            "label": "3:2"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio4_3",
+            "label": "4:3"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio_nt",
+            "label": "Ratio ASOS"
+          },
+          {
+            "group": "Squared",
+            "value": "ratio1_1",
+            "label": "1:1"
+          },
+          {
+            "group": "Portrait",
+            "value": "ratio2_3",
+            "label": "2:3"
+          },
+          {
+            "group": "Portrait",
+            "value": "ratio1_2",
+            "label": "1:2"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus1",
+            "label": "Ratio Custom 1"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus2",
+            "label": "Ratio Custom 2"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus3",
+            "label": "Ratio Custom 3"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus4",
+            "label": "Ratio Custom 4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "image_size",
+        "label": "Image Size",
+        "default": "nt_cover",
+        "options": [
+          {
+            "value": "nt_cover",
+            "label": "Full"
+          },
+          {
+            "value": "nt_contain",
+            "label": "Auto"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "image_position",
+        "info": "The first value is the horizontal position and the second value is the vertical.",
+        "options": [
+          {
+            "value": "default",
+            "label": "Default"
+          },
+          {
+            "value": "1",
+            "label": "Left Top"
+          },
+          {
+            "value": "2",
+            "label": "Left Center"
+          },
+          {
+            "value": "3",
+            "label": "Left Bottom"
+          },
+          {
+            "value": "4",
+            "label": "Right Top"
+          },
+          {
+            "value": "5",
+            "label": "Right Center"
+          },
+          {
+            "value": "6",
+            "label": "Right Bottom"
+          },
+          {
+            "value": "7",
+            "label": "Center Top"
+          },
+          {
+            "value": "8",
+            "label": "Center Center"
+          },
+          {
+            "value": "9",
+            "label": "Center Bottom"
+          }
+        ],
+        "label": "Image Position",
+        "default": "8"
+      }
+  ]
+}
+{% endschema %}

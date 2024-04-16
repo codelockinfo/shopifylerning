@@ -1,0 +1,11 @@
+{%- liquid
+  layout none
+   assign sett_equal = false
+   assign show_vendor = false
+   assign inc_price = settings.price_format
+   assign use_rating = settings.use_pr_rating 
+   assign inc_rating = settings.app_review 
+   assign show_color = settings.show_pr_color 
+   assign show_cl_type = settings.show_color_type
+   assign show_size = settings.show_pr_size -%}
+<div class="pin__popup op__0 pa">{%- render 'pr_loop_grid_2', product:product,col_mb:'12 tc',sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}</div>

@@ -1,0 +1,49 @@
+{%- liquid
+assign key = ''
+assign key_2 = ''
+assign key_3 = ''
+if block.settings.use_auto_filter_tag
+  assign stt_key = block.settings.key | default:'nt_the4' | strip
+  assign key = stt_key | append:'_' | downcase
+  assign key_2 = stt_key | append:'-' | downcase
+  assign key_3 = stt_key | append:' ' | downcase
+  assign group_tags = tags_dow_arr | where:key
+  assign group_tags_2 = tags_dow_arr | where:key_2
+  assign group_tags_3 = tags_dow_arr | where:key_3
+  assign tag_block_org = group_tags | concat: group_tags_2 | concat: group_tags_3 | uniq
+  assign tag_block = tag_block_org | join: ',' | replace: '  ',' ' | split: ',' | uniq
+  assign current_tags = current_tags |join:';;' | replace: '  ',' ' | split: ';;' 
+else
+   assign tag_push = ''
+   assign tag_stt_arr = block.settings.arra_enter | replace: ' ,', ',' | replace: ', ', ',' | split: ',' | uniq 
+   assign tag_stt_arr_dow = tag_stt_arr | join: ',' | downcase | split: ',' 
+   for tag in tag_stt_arr_dow
+      if tags_dow_arr contains tag
+        assign tag_push = tag_push |append:tag_stt_arr[forloop.index0] |append:','
+      endif
+   endfor
+   assign tag_block = tag_push | split: ',' 
+endif -%}
+
+{%- if tag_block.size > 0 -%}
+<div class="col-12 col-md-{{col_class}} widget block_{{block.id}}">
+  <h5 class="widget-title">{{block.settings.title}}</h5>
+  <div class="loke_scroll">
+     <ul class="nt_filter_block nt_filter_style{{block.settings.style}} css_ntbar">
+        {%- for tag in tag_block -%}
+
+            {%- liquid
+              assign tag_dow = tag | downcase
+              assign tag_key = tag | remove:key_3 | remove:key_2 | remove:key | strip -%}
+            {%- if current_tags contains tag_dow -%}
+                  <li class="active">{{ tag_key | link_to_remove_tag: tag_dow | replace: 'title=', 'aria-label=' }}</li>
+            {%- else -%}
+                  <li>{{ tag_key | link_to_add_tag: tag_dow | replace: 'title=', 'aria-label=' }}</li>
+            {%- endif -%}
+
+        {%- endfor -%}
+     </ul>
+  </div>
+</div>
+<style>.cat_filter {opacity: 1;pointer-events: auto}.type_toolbar_filter{display: block}</style>
+{%- endif -%}

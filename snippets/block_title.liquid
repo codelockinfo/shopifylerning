@@ -1,0 +1,8 @@
+{%- assign sett_title = block.settings.title -%}
+{%- assign style_title = block.settings.style_title -%}
+{%- if sett_title != blank -%}
+<div class="wrap_title {{block_title}} des_{{style_title}} sub_title_size_{{block.settings.sub_title | size}}" {{ block.shopify_attributes }}>
+<h3 class="section-title tc pr flex fl_center al_center fs__24 {{style_title}}"><span class="mr__10 ml__10">{{sett_title}}</span></h3>
+<span class="dn tt_divider"><span></span><i class="dn clpr{{block.settings.show_clpr}} {{style_title |split:'+' | last }} la-{{block.settings.ic_tt}}"></i><span></span></span><span class="section-subtitle db tc{% if block.settings.sub_font == '2' %} sub-title{% endif %}">{{block.settings.sub_title}}</span>
+</div>
+{%- endif -%}

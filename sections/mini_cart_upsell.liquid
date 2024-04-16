@@ -1,0 +1,87 @@
+{%- liquid
+ assign on_sale_txt = 'products.product.on_sale' | t
+ assign quick_view_t = 'products.grid_items.quick_view' | t
+ assign save_js = 'products.product.save_js' | t: saved_amount:'saved_amount'
+ assign inc_price = settings.price_format
+ assign placeholder_img = settings.placeholder_img
+ assign rtl = settings.use_rtl
+ assign arrPRcat = cart.items | map:'product_id'
+ assign index = 1
+ assign limit = 5 -%}
+
+{%- if recommendations.products_count > 0 -%}
+<div class="mini_cart_upsell">
+	<div class="mini_cart_upsell__title tc cd">{{ 'cart.general.fbt_title' | t }}</div>
+	<div class="mini_cart_upsell_items row" data-flickity='{"arrowShape": {"x0": 20, "x1": 60, "y1": 40, "x2": 65, "y2": 35, "x3": 30},"fade":false,"draggable":false,"cellSelector": ".upsell_item","cellAlign": "center","wrapAround": true,"autoPlay": false,"prevNextButtons":true,"adaptiveHeight": false,"imagesLoaded": false, "lazyLoad": 0,"dragThreshold" : 0,"pageDots": true,"rightToLeft": {{rtl}} }'>
+		{%- for product in recommendations.products -%}
+		{%- if index > limit %}{% break %}{% endif -%}
+		{%- if arrPRcat contains product.id %}{% continue %}{% endif -%}
+		{%- assign index = index | plus:1 -%}
+		{%- assign image = product.images[0] | default:placeholder_img -%}
+		{%- capture url_last -%}{{product.url | split:'/products/' | first}}/products/{{product.handle}}{%- endcapture -%}
+	   <div class="upsell_item col-12">
+	     <div class="row no-gutters al_center">
+	       <div class="col-auto">
+	         <div class="upsell_item_img pr">
+	         	{%- if image != blank %}{% assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+	         	<img src="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20{{image.width}}%20{{image.height}}%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3C%2Fsvg%3E" data-src="{{ img_url }}" data-widths="[80, 160, 320, 640]" data-sizes="auto" class="w__100 lazyload lz_op_ef" alt="{{image.alt | escape }}">
+	         	{%- endif -%}
+	         </div>
+	       </div>
+	       <div class="col oh">
+	         <a class="upsell_item__title db truncate" href="{{product.url}}">{{ product.title }}</a>
+	         <span class="price dib">
+					{%- liquid
+							assign variant_unit = product.variants.first
+							assign pid = product.id
+							assign hd_up = 'group-' |append:pid
+							assign nav_up = linklists[hd_up].links | where:'type','product_link'
+							assign nav_up_size = nav_up.size -%}
+
+							{%- if nav_up_size == 0 and variant_unit.unit_price_measurement -%}
+							   {%- if variant_unit.compare_at_price > variant_unit.price -%}<del>{{ variant_unit.compare_at_price  | money }}</del><ins>{{ variant_unit.price | money }}</ins>{%- else -%}{{ variant_unit.price | money }}{%- endif -%}
+							   {%- capture unit_price_base_unit -%}
+							    <span class="unit_base">
+							      {%- if variant_unit.unit_price_measurement -%}
+							        {%- if variant_unit.unit_price_measurement.reference_value != 1 -%}
+							          {{- variant_unit.unit_price_measurement.reference_value -}}
+							        {%- endif -%}
+							        {{ variant_unit.unit_price_measurement.reference_unit }}
+							      {%- endif -%}
+							    </span>
+							   {%- endcapture -%}
+							   <div class="price__unit"><span class="unit_price">{{ variant_unit.unit_price | money }}</span><span>/</span>{{- unit_price_base_unit -}}</div>
+
+							{%- elsif inc_price == '1' -%}
+							  {%- if nav_up_size > 0 -%}{{ product.price | money }}{%- if product.compare_at_price != blank -%} – {{ product.compare_at_price | money }}{%- endif -%}
+							  {%- else -%}
+							    {%- if product.price_varies -%}{{ product.price_min | money }} – {{ product.price_max | money }}
+							    {%- elsif product.compare_at_price > product.price -%}<del>{{ product.compare_at_price  | money }}</del> <ins>{{ product.price | money }}</ins>{%- if settings.label_sale_style == '1' -%}<span class="nt_label onsale">{{ on_sale_txt }}</span>{%- else-%}{%- assign save = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | ceil -%}<span class="onsale nt_label">{{ save_js | replace:'saved_amount',save }}</span>{% endif -%}
+							    {%- else -%}{{ product.price | money }}
+							    {%- endif -%}
+							  {%- endif -%}
+
+							{%- else -%}
+
+							  {%- if nav_up_size > 0 -%}<span class="cb fwn">{{ 'products.product.from' | t }}</span> {{ product.price | money }}
+							  {%- else -%}
+							    {%- if product.price_varies -%}<span class="cb fwn">{{ 'products.product.from' | t }}</span> {{ product.price_min | money }}
+							    {%- elsif product.compare_at_price > product.price -%}<del>{{ product.compare_at_price  | money }}</del> <ins>{{ product.price | money }}</ins>{%- if settings.label_sale_style == '1' -%}<span class="nt_label onsale">{{ on_sale_txt }}</span>{%- else-%}{%- assign save = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | ceil -%}<span class="onsale nt_label">{{ save_js | replace:'saved_amount',save }}</span>{% endif -%}
+							    {%- else -%}{{ product.price | money }}
+							    {%- endif -%}
+							  {%- endif -%}
+							{%- endif -%}
+	         </span>
+	       </div>
+	       <div class="col-auto"><a class="upsell_qv js_add_qv cd tc dib ttip_nt tooltip_left ts__03" href="{{url_last}}" data-id="{{product.id}}" rel="nofollow"><span class="tt_txt">{{quick_view_t}}</span><i class="iccl iccl-eye"></i></a></div>
+	     </div>
+	   </div>
+	   {%- endfor -%}
+	</div>
+</div>
+<style>
+  .mini_cart_upsell { margin: 20px;border-radius: 5px;overflow: hidden;box-shadow: 0 0 3px 0 rgb(0 0 0 / 20%);
+      {%- if index == 1 %}display: none !important{% endif-%}
+  }.mini_cart_upsell__title{background-color:#f5f5f5;font-size:15px;font-weight:500;padding:10px}.upsell_item__title{font-size:14px;line-height:1.35}.upsell_item_img{margin:10px}.upsell_item_img img{width:80px;max-height:110px;object-fit:contain}.upsell_item .col-auto{max-width:100px}.mini_cart_upsell_items .flickity-viewport,.mini_cart_upsell_items:not(.flickity-enabled) .upsell_item:not(:last-child){border-bottom:4px double #eee}.upsell_item .upsell_qv{padding:10px;line-height:1;color:#fff;border-radius:5px;box-shadow:0 0 3px 0 rgb(0 0 0 / 20%);margin:10px}.upsell_item .upsell_qv>i{font-weight:600}.upsell_item .onsale.nt_label{margin: 0 5px;width:auto;height:auto;border-radius:3px;font-size:10px;color:#fff;display:inline-block;padding:4px;line-height: 1;}.mini_cart_upsell .flickity-prev-next-button{position:static;width:30%;-ms-flex-order:4;order:4;color:#222;border:0;background:0 0;border-radius:0}.mini_cart_upsell .flickity-prev-next-button.next{-ms-flex-order:5;order:5}.mini_cart_upsell .flickity-page-dots{width:40%;-ms-flex-order:4;order:4}.mini_cart_upsell .flickity-prev-next-button:before{display:inline-block;width:100%;font-size:36px;height:auto;line-height:1}.mini_cart_upsell .flickity-enabled .flickity-prev-next-button{-webkit-transform:scale(1);transform:scale(1);opacity:1}.mini_cart_upsell .flickity-page-dots .dot{margin-top:16px}
+</style>
+{%- endif -%}

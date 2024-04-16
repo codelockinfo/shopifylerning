@@ -1,0 +1,293 @@
+{%- liquid
+ assign limit = 5
+ assign show_pr = false
+ assign img_size = '40x' 
+ assign only_icon = 'only_icon_' | append:settings.only_icon -%}
+
+<ul id="menu_mb_cat" class="nt_mb_menu">
+   {%- if section.blocks.size > 0 -%}
+      {%- for block in section.blocks -%}
+         {%- assign block_stts = block.settings -%}
+         {%- assign collection = collections[block_stts.cat] -%}
+         {%- assign tt_current = block_stts.title | default:collection.title -%}
+         {%- assign url_current = block_stts.url | default:collection.url -%}
+            {%- case block.type -%}
+              {%- when 'cat' -%}
+                  {%- if linklists[block_stts.menu].links.size > 0 -%}
+                      <li id="item_{{block.id}}" class="menu-item item-level-0 menu-item-has-children {{only_icon}}" {{ block.shopify_attributes }}>
+                        <a href="{{url_current}}"><span class="nav_link_txt flex al_center">
+
+                         {%- if block_stts.icons_op == '2' and block_stts.icon != blank %}<i class="las la-{{block_stts.icon | strip }} mr__10 fs__20"></i>
+                         {%- elsif block_stts.icons_op == '1' and block_stts.image != blank %}<i class="dib mr__10"><img class="img_catk_mb" src="{{block_stts.image | img_url:img_size }}" alt="{{block_stts.image.alt}}"></i>{% endif -%}
+
+                         {{tt_current}}{% if block_stts.lb != blank %}<span class="lbc_nav_mb ml__5" style="background-color: {{block_stts.lb_cl}}">{{block_stts.lb}}</span>{% endif %}</span><span class="nav_link_icon ml__5"></span></a>
+                           <ul class="sub-menu">
+                              {%- for link in linklists[block_stts.menu].links -%}
+
+                                 {%- assign arrlt = link.title | split: '[' -%}{%- render 'lb_inc',arrlt:arrlt -%}
+                                 {%- if link.links != blank -%}
+                                    <li class="menu-item item-level-1 menu-item-has-children {{only_icon}}{% if link.active %} current_item{% endif %}">
+                                       <a href="{{link.url}}"><span class="nav_link_txt flex al_center">{%- render 'lb_inc_mb',arrlt:arrlt -%}</span><span class="nav_link_icon ml__5"></span></a>
+                                       <ul class="sub-sub-menu">
+                                          {%- for child_link in link.links -%}
+
+                                             {%- assign arrlt = child_link.title | split: '[' -%}
+                                             {%- if child_link.links != blank -%}
+                                                <li id="item_{{block.id}}" class="menu-item item-level-2 menu-item-has-children {{only_icon}}{% if child_link.active %} current_item{% endif %}">
+                                                   <a href="{{child_link.url}}"><span class="nav_link_txt flex al_center">{%- render 'lb_inc_mb',arrlt:arrlt -%}</span><span class="nav_link_icon ml__5"></span></a>
+                                                   <ul class="sub-sub-sub-menu">
+
+                                                      {%- for grandchild_link in child_link.links -%}
+                                                      {%- assign arrlt = grandchild_link.title | split: '[' -%}
+                                                      <li class="menu-item item-level-3{% if grandchild_link.active %} current_item{% endif %}"><a href="{{grandchild_link.url}}">{%- render 'lb_inc_mb',arrlt:arrlt -%}</a></li>
+                                                      {%- endfor -%}
+
+                                                   </ul>
+                                                </li>
+                                             {%- else -%}
+                                                 <li class="menu-item item-level-2{% if child_link.active %} current_item{% endif %}"><a href="{{child_link.url}}">{%- render 'lb_inc_mb',arrlt:arrlt -%}</a></li>
+                                             {%- endif -%}
+
+                                          {%- endfor -%}
+                                       </ul>
+                                    </li>
+                                 {%- else -%}
+                                    <li class="menu-item item-level-1{% if link.active %} current_item{% endif %}"><a href="{{link.url}}">{%- render 'lb_inc_mb',arrlt:arrlt -%}</a></li>
+                                 {%- endif -%}
+
+                              {%- endfor -%}
+                           </ul>
+                     </li>
+                  {%- else -%}
+                      <li id="item_{{block.id}}" class="menu-item item-level-0"><a href="{{url_current}}">
+
+                       {%- if block_stts.icons_op == '2' and block_stts.icon != blank %}<i class="las la-{{block_stts.icon | strip }} mr__10 fs__20"></i>
+                       {%- elsif block_stts.icons_op == '1' and block_stts.image != blank %}<i class="dib mr__10"><img class="img_catk_mb" src="{{block_stts.image | img_url:img_size }}" alt="{{block_stts.image.alt}}"></i>{% endif -%}
+
+                       {{tt_current}}{% if block_stts.lb != blank %}<span class="lbc_nav_mb ml__5" style="background-color: {{block_stts.lb_cl}}">{{block_stts.lb}}</span>{% endif %}</a></li>
+                  {%- endif -%}
+              {%- else -%}
+            
+               {%- capture get_sub_cat -%}
+                      {%- for i in (1..25) -%}
+                      {%- assign cat = 'cat' | append:i -%}
+                      {%- assign url = 'url' | append:i -%}
+                      {%- assign image = 'image' | append:i -%}
+                      {%- assign cat_id = block_stts[cat] -%}
+                      {%- assign url_id = block_stts[url] -%}
+                      {%- assign image_id = block_stts[image] -%}
+                      {%- assign collec = collections[cat_id] -%}
+
+                          {%- if collec == blank and url_id == blank %}{% continue %}{% endif %}{% assign image = image_id | default:collec.image -%}
+                           <div class="cat_grid_item cat_space_item">
+                            <div class="cat_grid_item__content pr oh">
+                               <a href="{{ url_id|default:collec.url }}" class="db cat_grid_item__link">
+                                {%- if image != blank -%}
+                                <div class="cat_grid_item__overlay item__position nt_bg_lz lazyload" data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{image.aspect_ratio}}" data-sizes="auto" data-parent-fit="width" style="padding-top:{{ 1 | divided_by: image.aspect_ratio | times: 100}}%;"></div>
+                                {%- else -%}
+                                <div class="cat_grid_item__overlay item__position nt_bg_lz" style="padding-top:100%;"></div>
+                                {%- endif -%}
+                               </a>
+                               <div class="cat_grid_item__wrapper pe_none"><div class="cat_grid_item__title h3">{{ collec.title }}</div></div>
+                            </div>
+                           </div>
+                         
+                      {%- endfor -%}
+               {%- endcapture -%}
+
+               {%- if get_sub_cat != blank -%}
+                   <li id="item_{{block.id}}" class="menu-item menu-item-cat item-level-0 menu-item-has-children {{only_icon}}" {{ block.shopify_attributes }}>
+                     <a href="{{url_current}}"><span class="nav_link_txt flex al_center">
+
+                      {%- if block_stts.icons_op == '2' and block_stts.icon != blank %}<i class="las la-{{block_stts.icon | strip }} mr__10 fs__20"></i>
+                      {%- elsif block_stts.icons_op == '1' and block_stts.image != blank %}<i class="dib mr__10"><img class="img_catk_mb" src="{{block_stts.image | img_url:img_size }}" alt="{{block_stts.image.alt}}"></i>{% endif -%}
+
+                      {{tt_current}}{% if block_stts.lb != blank %}<span class="lbc_nav_mb ml__5" style="background-color: {{block_stts.lb_cl}}">{{block_stts.lb}}</span>{% endif %}</span><span class="nav_link_icon ml__5"></span></a>
+                      <ul class="sub-menu equal_nt cat_design_2">{{get_sub_cat}}</ul>
+                  </li>
+               {%- else -%}
+                   <li id="item_{{block.id}}" class="menu-item item-level-0"><a href="{{url_current}}">
+
+                    {%- if block_stts.icons_op == '2' and block_stts.icon != blank %}<i class="las la-{{block_stts.icon | strip }} mr__10 fs__20"></i>
+                    {%- elsif block_stts.icons_op == '1' and block_stts.image != blank %}<i class="dib mr__10"><img class="img_catk_mb" src="{{block_stts.image | img_url:img_size }}" alt="{{block_stts.image.alt}}"></i>{% endif -%}
+
+                    {{tt_current}}{% if block_stts.lb != blank %}<span class="lbc_nav_mb ml__5" style="background-color: {{block_stts.lb_cl}}">{{block_stts.lb}}</span>{% endif %}</a></li>
+               {%- endif -%}
+            {%- endcase -%}
+      {%- endfor -%}
+   {%- else -%}
+   <li><a href="/admin/themes/">Create your mobile categories menu sidebar and config from Section > Mobile Categories</a></li>
+   {%- endif -%}
+</ul>
+
+{%- schema -%}
+  {
+    "name": "Mobile Categories",
+    /*"class": "mb_nav_tab",*/
+    "max_blocks": 30,
+    "blocks": [
+      {
+        "type": "cat",
+        "name": "Collection Link List",
+        "settings": [
+         {
+            "label": "== Collection",
+            "id": "cat",
+            "type": "collection"
+         },/*
+         {
+           "type": "checkbox",
+           "id": "show_pr",
+           "label": "== Show product list?",
+           "default": false
+         },
+         {
+           "type": "checkbox",
+           "id": "show_va",
+           "label": "== Show 'view all' button?",
+           "info": "Active when you enable product list",
+           "default": true
+         },
+         {
+           "type": "text",
+           "id": "txt_va",
+           "label": "== Text 'view all'?",
+           "default": "view all"
+         },*/
+         {
+           "type": "text",
+           "id": "title",
+           "label": "== Title (optional)",
+            "info": "Leave empty to use 'collection title'."
+         },
+          {
+            "type": "url",
+            "id": "url",
+            "label": "Link (optional)",
+            "info": "Leave empty to use 'collection url'."
+          },
+         {
+            "type": "link_list",
+            "id": "menu",
+            "label": "== Add menu (optional)"
+         },
+         {
+            "type":"text",
+            "id":"lb",
+            "label":"== Label text"
+         },
+         {
+            "type":"color",
+            "id":"lb_cl",
+            "default":"#e91e63",
+            "label":"== Label color"
+         },
+         {
+           "type": "select",
+           "id": "icons_op",
+           "options": [
+             {
+               "value": "0",
+               "label": "None"
+             },
+             {
+               "value": "1",
+               "label": "Image"
+             },
+             {
+               "value": "2",
+               "label": "Icon"
+             }
+           ],
+           "label": "== Show icons option:",
+           "default": "2"
+         },
+         {
+             "type": "image_picker",
+             "id": "image",
+             "label": "Image"
+         },
+         {
+            "id": "icon",
+            "type": "text",
+            "label": "Icon",
+            "default":"chair",
+            "info":"Ex:user [Line awesome icons](https://icons8.com/line-awesome)"
+         }
+        ]
+      },
+      {
+        "type": "catimg",
+        "name": "Collection Image List",
+        "settings": [
+         {
+            "label": "== Collection",
+            "id": "cat",
+            "type": "collection"
+         },
+         {
+           "type": "text",
+           "id": "title",
+           "label": "== Title (optional)",
+            "info": "Leave empty to use 'collection title'."
+         },
+          {
+            "type": "url",
+            "id": "url",
+            "label": "Link (optional)",
+            "info": "Leave empty to use 'collection url'."
+          },
+         {
+            "type":"text",
+            "id":"lb",
+            "label":"== Label text"
+         },
+         {
+            "type":"color",
+            "id":"lb_cl",
+            "default":"#e91e63",
+            "label":"== Label color"
+         },
+         {
+           "type": "select",
+           "id": "icons_op",
+           "options": [
+             {
+               "value": "0",
+               "label": "None"
+             },
+             {
+               "value": "1",
+               "label": "Image"
+             },
+             {
+               "value": "2",
+               "label": "Icon"
+             }
+           ],
+           "label": "== Show icons option:",
+           "default": "2"
+         },
+         {
+             "type": "image_picker",
+             "id": "image",
+             "label": "Image"
+         },
+         {
+            "id": "icon",
+            "type": "text",
+            "label": "Icon",
+            "default":"chair",
+            "info":"Ex:user [Line awesome icons](https://icons8.com/line-awesome)"
+         },
+          {
+            "type": "header",
+            "content": "== List collection"
+          },
+          {"type": "paragraph","content": "Leave link empty to use 'collection url'."},
+          {"type": "paragraph","content": "#1 ——————————————"},{"label": " Collection #1","id": "cat1", "type": "collection"},{"label": "Link #1 (optional)","id": "url1", "type": "url"},{"type": "image_picker","id": "image1","label": "Image #1"},{"type": "paragraph","content": "#2 ——————————————"},{"label": " Collection #2","id": "cat2", "type": "collection"},{"label": "Link #2 (optional)","id": "url2", "type": "url"},{"type": "image_picker","id": "image2","label": "Image #2"},{"type": "paragraph","content": "#3 ——————————————"},{"label": " Collection #3","id": "cat3", "type": "collection"},{"label": "Link #3 (optional)","id": "url3", "type": "url"},{"type": "image_picker","id": "image3","label": "Image #3"},{"type": "paragraph","content": "#4 ——————————————"},{"label": " Collection #4","id": "cat4", "type": "collection"},{"label": "Link #4 (optional)","id": "url4", "type": "url"},{"type": "image_picker","id": "image4","label": "Image #4"},{"type": "paragraph","content": "#5 ——————————————"},{"label": " Collection #5","id": "cat5", "type": "collection"},{"label": "Link #5 (optional)","id": "url5", "type": "url"},{"type": "image_picker","id": "image5","label": "Image #5"},{"type": "paragraph","content": "#6 ——————————————"},{"label": " Collection #6","id": "cat6", "type": "collection"},{"label": "Link #6 (optional)","id": "url6", "type": "url"},{"type": "image_picker","id": "image6","label": "Image #6"},{"type": "paragraph","content": "#7 ——————————————"},{"label": " Collection #7","id": "cat7", "type": "collection"},{"label": "Link #7 (optional)","id": "url7", "type": "url"},{"type": "image_picker","id": "image7","label": "Image #7"},{"type": "paragraph","content": "#8 ——————————————"},{"label": " Collection #8","id": "cat8", "type": "collection"},{"label": "Link #8 (optional)","id": "url8", "type": "url"},{"type": "image_picker","id": "image8","label": "Image #8"},{"type": "paragraph","content": "#9 ——————————————"},{"label": " Collection #9","id": "cat9", "type": "collection"},{"label": "Link #9 (optional)","id": "url9", "type": "url"},{"type": "image_picker","id": "image9","label": "Image #9"},{"type": "paragraph","content": "#10 ——————————————"},{"label": " Collection #10","id": "cat10", "type": "collection"},{"label": "Link #1 (optional)0","id": "url10", "type": "url"},{"type": "image_picker","id": "image10","label": "Image #10"},{"type": "paragraph","content": "#11 ——————————————"},{"label": " Collection #11","id": "cat11", "type": "collection"},{"label": "Link #1 (optional)1","id": "url11", "type": "url"},{"type": "image_picker","id": "image11","label": "Image #11"},{"type": "paragraph","content": "#12 ——————————————"},{"label": " Collection #12","id": "cat12", "type": "collection"},{"label": "Link #1 (optional)2","id": "url12", "type": "url"},{"type": "image_picker","id": "image12","label": "Image #12"},{"type": "paragraph","content": "#13 ——————————————"},{"label": " Collection #13","id": "cat13", "type": "collection"},{"label": "Link #1 (optional)3","id": "url13", "type": "url"},{"type": "image_picker","id": "image13","label": "Image #13"},{"type": "paragraph","content": "#14 ——————————————"},{"label": " Collection #14","id": "cat14", "type": "collection"},{"label": "Link #1 (optional)4","id": "url14", "type": "url"},{"type": "image_picker","id": "image14","label": "Image #14"},{"type": "paragraph","content": "#15 ——————————————"},{"label": " Collection #15","id": "cat15", "type": "collection"},{"label": "Link #1 (optional)5","id": "url15", "type": "url"},{"type": "image_picker","id": "image15","label": "Image #15"},{"type": "paragraph","content": "#16 ——————————————"},{"label": " Collection #16","id": "cat16", "type": "collection"},{"label": "Link #1 (optional)6","id": "url16", "type": "url"},{"type": "image_picker","id": "image16","label": "Image #16"},{"type": "paragraph","content": "#17 ——————————————"},{"label": " Collection #17","id": "cat17", "type": "collection"},{"label": "Link #1 (optional)7","id": "url17", "type": "url"},{"type": "image_picker","id": "image17","label": "Image #17"},{"type": "paragraph","content": "#18 ——————————————"},{"label": " Collection #18","id": "cat18", "type": "collection"},{"label": "Link #1 (optional)8","id": "url18", "type": "url"},{"type": "image_picker","id": "image18","label": "Image #18"},{"type": "paragraph","content": "#19 ——————————————"},{"label": " Collection #19","id": "cat19", "type": "collection"},{"label": "Link #1 (optional)9","id": "url19", "type": "url"},{"type": "image_picker","id": "image19","label": "Image #19"},{"type": "paragraph","content": "#20 ——————————————"},{"label": " Collection #20","id": "cat20", "type": "collection"},{"label": "Link #2 (optional)0","id": "url20", "type": "url"},{"type": "image_picker","id": "image20","label": "Image #20"},{"type": "paragraph","content": "#21 ——————————————"},{"label": " Collection #21","id": "cat21", "type": "collection"},{"label": "Link #2 (optional)1","id": "url21", "type": "url"},{"type": "image_picker","id": "image21","label": "Image #21"},{"type": "paragraph","content": "#22 ——————————————"},{"label": " Collection #22","id": "cat22", "type": "collection"},{"label": "Link #2 (optional)2","id": "url22", "type": "url"},{"type": "image_picker","id": "image22","label": "Image #22"},{"type": "paragraph","content": "#23 ——————————————"},{"label": " Collection #23","id": "cat23", "type": "collection"},{"label": "Link #2 (optional)3","id": "url23", "type": "url"},{"type": "image_picker","id": "image23","label": "Image #23"},{"type": "paragraph","content": "#24 ——————————————"},{"label": " Collection #24","id": "cat24", "type": "collection"},{"label": "Link #2 (optional)4","id": "url24", "type": "url"},{"type": "image_picker","id": "image24","label": "Image #24"},{"type": "paragraph","content": "#25 ——————————————"},{"label": " Collection #25","id": "cat25", "type": "collection"},{"label": "Link #2 (optional)5","id": "url25", "type": "url"},{"type": "image_picker","id": "image25","label": "Image #25"}
+        ]
+      }
+    ]
+  }
+{% endschema %}

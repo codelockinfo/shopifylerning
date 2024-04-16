@@ -1,0 +1,94 @@
+{%- liquid
+  assign img_variants = product.variants | where: "featured_image"
+  if key_nt == '_ppr'
+    assign idpr = '#product'
+    assign id_call = 'callBackVariant_ppr'
+  elsif key_nt == '_qv'
+    assign idpr = '#productqv'
+    assign id_call = 'callBackVariant_qv'
+  elsif key_nt == '_qs'
+    assign idpr = '#productqs'
+    assign id_call = 'callBackVariant_qs'
+  else
+    assign idpr = '#product'| append:key_nt
+    assign id_call = 'callBackVariant'| append:key_nt
+  endif
+  assign pr_id = product.id 
+  assign pr_size = product.options.size
+  assign img_size = '180x'
+  assign img_variants_0 = img_variants | first -%}
+
+<style>
+{%- capture min_css -%}
+
+     {%- assign ck = false -%} {%- assign color_ck = settings.color_ck | append:',color,colors,couleur,colour' -%}{%- assign get_color = color_ck | downcase | replace: ' ,', ',' | replace: ', ', ',' | split: ',' | uniq -%}
+     {%- for option in product.options_with_values -%}{%- assign name = option.name | downcase -%}
+        {%- if get_color contains name -%}
+              {%- assign ck = true -%} {%- assign _index = forloop.index -%}{%- assign index_0 = forloop.index0 -%}
+              {%- assign color_count = option.values.size -%}{%- assign ck_values = '' -%}{%- assign index = 0 -%}
+              {%- assign values = '' -%}
+              {%- for variant in img_variants -%}
+                 {%- case _index -%}
+
+                    {%- when 1 -%}
+                      {%- assign variant_color = variant.option1 -%}
+                      {%- assign v_ = 'nt1_' | append: variant.option2 -%}
+                      {%- assign v__ = 'nt2_' | append: variant.option3 -%}
+
+                  {%- when 2 -%}
+                    {%- assign variant_color = variant.option2 -%}
+                      {%- assign v_ = 'nt_' | append: variant.option1 -%}
+                      {%- assign v__ = 'nt2_' | append: variant.option3 -%}
+
+                  {%- when 3 -%}
+                    {%- assign variant_color = variant.option3 -%}
+                      {%- assign v_ = 'nt1_' | append: variant.option2 -%}
+                      {%- assign v__ = 'nt_' | append: variant.option1 -%}
+
+                 {%- endcase -%}
+                      
+                    {%- if pr_size == 3 -%}
+                    .nt_pre_img,{{idpr}}-{{pr_id}} #{{id_call}}.nt_{{variant.option1 | handleize }}.nt1_{{variant.option2 | handleize }}.nt2_{{variant.option3 | handleize }} ul[data-id="{{index_0}}"] .bg_color_{{ variant_color | handleize }}.lazyloaded,
+                    {{idpr}}-{{pr_id}} #{{id_call}}.{{v_ | handleize }}.{{v__ | handleize }} ul[data-id="{{index_0}}"] .bg_color_{{ variant_color | handleize }}.lazyloaded 
+                    {%- unless values contains variant_color -%}
+                        {%- assign values = values | join: ',' -%}
+                        {%- assign values = values | append: ',' | append: variant_color -%} 
+                        {%- assign values = values | split: ',' -%}
+                       ,{{idpr}}-{{pr_id}} #{{id_call}} ul[data-id="{{index_0}}"] .bg_color_{{ variant_color | handleize }}.lazyloaded
+                    {%- endunless -%}
+                    {
+                       background-image: url({{ variant | img_url: img_size }});
+                    }
+                    {%- elsif pr_size == 2 -%}
+                     .nt_pre_img,{{idpr}}-{{pr_id}} #{{id_call}}.nt_{{variant.option1 | handleize }} ul[data-id="{{index_0}}"] .bg_color_{{ variant_color | handleize }}.lazyloaded,
+                     {{idpr}}-{{pr_id}} #{{id_call}}.nt_{{variant.option1 | handleize }}.nt1_{{variant.option2 | handleize }} ul[data-id="{{index_0}}"] .bg_color_{{ variant_color | handleize }}.lazyloaded
+                    {%- unless values contains variant_color -%}
+                        {%- assign values = values | join: ',' -%}
+                        {%- assign values = values | append: ',' | append: variant_color -%} 
+                        {%- assign values = values | split: ',' -%}
+                       ,{{idpr}}-{{pr_id}} #{{id_call}} ul[data-id="{{index_0}}"] .bg_color_{{ variant_color | handleize }}.lazyloaded
+                    {%- endunless -%}
+                    {
+                       background-image: url({{ variant | img_url: img_size }});
+                    }
+                    {%- else -%}
+                       {%- unless values contains variant_color -%}
+                           {%- assign values = values | join: ',' -%}
+                           {%- assign values = values | append: ',' | append: variant_color -%} 
+                           {%- assign values = values | split: ',' -%}
+                          {{idpr}}-{{pr_id}} #{{id_call}} ul[data-id="{{index_0}}"] .bg_color_{{ variant_color | handleize }}.lazyloaded {background-image: url({{ variant | img_url: img_size }})}
+                       {%- endunless -%}
+                    {%- endif -%}
+
+              {%- endfor -%}
+
+        {%- endif -%}
+     {%- endfor -%}
+
+     {%- if img_variants_0 != blank and settings.use_fimg -%}
+       #{{id_call}} .fimg_true.style_color .fimg_ratio.is-color .swatch__value_pr {padding-top:{{ 1 | divided_by: img_variants_0.featured_image.aspect_ratio | times: 100}}% }
+     {%- endif -%}
+
+{%- endcapture -%}
+{{min_css | strip_newlines | remove: "  " }}
+</style>

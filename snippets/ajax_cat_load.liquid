@@ -1,0 +1,29 @@
+{%- liquid
+  assign inc_price = settings.price_format
+  assign use_rating = settings.use_pr_rating
+  assign inc_rating = settings.app_review
+  assign show_color = settings.show_pr_color
+  assign show_cl_type = settings.show_color_type
+  assign show_size = settings.show_pr_size
+  assign show_list_switch = settings.show_list_switch
+  unless on_list
+    assign on_list = false
+  endunless -%}
+
+{%- capture min_html -%}<!--split-->
+      {%- if shop_des == 'packery' -%}
+          {%- for product in arr_results -%}{% capture col %}{% cycle '3','6','3','3','3','3','3','3','3','6','3','3','3' %}{% endcapture %}{%- render 'pr_loop_grid_1',page_t4:page_t4,page_t4:page_t4,product:product, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_size:show_size -%}{%- endfor -%}<!--split-->
+      {%- else -%}
+          {%- if show_list_switch and on_list -%}
+           {%- for product in arr_results -%}{%- render 'pr_loop_list',page_t4:page_t4,product:product,inc_pr:inc_pr,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}{%- endfor -%}<!--split-->
+          {%- elsif inc_pr == '1' or inc_pr == '1 tc' -%}
+   	       {%- for product in arr_results -%}{%- render 'pr_loop_grid_1',page_t4:page_t4,product:product,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}{%- endfor -%}<!--split-->
+          {%- else -%}
+   	       {%- for product in arr_results -%}{%- render 'pr_loop_grid_2',page_t4:page_t4,product:product,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}{%- endfor -%}<!--split-->
+          {%- endif -%}
+      {%- endif -%}
+      {{ arr_results.size | plus:paginate.current_offset }}<!--split-->
+      {%- if paginate.next.is_link -%}{{ paginate.next.url }}{%- else -%}no_prs{%- endif -%}<!--split-->
+      {%- if paginate.previous.is_link -%}{{ paginate.previous.url }}{%- else -%}no_prs{%- endif -%}<!--split-->
+{%- endcapture -%}
+{{min_html | strip_newlines | remove: "  "}} 

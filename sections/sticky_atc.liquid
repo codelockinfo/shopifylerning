@@ -1,0 +1,164 @@
+{%- liquid
+   assign sticky_atc = settings.sticky_atc
+   assign currently = product.selected_or_first_available_variant
+   assign cu_pr = currently.price
+   assign cp_pr = currently.compare_at_price | default:cu_pr
+   assign image = currently.featured_image | default:product.featured_image
+   assign pr_variants = product.variants 
+   assign available_v = pr_variants | where: "available"
+   assign available_v_1 = available_v.first
+   assign cur_var_id = currently.id
+   assign default = product.has_only_default_variant
+   assign pid = product.id
+   assign hd_up = 'group-' |append:pid
+   assign nav_up = linklists[hd_up].links | where:'type','product_link'
+   assign nav_up_size = nav_up.size
+   assign variants_size = pr_variants.size 
+   assign selected_variant = product.selected_variant -%}
+
+<div class="sticky_atc_wrap mobile_{{section.settings.mb}} pf b__0 l__0 r__0 pt__10 pb__10 bgw z_100">
+   <div class="container">
+      <div class="row al_center fl_center">
+         <div class="col sticky_atc_content">
+           <div class="row no-gutters al_center">
+             <div class="col-auto sticky_atc_thumb mr__10 flex al_center">
+                {%- assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+                 <img alt="{{pr.title | escape}}" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ img_url }}" data-widths="[75, 150]" data-sizes="auto" class="js_fgr_img lazyload w__100 lz_op_ef"> 
+             </div>
+             <div class="col sticky_atc_info">
+                <h4 class="fs__14 mg__0">{{product.title}}</h4>
+                 {%- if available_v.size < 2 -%}
+                    <input class="js_sticky_sl" name="id" value="{{ available_v_1.id }}" type="hidden">
+                 {%- else -%}
+                    <select name="id" class="hide hidden js_sticky_sl" data-select-sticky_atc> 
+                     {%- for variant in available_v -%}
+                        <option data-img="{{variant.image | default:product.featured_image | img_url: '1x1'}}" data-ogprice="{{variant.compare_at_price |default:variant.price}}" data-price="{{variant.price}}" value="{{ variant.id }}"{% if variant.id == cur_var_id %} selected="selected"{% endif %}>{{ variant.title | escape }}</option>
+                     {%- endfor -%}
+                    </select>
+                    <span class="txt_under sticky_atc_a cp fwm">{{currently.title}}</span>
+                 {%- endif -%}
+             </div>
+           </div>
+         </div>
+         <div class="col-auto sticky_atc_btn variations_form flex wrap al_center fl_center">
+          {%- if available_v.size > 1 -%}<div class="txt_under sticky_atc_a cp fwm dn tc truncate mr__10">{{currently.title}}</div>{%- endif -%}
+          <div class="sticky_atc_price">
+            {%- if nav_up_size == 0 -%}
+              {% if cp_pr > cu_pr %}<del>{{cp_pr| money}}</del> <ins>{{cu_pr| money}}</ins>{% else %}{{cu_pr | money}}{% endif %}
+            {%- else -%}
+              {% if cp_pr > cu_pr %}{{cu_pr| money}}-{{cp_pr| money}}{% else %}{{cu_pr | money}}{% endif %}
+            {%- endif -%}
+          </div>
+          {%- if nav_up_size == 0 -%}
+          <div class="quantity pr ml__10 mr__10">
+            <input type="number" class="input-text qty text tc js_sticky_qty" step="1" min="0" max="{% if currently.inventory_management != null %}{{currently.inventory_quantity}}{% else %}9999{% endif %}" name="quantity" value="1" size="4" pattern="[0-9]*" inputmode="numeric">
+            <div class="qty tc fs__14"> <a rel="nofollow" data-no-instant class="plus db cb pa pr__15 tr r__0" href="#"> <i class="facl facl-plus"></i> </a> <a rel="nofollow" data-no-instant class="minus db cb pa pl__15 tl l__0" href="#"> <i class="facl facl-minus"></i> </a></div>
+          </div>
+          {%- endif -%}
+          {%- if default and currently.inventory_quantity <= 0  and currently.inventory_management == 'shopify' -%}{%- assign txt = 'products.product.pre_orders' | t -%}{%- else -%}{%- assign txt = 'products.product.add_to_cart' | t -%}{%- endif -%}
+           <button data-time='{{section.settings.time}}000' data-ani='{{section.settings.ani}}' class="single_add_to_cart_button button truncate{% if nav_up_size > 0 %} sticky_atc_a ml__10{% else %} sticky_atc_js{% endif %}{% if settings.pr_curent == '1' and variants_size > 1 and selected_variant == blank %} disabled{% endif %}"><span class="txt_add">{{txt}}</span><span class="txt_pre dn">{{'products.product.pre_orders' | t}}</span></button>
+         </div>
+      </div>
+   </div>
+</div>
+<style>
+.sticky_atc_wrap{z-index:340;box-shadow:0 0 9px rgba(0,0,0,.12);transition:-webkit-transform .25s ease;transition:transform .25s ease;transition:transform .25s ease,-webkit-transform .25s ease;-webkit-transform:translate3d(0,100%,0);transform:translate3d(0,100%,0)}.sticky_atc_wrap.sticky_atc_shown{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}.sticky_atc_thumb{min-height:75px;}.sticky_atc_thumb img{max-height:75px;max-width:65px;width:auto}.sticky_atc_a{font-size:13px;cursor:pointer}.sticky_atc_btn .quantity{border-radius:2px;border-color:#ddd}.sticky_atc_btn .single_add_to_cart_button{border-radius:2px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.15)}.sticky_atc_info>h4{color:#222}.sticky_atc_price{font-size:16px}.sticky_atc_price ins{text-decoration:none}#nt_backtop.sticky_atc_shown{bottom:105px}.popup_slpr_wrap.sticky_atc_shown{bottom:105px}@media (max-width:1024px){.gecko_toolbar_true .sticky_atc_wrap{bottom:55px}.gecko_toolbar_true #nt_backtop.sticky_atc_shown,.gecko_toolbar_true .popup_slpr_wrap.sticky_atc_shown{bottom:160px}}
+@media (max-width: 767px) {.sticky_atc_content{display:none}.sticky_atc_btn .txt_under{display:block;font-size:14px}
+   {%- if available_v.size < 2 -%} 
+   #nt_backtop.sticky_atc_shown{bottom:70px}.gecko_toolbar_true #nt_backtop.sticky_atc_shown,.gecko_toolbar_true .popup_slpr_wrap.sticky_atc_shown{bottom:130px}.popup_slpr_wrap.sticky_atc_shown{bottom:75px}
+   {%- endif -%} }
+@media (max-width:575px){.sticky_atc_btn .txt_under{width:100%;min-width:100%;margin:0 0 10px}.sticky_atc_price{display:none}.sticky_atc_btn{-ms-flex-preferred-size:0;flex-basis:0;-ms-flex-positive:1;flex-grow:1;max-width:100%;padding:0 2px}.sticky_atc_btn .single_add_to_cart_button{width:100%;margin:0;-ms-flex-preferred-size:0;flex-basis:0;-ms-flex-positive:1;flex-grow:1;max-width:100%}.sticky_atc_btn .quantity{margin-left:0}}
+</style>
+
+{%- schema -%}
+  {
+    "name": "Sticky add to cart",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Config enable/disable on Theme settings: Product Page ---> PRODUCT FEATURES"
+      },
+       {
+         "type": "paragraph",
+         "content": "Display a sticky add-to-cart bar when scrolling passed the add-to-cart button."
+       },
+      {
+        "type": "checkbox",
+        "id": "mb",
+        "label": "Show sticky add to cart on mobile?",
+        "default": true
+      },{
+           "type": "select",
+           "id": "ani",
+           "options": [
+             {
+               "value": "none",
+               "label": "None"
+             },
+             {
+               "value": "bounce",
+               "label": "Bounce"
+             },
+             {
+               "value": "tada",
+               "label": "Tada"
+             },
+             {
+               "value": "swing",
+               "label": "Swing"
+             },
+             {
+               "value": "flash",
+               "label": "Flash"
+             },
+             {
+               "value": "fadeIn",
+               "label": "FadeIn"
+             },
+             {
+               "value": "heartBeat",
+               "label": "HeartBeat"
+             },
+             {
+               "value": "shake",
+               "label": "Shake"
+             }
+           ],
+           "label": "Add to cart animation"
+         },
+          {
+            "type": "range",
+            "id": "time",
+            "min": 2,
+            "max": 40,
+            "step": 1,
+            "label": "Loop time (seconnds)",
+            "info": "Loop time add to cart animation",
+            "unit": "sec",
+            "default": 6
+          }/*,
+      {
+        "type": "checkbox",
+        "id": "width",
+        "label": "Use full width?",
+        "default": false
+      },
+      {
+         "type": "select",
+         "id": "pos",
+         "options": [
+           {
+             "value": "top",
+             "label": "Top"
+           },
+           {
+             "value": "bottom",
+             "label": "Bottom"
+           }
+         ],
+         "label": "Position",
+         "default": "bottom"
+      }*/
+    ]
+  }
+{% endschema %}

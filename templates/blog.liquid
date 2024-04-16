@@ -1,0 +1,66 @@
+{%- comment -%}
+  The contents of the blog.liquid template can be found in /sections/blog-template.liquid
+{%- endcomment -%}
+{%- liquid
+assign hidden_cat = settings.use_hidden_blg | default:false
+assign class_main = '12'
+assign no_sidebar = true
+assign shop_sidebar = settings.blog_sidebar
+if hidden_cat == false 
+  case shop_sidebar
+    when 'right'
+      assign no_sidebar = false
+      case settings.blog_size_sidebar
+        when '1'
+          assign class_main = '10 order-1'
+          assign class_sidebar = '2 order-12'
+        when '2'
+          assign class_main = '9 order-1'
+          assign class_sidebar = '3 order-12'
+         when '3'
+          assign class_main = '8 order-1'
+           assign class_sidebar = '4 order-12'
+      endcase
+    when 'left'
+      assign no_sidebar = false
+      case settings.blog_size_sidebar
+        when '1'
+          assign class_main = '10 order-lg-12 order-1'
+          assign class_sidebar = '2 order-lg-1 order-12'
+        when '2'
+          assign class_main = '9 order-lg-12 order-1'
+          assign class_sidebar = '3 order-lg-1 order-12'
+        when '3'
+          assign class_main = '8 order-lg-12 order-1'
+          assign class_sidebar = '4 order-lg-1 order-12'
+       endcase
+   endcase
+elsif shop_sidebar == 'left' or shop_sidebar == 'right'
+   assign no_sidebar = false 
+   assign class_sidebar = '12'
+endif
+assign blog_h = settings.blog_h -%}
+
+{%- if blog_h %}{% section 'blog-heading' %}{% endif -%}
+{%- if settings.blog_slider %}{%- unless blog_h %}<h1 class="hide dn">{{ page_title }}</h1>{% endunless -%}{% section 'blog-slider' %}{% endif -%}
+
+<div class="container container_cat cat_{{settings.blog_layout}} mt__60 mb__60">
+  <div class="row nt_single_blog">
+    {%- unless no_sidebar %}<div class="col-lg-{{class_sidebar}} col-xs-12 sidebar">{% section 'article-sidebar' %}</div>{% endunless -%}
+    <div class="col-lg-{{class_main}} col-xs-12">{%- if blog.articles_count > 0 %}{% section 'blog-template' %}{% endif -%}</div>
+  </div>
+</div>
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "mainEntityOfPage": {"@type": "WebPage","@id": "{{ shop.secure_url }}{{ blog.url }}"},
+    "publisher": {
+      "@type": "Organization",
+      "name": "{{ shop.name }}",
+      "description": {{ shop.description | strip_html | json }}
+    },
+    "url": "{{ shop.secure_url }}{{ blog.url }}",
+    "name": "{{ blog.title }}"
+  }
+</script>

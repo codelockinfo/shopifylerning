@@ -1,0 +1,66 @@
+{%- liquid
+  assign limit = block.settings.limit
+  assign inc_price = settings.price_format
+  assign use_rating = settings.use_pr_rating
+  assign inc_rating = settings.app_review
+  assign show_color = settings.show_pr_color
+  assign show_cl_type = settings.show_color_type
+  assign show_size = settings.show_pr_size
+  assign sett_equal = block.settings.use_eq_height
+  assign show_vendor = block.settings.show_vendor
+  assign inc_pr = block.settings.pr_des
+  assign use_pagination = block.settings.use_pagination
+  assign col = block.settings.col_pr
+  assign col_tb = block.settings.col_pr_tb
+  assign cl_mb = block.settings.col_pr_mb
+  assign col_mb = ' pr_animated done' | prepend:cl_mb
+  assign results_count = collection.all_products_count
+  assign rtl = settings.use_rtl
+  assign use_cdt = block.settings.use_cdt
+  assign txt_cd = 'products.grid_items.offer_end_in' | t -%}
+{%- capture url_cat -%}/collections/{{collection.handle}}{%- endcapture -%} 
+
+{%- paginate collection.products by limit -%}
+  {%- if paginate.current_page == 1 -%} 
+    {%- if ck_q == false -%}<!--split-->{%- endif -%}
+    {%- if slider -%}
+    <div class="products nt_products_holder row row_pr_{{inc_pr}} cdt_des_{{block.settings.cdt_des}} round_cd_{{block.settings.round_cd}} js_carousel nt_slider {{block.settings.image_size}} {{block.settings.image_ratio}} position_{{block.settings.image_position}} space_{{block.settings.space}} prev_next_{{block.settings.btn_color}} btn_owl_{{block.settings.btn_owl}} dot_owl_{{block.settings.dot_owl}} dot_color_{{block.settings.dot_color}} btn_vi_{{block.settings.btn_vi}}{% if sett_equal %} equal_nt{%- endif %}" data-flickity='{"imagesLoaded": false, "adaptiveHeight": false, "contain": true{% if block.settings.loop %}, "groupCells": "100%", "cellAlign": "left"{% else %}, "groupCells": true, "cellAlign": "center"{% endif %}, "dragThreshold" : 5,"wrapAround": {{block.settings.loop}},"prevNextButtons": {{block.settings.button}},"percentPosition": true,"pageDots": {{block.settings.dot}}, "autoPlay" : {{ block.settings.au_time | times: 1000 }}, "pauseAutoPlayOnHover" : {{block.settings.au_hover}}, "rightToLeft": {{rtl}} }'>
+    {%- else -%}
+    <div class="products nt_products_holder row fl_center row_pr_{{inc_pr}} cdt_des_{{block.settings.cdt_des}} round_cd_{{block.settings.round_cd}} {{block.settings.image_size}} {{block.settings.image_ratio}} position_{{block.settings.image_position}} space_{{block.settings.space}}{% if sett_equal %} equal_nt{%- endif %}">
+    {%- endif -%}
+        {%- if collection != blank -%}
+              {%- if inc_pr == '1' or inc_pr == '1 tc' -%}
+              {%- for product in collection.products -%}{%- render 'pr_loop_grid_1',product:product,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}{%- endfor -%}
+              {%- else -%}
+              {%- for product in collection.products -%}{%- render 'pr_loop_grid_2',product:product,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}{%- endfor -%}
+              {%- endif -%}
+        {%- else -%}
+           {%- for i in (1..8) -%}
+              <div class="pr_animated mt__30 pr_grid_item product nt_pr desgin__1 col-6 col-lg-3 col-md-3 done">
+                <div class="product-inner pr"><div class="product-image pr oh"><a class="db" href="/admin/products">{%- capture current -%}{%- cycle 1, 2, 3, 4, 5, 6,7,8 -%}{%- endcapture -%}<div class="pr_lazy_img main-img nt_img_ratio nt_bg_lz lazyload" style="padding-top:100%" data-bg="{{ 'product-' | append:current | append:'.jpg' | asset_url }}"></div></a></div></div>
+                <div class="product-info mt__15"><h3 class="product-title pr fs__14 mg__0 fwm"><a class="cd chp" href="/admin/products">{{ 'homepage.onboarding.product_title' | t }}</a></h3><span class="price dib mb__5"><del>$59.00</del><ins>$39.00</ins></span></div>
+              </div>
+           {%- endfor -%}
+        {%- endif -%}
+    </div>
+    {%- if paginate.pages > 1 and use_pagination != 'none' -%}
+    <div class="products-footer tc mt__40">
+        {%- if paginate.next.is_link and use_pagination == 'more' -%}
+        {%- if block.settings.use_bar_lm -%}
+        <div class="js_progress_bar" data-tt='{{results_count}}'>
+          {%- assign current_pr_size = collection.products.size | plus:paginate.current_offset -%}
+           <p class="mg__0 progress_txt fs__15">{{ 'collections.general.bar_with_count_html' | t:current_count:current_pr_size,total_count:results_count}}</p>
+          <div class="progress_bar pr oh"><div class="current_bar pa t__0 r__0 l__0 b__0" style="width: {{current_pr_size | times:100.0 | divided_by: results_count}}%"></div></div>
+        </div>
+        {%- endif -%}
+        <a class="se_cat_lm pr nt_cat_lm button bid_lm button_{{block.settings.btn_style}} br_rd_{{block.settings.btn_rd}} btn_icon_{{block.settings.btn_icon}}" data-id={{sid}} data-get='{% if ck_q %}{{ collection.url }}{% endif %}{{ paginate.next.url }}{% if ck_q %}&q={{forloop.index0}}_bid{% endif %}' href="{{ collection.url }}">{{ 'products.grid_items.load_more' | t }}</a>
+        {%- else -%}
+        <a class="pr button view_more js_add_loading button_{{block.settings.btn_style}} br_rd_{{block.settings.btn_rd}} btn_icon_{{block.settings.btn_icon}}" href="{{ collection.url }}">{{ 'products.grid_items.view_more' | t }}</a>
+        {%- endif -%}
+    </div>
+    {%- endif -%}
+    {%- if ck_q == false -%}<!--split-->{%- endif -%}
+  {%- else -%}
+    {%- render 'ajax_cat_load',arr_results:collection.products,paginate:paginate,col:col, col_tb:col_tb, col_mb:col_mb,shop_des:'default',inc_pr:inc_pr,sett_equal:sett_equal,show_vendor:show_vendor,url_cat:url_cat -%}
+  {%- endif -%}
+{%- endpaginate -%}

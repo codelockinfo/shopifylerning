@@ -1,0 +1,79 @@
+{%- if settings.currency_type == '1' and shop.enabled_currencies.size > 1 -%}
+    {%- assign cart_iso_code = cart.currency.iso_code -%}
+    {%- if currency_header -%}
+    <ul>
+        {%- if linklists.currency-the4.links.size > 0 -%}
+          {%- for currency in shop.enabled_currencies -%}{%- assign iso_code = currency.iso_code -%}
+                <li><a data-currency="{{iso_code}}" class="currency-item chp{% if iso_code == cart_iso_code %} selected{% endif %}" href="#">{{ iso_code }}</a></li>
+          {%- endfor -%}
+        {%- else -%}
+          {%- for currency in shop.enabled_currencies -%}{%- assign iso_code = currency.iso_code -%}
+                <li><a data-currency="{{iso_code}}" class="currency-item chp{% if iso_code == cart_iso_code %} selected{% endif %}" href="#">{{ iso_code }}</a></li>
+          {%- endfor -%}
+        {%- endif -%}
+     </ul>
+    {%- else -%}
+       <{{html}} class="nt_currency currencies nt-has-children pr tl lazyload">
+         {%- if block.settings.title != blank-%}<span class="mr__5 c_888">{{block.settings.title}}</span>{%- endif -%}
+         {%- if linklists.currency-the4.links.size > 0 -%}
+           {%- assign ck_iso_code = '#'|append:cart_iso_code -%}{%- assign links_cur = linklists.currency-the4.links | where: "url", ck_iso_code -%}
+         {%- endif -%}
+          <a rel="nofollow" href="#" class="value current-currency selected-currency">{{ links_cur.first.title|default:cart_iso_code }}</a>
+          <div class="nav_dropdown color_primary_dark pa">
+             <ul class="sub-menu color-scheme-dark">
+                {%- if linklists.currency-the4.links.size > 0 -%}
+                  {%- for link in linklists.currency-the4.links -%}{%- assign iso_code = link.url |remove:'#'|remove:' ' -%}
+                       <li><a data-currency="{{iso_code}}" class="db chp{% if iso_code == cart_iso_code %} selected{% endif %}" href="#" rel="nofollow">{{ link.title|strip_html }}</a></li>
+                  {%- endfor -%}
+                {%- else -%}
+                  {%- for currency in shop.enabled_currencies -%}{%- assign iso_code = currency.iso_code -%}
+                       <li><a data-currency="{{iso_code}}" class="db chp{% if iso_code == cart_iso_code %} selected{% endif %}" href="#" rel="nofollow">{{ iso_code }}</a></li>
+                  {%- endfor -%}
+                {%- endif -%}
+             </ul>
+          </div>
+       </{{html}}>
+    {%- endif -%}
+{%- elsif settings.currency_type == '2' -%}
+  {%- assign supported_codes = settings.supported_currencies | split: '|' -%}
+  {%- assign check = true -%}
+  {%- assign shop_c = cart.currency.iso_code -%}
+  {%- for code in supported_codes -%}
+    {%- assign array_money = code | split: '-' -%}
+    {%- assign data_currency = array_money | first | upcase | strip -%}
+    {%- assign name_money = array_money | last | strip -%}
+    {%- if data_currency == shop_c -%}
+       {%- assign check = false -%}
+       {%- break -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {%- if currency_header -%}
+  <ul>
+     {%- if check -%}
+         <li><a data-currency="{{ shop_c }}" class="currency-item selected" href="#">{{ shop_c }}</a></li>
+      {%- endif -%}
+      {%- for code in supported_codes -%}
+           {%- assign array_money = code | split: '-' -%}
+           {%- assign data_currency = array_money | first | upcase | strip -%}
+           {%- assign name_money = array_money | last | strip -%}
+            <li><a data-currency="{{data_currency}}" class="currency-item chp{%- if shop_c == data_currency %} selected{%- endif -%}" href="#">{{ name_money }}</a></li>
+      {% endfor %}
+   </ul>
+  {%- else -%}
+     <{{html}} class="nt_currency currencies nt-has-children pr tl lazyload">
+       {%- if block.settings.title != blank-%}<span class="mr__5 c_888">{{block.settings.title}}</span>{%- endif -%}
+        <a rel="nofollow" href="javascript:void(0);" class="value current-currency selected-currency">{{ shop_c }}</a>
+        <div class="nav_dropdown color_primary_dark pa">
+           <ul class="sub-menu color-scheme-dark">
+              {%- if check -%}<li><a data-currency="{{ shop_c }}" class="db chp selected" href="#" rel="nofollow">{{ shop_c }}</a></li>{%- endif -%}
+              {%- for code in supported_codes -%}
+                  {%- assign array_money = code | split: '-' -%}
+                  {%- assign data_currency = array_money | first | upcase | strip -%}
+                  {%- assign name_money = array_money | last | strip -%}
+                   <li><a data-currency="{{data_currency}}" class="db chp{%- if shop_c == data_currency %} selected{%- endif -%}" href="#" rel="nofollow">{{ name_money }}</a></li>
+              {%- endfor -%}
+           </ul>
+        </div>
+     </{{html}}>
+  {%- endif -%}
+{%- endif -%}

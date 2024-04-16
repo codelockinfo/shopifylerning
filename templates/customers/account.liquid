@@ -1,0 +1,113 @@
+{%- section 'acc_heading' -%}
+<div class="container mt__60 mb__60">
+  <div class="row">
+     <div class="col-12 col-md-3 sp-myaccount-sidebar is_sticky_sidebar">
+        <nav class="sp-myaccount-nav mb__30 theiaStickySidebar">
+           <ul class="ul_none is_sticky_inner">
+              <li class="sp-myaccount-nav-link sp-myaccount-nav-link--dashboard is-active pe_none">
+                 <a class="js_add_ld" href="{{ routes.account_url }}">{{ 'customer.account.dashboard' | t }}</a>
+              </li>
+              <li class="sp-myaccount-nav-link sp-myaccount-nav-link--edit-address">
+                 <a class="js_add_ld" href="{{ routes.account_addresses_url }}">{{ 'customer.addresses.title' | t }} ({{ customer.addresses_count }})</a>
+              </li>
+              {%- if settings.wishlist_type != '0' -%}
+              <li class="sp-myaccount-nav-link sp-myaccount-nav-link--wishlist">
+                 <a class="js_link_wis" href="{{ routes.search_url }}/?view=wish">{{ 'customer.account.wishlist' | t }} (<span class="jswcount">0</span>)</a>
+              </li>
+              {%- endif -%}
+              <li class="sp-myaccount-nav-link sp-myaccount-nav-link--customer-logout">
+                <a class="js_add_ld" href="{{routes.account_logout_url}}" data-no-instant>{{ 'customer.account.log_out' | t }}</a>
+              </li>
+           </ul>
+        </nav>
+     </div>
+     <div class="col-12 col-md-9 sp-myaccount-content is_sticky_content">
+     <div class="theiaStickySidebar">{%- assign customer_name = customer.name |default:customer.default_address.name |default:customer.email -%}
+         <p>{{ 'customer.account.hello_html' | t:name:customer_name,link:routes.account_logout_url }}</p>
+         {%- if settings.enable_sub_reCharge -%}   
+         <!-- Begin ReCharge code -->
+         <p clas="mt__30" id="rc_link_container"><a href="/tools/recurring/login">{{ 'customer.account.manage_subs' | t }}</a></p>
+         <!-- End ReCharge code -->
+         {%- endif -%}
+         <p clas="mt__30"><strong>{{ 'customer.orders.title' | t }}</strong></p>
+         {%- if customer.orders.size != 0 -%}
+            {%- paginate customer.orders by 20 -%}
+               <table class="responsive-table orders-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">{{ 'customer.orders.order_number' | t }}</th>
+                      <th scope="col">{{ 'customer.orders.date' | t }}</th>
+                      <th scope="col">{{ 'customer.orders.payment_status' | t }}</th>
+                      <th scope="col">{{ 'customer.orders.fulfillment_status' | t }}</th>
+                      <th scope="col">{{ 'customer.orders.total' | t }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {%- for order in customer.orders -%}
+                      <tr>
+                        <th data-label="{{ 'customer.orders.order_number' | t }}" scope="row">
+                          <a href="{{ order.customer_url }}" class="btn btn--secondary btn--small js_add_ld" aria-label="{{ 'customer.orders.order_number_link' | t: number: order.name }}">{{ order.name }}</a>
+                        </th>
+                        <td data-label="{{ 'customer.orders.date' | t }}">{{ order.created_at | time_tag: format: 'date' }}</td>
+                        <td data-label="{{ 'customer.orders.payment_status' | t }}">{{ order.financial_status_label }}</td>
+                        <td data-label="{{ 'customer.orders.fulfillment_status' | t }}">{{ order.fulfillment_status_label }}</td>
+                        <td data-label="{{ 'customer.orders.total' | t }}">{{ order.total_price | money }}</td>
+                      </tr>
+                    {%- endfor -%}
+                  </tbody>
+               </table>
+              {%- if paginate.pages > 1 -%}{% render 'pagination', paginate: paginate, cl_a:' js_add_ld' %}{%- endif -%}
+            {%- endpaginate -%}
+         {%- else -%}
+            <div class="shopify-message"><i class="facl facl-ok"></i><a class="btn_link fwsb tu mr__10" href="{{routes.all_products_collection_url | sort_by: 'best-selling'}}">{{ 'customer.make_order' | t }}</a> {{ 'customer.orders.none' | t }}</div>
+         {%- endif -%}
+         <p class="mt__40"><strong>{{ 'customer.account.details' | t }}</strong></p>
+            <div class="table-responsive">   
+               <table>
+                 <tbody>
+                   <tr>
+                     <td class="text-left"><strong>{{ 'customer.account.name' | t }}</strong></td>
+                     <td>{{ customer_name }}</td>
+                   </tr>
+                   <tr>
+                     <td class="text-left"><strong>{{ 'customer.account.email' | t }}</strong></td>
+                     <td>{{ customer.default_address.email |default:customer.email }}</td>
+                   </tr>
+                   
+                   {%- if customer.default_address != nil -%}
+                      <tr>
+                        <td class="text-left"><strong>{{ 'customer.account.address' | t }}</strong></td>
+                        <td>{{ customer.default_address.address1 }}</td>
+                      </tr>
+                      {%- if customer.default_address.address2 != "" -%}
+                      <tr>
+                        <td class="text-left"><strong>{{ 'customer.account.address_2' | t }}</strong></td>
+                        <td>{{ customer.default_address.address2 }}</td>
+                      </tr>
+                      {%- endif -%}
+                      {%- if customer.default_address.city != blank -%}
+                      <tr>
+                        <td class="text-left"><strong>{{ 'customer.account.country' | t }}</strong></td>
+                        <td>{{ customer.default_address.city}}, {% if address.province_code %}{{customer.default_address.province_code}}, {% endif %}{{customer.default_address.country}}</td>
+                      </tr>
+                      {%- endif -%}
+                      {%- if customer.default_address.zip != blank -%}
+                      <tr>
+                        <td class="text-left"><strong>{{ 'customer.account.zip' | t }}</strong></td>
+                        <td>{{ customer.default_address.zip }}</td>
+                      </tr>
+                      {%- endif -%}
+                      {%- if customer.default_address.phone != blank -%}
+                      <tr>
+                        <td class="text-left"><strong>{{ 'customer.account.phone' | t }}</strong></td>
+                        <td>{{ customer.default_address.phone }}</td>
+                      </tr>
+                      {%- endif -%}
+                   {%- endif -%}
+                 </tbody>
+               </table>
+            </div>
+     </div>
+     </div>
+  </div>
+</div>

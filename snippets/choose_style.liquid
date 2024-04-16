@@ -1,0 +1,31 @@
+{%- comment %}title="{{link.title | escape}}"{% endcomment -%}
+{%- if call_cl == '_qv' %}{% assign col_style = '3' -%}
+{%- else -%}{% assign col_style = '15' -%}
+{%- endif -%}
+
+{%- for st_item in style_tag_arr %}{% assign style_item = st_item | remove:'stylet4_' %}{% assign nav_style = linklists[style_item].links | where:'type','product_link' -%} 
+<div class="pr_choose_style{% if default %} mb__40{% endif %}">
+    <h4 class="pr_choose_title">{{linklists[style_item].title}}</h4>
+    <div class="row fl_nowrap pr_choose_wrap">
+
+      {%- for link in nav_style %}{% assign pr = link.object -%}{% assign pr_imgs = pr.images -%}
+         <div class="col-4 col-md-{{col_style}} pr_choose_item tc{% if pid == pr.id %} t4_chosen{% endif %}">
+            <a href="{{pr.url | within:collection}}" class="db">
+               {%- if pr_imgs.size > 0 %}{% assign image = pr_imgs[0] -%}{% assign image = pr_imgs[0] -%}
+               <div class="pr_choose_img pr oh">
+                  <div class="pr_ch_img lz_op_ef lazyload" data-bgset="{{ image | img_url: '1x1' }}" data-parent-fit="width" data-wiis data-ratio="{{image.aspect_ratio}}" data-sizes="auto"></div>
+                  {%- if pr_imgs.size > 1 %}{% assign image = pr_imgs[1] -%}
+                  <div class="pr_ch_img_hover pe_none pa t__0 l__0 r__0 b__0 op__0 lz_op_ef lazyload" data-bgset="{{ image | img_url: '1x1' }}" data-parent-fit="width" data-wiis data-ratio="{{image.aspect_ratio}}" data-sizes="auto"></div>
+                  {%- endif -%}
+               </div>
+               {%- endif -%}
+               <div class="pr_choose_info truncate">{{link.title}}</div>      
+            </a>
+         </div>
+      {%- endfor -%}
+
+    </div>
+</div>
+{%- endfor -%}
+{%- assign ratio_style = product.images[0].aspect_ratio |default:1 -%} 
+<style>.pr_ch_img {padding-top: {{ 1 | divided_by:ratio_style | times: 100}}%;}.pr_choose_wrap{overflow:hidden;overflow-x:auto;-webkit-overflow-scrolling:touch}.pr_choose_title{font-size:14px;text-transform:uppercase;font-weight:700}.pr_choose_img .lz_op_ef{background-repeat:no-repeat;background-size:cover;background-position:center center}.row.pr_choose_wrap{margin:10px 0 25px}.pr_choose_style~.nt_cart_form .swatch{margin-bottom:15px}.pr_choose_wrap>.pr_choose_item{padding:5px;border:1px solid #ddd;margin-right:10px;border-radius:4px}.pr_choose_info{font-size:12px;font-weight:500;margin-top:5px}.pr_ch_img_hover{-webkit-transition:opacity .5s,-webkit-transform 2s cubic-bezier(0,0,.44,1.18);transition:opacity .5s,transform 2s cubic-bezier(0,0,.44,1.18),-webkit-transform 2s cubic-bezier(0,0,.44,1.18)}.pr_choose_item:hover .pr_ch_img_hover{opacity:1;transform:scale(1.09)}</style>

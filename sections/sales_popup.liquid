@@ -1,0 +1,382 @@
+{%- liquid
+  assign enable_salse_pp = settings.enable_salse_pp
+  assign enable_salse_pp_mb = settings.enable_salse_pp_mb
+  assign collection = collections[section.settings.collection_id]
+  assign available_products = collection.products | where: "available"
+  assign key = search.terms | default: request.page_type | strip
+  assign page_type = section.settings[key] | default:false
+  assign show_cl = section.settings.show_cl
+  assign show_qv =  section.settings.show_qv -%}
+
+{%- for i in (1..1) %}{% if page_type == false or available_products.size == 0 %}{% break %}{% endif -%}
+
+{%- capture url_cat -%}{% if collection %}/collections/{{collection.handle}}{% endif %}{%- endcapture -%}
+
+<div class="popup_slpr_wrap sales_animated hide oh des_{{section.settings.des}} slpr_mb_{{section.settings.mb}}{%- if show_cl or show_qv %} slpr_has_btns{% endif %}"
+    data-stt='{
+     "show":{
+      "index":{{section.settings.index | json}},
+      "product":{{section.settings.product | json}},
+      "collection":{{section.settings.collection | json}},
+      "article":{{section.settings.article | json}},
+      "blog":{{section.settings.blog | json}},
+      "cart":{{section.settings.cart | json}},
+      "page":{{section.settings.page | json}}
+    },
+     "classDown":{
+      "aniswing":"anibounceOutDown","anishake":"anibounceOutDown","aniwobble":"anibounceOutDown","anijello":"anibounceOutDown","anislideInUp":"anislideOutDown","anislideInLeft":"anislideOutLeft","anifadeIn":"anifadeOut","anifadeInLeft":"anifadeOutLeft","anibounceInUp":"anibounceOutDown","anibounceInLeft":"anibounceOutLeft","anirotateInDownLeft":"anirotateOutDownLeft","anirotateInUpLeft":"anirotateOutDownLeft","aniflipInX":"aniflipOutX","anizoomIn":"anizoomOut","anirollIn":"anirollOut"
+    },
+    "limit": {{ section.settings.limit | json }},
+    "pp_type": {{ section.settings.pp_type | json }},
+    "catlink": {{ collection.url | json}}, 
+    "url": {{ available_products | map:'url' | json }},
+    "id": {{ available_products | map:'id' | json }},
+    "image": {{ available_products | map:'featured_image' | json }},
+    "StarTime": {{ section.settings.start_time | json }},
+    "StarTime_unit": {{ section.settings.start_time_unit | plus:0 | json }},
+    "StayTime": {{ section.settings.stay_time | json }},
+    "StayTime_unit": {{ section.settings.stay_time_unit | plus:0 | json }},
+    "ClassUp": {{ section.settings.pp_ani | json }}
+    }'>
+   <div class="row al_center no-gutters fl_nowrap pr">
+      <div class="col-auto popup_slpr_thumb">
+        <a href="" class="db pr oh js_slpr_a"><img class="js_slpr_img" src="" srcset="" alt="sales popup"></a>
+      </div>
+      <div class="col popup_slpr_info">
+           <span class="db mb__5 fs__12"><span class="cb fs__13 js_slpr_location"></span> {{section.settings.txt1}}</span>
+           <a href="" class="js_slpr_a pp_slpr_title db mb__5 fs__13 tu truncate js_slpr_tt"></a>
+           <div class="pp_slpr_ago fs__12">
+               {%- if section.settings.show_time %}<span class="pp_slpr_time js_slpr_ago"></span>{% endif -%}
+               {%- if section.settings.show_verify %}<span class="pp_slpr_verify cb fs__13"><i class="las la-check-circle"></i>{{section.settings.txt2}}</span>{% endif -%}
+           </div>
+      </div>
+      {%- if show_cl %}<a class="pp_slpr_close pa op__0" href="#" rel="nofollow"><i class="las la-times"></i></a>{% endif -%}
+      {%- if show_qv %}<a href="" data-id="" rel="nofollow" class="js_slpr_a js_add_qv pp_slpr_qv pa op__0"><span class="ttip_nt tooltip_left"><i class="las la-eye"></i><span class="tt_txt">{{ 'products.grid_items.quick_view' | t }}</span></span></a>{% endif -%}
+   </div>
+</div>
+<script type="application/json" id="title_sale_pp">{{- available_products | map:'title' | json -}}</script>
+<script type="application/json" id="location_sale_pp">{{- section.settings.list_user | replace: ' | ', '|' | replace: ' |', '|' | replace: '| ', '|' | split: '|' | json -}}</script>
+<script type="application/json" id="time_sale_pp">{{- section.settings.list_time | replace: ' | ', '|' | replace: ' |', '|' | replace: '| ', '|' | split: '|' | json -}}</script>
+<style>
+.popup_slpr_wrap{max-width:350px;position:fixed;top:auto;background-color:#fff;transition:all .25s ease;-moz-box-shadow:0 0 12px rgba(0,0,0,.12);-webkit-box-shadow:0 0 12px rgba(0,0,0,.12);box-shadow:0 0 12px rgba(0,0,0,.12);border-radius:5px;left:35px;bottom:55px;width:100%;z-index:320;z-index:350}.popup_slpr_thumb{padding:10px!important}.popup_slpr_thumb img{max-width:65px}.popup_slpr_info{max-width:265px;padding:10px 10px 10px 0!important}.slpr_has_btns .popup_slpr_info{padding-right:30px!important}.pp_slpr_title{font-weight:600;color:#222}.pp_slpr_ago i{color:#0ca940;font-size:16px;margin:0 5px}.popup_slpr_wrap a.pa{right:5px;top:12px;text-align:center;opacity:1;display:inline-block;line-height:25px;width:25px;height:25px;font-size:20px;border-radius:5px;font-weight:400}.popup_slpr_wrap a.pp_slpr_qv{top:auto;bottom:12px}.popup_slpr_wrap.des_2,.popup_slpr_wrap.des_2 a{border-radius:90px}.popup_slpr_wrap.des_2 .popup_slpr_thumb>a{border-radius:50%}.popup_slpr_wrap.des_2 a.pa{top:50%;margin-top:-25px}.popup_slpr_wrap.des_2 a.pp_slpr_qv{bottom:auto;margin-top:0}@media (max-width:767px){.popup_slpr_wrap{left:3px}}@media (max-width:375px){.popup_slpr_info{max-width:210px}}@media (max-width:370px){.popup_slpr_wrap{left:0;max-width:320px}.popup_slpr_info{max-width:230px}}@media (min-width: 1025px){.des_header_7 .popup_slpr_wrap {left: auto;right: 125px}}
+.sales_animated{-webkit-animation-duration:1s;animation-duration:1s;-webkit-animation-fill-mode:both;animation-fill-mode:both}@-webkit-keyframes anislideOutDown{from{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);opacity:1}to{visibility:hidden;-webkit-transform:translate3d(0,100%,0);transform:translate3d(0,100%,0);opacity:0}}@keyframes anislideOutDown{from{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);opacity:1}to{visibility:hidden;-webkit-transform:translate3d(0,100%,0);transform:translate3d(0,100%,0);opacity:0}}.anislideOutDown{-webkit-animation-name:anislideOutDown;animation-name:anislideOutDown}@-webkit-keyframes anislideOutLeft{from{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);opacity:1}to{visibility:hidden;-webkit-transform:translate3d(-100%,0,0);transform:translate3d(-100%,0,0);opacity:0}}@keyframes anislideOutLeft{from{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);opacity:1}to{visibility:hidden;-webkit-transform:translate3d(-100%,0,0);transform:translate3d(-100%,0,0);opacity:0}}.anislideOutLeft{-webkit-animation-name:anislideOutLeft;animation-name:anislideOutLeft}@-webkit-keyframes anifadeOut{from{opacity:1}to{opacity:0}}@keyframes anifadeOut{from{opacity:1}to{opacity:0}}.anifadeOut{-webkit-animation-name:anifadeOut;animation-name:anifadeOut}@-webkit-keyframes anifadeOutLeft{from{opacity:1}to{opacity:0;-webkit-transform:translate3d(-100%,0,0);transform:translate3d(-100%,0,0)}}@keyframes anifadeOutLeft{from{opacity:1}to{opacity:0;-webkit-transform:translate3d(-100%,0,0);transform:translate3d(-100%,0,0)}}.anifadeOutLeft{-webkit-animation-name:anifadeOutLeft;animation-name:anifadeOutLeft}@-webkit-keyframes anibounceOutDown{20%{-webkit-transform:translate3d(0,10px,0);transform:translate3d(0,10px,0)}40%,45%{opacity:1;-webkit-transform:translate3d(0,-20px,0);transform:translate3d(0,-20px,0)}to{opacity:0;-webkit-transform:translate3d(0,2000px,0);transform:translate3d(0,2000px,0)}}@keyframes anibounceOutDown{20%{-webkit-transform:translate3d(0,10px,0);transform:translate3d(0,10px,0)}40%,45%{opacity:1;-webkit-transform:translate3d(0,-20px,0);transform:translate3d(0,-20px,0)}to{opacity:0;-webkit-transform:translate3d(0,2000px,0);transform:translate3d(0,2000px,0)}}.anibounceOutDown{-webkit-animation-name:anibounceOutDown;animation-name:anibounceOutDown}@-webkit-keyframes anibounceOutLeft{20%{opacity:1;-webkit-transform:translate3d(20px,0,0);transform:translate3d(20px,0,0)}to{opacity:0;-webkit-transform:translate3d(-2000px,0,0);transform:translate3d(-2000px,0,0)}}@keyframes anibounceOutLeft{20%{opacity:1;-webkit-transform:translate3d(20px,0,0);transform:translate3d(20px,0,0)}to{opacity:0;-webkit-transform:translate3d(-2000px,0,0);transform:translate3d(-2000px,0,0)}}.anibounceOutLeft{-webkit-animation-name:anibounceOutLeft;animation-name:anibounceOutLeft}@-webkit-keyframes anirotateOutDownLeft{from{-webkit-transform-origin:left bottom;transform-origin:left bottom;opacity:1}to{-webkit-transform-origin:left bottom;transform-origin:left bottom;-webkit-transform:rotate3d(0,0,1,45deg);transform:rotate3d(0,0,1,45deg);opacity:0}}@keyframes anirotateOutDownLeft{from{-webkit-transform-origin:left bottom;transform-origin:left bottom;opacity:1}to{-webkit-transform-origin:left bottom;transform-origin:left bottom;-webkit-transform:rotate3d(0,0,1,45deg);transform:rotate3d(0,0,1,45deg);opacity:0}}.anirotateOutDownLeft{-webkit-animation-name:anirotateOutDownLeft;animation-name:anirotateOutDownLeft}@-webkit-keyframes anirotateOutDownLeft{from{-webkit-transform-origin:left bottom;transform-origin:left bottom;opacity:1}to{-webkit-transform-origin:left bottom;transform-origin:left bottom;-webkit-transform:rotate3d(0,0,1,45deg);transform:rotate3d(0,0,1,45deg);opacity:0}}@keyframes anirotateOutDownLeft{from{-webkit-transform-origin:left bottom;transform-origin:left bottom;opacity:1}to{-webkit-transform-origin:left bottom;transform-origin:left bottom;-webkit-transform:rotate3d(0,0,1,45deg);transform:rotate3d(0,0,1,45deg);opacity:0}}.anirotateOutDownLeft{-webkit-animation-name:anirotateOutDownLeft;animation-name:anirotateOutDownLeft}@-webkit-keyframes aniflipOutX{from{-webkit-transform:perspective(400px);transform:perspective(400px)}30%{-webkit-transform:perspective(400px) rotate3d(1,0,0,-20deg);transform:perspective(400px) rotate3d(1,0,0,-20deg);opacity:1}to{-webkit-transform:perspective(400px) rotate3d(1,0,0,90deg);transform:perspective(400px) rotate3d(1,0,0,90deg);opacity:0}}@keyframes aniflipOutX{from{-webkit-transform:perspective(400px);transform:perspective(400px)}30%{-webkit-transform:perspective(400px) rotate3d(1,0,0,-20deg);transform:perspective(400px) rotate3d(1,0,0,-20deg);opacity:1}to{-webkit-transform:perspective(400px) rotate3d(1,0,0,90deg);transform:perspective(400px) rotate3d(1,0,0,90deg);opacity:0}}.aniflipOutX{-webkit-animation-duration:.75s;animation-duration:.75s;-webkit-animation-name:aniflipOutX;animation-name:aniflipOutX;-webkit-backface-visibility:visible!important;backface-visibility:visible!important}@-webkit-keyframes anizoomOut{from{opacity:1}50%{opacity:0;-webkit-transform:scale3d(.3,.3,.3);transform:scale3d(.3,.3,.3)}to{opacity:0}}@keyframes anizoomOut{from{opacity:1}50%{opacity:0;-webkit-transform:scale3d(.3,.3,.3);transform:scale3d(.3,.3,.3)}to{opacity:0}}.anizoomOut{-webkit-animation-name:anizoomOut;animation-name:anizoomOut}@-webkit-keyframes anirollOut{from{opacity:1}to{opacity:0;-webkit-transform:translate3d(100%,0,0) rotate3d(0,0,1,120deg);transform:translate3d(100%,0,0) rotate3d(0,0,1,120deg)}}@keyframes anirollOut{from{opacity:1}to{opacity:0;-webkit-transform:translate3d(100%,0,0) rotate3d(0,0,1,120deg);transform:translate3d(100%,0,0) rotate3d(0,0,1,120deg)}}.anirollOut{-webkit-animation-name:anirollOut;animation-name:anirollOut}@-webkit-keyframes anibounceOutDown{20%{-webkit-transform:translate3d(0,10px,0);transform:translate3d(0,10px,0)}40%,45%{opacity:1;-webkit-transform:translate3d(0,-20px,0);transform:translate3d(0,-20px,0)}to{opacity:0;-webkit-transform:translate3d(0,2000px,0);transform:translate3d(0,2000px,0)}}@keyframes anibounceOutDown{20%{-webkit-transform:translate3d(0,10px,0);transform:translate3d(0,10px,0)}40%,45%{opacity:1;-webkit-transform:translate3d(0,-20px,0);transform:translate3d(0,-20px,0)}to{opacity:0;-webkit-transform:translate3d(0,2000px,0);transform:translate3d(0,2000px,0)}}.anibounceOutDown{-webkit-animation-name:anibounceOutDown;animation-name:anibounceOutDown}@keyframes anislideInUp{from{-webkit-transform:translate3d(0,100%,0);transform:translate3d(0,100%,0);visibility:visible;opacity:0}to{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);opacity:1}}.anislideInUp{-webkit-animation-name:anislideInUp;animation-name:anislideInUp}@-webkit-keyframes anislideInLeft{from{-webkit-transform:translate3d(-100%,0,0);transform:translate3d(-100%,0,0);visibility:visible;opacity:0}to{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);opacity:1}}@keyframes anislideInLeft{from{-webkit-transform:translate3d(-100%,0,0);transform:translate3d(-100%,0,0);visibility:visible;opacity:0}to{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);opacity:1}}.anislideInLeft{-webkit-animation-name:anislideInLeft;animation-name:anislideInLeft}@-webkit-keyframes anifadeIn{from{opacity:0}to{opacity:1}}@keyframes anifadeIn{from{opacity:0}to{opacity:1}}.anifadeIn{-webkit-animation-name:anifadeIn;animation-name:anifadeIn}@-webkit-keyframes anifadeInLeft{from{opacity:0;-webkit-transform:translate3d(-100%,0,0);transform:translate3d(-100%,0,0)}to{opacity:1;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}}@keyframes anifadeInLeft{from{opacity:0;-webkit-transform:translate3d(-100%,0,0);transform:translate3d(-100%,0,0)}to{opacity:1;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}}.anifadeInLeft{-webkit-animation-name:anifadeInLeft;animation-name:anifadeInLeft}@-webkit-keyframes anibounceInUp{60%,75%,90%,from,to{-webkit-animation-timing-function:cubic-bezier(.215,.61,.355,1);animation-timing-function:cubic-bezier(.215,.61,.355,1)}from{opacity:0;-webkit-transform:translate3d(0,3000px,0);transform:translate3d(0,3000px,0)}60%{opacity:1;-webkit-transform:translate3d(0,-20px,0);transform:translate3d(0,-20px,0)}75%{-webkit-transform:translate3d(0,10px,0);transform:translate3d(0,10px,0)}90%{-webkit-transform:translate3d(0,-5px,0);transform:translate3d(0,-5px,0)}to{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}}@keyframes anibounceInUp{60%,75%,90%,from,to{-webkit-animation-timing-function:cubic-bezier(.215,.61,.355,1);animation-timing-function:cubic-bezier(.215,.61,.355,1)}from{opacity:0;-webkit-transform:translate3d(0,3000px,0);transform:translate3d(0,3000px,0)}60%{opacity:1;-webkit-transform:translate3d(0,-20px,0);transform:translate3d(0,-20px,0)}75%{-webkit-transform:translate3d(0,10px,0);transform:translate3d(0,10px,0)}90%{-webkit-transform:translate3d(0,-5px,0);transform:translate3d(0,-5px,0)}to{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}}.anibounceInUp{-webkit-animation-name:anibounceInUp;animation-name:anibounceInUp}@-webkit-keyframes anibounceInLeft{60%,75%,90%,from,to{-webkit-animation-timing-function:cubic-bezier(.215,.61,.355,1);animation-timing-function:cubic-bezier(.215,.61,.355,1)}0%{opacity:0;-webkit-transform:translate3d(-3000px,0,0);transform:translate3d(-3000px,0,0)}60%{opacity:1;-webkit-transform:translate3d(25px,0,0);transform:translate3d(25px,0,0)}75%{-webkit-transform:translate3d(-10px,0,0);transform:translate3d(-10px,0,0)}90%{-webkit-transform:translate3d(5px,0,0);transform:translate3d(5px,0,0)}to{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}}@keyframes anibounceInLeft{60%,75%,90%,from,to{-webkit-animation-timing-function:cubic-bezier(.215,.61,.355,1);animation-timing-function:cubic-bezier(.215,.61,.355,1)}0%{opacity:0;-webkit-transform:translate3d(-3000px,0,0);transform:translate3d(-3000px,0,0)}60%{opacity:1;-webkit-transform:translate3d(25px,0,0);transform:translate3d(25px,0,0)}75%{-webkit-transform:translate3d(-10px,0,0);transform:translate3d(-10px,0,0)}90%{-webkit-transform:translate3d(5px,0,0);transform:translate3d(5px,0,0)}to{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}}.anibounceInLeft{-webkit-animation-name:anibounceInLeft;animation-name:anibounceInLeft}@-webkit-keyframes anirotateInDownLeft{from{-webkit-transform-origin:left bottom;transform-origin:left bottom;-webkit-transform:rotate3d(0,0,1,-45deg);transform:rotate3d(0,0,1,-45deg);opacity:0}to{-webkit-transform-origin:left bottom;transform-origin:left bottom;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);opacity:1}}@keyframes anirotateInDownLeft{from{-webkit-transform-origin:left bottom;transform-origin:left bottom;-webkit-transform:rotate3d(0,0,1,-45deg);transform:rotate3d(0,0,1,-45deg);opacity:0}to{-webkit-transform-origin:left bottom;transform-origin:left bottom;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);opacity:1}}.anirotateInDownLeft{-webkit-animation-name:anirotateInDownLeft;animation-name:anirotateInDownLeft}@-webkit-keyframes anirotateInUpLeft{from{-webkit-transform-origin:left bottom;transform-origin:left bottom;-webkit-transform:rotate3d(0,0,1,45deg);transform:rotate3d(0,0,1,45deg);opacity:0}to{-webkit-transform-origin:left bottom;transform-origin:left bottom;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);opacity:1}}@keyframes anirotateInUpLeft{from{-webkit-transform-origin:left bottom;transform-origin:left bottom;-webkit-transform:rotate3d(0,0,1,45deg);transform:rotate3d(0,0,1,45deg);opacity:0}to{-webkit-transform-origin:left bottom;transform-origin:left bottom;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0);opacity:1}}.anirotateInUpLeft{-webkit-animation-name:anirotateInUpLeft;animation-name:anirotateInUpLeft}@-webkit-keyframes aniflipInX{from{-webkit-transform:perspective(400px) rotate3d(1,0,0,90deg);transform:perspective(400px) rotate3d(1,0,0,90deg);-webkit-animation-timing-function:ease-in;animation-timing-function:ease-in;opacity:0}40%{-webkit-transform:perspective(400px) rotate3d(1,0,0,-20deg);transform:perspective(400px) rotate3d(1,0,0,-20deg);-webkit-animation-timing-function:ease-in;animation-timing-function:ease-in}60%{-webkit-transform:perspective(400px) rotate3d(1,0,0,10deg);transform:perspective(400px) rotate3d(1,0,0,10deg);opacity:1}80%{-webkit-transform:perspective(400px) rotate3d(1,0,0,-5deg);transform:perspective(400px) rotate3d(1,0,0,-5deg)}to{-webkit-transform:perspective(400px);transform:perspective(400px)}}@keyframes aniflipInX{from{-webkit-transform:perspective(400px) rotate3d(1,0,0,90deg);transform:perspective(400px) rotate3d(1,0,0,90deg);-webkit-animation-timing-function:ease-in;animation-timing-function:ease-in;opacity:0}40%{-webkit-transform:perspective(400px) rotate3d(1,0,0,-20deg);transform:perspective(400px) rotate3d(1,0,0,-20deg);-webkit-animation-timing-function:ease-in;animation-timing-function:ease-in}60%{-webkit-transform:perspective(400px) rotate3d(1,0,0,10deg);transform:perspective(400px) rotate3d(1,0,0,10deg);opacity:1}80%{-webkit-transform:perspective(400px) rotate3d(1,0,0,-5deg);transform:perspective(400px) rotate3d(1,0,0,-5deg)}to{-webkit-transform:perspective(400px);transform:perspective(400px)}}.aniflipInX{-webkit-backface-visibility:visible!important;backface-visibility:visible!important;-webkit-animation-name:aniflipInX;animation-name:aniflipInX}@-webkit-keyframes anizoomIn{from{opacity:0;-webkit-transform:scale3d(.3,.3,.3);transform:scale3d(.3,.3,.3)}50%{opacity:1}}@keyframes anizoomIn{from{opacity:0;-webkit-transform:scale3d(.3,.3,.3);transform:scale3d(.3,.3,.3)}50%{opacity:1}}.anizoomIn{-webkit-animation-name:anizoomIn;animation-name:anizoomIn}@-webkit-keyframes anirollIn{from{opacity:0;-webkit-transform:translate3d(-100%,0,0) rotate3d(0,0,1,-120deg);transform:translate3d(-100%,0,0) rotate3d(0,0,1,-120deg)}to{opacity:1;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}}@keyframes anirollIn{from{opacity:0;-webkit-transform:translate3d(-100%,0,0) rotate3d(0,0,1,-120deg);transform:translate3d(-100%,0,0) rotate3d(0,0,1,-120deg)}to{opacity:1;-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}}.anirollIn{-webkit-animation-name:anirollIn;animation-name:anirollIn}@-webkit-keyframes aniswing{20%{-webkit-transform:rotate3d(0,0,1,15deg);transform:rotate3d(0,0,1,15deg)}40%{-webkit-transform:rotate3d(0,0,1,-10deg);transform:rotate3d(0,0,1,-10deg)}60%{-webkit-transform:rotate3d(0,0,1,5deg);transform:rotate3d(0,0,1,5deg)}80%{-webkit-transform:rotate3d(0,0,1,-5deg);transform:rotate3d(0,0,1,-5deg)}to{-webkit-transform:rotate3d(0,0,1,0deg);transform:rotate3d(0,0,1,0deg)}}@keyframes aniswing{20%{-webkit-transform:rotate3d(0,0,1,15deg);transform:rotate3d(0,0,1,15deg)}40%{-webkit-transform:rotate3d(0,0,1,-10deg);transform:rotate3d(0,0,1,-10deg)}60%{-webkit-transform:rotate3d(0,0,1,5deg);transform:rotate3d(0,0,1,5deg)}80%{-webkit-transform:rotate3d(0,0,1,-5deg);transform:rotate3d(0,0,1,-5deg)}to{-webkit-transform:rotate3d(0,0,1,0deg);transform:rotate3d(0,0,1,0deg)}}.aniswing{-webkit-transform-origin:top center;transform-origin:top center;-webkit-animation-name:aniswing;animation-name:aniswing}@-webkit-keyframes anishake{from,to{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}10%,30%,50%,70%,90%{-webkit-transform:translate3d(-10px,0,0);transform:translate3d(-10px,0,0)}20%,40%,60%,80%{-webkit-transform:translate3d(10px,0,0);transform:translate3d(10px,0,0)}}@keyframes anishake{from,to{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}10%,30%,50%,70%,90%{-webkit-transform:translate3d(-10px,0,0);transform:translate3d(-10px,0,0)}20%,40%,60%,80%{-webkit-transform:translate3d(10px,0,0);transform:translate3d(10px,0,0)}}.anishake{-webkit-animation-name:anishake;animation-name:anishake}@-webkit-keyframes aniwobble{from{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}15%{-webkit-transform:translate3d(-25%,0,0) rotate3d(0,0,1,-5deg);transform:translate3d(-25%,0,0) rotate3d(0,0,1,-5deg)}30%{-webkit-transform:translate3d(20%,0,0) rotate3d(0,0,1,3deg);transform:translate3d(20%,0,0) rotate3d(0,0,1,3deg)}45%{-webkit-transform:translate3d(-15%,0,0) rotate3d(0,0,1,-3deg);transform:translate3d(-15%,0,0) rotate3d(0,0,1,-3deg)}60%{-webkit-transform:translate3d(10%,0,0) rotate3d(0,0,1,2deg);transform:translate3d(10%,0,0) rotate3d(0,0,1,2deg)}75%{-webkit-transform:translate3d(-5%,0,0) rotate3d(0,0,1,-1deg);transform:translate3d(-5%,0,0) rotate3d(0,0,1,-1deg)}to{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}}@keyframes aniwobble{from{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}15%{-webkit-transform:translate3d(-25%,0,0) rotate3d(0,0,1,-5deg);transform:translate3d(-25%,0,0) rotate3d(0,0,1,-5deg)}30%{-webkit-transform:translate3d(20%,0,0) rotate3d(0,0,1,3deg);transform:translate3d(20%,0,0) rotate3d(0,0,1,3deg)}45%{-webkit-transform:translate3d(-15%,0,0) rotate3d(0,0,1,-3deg);transform:translate3d(-15%,0,0) rotate3d(0,0,1,-3deg)}60%{-webkit-transform:translate3d(10%,0,0) rotate3d(0,0,1,2deg);transform:translate3d(10%,0,0) rotate3d(0,0,1,2deg)}75%{-webkit-transform:translate3d(-5%,0,0) rotate3d(0,0,1,-1deg);transform:translate3d(-5%,0,0) rotate3d(0,0,1,-1deg)}to{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}}.aniwobble{-webkit-animation-name:aniwobble;animation-name:aniwobble}@-webkit-keyframes anijello{11.1%,from,to{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}22.2%{-webkit-transform:skewX(-12.5deg) skewY(-12.5deg);transform:skewX(-12.5deg) skewY(-12.5deg)}33.3%{-webkit-transform:skewX(6.25deg) skewY(6.25deg);transform:skewX(6.25deg) skewY(6.25deg)}44.4%{-webkit-transform:skewX(-3.125deg) skewY(-3.125deg);transform:skewX(-3.125deg) skewY(-3.125deg)}55.5%{-webkit-transform:skewX(1.5625deg) skewY(1.5625deg);transform:skewX(1.5625deg) skewY(1.5625deg)}66.6%{-webkit-transform:skewX(-.78125deg) skewY(-.78125deg);transform:skewX(-.78125deg) skewY(-.78125deg)}77.7%{-webkit-transform:skewX(.390625deg) skewY(.390625deg);transform:skewX(.390625deg) skewY(.390625deg)}88.8%{-webkit-transform:skewX(-.1953125deg) skewY(-.1953125deg);transform:skewX(-.1953125deg) skewY(-.1953125deg)}}@keyframes anijello{11.1%,from,to{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}22.2%{-webkit-transform:skewX(-12.5deg) skewY(-12.5deg);transform:skewX(-12.5deg) skewY(-12.5deg)}33.3%{-webkit-transform:skewX(6.25deg) skewY(6.25deg);transform:skewX(6.25deg) skewY(6.25deg)}44.4%{-webkit-transform:skewX(-3.125deg) skewY(-3.125deg);transform:skewX(-3.125deg) skewY(-3.125deg)}55.5%{-webkit-transform:skewX(1.5625deg) skewY(1.5625deg);transform:skewX(1.5625deg) skewY(1.5625deg)}66.6%{-webkit-transform:skewX(-.78125deg) skewY(-.78125deg);transform:skewX(-.78125deg) skewY(-.78125deg)}77.7%{-webkit-transform:skewX(.390625deg) skewY(.390625deg);transform:skewX(.390625deg) skewY(.390625deg)}88.8%{-webkit-transform:skewX(-.1953125deg) skewY(-.1953125deg);transform:skewX(-.1953125deg) skewY(-.1953125deg)}}.anijello{-webkit-animation-name:anijello;animation-name:anijello;-webkit-transform-origin:center;transform-origin:center}
+</style>
+{%- endfor -%}
+
+{%- schema -%}
+  {
+    "name": "Sales popup",
+    /*"class":"mfp-hide-",*/
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Config enable/disable on Theme settings: General settings ---> SHOP SECTION SETTINGS"
+      },
+      {
+        "type": "collection",
+        "label": "Select collection to display",
+        "id": "collection_id"
+      },
+      {
+        "type": "range",
+        "id": "limit",
+        "min": 1,
+        "max": 50,
+        "step": 1,
+        "label": "Limit Products",
+        "default": 8
+      },
+      {
+        "type": "header",
+        "content": "Select page to display"
+      },
+      {
+        "type": "checkbox",
+        "id": "index",
+        "label": "Home page",
+        "default": true,
+        "info": "Sales popup will display on home page"
+      },
+      {
+        "type": "checkbox",
+        "id": "product",
+        "label": "Product page",
+        "default": true,
+        "info": "Sales popup will display on Product page"
+      },
+      {
+        "type": "checkbox",
+        "id": "collection",
+        "label": "Collection page",
+        "default": false,
+        "info": "Sales popup will display on Collection page"
+      },
+      {
+        "type": "checkbox",
+        "id": "article",
+        "label": "Article page",
+        "default": false,
+        "info": "Sales popup will display on Article page"
+      },
+      {
+        "type": "checkbox",
+        "id": "blog",
+        "label": "Blog page",
+        "default": false,
+        "info": "Sales popup will display on Blog page"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart",
+        "label": "Cart page",
+        "default": false,
+        "info": "Sales popup will display on Cart page"
+      },
+      {
+        "type": "checkbox",
+        "id": "page",
+        "label": "Other page",
+        "default": false,
+        "info": "Sales popup will display on Other page"
+      },
+      {
+        "type": "header",
+        "content": "General settings"
+      },
+      {
+        "type": "select",
+        "id": "pp_type",
+        "label": "Sales popup type",
+        "default": "2",
+        "options": [
+          {
+            "value": "1",
+            "label": "Sequential"
+          },
+          {
+            "value": "2",
+            "label": "Random"
+          }
+        ]
+      },
+      {
+        "type": "range",
+        "id": "start_time",
+        "min": 1,
+        "max": 60,
+        "step": 1,
+        "label": "Popup Start Time",
+        "default": 4
+      },
+      {
+        "type": "select",
+        "id": "start_time_unit",
+        "label": "Popup Start Time Unit",
+        "default": "1000",
+        "options": [
+          {
+            "value": "1000",
+            "label": "Second"
+          },
+          {
+            "value": "60000",
+            "label": "Minute"
+          }
+        ]
+      },
+      {
+        "type": "range",
+        "id": "stay_time",
+        "min": 1,
+        "max": 60,
+        "step": 1,
+        "label": "Popup Stay Time",
+        "default": 5
+      },
+      {
+        "type": "select",
+        "id": "stay_time_unit",
+        "label": "Popup Stay Time Unit",
+        "default": "1000",
+        "options": [
+          {
+            "value": "1000",
+            "label": "Second"
+          },
+          {
+            "value": "60000",
+            "label": "Minute"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "show_cl",
+        "label": "Show close button?",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "show_qv",
+        "label": "Show quick view button?",
+        "default": false
+      },
+      {
+        "type": "textarea",
+        "id": "list_user",
+        "default": "Nathan (California) | Alex (Texas) | Henry (New York) | Kiti (Ohio) | Daniel (Washington) | Hau (California) | Van (Ohio) | Sara (Montana)  | Kate (Georgia)",
+        "info":"separate with '|'. If you not want use list user you can write a text. eg:'someone'",
+        "label": "List user purchased:",
+        "placeholder": "user1 | user2 | ..."
+      },
+      {
+        "type": "checkbox",
+        "id": "show_time",
+        "label": "Show time ago in suggest",
+        "default": true
+      },
+      {
+        "type": "textarea",
+        "id": "list_time",
+        "default": "4 hours ago | 2 hours ago | 45 minutes ago | 1 day ago | 8 hours ago | 10 hours ago | 25 minutes ago | 2 day ago | 5 hours ago | 40 minutes ago",
+        "info":"separate with '|'",
+        "label": "List time:",
+        "placeholder": "time1 | time2 | ..."
+      },
+      {
+        "type": "checkbox",
+        "id": "show_verify",
+        "label": "Show Verified?",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Theme settings"
+      },
+      {
+        "type": "select",
+        "id": "des",
+        "options": [
+          {
+            "value": "1",
+            "label": "Desgin 1"
+          },
+          {
+            "value": "2",
+            "label": "Desgin 2"
+          }
+        ],
+        "label": "Desgin Popup:",
+        "default": "1"
+      },
+      {
+        "type": "select",
+        "id": "pp_ani",
+        "label": "Animation Style",
+        "default": "anislideInUp",
+        "options": [
+          {
+            "value": "anislideInUp",
+            "label": "slideInUp"
+          },
+          {
+            "value": "anislideInLeft",
+            "label": "slideInLeft"
+          },
+          {
+            "value": "anifadeIn",
+            "label": "fadeIn"
+          },
+          {
+            "value": "anifadeInLeft",
+            "label": "fadeInLeft"
+          },
+          {
+            "value": "anibounceInUp",
+            "label": "bounceInUp"
+          },
+          {
+            "value": "anibounceInLeft",
+            "label": "bounceInLeft"
+          },
+          {
+            "value": "anirotateInDownLeft",
+            "label": "rotateInDownLeft"
+          },
+          {
+            "value": "anirotateInUpLeft",
+            "label": "rotateInUpLeft"
+          },
+          {
+            "value": "aniflipInX",
+            "label": "flipInX"
+          },
+          {
+            "value": "anizoomIn",
+            "label": "zoomIn"
+          },
+          {
+            "value": "anirollIn",
+            "label": "rollIn"
+          },
+          {
+            "value": "aniswing",
+            "label": "swing"
+          },
+          {
+            "value": "anishake",
+            "label": "shake"
+          },
+          {
+            "value": "aniwobble",
+            "label": "wobble"
+          },
+          {
+            "value": "anijello",
+            "label": "jello"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "id": "txt1",
+        "default": "purchased",
+        "label": "Text 'Purchased'"
+      },
+      {
+        "type": "text",
+        "id": "txt2",
+        "default": "Verified",
+        "label": "Text 'Verified'"
+      }/*,
+      {
+        "type": "select",
+        "id": "pp_color",
+        "options": [
+          {
+            "value": "dark",
+            "label": "Dark"
+          },
+          {
+            "value": "light",
+            "label": "Light"
+          }
+        ],
+        "label": "Header text color",
+        "default": "dark"
+      },
+      {
+        "type": "color",
+        "id": "bg_cl",
+        "default": "#fff",
+        "label": "Background Color"
+      },
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Background image",
+        "info": "400x120 recommend"
+      }*/
+    ]
+  }
+{% endschema %}

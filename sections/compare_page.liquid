@@ -1,0 +1,264 @@
+{%- liquid
+  assign tooltip = ''
+  assign results_count = search.results_count
+  assign pr_results = search.results
+  assign inc_price = settings.price_format
+  assign use_rating = settings.use_pr_rating
+  assign inc_rating = settings.app_review
+  assign use_quickview = settings.use_quickview
+  assign btn_blocks = section.blocks | where: "type", 'btn'
+  assign on_sale_txt = 'products.product.on_sale' | t
+  assign save_js = 'products.product.save_js' | t: saved_amount:'saved_amount'
+  assign remove_txt = 'general.compare.remove' | t
+  assign in_stock_txt = 'general.compare.in_stock' | t
+  assign outofstock_txt = 'general.compare.outofstock' | t -%}
+
+{%- paginate search.results by limit -%}
+<div class="container mt__80 mb__80">
+
+{%- if results_count > 0 -%}
+   
+   <div class="themet4_compare_table">
+      
+      {%- for block in section.blocks -%}
+         {% if block.type == 'btn' %}{% continue %}{% endif -%}
+         {%- assign block_title = block.settings.title | escape -%}
+         {%- case block.type -%}
+            {%- when 'basic' -%}
+                <div class="themet4_compare_row compare_basic">
+                  <div class="themet4_compare_col compare_field"></div>
+                  {%- for product in pr_results %}
+                  {%- liquid
+                    assign pr_id = product.id
+                    assign pr_url = product.url
+                    assign on_sale = false
+                    assign image = product.images[0] | default:settings.placeholder_img
+                    assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' 
+                    if product.compare_at_price_min > product.price_min
+                      assign on_sale = true 
+                    endif -%}
+                    {%- capture url_last -%}{{pr_url | split:'/products/' | first}}/products/{{product.handle}}{%- endcapture -%}
+                  <div class="themet4_compare_col compare_value compare_id_{{pr_id}}" data-title>
+                    <div class="compare_basic_content">
+                       <a href="/" data-no-instant rel="nofollow" class="cpt4_remve compare_remove dib" data-id="{{pr_id}}">{{remove_txt}}</a>
+                       {%- if image != blank %}<a class="product-image db" href="{{pr_url}}"><img src="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20{{image.width}}%20{{image.height}}%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3C%2Fsvg%3E" data-src="{{ img_url }}" data-widths="[80, 160, 250, 320, 500, 640]" data-sizes="auto" class="w__100 lazyload lz_op_ef" alt="{{image.alt | escape }}"></a>{% endif -%}
+                       <a class="product-title db" href="{{pr_url}}">{{ product.title | escape }}</a>
+                       <div class="price">
+                           {%- if product.price_varies -%}
+                          {{ product.price_min | money }}–{{ product.price_max | money }}
+                          {%- elsif on_sale -%}<del>{{ product.compare_at_price  | money }}</del> <ins>{{ product.price | money }}</ins>{%- if settings.label_sale_style == '1' -%}<span class="nt_label onsale">{{ on_sale_txt }}</span>{%- else-%}{%- assign save = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | ceil -%}<span class="onsale nt_label">{{ save_js | replace:'saved_amount',save }}</span>{% endif -%}
+                          {%- else -%}
+                          {{ product.price | money }}
+                          {%- endif -%}
+                       </div>
+                       {%- if use_quickview -%}<a class="pr nt_add_qv js_add_qv cd br__40 pl__25 pr__25 bgw tc dib {{tooltip}}" href="{{url_last}}" data-id="{{pr_id}}" rel="nofollow" class="{{tooltip}}"><span class="tt_txt">{{ 'products.grid_items.quick_view' | t }}</span><i class="iccl iccl-eye"></i><span>{{ 'products.grid_items.quick_view' | t }}</span></a>{%-endif-%}
+                       <div class="db not_mt10"></div>
+                       {%- unless settings.hide_btns %}{% render 'nt_add_btn',product:product,tooltip:'',url_last:url_last -%}{% endunless -%}
+                    </div>
+                  </div>
+                  {%- endfor -%}
+                </div>
+
+            {%- when 'availability' -%}
+                <div class="themet4_compare_row compare_availability">
+                  <div class="themet4_compare_col compare_field">{{block_title}}</div>
+                  {%- for product in pr_results -%}
+                  <div class="themet4_compare_col compare_value compare_id_{{product.id}}" data-title="{{block_title}}">{% if product.available %}<span class="stock in-stock">{{in_stock_txt}}</span>{% else %}<span class="stock out-of-stock">{{outofstock_txt}}</span>{% endif %}</div>
+                  {%- endfor -%}
+                </div>
+
+            {%- when 'vendor' -%}
+                <div class="themet4_compare_row compare_vendor">
+                  <div class="themet4_compare_col compare_field">{{block_title}}</div>
+                  {%- for product in pr_results %}<div class="themet4_compare_col compare_value compare_id_{{product.id}}" data-title="{{block_title}}">{{product.vendor |default:'-' | escape}}</div>{% endfor -%}
+                </div>
+
+            {%- when 'rating' %}{% if use_rating %}{% continue %}{% endif -%}
+                <div class="themet4_compare_row compare_rating">
+                  <div class="themet4_compare_col compare_field">{{block_title}}</div>
+                  {%- for product in pr_results -%}
+                  <div class="themet4_compare_col compare_value compare_id_{{product.id}}" data-title="{{block_title}}">
+                    {%- render 'rating',product:product,inc_rating:inc_rating -%}
+                  </div>
+                  {%- endfor -%}
+                </div>
+
+            {%- else -%}
+                <div class="themet4_compare_row compare_pr_variants compare_{{block.settings.title | handle}}">
+                  <div class="themet4_compare_col compare_field">{{block_title}}</div>
+                  {%- for product in pr_results -%}
+                  <div class="themet4_compare_col compare_value compare_id_{{product.id}}" data-title="{{block_title}}">{% if product.has_only_default_variant %}-{% else %}{{product.options_by_name[block.settings.title].values | join: ', ' |default:'-'}}{% endif -%}</div>
+                  {%- endfor -%}
+                </div>
+
+         {%- endcase -%}
+      {%- endfor -%}
+   </div>
+   <style>.compare_basic_content a.pr_atc{pointer-events:auto;opacity:1}.themet4_compare_table{border:1px solid rgba(129,129,129,.2)}.themet4_compare_row{display:flex;flex-direction:row;flex-wrap:nowrap}.themet4_compare_row:nth-child(even) .themet4_compare_col{background-color:rgba(0,0,0,.03)}.themet4_compare_col{display:flex;flex-direction:column;justify-content:center;padding:15px;word-break:break-word}.themet4_compare_col p{margin-bottom:0}.themet4_compare_col .themet4_compare_brand img{max-width:110px}.themet4_compare_col .product-image{display:block}.themet4_compare_col .added_to_cart,.themet4_compare_col .button{padding:10px 14px;font-size:12px;line-height:16px;color:#fff}.themet4_compare_col .added_to_cart:hover,.themet4_compare_col .button:hover{color:#fff;box-shadow:inset 0 0 200px rgba(0,0,0,.1)}.themet4_compare_col .button.added{display:none}.themet4_compare_col:not(:last-child){border-right:1px solid rgba(129,129,129,.2)}.themet4_dark .themet4_compare_col:not(:last-child){border-color:rgba(255,255,255,.15)}.compare_field{flex:0 0 20%;color:#2d2a2a;text-transform:uppercase;font-weight:600;font-size:15px}.themet4_dark .compare_field{color:#fff}.compare_value{line-height:1.4;flex:0 1 26.6666%;align-items:center;text-align:center}.compare_value :not(.not_mt10):not(:last-child){margin-bottom:10px !important}.browser-Internet .compare_value{flex-direction:row}.compare_basic .compare_value{justify-content:flex-start;padding-top:0}.compare_basic .compare_value:before{display:none}.compare_basic_content{width:100%}a.compare_remove{color:#2d2a2a;text-decoration:none;text-transform:uppercase;letter-spacing:.3px;font-weight:600;font-size:12px;margin:10px 0;position:relative;display:inline-block;cursor:pointer;line-height:30px;padding-right:18px}a.compare_remove:after,a.compare_remove:before{content:" ";position:absolute;top:50%;display:inline-block;margin-top:-1px;width:12px;height:2px;background-color:#000;transition:background-color .2s ease-in-out,width .2s ease-in-out,-webkit-transform .2s ease-in-out;transition:background-color .2s ease-in-out,transform .2s ease-in-out,width .2s ease-in-out;transition:background-color .2s ease-in-out,transform .2s ease-in-out,width .2s ease-in-out,-webkit-transform .2s ease-in-out;right:0;-webkit-transform:rotate(45deg);transform:rotate(45deg)}a.compare_remove:after{-webkit-transform:rotate(-45deg);transform:rotate(-45deg)}a.compare_remove:hover:after,a.compare_remove:hover:before{-webkit-transform:rotate(0);transform:rotate(0)}.compare_basic_content a.product-title{font-weight:500;line-height:1.3}.compare_basic_content .pr_qty_atc a,.compare_basic_content a.nt_add_qv,.compare_basic_content a.pr_atc{position:relative;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;text-align:center;text-decoration:none;text-shadow:none;letter-spacing:.3px;font-weight:500;cursor:pointer;padding:10px 14px;font-size:12px;line-height:16px;background-color:#e1b878;border:none;box-shadow:inset 0 -2px 0 rgba(0,0,0,.15);transition:color .25s ease,background-color .25s ease,border-color .25s ease,box-shadow 0s ease,opacity .25s ease;border-radius:0;color:#fff}.compare_basic_content .pr_qty_atc{position:static;opacity:1;pointer-events:auto;display:-ms-inline-flexbox;display:inline-flex;-ms-flex-pack:center;justify-content:center;-ms-flex-align:center;align-items:center;-ms-flex-wrap:wrap;flex-wrap:wrap}.compare_basic_content .pr_qty_atc .quantity,.compare_basic_content .pr_qty_atc a,.compare_basic_content a.pr_atc{background-color:#00a0ac;background-color:#95bf46}.compare_value .quantity{margin-bottom:0!important}.compare_basic_content .pr_qty_atc .pr_atc_{color:#fff!important;width:auto;min-height:40px}.compare_basic_content .pr_qty_atc:hover,.compare_basic_content a.nt_add_qv:hover,.compare_basic_content a.pr_atc:hover{opacity:.85}.compare_basic_content .pr_qty_atc:after,.compare_basic_content a.nt_add_qv:after,.compare_basic_content a.pr_atc:after{position:absolute;top:50%;left:50%;margin-top:-9px;margin-left:-9px;opacity:0;transition:opacity 0s ease;content:"";display:inline-block;width:18px;height:18px;border:1px solid rgba(255,255,255,.3);border-left-color:#fff;border-radius:50%;vertical-align:middle}.compare_basic_content a.loading{color:transparent!important}.compare_basic_content a.loading:after{opacity:1;transition:opacity .25s ease;-webkit-animation:spin 450ms infinite linear;animation:spin 450ms infinite linear}.compare_basic_content .pr_qty_atc i,.compare_basic_content .pr_qty_atc span.tt_txt,.compare_basic_content a.nt_add_qv i,.compare_basic_content a.nt_add_qv span.tt_txt,.compare_basic_content a.pr_atc i,.compare_basic_content a.pr_atc span.tt_txt{display:none}.compare_basic_content .price{color:#006e52;color:#95bf46}.compare_availability .stock{color:#006e52;color:#95bf46;font-weight:500;font-size:14px;line-height:1.2}.compare_availability .out-of-stock{color:#e1b878}.compare_basic_content .onsale.nt_label{width:auto;height:auto;color:#fff;display:inline-block;padding:2px 4px;border-radius:2px;font-size:10px;margin:5px}.compare_basic_content img{max-height:250px;object-fit:contain}@media (max-width:1024px){.themet4_compare_table{overflow-x:auto;-webkit-overflow-scrolling:touch}.compare_value{flex:1 0 33.33333%}}@media (max-width:768px){.compare_field{display:none}.compare_value:before{content:attr(data-title);display:block;margin-top:-15px;margin-bottom:15px;padding:10px;width:100%;background-color:rgba(0,0,0,.03);color:#2d2a2a;text-transform:uppercase;font-weight:600;font-size:14px}.themet4_compare_col{flex:1 0 50%;justify-content:flex-start;background-color:transparent!important}}@media (max-width:575px){.themet4_compare_row .themet4_compare_col{flex:1 0 75%}}.products .product-image .nt_add_cp{display:none}.variations_button .nt_add_cp{display:none}</style>
+    {%- style -%}
+    .compare_basic_content a.nt_add_qv {background-color: {{section.settings.bg_qv}} }.compare_basic_content .pr_qty_atc .quantity, .compare_basic_content .pr_qty_atc a, .compare_basic_content a.pr_atc {background-color: {{section.settings.bg_atc}} }.compare_basic_content .price {color: {{section.settings.cl_price}} }.compare_availability .stock {color: {{section.settings.cl_in}} }.compare_availability .out-of-stock {color: {{section.settings.cl_out}} }
+    {%- endstyle -%}
+  
+{%- else -%}
+    <div class="empty_cart_page tc">
+      <i class="las la-sync fwb pr mb__30 fs__90"></i>
+      <h4 class="cart_page_heading mg__0 mb__20 tu fs__30">{{ 'general.compare.empty' | t }}</h4>
+      <div class="cart_page_txt">{{ 'general.compare.empty_html' | t }}</div>
+      {%- if btn_blocks.size > 0 -%}
+         <div class="mt__30"></div>
+         {%- for block in btn_blocks -%}<p class="mb__15"><a class="button button_{{block.settings.style}} js_add_ld" href="{{block.settings.url | default:routes.all_products_collection_url}}">{{ block.settings.title }}</a></p>{%- endfor -%}
+       {%- endif -%}
+    </div>
+    <style>.tp_se_compare .la-sync:before {content: "\f021";color: rgba(142,142,142,.2);font-size: 180px;}.products .product-image .nt_add_cp {display: none;}.variations_button .nt_add_cp {display: none;}</style>
+{%- endif -%}
+</div>
+{%- endpaginate -%}
+
+{%- schema -%}
+  {
+    "name": "Compare Page",
+    "class": "tp_se_compare",
+    "settings": [
+      {
+        "type": "color",
+        "id": "bg_qv",
+        "label": "Background color:",
+        "info": "Quick view",
+        "default": "#e1b878"
+      },
+      {
+        "type": "color",
+        "id": "bg_atc",
+        "label": "Background color:",
+        "info": "Add to cart, Quick Shop,...",
+        "default": "#95bf46"
+      },
+      {
+        "type": "color",
+        "id": "cl_price",
+        "label": "Color price:",
+        "info": "Add to cart, Quick Shop,...",
+        "default": "#95bf46"
+      },
+      {
+        "type": "color",
+        "id": "cl_in",
+        "label": "Color in stock:",
+        "default": "#95bf46"
+      },
+      {
+        "type": "color",
+        "id": "cl_out",
+        "label": "Color out of stock:",
+        "default": "#e1b878"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "basic",
+        "name": "Content Basic",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "paragraph",
+            "content": "image, title, price,..."
+          }
+        ]
+      },
+      {
+        "type": "availability",
+        "name": "Availability",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Availability"
+          }
+        ]
+      },
+      {
+        "type": "vendor",
+        "name": "Vendor",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Vendor"
+          }
+        ]
+      },
+      {
+        "type": "rating",
+        "name": "Rating",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Rating"
+          }
+        ]
+      },
+      {
+        "type": "variants",
+        "name": "Variants",
+        "limit": 10,
+        "settings": [
+          {
+            "type": "paragraph",
+            "content": "Enter key variant name in product to it show in compare. eg: Color or Size"
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Key variant name:",
+            "default": "Color"
+          }
+        ]
+      },
+      {
+        "type": "btn",
+        "name": "Button emty",
+        "limit": 5,
+        "settings": [
+          {
+            "type": "paragraph",
+            "content": "Tip: Only show when compare empty."
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Button Title",
+            "default": "Return To Shop"
+          },
+          {
+            "type": "url","id": "url","label": "Button link"
+          },
+          {
+            "type": "select",
+            "id": "style",
+            "options": [
+              {"value": "primary tu","label": "Button Primary"},
+              {"value": "secondary","label": "Button Secondary"}
+            ],
+            "label": "Button Style: "
+          }
+        ]
+      }
+   ],
+    "default": {
+      "blocks": [
+        {"type": "basic"},
+        {"type": "availability"},
+        {"type": "vendor"},
+        {"type": "variants"},
+        {"type": "btn"}
+      ]
+    }
+  }
+{% endschema %}

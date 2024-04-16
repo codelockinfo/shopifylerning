@@ -1,0 +1,163 @@
+{%- section 'acc_heading' -%}
+<div class="container mt__60">
+  <div class="row">
+      <div class="col-12 mb__60 hide" id="ResetSuccess">
+         <div class="shopify-message"><i class="facl facl-ok"></i>{{ 'customer.recover_password.success' | t }}</div>
+         <p class="text_content_success mt__10 mg__0">{{ 'customer.recover_password.content_success' | t }}</p>
+      </div>
+   {%- if settings.lr_enable -%}
+     <div class="col-12 col-md-6 divLoginForm login-form mb__60">
+        <div id="CustomerLoginForm">
+          <h2>{{ 'customer.login.title' | t }}</h2>
+          {%- form 'customer_login', novalidate: 'novalidate' -%}
+            {%- if settings.checkout_url != blank -%}<input type="hidden" name="checkout_url" value="{{settings.checkout_url}}" />{%- endif -%}
+            {%- if form.errors -%}
+              <div class="form-message form-message--error">
+                <h2 class="h3 form-message__title " tabindex="-1" data-form-status>{{ 'contact.form.error_heading' | t }}</h2>
+                {{ form.errors | default_errors }}
+              </div>
+            {%- endif -%}
+            <p class="form-row">
+            <label for="CustomerEmail">{{ 'customer.login.email' | t }} <span class="required">*</span></label>
+            <input type="email" name="customer[email]" id="CustomerEmail" autocomplete="email" autocorrect="off" autocapitalize="off"{%- if form.errors contains 'form' %} class="input--error" aria-invalid="true"{%- endif -%}>
+            </p>
+            {%- if form.password_needed -%}
+            <p class="form-row">
+              <label for="CustomerPassword">{{ 'customer.login.password' | t }} <span class="required">*</span></label>
+              <input type="password" value="" name="customer[password]"id="CustomerPassword"{%- if form.errors contains 'form' %} class="input--error" aria-invalid="true"{%- endif -%}>
+            </p>
+            {%- endif -%}
+              {%- if form.password_needed -%}
+                <p><a href="#recover" data-no-instant rel="nofollow" id="RecoverPassword">{{ 'customer.login.forgot_password' | t }}</a></p>
+              {%- endif -%}
+              <input type="submit" class="btn js_add_ld" value="{{ 'customer.login.sign_in' | t }}">
+
+          {%- endform -%}
+        </div>
+        <div id="RecoverPasswordForm" class="hide">
+          <h2>{{ 'customer.recover_password.title' | t }}</h2>
+          <p>{{ 'customer.recover_password.subtext' | t }}</p>
+          {%- form 'recover_customer_password' -%}
+            {%- if form.posted_successfully? %}<span class="hide reset-password-success"></span>{% endif -%}
+            <p class="form-row">
+                <label for="RecoverEmail">{{ 'customer.recover_password.email' | t }}</label>
+                <input type="email" value="" name="email" id="RecoverEmail" class="input-full{% if form.errors %} input--error{% endif %}" autocorrect="off" autocapitalize="off"{% if form.errors %} aria-invalid="true" aria-describedby="RecoverEmail-email-error"{%- endif -%}>
+               
+               {%- if form.errors -%}
+                 <span id="RecoverEmail-email-error" class="input-error-message">
+                   <i class="facl facl-attention cr mr__5"></i>
+                   <span>{{ form.errors.messages['form'] }}</span>
+                 </span>
+               {%- endif -%}
+            </p>
+            <input type="submit" class="btn js_add_ld" value="{{ 'customer.recover_password.submit' | t }}">
+            <br>
+            <a href="#LoginHeading" data-no-instant rel="nofollow" class="button mt__15" id="HideRecoverPasswordLink">{{ 'customer.recover_password.cancel' | t }}</a>
+          {%- endform -%}
+        </div>
+
+     </div>
+     <div class="col-12 col-md-6 divCreateForm login-form mb__60">
+       <div id="CustomerRegisterForm">
+         <h2>{{ 'customer.register.title' | t }}</h2>
+         {%- assign formId = 'RegisterForm' -%}
+         {%- form 'create_customer', id: formId, novalidate: 'novalidate' -%}
+            {%- comment -%}{%- render 'form-status', form: form, form_id: formId -%}{%- endcomment -%}
+            <p class="form-row">
+             <label for="{{ formId }}-FirstName">{{ 'customer.register.first_name' | t }}</label>
+             <input type="text" name="customer[first_name]" id="{{ formId }}-FirstName" {% if form.first_name %}value="{{ form.first_name }}"{% endif %} autocomplete="given-name">
+            </p>
+            <p class="form-row">
+             <label for="{{ formId }}-LastName">{{ 'customer.register.last_name' | t }}</label>
+             <input type="text" name="customer[last_name]" id="{{ formId }}-LastName" {% if form.last_name %}value="{{ form.last_name }}"{% endif %} autocomplete="family-name">
+            </p>
+            <p class="form-row">
+             <label for="{{ formId }}-email">{{ 'customer.register.email' | t }} <span class="required">*</span></label>
+             <input type="email" name="customer[email]" id="{{ formId }}-email" class="{% if form.errors contains 'email' %} input--error{% endif %}"{% if form.email %} value="{{ form.email }}"{% endif %} autocorrect="off" autocapitalize="off" autocomplete="email" aria-required="true" {%- if form.errors contains 'email' %} class="input--error" aria-invalid="true" aria-describedby="{{ formId }}-email-error"{%- endif -%}>
+             {%- if form.errors contains 'email' -%}
+               <span id="{{ formId }}-email-error" class="input-error-message">
+                 <i class="facl facl-attention cr mr__5"></i>
+                 <span>{{ form.errors.translated_fields['email'] | capitalize }} {{ form.errors.messages['email'] }}.</span>
+               </span>
+             {%- endif -%}
+            </p>
+            <p class="form-row">
+             <label for="{{ formId }}-password">{{ 'customer.register.password' | t }} <span class="required">*</span></label>
+             <input type="password" name="customer[password]" id="{{ formId }}-password" class="{% if form.errors contains 'password' %} input--error{% endif %}" aria-required="true"{%- if form.errors contains 'password' %} class="input--error" aria-invalid="true" aria-describedby="{{ formId }}-password-error"{%- endif -%}>
+             {%- if form.errors contains 'password' -%}
+               <span id="{{ formId}}-password-error" class="input-error-message">
+                 <i class="facl facl-attention cr mr__5"></i>
+                 <span>{{ form.errors.translated_fields['password'] | capitalize }} {{ form.errors.messages['password'] }}.</span>
+               </span>
+             {%- endif -%}
+             </p>
+             {%- if settings.use_privacy_policy -%}
+              <p class="form-row tl">{%- if settings.privacy_policy_link != blank -%}{{ 'customer.register.privacy_policy_html' | t:link: pages[settings.privacy_policy_link].url }}{%- else -%}{{ 'customer.register.privacy_policy' | t }}{%- endif -%}</p>
+             {%- endif -%}
+             <input type="submit" value="{{ 'customer.register.submit' | t }}" class="btn js_add_ld">
+         {%- endform -%}
+       </div>
+     </div>
+   {%- else -%}
+     <div class="col-12 offset-md-3 col-md-6  divLoginForm login-form mb__30 tc">
+        <div id="CustomerLoginForm">
+          <h2>{{ 'customer.login.title' | t }}</h2>
+          {%- form 'customer_login', novalidate: 'novalidate' -%}
+            {%- if settings.checkout_url != blank -%}<input type="hidden" name="checkout_url" value="{{settings.checkout_url}}" />{%- endif -%}
+            {%- if form.errors -%}
+              <div class="form-message form-message--error">
+                <h2 class="h3 form-message__title " tabindex="-1" data-form-status>{{ 'contact.form.error_heading' | t }}</h2>
+                {{ form.errors | default_errors }}
+              </div>
+            {%- endif -%}
+            <p class="form-row tl">
+            <label for="CustomerEmail">{{ 'customer.login.email' | t }} <span class="required">*</span></label>
+            <input type="email" name="customer[email]" id="CustomerEmail" autocomplete="email" autocorrect="off" autocapitalize="off"{%- if form.errors contains 'form' %} class="input--error" aria-invalid="true"{%- endif -%}>
+            </p>
+            {%- if form.password_needed -%}
+            <p class="form-row tl">
+              <label for="CustomerPassword">{{ 'customer.login.password' | t }} <span class="required">*</span></label>
+              <input type="password" value="" name="customer[password]"id="CustomerPassword"{%- if form.errors contains 'form' %} class="input--error" aria-invalid="true"{%- endif -%}>
+            </p>
+            {%- endif -%}
+              {%- if form.password_needed -%}
+                <p><a href="#recover" data-no-instant rel="nofollow" id="RecoverPassword">{{ 'customer.login.forgot_password' | t }}</a></p>
+              {%- endif -%}
+              <input type="submit" class="btn mb__25 js_add_ld" value="{{ 'customer.login.sign_in' | t }}">
+              <p><a href="{{routes.account_register_url}}" class="js_add_ld" id="customer_register_link">{{ 'customer.create_account' | t }}</a></p>
+
+          {%- endform -%}
+        </div>
+        <div id="RecoverPasswordForm" class="hide">
+          <h2>{{ 'customer.recover_password.title' | t }}</h2>
+          <p>{{ 'customer.recover_password.subtext' | t }}</p>
+          {%- form 'recover_customer_password' -%}
+            {%- if form.posted_successfully? %}<span class="hide reset-password-success"></span>{% endif -%}
+            <p class="form-row">
+                <label for="RecoverEmail">{{ 'customer.recover_password.email' | t }}</label>
+                <input type="email" value="" name="email" id="RecoverEmail" class="input-full{% if form.errors %} input--error{% endif %}" autocorrect="off" autocapitalize="off"{% if form.errors %} aria-invalid="true" aria-describedby="RecoverEmail-email-error"{%- endif -%}>
+               
+               {%- if form.errors -%}
+                 <span id="RecoverEmail-email-error" class="input-error-message">
+                   <i class="facl facl-attention cr mr__5"></i>
+                   <span>{{ form.errors.messages['form'] }}</span>
+                 </span>
+               {%- endif -%}
+            </p>
+            <input type="submit" class="btn js_add_ld" value="{{ 'customer.recover_password.submit' | t }}">
+            <br>
+            <a href="#LoginHeading" class="button mt__15" id="HideRecoverPasswordLink">{{ 'customer.recover_password.cancel' | t }}</a>
+          {%- endform -%}
+        </div>
+     </div>
+   {%- endif -%}
+
+    {%- comment -%}If accounts are set as optional, the following will be shown as an option during checkout, not on the default /login page.{%- endcomment -%}
+    {%- if shop.checkout.guest_login -%}
+    <div class="col-12 pt__30 mb__60 tc frm_guest_login login-form">
+        <h2 class="mb__20">{{ 'customer.login.guest_title' | t }}</h2>
+        {%- form 'guest_login' -%}<input type="submit" class="btn js_add_ld" value="{{ 'customer.login.guest_continue' | t }}">{%- endform -%}
+    </div>
+    {%- endif -%}
+  </div>
+</div>

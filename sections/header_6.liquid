@@ -1,0 +1,83 @@
+{%- assign h__bgimg = settings.h__bgimg -%}
+<div class="header__mid{% if h__bgimg != blank %} lazyload h__lz_img" data-bgset="{{ h__bgimg | img_url: '1x1' }}" data-ratio="{{h__bgimg.aspect_ratio}}" data-sizes="auto"{% else %}"{% endif %}><div class="container">
+   <div class="row al_center css_h_se">
+      <div class="col-lg-3 col-md-3 col-3">
+         {%- render 'push_menu' with 'dn_lg' -%}
+         <div class="dn db_lg">
+          {%- if section.settings.source == '1' -%}{{section.settings.txt}}
+          {%- elsif section.settings.source == '0' -%}
+          {%- elsif section.settings.social == '1' -%}{%- render 'social-sharing',class_tooltip:'ttip_nt tooltip_top_right' -%}
+          {%- elsif section.settings.social == '2' -%}{%- render 'social-sharing',follow_social:true,class_tooltip:'ttip_nt tooltip_top_right' -%}{%- endif -%}
+         </div> 
+      </div>
+      <div class="col-lg-6 col-md-6 col-6 tc">{%- render 'nt_logo' with 'div' -%}</div>
+      <div class="col-lg-3 col-md-3 col-3 tr">{%- render 'nt_group_btns' with true -%}</div>
+   </div>
+</div></div>
+<style>.header__mid .css_h_se {min-height: {{section.settings.height}}px}.header__mid .nt_action .push-menu-btn>svg {-webkit-transform: rotate(180deg);transform: rotate(180deg)}</style>
+
+{%- schema -%}
+  {
+    "name": "Header Design 6",
+    "class": "sp_header_mid",
+     "settings": [
+      {
+        "type": "range",
+        "id": "height",
+        "label": "== Custom header height",
+        "min": 60,
+        "max": 160,
+        "step": 1,
+        "unit": "px",
+        "default": 62
+      },
+      {
+        "type": "header",
+        "content": "== Text\/Social"
+      },
+      {
+        "type": "select",
+        "id": "source",
+        "options": [
+          {
+            "value": "0",
+            "label": "None"
+          },
+          {
+            "value": "1",
+            "label": "Text"
+          },
+          {
+            "value": "2",
+            "label": "Social"
+          }
+        ],
+        "label": "Show:",
+        "default": "2"
+      },
+      {
+        "type": "html",
+        "id": "txt",
+        "label": "___ Text in the header",
+        "info": "You can place here some advertisement or phone numbers.",
+        "default": "Welcome to our store!"
+      },
+      {
+        "type": "select",
+        "id": "social",
+        "options": [
+          {
+            "value": "1",
+            "label": "Share"
+          },
+          {
+            "value": "2",
+            "label": "Follow"
+          }
+        ],
+        "label": "___ Social:",
+        "default": "2"
+      }
+     ]
+  }
+{% endschema %}

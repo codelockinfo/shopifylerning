@@ -1,0 +1,82 @@
+<div class="wrap_title mb__20">
+   <h3 class="section-title pr fs__24 title_1">{{'products.fbt.title' | t}}</h3>
+</div>
+<div class="kl_fbt_wrap js_wrap_group">
+  
+ {%- form 'product', product, id: "fbt_frm_id", class:'fbt_frm', novalidate: 'novalidate' -%}
+     <div class="row al_center">
+       <div class="col-auto">
+         <ul class="ul_none flex wrap al_center kl_fbt_ul">
+             {%- assign price = currently_var.price -%}{%- assign compare_pr = currently_var.compare_at_price | default:price -%}{%- assign image = currently_var.featured_image | default:product.featured_image -%}
+             {%- assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+             <li class="kl_fbt_img_0 kl_fbt_img"><img alt="{{currently_var.title | escape}}" src="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20{{image.width}}%20{{image.height}}%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3C%2Fsvg%3E" data-src="{{ img_url }}" data-widths="[115, 230]" data-sizes="auto" class="lazyload lz_op_ef"></li>
+
+             {%- for link in nav_up %}{% assign pr = link.object -%}
+                 {%- if pid == pr.id or pr.available == false %}{% continue %}{% endif -%}
+                 {%- assign currently = pr.selected_or_first_available_variant -%}
+                 {%- assign cu_pr = currently.price -%}
+                 {%- assign cp_pr = currently.compare_at_price | default:cu_pr -%}
+                 {%- assign price = price | plus:cu_pr -%}{%- assign compare_pr = compare_pr | plus:cp_pr -%}{%- assign image = currently.featured_image | default:pr.featured_image -%}
+                  {%- assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+                  <li class="kl_fbt_img kl_fbt_img_{{forloop.index}}"><a href="{{pr.url}}" class="dib"><img alt="{{pr.title | escape}}" src="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20{{image.width}}%20{{image.height}}%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3C%2Fsvg%3E" data-src="{{ img_url }}" data-widths="[115, 230]" data-sizes="auto" class="lazyload lz_op_ef"></a></li>
+             {%- endfor -%}
+
+         </ul>
+       </div>
+       <div class="col-auto js_fpt_clbtn mt__10 mb__10">
+         <div class="kl_fbt_total_price mb__10"><span class="mr__5">{{'products.fbt.tt_price' | t}}</span><span class="kl_fbt_tt_price" data-cppr='{{compare_pr}}' data-pr='{{price}}'>{% if compare_pr > price %}<del>{{compare_pr| money}}</del> <ins>{{price| money}}</ins>{% else %}{{price| money}}{% endif %}</span></div>
+         <button type="submit" name="add" class="kl_fbt_btn js_add_group single_add_to_cart_button button"><span>{{'products.fbt.add_tc' | t}}</span></button>
+       </div>
+     </div>
+
+     <ul class="ul_none mt__30 mb__15">
+
+       <li class="kl_fbt_li js_item_group kl_fbt_li_0 kl_fbt_checked" data-sl='.kl_fbt_img_0'>
+         {%- assign available_v = product.variants | where: "available" -%}
+         {%- assign available_v_1 = available_v.first -%}
+
+         <input type="checkbox" checked="checked" class="js_fbt_ck" id="kl_fbt_ck_0"><label for="kl_fbt_ck_0" class="pr pe_none"><svg class="dn scl_selected"><use xlink:href="#scl_selected"></use></svg></label>
+         <span><strong>{{'products.fbt.this_item' | t}}</strong> {{product.title | truncatewords: 12}}{% if available_v.size < 2 and product.has_only_default_variant == false %} - {{ available_v_1.title }}{% endif %}</span>
+        
+         {%- if available_v.size < 2 -%}
+            <input name="items[][id]" class="js_fbt_input" data-ogprice="{{available_v_1.compare_at_price |default:available_v_1.price}}" data-price="{{available_v_1.price}}" value="{{ available_v_1.id }}" type="hidden">
+         {%- else -%}
+            <select name="items[][id]" class="js_fbt_sl">
+             {%- for variant in available_v -%}
+                <option data-img="{{variant.image | default:product.featured_image | img_url: '1x1'}}" data-ogprice="{{variant.compare_at_price |default:variant.price}}" data-price="{{variant.price}}" value="{{ variant.id }}"{% if variant.id == cur_var_id %} selected="selected"{% endif %}>{{ variant.title | escape }}</option>
+             {%- endfor -%}
+            </select>
+         {%- endif -%}
+         <input value="1" type="number" name="items[][quantity]" class="hide hidden js_grp_qty">
+         <span class="kl_fbt_price">{% if available_v_1.compare_at_price > available_v_1.price %}<del>{{available_v_1.compare_at_price| money}}</del> <ins>{{available_v_1.price| money}}</ins>{% else %}{{available_v_1.price | money}}{% endif %}</span>
+       </li>
+
+       {%- for link in nav_up %}{% assign pr = link.object -%}
+
+          {%- if pid == pr.id or pr.available == false %}{% continue %}{% endif -%}{%- assign index = forloop.index -%}
+          {%- assign available_v = pr.variants | where: "available" -%}
+          {%- assign available_v_1 = available_v.first -%}
+          <li class="kl_fbt_li js_item_group kl_fbt_li_{{index}} kl_fbt_checked" data-sl='.kl_fbt_img_{{index}}'>
+            <input type="checkbox" checked="checked" class="js_fbt_ck" id="kl_fbt_ck_{{index}}"><label for="kl_fbt_ck_{{index}}" class="pr"><svg class="dn scl_selected"><use xlink:href="#scl_selected"></use></svg></label>
+            <a class="kl_fbt_a" href="{{pr.url}}">{{pr.title | truncatewords: 12}}{% if available_v.size < 2 and pr.has_only_default_variant == false %} - {{ available_v_1.title }}{% endif %}</a>
+           
+            {%- if available_v.size < 2 -%}
+               <input name="items[][id]" class="js_fbt_input" data-ogprice="{{available_v_1.compare_at_price |default:available_v_1.price}}" data-price="{{available_v_1.price}}" value="{{ available_v_1.id }}" type="hidden">
+            {%- else -%}
+               <select name="items[][id]" class="js_fbt_sl">
+                {%- for variant in available_v -%}
+                   <option data-img="{{variant.image | default:pr.featured_image | img_url: '1x1'}}" data-ogprice="{{variant.compare_at_price |default:variant.price}}" data-price="{{variant.price}}" value="{{ variant.id }}">{{ variant.title | escape }}</option>
+                {%- endfor -%}
+               </select>
+            {%- endif -%}
+            <input value="1" type="number" name="items[][quantity]" class="hide hidden js_grp_qty">
+            <span class="kl_fbt_price">{% if available_v_1.compare_at_price > available_v_1.price %}<del>{{available_v_1.compare_at_price| money}}</del> <ins>{{available_v_1.price| money}}</ins>{% else %}{{available_v_1.price | money}}{% endif %}</span>
+          </li>
+
+       {%- endfor -%}
+     </ul>
+
+ {%- endform -%}
+</div>
+<style>.kl_fbt_img:not(.kl_fbt_img_0):before{content:"+";font-size:20px}.kl_fbt_li select{width:auto;border-radius:5px;color:#222;height:36px;line-height:36px;margin-left:5px}.kl_fbt_tt_price{color:#ec0101;font-size:18px}.kl_fbt_price{color:#ec0101;font-size:15px;margin:0 5px}.kl_fbt_wrap del{color:#878787}.kl_fbt_wrap ins{text-decoration:none}.kl_fbt_li:not(:last-child){margin-bottom:10px}.js_fbt_ck,.kl_fbt_li .label{display:none}.kl_fbt_li label:before{position:relative;top:2px;content:'';display:inline-block;margin-right:4px;width:14px;height:14px;min-width:14px;border:1px solid #d4d6d8;background:#fff;box-shadow:none;background-size:0;background-repeat:no-repeat;background-position:50%;transition:all .2s ease-in-out;border-radius:2px;-webkit-appearance:none;transition:border-color .2s ease-in-out,box-shadow .2s ease-in-out,background .2s ease-in-out}.kl_fbt_li svg{display:block;width:10px;height:10px;fill:#fff;position:absolute;top:5px;left:2px;pointer-events:none;transform:scale(0);-webkit-transform:scale(0);-webkit-transition:all .25s ease-in-out;transition:all .25s ease-in-out}.js_fbt_ck:checked+label svg{transform:scale(1);-webkit-transform:scale(1)}.js_fbt_ck:not(:checked)~*{opacity:.2}.js_fbt_ck:not(:checked)+label{opacity:1}.kl_fbt_img img{width:100%;margin:5px 10px;max-width:115px}.kl_fbt_img_0.kl_fbt_img img{margin-left:0}@media (max-width:1024px){.kl_fbt_img img{margin:5px;max-width:70px}.des_style_1.des_mb_2 .kl_fbt_img_0.kl_fbt_img img{margin-left:5px}.kl_fbt_img:not(.kl_fbt_img_0):before{font-size:16px}.kl_fbt_li label:before{width:24px;height:24px}.kl_fbt_li svg{width:16px;height:16px;top:-2px;left:3px}}</style> 
+      

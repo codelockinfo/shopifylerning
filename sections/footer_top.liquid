@@ -1,0 +1,2173 @@
+{%- assign image = section.settings.image -%}
+
+<div class="footer__top_wrap footer_sticky_{{section.settings.sticky}} footer_collapse_{{section.settings.accordions}} nt_bg_overlay pr oh pb__30 pt__80{% if image %} lazyload{% endif %}" {% if image %} data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{image.aspect_ratio}}" data-sizes="auto"{% endif %}>
+   <div class="container pr z_100">
+      <div class="row">
+      	{%- for block in section.blocks %}{% assign bk_stts = block.settings -%}
+      	<div class="col-lg-{{bk_stts.cl}} col-md-{{bk_stts.cl_tb}} col-{{bk_stts.cl_mb}} mb__50 order-lg-{{forloop.index}} order-{{bk_stts.order}}" {{ block.shopify_attributes }}>
+      		{%- case block.type -%}
+      		   {%- when 'logo' -%}
+                {%- assign image = bk_stts.image -%}
+		            <aside id="block_{{block.id}}" class="widget widget_text widget_logo">
+                   {%- if bk_stts.title != blank -%}<h3 class="widget-title fwsb flex al_center fl_between fs__16 mg__0 mb__30{% if image != blank %} dn_md{% endif %}"><span class="txt_title">{{bk_stts.title}}</span><span class="nav_link_icon ml__5"></span></h3>{%- endif -%}
+		               <div class="textwidget widget_footer">
+		                  <div class="footer-contact">
+		                     {%- if image != blank -%}<p><a class="db" href="/">{%- assign lg_w = bk_stts.logo_width -%}
+                          {%- assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+                          <img class="w__100 mb__15 lazyload lz_op_ef" src="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20{{image.width}}%20{{image.height}}%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3C%2Fsvg%3E" data-src="{{ img_url }}" data-widths="[{{lg_w}}, {{lg_w | times:2}}]" data-sizes="auto" alt="{{ image.alt | default: shop.name | escape}}" style="max-width: {{ lg_w }}px"></a></p>{%- endif -%}
+		                     {{- bk_stts.content -}}
+                         {%- liquid
+                          if bk_stts.social_mode != '1'
+                            if bk_stts.social_mode == '3'
+                              assign follow_social = true
+                            else
+                              assign share_image = settings.share_image | default: page_image | default: settings.logo
+                            endif
+                            render 'social-sharing', social-sharing:'mt__15',share_permalink:shop.url,share_title:shop.name,share_image:share_image,follow_social:follow_social
+                          endif -%}
+		                  </div>
+		               </div>
+		            </aside>
+      		   {%- when 'mail' -%}
+		            <aside id="block_{{block.id}}" class="widget widget_text">
+		               {%- if bk_stts.title != blank -%}<h3 class="widget-title fwsb flex al_center fl_between fs__16 mg__0 mb__30"><span class="txt_title">{{bk_stts.title}}</span><span class="nav_link_icon ml__5"></span></h3>{%- endif -%}
+		               <div class="textwidget widget_footer newl_des_{{bk_stts.newl_des}}">
+		                  <p>{{bk_stts.sub_title}}</p>
+		                  {%- render 'newsletter',newl_des:bk_stts.newl_des,btn_icon:bk_stts.btn_icon -%}
+		                  {%- assign image = bk_stts.image -%}
+						       {%- if bk_stts.source == '1' and image -%}{%- assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+					              <p class="mt__20"><img style="max-width: {{image.width}}px" class="w__100 lazyload lz_op_ef" src="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20{{image.width}}%20{{image.height}}%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3C%2Fsvg%3E" data-src="{{ img_url }}" data-widths="[90, 120, 150, 180, 360, 480, 600]" data-sizes="auto" alt="{{image.alt | escape}}"></p>
+					          {%- elsif bk_stts.source == '2' and bk_stts.svg -%}
+                      {%- assign arr = bk_stts.svg | remove: ' ' | split:"," -%}
+                      <style>.payment_footer_svg img {padding: 2.5px;height: {{bk_stts.height}}px;}</style>
+                      <p class="mt__20 payment_footer_svg">
+                        {%- for img in arr -%}
+                        {%- if img contains 'cust4__'-%}
+                           {%- assign getIMG = img | remove_first: "cust4__" -%}
+                           {%- assign image = images[getIMG] -%}
+                           {%- if image == blank %}{% continue %}{% endif -%}
+                           <img class="lazyload" src="https://cdn.shopify.com/s/assets/payment_icons/generic-dfdcaf09b6731ca14dd7441354c0ad8bc934184eb15ae1fda6a6b9e307675485.svg" data-src="{{ image | img_url: '100x' }}" alt="{{image.alt | escape}}" />
+                        {%- else -%}
+                           <img class="lazyload" src="https://cdn.shopify.com/s/assets/payment_icons/generic-dfdcaf09b6731ca14dd7441354c0ad8bc934184eb15ae1fda6a6b9e307675485.svg" data-src="{{ img | payment_type_img_url }}" alt="{{img | replace:'_',' '}}" />
+                        {%- endif -%}
+                        {%- endfor -%}
+                      </p>
+                    {%- endif -%}
+		               </div>
+		            </aside>
+            {%- when 'collection' -%}
+                {%- liquid
+                 assign on_sale_txt = 'products.product.on_sale' | t
+                 assign save_js = 'products.product.save_js' | t: saved_amount:'saved_amount' -%}
+                <aside id="block_{{block.id}}" class="widget widget_product_list">
+                  {%- if bk_stts.title != blank -%}<h3 class="widget-title fwsb flex al_center fl_between fs__16 mg__0 mb__30"><span class="txt_title">{{bk_stts.title}}</span><span class="nav_link_icon ml__5"></span></h3>{%- endif -%}
+                   {%- if bk_stts.collection == blank -%}
+                      <p class="mg__0 mb__30">{{ 'homepage.onboarding.no_content' | t }}</p>
+                   {%- else -%}
+                   <div class="widget_footer product_list_widget">
+                      {%- for product in collections[bk_stts.collection].products limit: bk_stts.limit -%}
+                         {%- render 'pr_group_loop',product:product,c:collections[bk_stts.collection],on_sale_txt:on_sale_txt,save_js:save_js -%}
+                      {%- endfor -%}
+                   </div>
+                   {%- endif -%}
+                </aside>
+            {%- when 'post' -%}{%- assign date = bk_stts.date -%}
+                <aside id="block_{{block.id}}" class="widget widget_post_list">
+                  {%- if bk_stts.title != blank -%}<h3 class="widget-title fwsb flex al_center fl_between fs__16 mg__0 mb__30"><span class="txt_title">{{bk_stts.title}}</span><span class="nav_link_icon ml__5"></span></h3>{%- endif -%}
+                   {%- if bk_stts.blog == blank -%}
+                      <p class="mg__0 mb__30">{{ 'homepage.onboarding.no_content' | t }}</p>
+                   {%- else -%}
+                   <div class="widget_footer post_list_widget">
+                      {%- for article in blogs[bk_stts.blog].articles limit: bk_stts.limit -%}
+                         {%- render 'ar_group_loop', article:article, date:date -%}
+                      {%- endfor -%}
+                   </div>
+                   {%- endif -%}
+                </aside>
+            {%- when 'instagram' -%}{%- assign col = bk_stts.col_pr -%}{%- assign col_tb = bk_stts.col_pr_tb -%}{%- assign col_mb = bk_stts.col_pr_mb -%}
+                <aside id="block_{{block.id}}" class="widget widget_instagram">
+                  {%- if bk_stts.title != blank -%}<h3 class="widget-title fwsb flex al_center fl_between fs__16 mg__0 mb__30"><span class="txt_title">{{bk_stts.title}}</span><span class="nav_link_icon ml__5"></span></h3>{%- endif -%}
+                   <div class="widget_footer nt_instagram_wrap row equal_nt ins_spaces_{{bk_stts.space}} ins_rounded_{{bk_stts.rounded_ins}} nt_cover ratio1_1 position_8 js_nt_ist" data-id='{{col}}{{col_tb}}{{col_mb}}{{bk_stts.limit}}{{bk_stts.open_link}}' data-cl='{{col}}' data-cltb='{{col_tb}}' data-clmb='{{col_mb}}' data-acc='{{bk_stts.acc2 | default:settings.global_acc}}' data-limit='{{bk_stts.limit }}' data-target='{{bk_stts.open_link}}'><div class="lds_bginfinity pr"></div></div>
+                </aside>
+
+            {%- when 'instagram2' -%}{%- assign col = bk_stts.col_pr -%}{%- assign col_tb = bk_stts.col_pr_tb -%}{%- assign col_mb = bk_stts.col_pr_mb -%}
+                <aside id="block_{{block.id}}" class="widget widget_instagram">
+                  {%- if bk_stts.title != blank -%}<h3 class="widget-title fwsb flex al_center fl_between fs__16 mg__0 mb__30"><span class="txt_title">{{bk_stts.title}}</span><span class="nav_link_icon ml__5"></span></h3>{%- endif -%}
+                   <div class="widget_footer nt_instagram_wrap row equal_nt ins_spaces_{{bk_stts.space}} ins_rounded_{{bk_stts.rounded_ins}} nt_cover ratio1_1 position_8 js_nt_ist" data-id='{{col}}{{col_tb}}{{col_mb}}{{bk_stts.limit}}{{bk_stts.open_link}}' data-cl='{{col}}' data-cltb='{{col_tb}}' data-clmb='{{col_mb}}' data-acc='ins_19041994' data-limit='{{bk_stts.limit }}' data-target='{{bk_stts.open_link}}'><div class="lds_bginfinity pr"></div></div>
+                </aside>
+
+      		   {%- when 'text' -%}
+		            <aside id="block_{{block.id}}" class="widget widget_text">
+		               {%- if bk_stts.title != blank -%}<h3 class="widget-title fwsb flex al_center fl_between fs__16 mg__0 mb__30"><span class="txt_title">{{bk_stts.title}}</span><span class="nav_link_icon ml__5"></span></h3>{%- endif -%}
+		               <div class="textwidget widget_footer">{{bk_stts.content}}</div>
+		            </aside>
+
+      		   {%- when 'html' -%}
+		            <aside id="block_{{block.id}}" class="widget widget_text">
+		               {%- if bk_stts.title != blank -%}<h3 class="widget-title fwsb flex al_center fl_between fs__16 mg__0 mb__30"><span class="txt_title">{{bk_stts.title}}</span><span class="nav_link_icon ml__5"></span></h3>{%- endif -%}
+		               <div class="textwidget widget_footer">{{bk_stts.content}}</div>
+		            </aside>
+
+      		  {%- else -%}
+		            <aside id="block_{{block.id}}" class="widget widget_nav_menu">
+		               {%- if bk_stts.title != blank -%}<h3 class="widget-title fwsb flex al_center fl_between fs__16 mg__0 mb__30"><span class="txt_title">{{bk_stts.title}}</span><span class="nav_link_icon ml__5"></span></h3>{%- endif -%}
+		               <div class="menu_footer widget_footer">
+		               	{%- assign menu = bk_stts.menu -%}
+		               	{%- if menu != blank -%}
+		                  <ul class="menu">
+		                  	{%- for link in linklists[menu].links -%}
+		                     <li class="menu-item{% if link.active %} current-menu-item{% endif %}"><a href="{{ link.url }}">{{ link.title | split: '[' | first }}</a></li>
+		                     {%- endfor -%}
+		                  </ul>
+		                  {%- else -%}Pick a linked list to show here.
+		                  {%- endif -%}
+		               </div>
+		            </aside>
+
+      		{%- endcase -%}
+      	</div>
+      	{%- endfor -%}
+      </div>
+   </div>
+</div>
+
+{%- style -%}{% if section.settings.border %}.footer__top_wrap{border-style: solid;border-width: 1px 0;border-color: {{section.settings.bd_cl}}}{% endif -%}
+.footer__top a:hover{color: {{section.settings.cl_hover}}}.footer__top .signup-newsletter-form,.footer__top .signup-newsletter-form input.input-text {background-color: transparent;}.footer__top .signup-newsletter-form input.input-text {color: {{section.settings.cl_ip}} }.footer__top .signup-newsletter-form .submit-btn {background-color: {{section.settings.cl_btn}} }.footer__top .widget-title { color: {{section.settings.cl_h}} }.footer__top a:not(:hover) { color: {{section.settings.cl_a}} }.footer__top .signup-newsletter-form{ border-color: {{section.settings.bd_ip}} }.footer__top .nt_bg_overlay:after{ background-color: {{section.settings.cl_overlay}};opacity: {{section.settings.cl_opacity | divided_by: 100.00}} }.footer__top_wrap {background-color: {{section.settings.bg}};background-repeat: {{section.settings.bg_repeat}};background-size: {{section.settings.bg_size}};background-attachment: {{section.settings.bg_att}};background-position: {{section.settings.bg_pos}};color:{{section.settings.cl}} }
+{%- if section.settings.sticky -%}
+@media (min-width:1025px){.wrapper_boxed #nt_footer {max-width: 1200px;margin-left: auto;margin-right: auto;}#nt_content{z-index:2}#nt_content,.gecko_prefooter{position:relative;background-color:#fff}#nt_footer{position:fixed;right:0;bottom:0;left:0;width:auto;transition:all .25s ease;-webkit-backface-visibility:hidden;backface-visibility:hidden;-webkit-perspective:800px;perspective:800px}.browser-Safari #nt_footer{opacity:0}.browser-Safari #nt_footer.visible_footer{opacity:1}}
+{%- endif -%}
+{%- endstyle -%}
+
+{%- schema -%}
+  {
+    "name": "Footer Top",
+    "class": "footer__top type_instagram",
+    "max_blocks": 6,
+    "settings": [
+      {
+        "type": "header",
+        "content": "== General Settings"
+      },
+      {
+        "type": "checkbox",
+        "id": "sticky",
+        "info": "Enable\/disable sticky footer option",
+        "label": "Sticky footer",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "accordions",
+        "info": "Enable\/disable accordions mobile footer option",
+        "label": "Accordions mobile",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "border",
+        "info": "Enable\/disable border top\/bottom?",
+        "label": "Border footer",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "== Footer Color" 
+      },
+      {
+        "type": "color",
+        "id": "bd_cl",
+        "label": "Border color Footer Top",
+        "default": "#ededed"
+      },
+      {
+        "type": "color",
+        "id": "cl_h",
+        "label": "Color Heading",
+        "default": "#222"
+      },
+      {
+        "type": "color",
+        "id": "cl",
+        "label": "Color Text",
+        "default": "#878787"
+      },
+      {
+        "type": "color",
+        "id": "cl_a",
+        "label": "Color Link",
+        "default": "#878787"
+      },
+      {
+        "type": "color",
+        "id": "cl_hover",
+        "label": "Color Hover Link",
+        "default": "#b59677"
+      },
+      {
+        "type": "color",
+        "id": "cl_ip",
+        "label": "Color input newsletter",
+        "default": "#878787"
+      },
+      {
+        "type": "color",
+        "id": "bd_ip",
+        "label": "Border color input newsletter",
+        "default": "#878787"
+      },
+      {
+        "type": "color",
+        "id": "cl_btn",
+        "label": "Color button newsletter",
+        "default": "#222"
+      },
+      {
+        "type": "header",
+        "content": "== Footer background"
+      },
+      {
+        "type": "color", 
+        "id": "bg",
+        "label": "Select Color",
+        "default": "#f6f6f8"
+      },
+      {
+        "type": "select",
+        "id": "bg_repeat",
+        "options": [
+          {
+            "value": "no-repeat",
+            "label": "No Repeat"
+          },
+          {
+            "value": "repeat",
+            "label": "Repeat All"
+          },
+          {
+            "value": "repeat-x",
+            "label": "Repeat Horizontally"
+          },
+          {
+            "value": "repeat-y",
+            "label": "Repeat Vertically"
+          },
+          {
+            "value": "inherit",
+            "label": "Inherit"
+          }
+        ],
+        "label": "___ Background Repeat",
+        "default": "no-repeat",
+        "info": "[Specifies how to repeat the background images](https:\/\/w3schools.com\/cssref\/pr_background-repeat.asp)"
+      },
+      {
+        "type": "select",
+        "id": "bg_size",
+        "options": [
+          {
+            "value": "auto",
+            "label": "Auto"
+          },
+          {
+            "value": "inherit",
+            "label": "Inherit"
+          },
+          {
+            "value": "cover",
+            "label": "Cover"
+          },
+          {
+            "value": "contain",
+            "label": "Contain"
+          }
+        ],
+        "label": "___ Background Size",
+        "default": "cover",
+        "info": "[Specifies the size of the background images](https:\/\/w3schools.com\/cssref\/css3_pr_background-size.asp)"
+      },
+      {
+        "type": "select",
+        "id": "bg_att",
+        "options": [
+          {
+            "value": "fixed",
+            "label": "Fixed"
+          },
+          {
+            "value": "scroll",
+            "label": "Scroll"
+          },
+          {
+            "value": "inherit",
+            "label": "Inherit"
+          }
+        ],
+        "label": "___ Background Attachment",
+        "default": "scroll",
+        "info": "[Specifies whether the background images are fixed or scrolls with the rest of the page](https:\/\/w3schools.com\/cssref\/pr_background-attachment.asp)"
+      },
+      {
+        "type": "select",
+        "id": "bg_pos",
+        "label": "Image position",
+        "default": "center center",
+        "options": [
+          {
+            "value": "left top",
+            "label": "Left Top"
+          },
+          {
+            "value": "left center",
+            "label": "Left Center"
+          },
+          {
+            "value": "left bottom",
+            "label": "Left Bottom"
+          },
+          {
+            "value": "center top",
+            "label": "Center Top"
+          },
+          {
+            "value": "center center",
+            "label": "Center Center"
+          },
+          {
+            "value": "center bottom",
+            "label": "Center Bottom"
+          },
+          {
+            "value": "right top",
+            "label": "Right Top"
+          },
+          {
+            "value": "right center",
+            "label": "Right Center"
+          },
+          {
+            "value": "right bottom",
+            "label": "Right Bottom"
+          }
+        ]
+      },
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Background image"
+      },
+      {
+        "type": "color",
+        "id": "cl_overlay",
+        "label": "Overlay",
+        "default": "#000"
+      },
+      {
+        "type": "range",
+        "id": "cl_opacity",
+        "label": "Overlay opacity",
+        "default": 0,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "logo",
+        "name": "Get in touch",
+        "limit": 1,
+        "settings": [
+         {
+           "type": "header",
+           "content": "== Logo"
+         },
+         {
+           "type": "image_picker",
+           "id": "image",
+           "label": "Custom logo",
+           "info": "190px wide recommended"
+         },
+        {
+          "type": "range",
+          "id": "logo_width",
+          "label": "== Custom logo width",
+          "min": 50,
+          "max": 350,
+          "step": 5,
+          "unit": "px",
+          "default": 100
+        },
+         {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Get in touch",
+            "info":"if you want not use logo, you can use text"
+          },
+         {
+           "type": "header",
+           "content": "== Get in touch"
+         },
+         {
+            "type": "html",
+            "id": "content",
+            "label": "Content",
+            "default": "<p><i class=\"pegk pe-7s-map-marker\"> <\/i><span>184 Main Rd E, St Albans <br> <span class=\"pl__30\">VIC 3021, Australia<\/span><\/span><\/p><p><i class=\"pegk pe-7s-mail\"><\/i><span> <a href=\"mailto:contact@company.com\">contact@company.com<\/a><\/span><\/p><p><i class=\"pegk pe-7s-call\"><\/i> <span>+001 2233 456 <\/span><\/p>"
+         },
+        {
+          "type": "select",
+          "id": "social_mode",
+          "label": "Footer social:",
+          "default": "3",
+          "options": [
+            {
+              "value": "1",
+              "label": "Disable"
+            },
+            {
+              "value": "2",
+              "label": "Share"
+            },
+            {
+              "value": "3",
+              "label": "Follow"
+            }
+          ]
+        },
+         {
+           "type": "header",
+           "content": "== Width settings"
+	      },
+	       {
+	         "type": "select",
+	         "id": "order",
+	         "label": "Order postion mobile,tablet",
+	         "default": "1",
+	         "options": [
+	          {
+	            "value": "1",
+	            "label": "1"
+	          },
+	          {
+	            "value": "2",
+	            "label": "2"
+	          },
+	          {
+	            "value": "3",
+	            "label": "3"
+	          },
+	          {
+	            "value": "4",
+	            "label": "4"
+	          },
+	          {
+	            "value": "5",
+	            "label": "5"
+	          },
+	          {
+	            "value": "6",
+	            "label": "6"
+	          },
+            {
+              "value": "7",
+              "label": "7"
+            },
+            {
+              "value": "8",
+              "label": "8"
+            },
+            {
+              "value": "9",
+              "label": "9"
+            },
+            {
+              "value": "10",
+              "label": "10"
+            }
+	         ]
+	       },
+	       {
+	         "type": "select",
+	         "id": "cl",
+	         "label": "Container width",
+	         "default": "3",
+	         "options": [
+	          {
+	            "value": "12",
+	            "label": "100%"
+	          },
+            {
+              "value": "8",
+              "label": "66%"
+            },
+	          {
+	            "value": "6",
+	            "label": "50%"
+	          },
+	          {
+	            "value": "4",
+	            "label": "33%"
+	          },
+	          {
+	            "value": "3",
+	            "label": "25%"
+	          },
+	          {
+	            "value": "15",
+	            "label": "20%"
+	          },
+	          {
+	            "value": "2",
+	            "label": "16%"
+	          }
+	         ]
+	       },
+          {
+            "type": "select",
+            "id": "cl_tb",
+            "label": "Container width tablet",
+            "default": "6",
+            "options": [
+	          {
+	            "value": "12",
+	            "label": "100%"
+	          },
+            {
+              "value": "8",
+              "label": "66%"
+            },
+	          {
+	            "value": "6",
+	            "label": "50%"
+	          },
+	          {
+	            "value": "4",
+	            "label": "33%"
+	          },
+	          {
+	            "value": "3",
+	            "label": "25%"
+	          }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "cl_mb",
+            "label": "Container width mobile",
+            "default": "12",
+            "options": [
+	          {
+	            "value": "12",
+	            "label": "100%"
+	          },
+	          {
+	            "value": "6",
+	            "label": "50%"
+	          }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "menu",
+        "name": "Menu",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Quick links"
+          },
+          {
+            "type": "link_list",
+            "id": "menu",
+            "label": "Add menu"
+          },
+	       {
+	         "type": "select",
+	         "id": "order",
+	         "label": "Order postion mobile,tablet",
+	         "default": "1",
+	         "options": [
+	          {
+	            "value": "1",
+	            "label": "1"
+	          },
+	          {
+	            "value": "2",
+	            "label": "2"
+	          },
+	          {
+	            "value": "3",
+	            "label": "3"
+	          },
+	          {
+	            "value": "4",
+	            "label": "4"
+	          },
+	          {
+	            "value": "5",
+	            "label": "5"
+	          },
+	          {
+	            "value": "6",
+	            "label": "6"
+	          },
+            {
+              "value": "7",
+              "label": "7"
+            },
+            {
+              "value": "8",
+              "label": "8"
+            },
+            {
+              "value": "9",
+              "label": "9"
+            },
+            {
+              "value": "10",
+              "label": "10"
+            }
+	         ]
+	       },
+          {
+            "type": "select",
+            "id": "cl",
+            "label": "Container width",
+            "default": "2",
+            "options": [
+	          {
+	            "value": "12",
+	            "label": "100%"
+	          },
+            {
+              "value": "8",
+              "label": "66%"
+            },
+	          {
+	            "value": "6",
+	            "label": "50%"
+	          },
+	          {
+	            "value": "4",
+	            "label": "33%"
+	          },
+	          {
+	            "value": "3",
+	            "label": "25%"
+	          },
+	          {
+	            "value": "15",
+	            "label": "20%"
+	          },
+	          {
+	            "value": "2",
+	            "label": "16%"
+	          }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "cl_tb",
+            "label": "Container width tablet",
+            "default": "6",
+            "options": [
+	          {
+	            "value": "12",
+	            "label": "100%"
+	          },
+            {
+              "value": "8",
+              "label": "66%"
+            },
+	          {
+	            "value": "6",
+	            "label": "50%"
+	          },
+	          {
+	            "value": "4",
+	            "label": "33%"
+	          },
+	          {
+	            "value": "3",
+	            "label": "25%"
+	          }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "cl_mb",
+            "label": "Container width mobile",
+            "default": "12",
+            "options": [
+	          {
+	            "value": "12",
+	            "label": "100%"
+	          },
+	          {
+	            "value": "6",
+	            "label": "50%"
+	          }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "mail",
+        "name": "Newsletter signup",
+        "limit": 1,
+        "settings": [
+         {
+            "type": "select",
+            "id": "newl_des",
+            "label": "Newsletter Design:",
+            "default": "1",
+            "options": [
+              {
+                "value": "1",
+                "label": "Design 1"
+              },
+              {
+                "value": "2",
+                "label": "Design 2"
+              },
+              {
+                "value": "3",
+                "label": "Design 3"
+              }
+            ]
+          },
+          {
+            "type": "checkbox",
+            "id": "btn_icon",
+            "label": "Button icon?",
+            "default": false
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Newsletter Signup"
+          },
+          {
+            "type": "text",
+            "id": "sub_title",
+            "label": "Sub Text",
+            "default": "Subscribe to our newsletter and get 10% off your first purchase"
+          },
+         {
+            "type": "select",
+            "id": "source",
+            "label": "Source IMG:",
+            "default": "1",
+            "options": [
+              {
+                "value": "1",
+                "label": "Image"
+              },
+              {
+                "value": "2",
+                "label": "SVG"
+              }
+            ]
+          },
+          {
+            "type": "header",
+            "content": "== Image"
+          },
+         {
+           "type": "image_picker",
+           "id": "image",
+           "label": "Trust seal image"
+         },
+          {
+            "type": "header",
+            "content": "== SVG"
+          },
+         {
+           "type": "textarea",
+           "id": "svg",
+           "label": "SVG list",
+           "default": "amazon_payments,american_express,apple_pay,bitcoin,dankort,diners_club,discover,dogecoin,dwolla,forbrugsforeningen,interac,google_pay,jcb,klarna,klarna-pay-later,litecoin,maestro,master,paypal,shopify_pay,sofort,visa",
+           "info": "amazon_payments,american_express,apple_pay,bitcoin,dankort,diners_club,discover,dogecoin,dwolla,forbrugsforeningen,interac,google_pay,jcb,klarna,klarna-pay-later,litecoin,maestro,master,paypal,shopify_pay,sofort,visa"
+         },
+         {
+          "type": "range",
+          "id": "height",
+          "min": 1,
+          "max": 100,
+          "step": 1,
+          "label": "Height",
+          "unit": "px",
+          "default": 30
+         },
+          {
+            "type": "header",
+            "content": "== Width settings"
+          },
+	       {
+	         "type": "select",
+	         "id": "order",
+	         "label": "Order postion mobile,tablet",
+	         "default": "1",
+	         "options": [
+	          {
+	            "value": "1",
+	            "label": "1"
+	          },
+	          {
+	            "value": "2",
+	            "label": "2"
+	          },
+	          {
+	            "value": "3",
+	            "label": "3"
+	          },
+	          {
+	            "value": "4",
+	            "label": "4"
+	          },
+	          {
+	            "value": "5",
+	            "label": "5"
+	          },
+	          {
+	            "value": "6",
+	            "label": "6"
+	          },
+            {
+              "value": "7",
+              "label": "7"
+            },
+            {
+              "value": "8",
+              "label": "8"
+            },
+            {
+              "value": "9",
+              "label": "9"
+            },
+            {
+              "value": "10",
+              "label": "10"
+            }
+	         ]
+	       },
+          {
+            "type": "select",
+            "id": "cl",
+            "label": "Container width",
+            "default": "3",
+            "options": [
+	          {
+	            "value": "12",
+	            "label": "100%"
+	          },
+            {
+              "value": "8",
+              "label": "66%"
+            },
+	          {
+	            "value": "6",
+	            "label": "50%"
+	          },
+	          {
+	            "value": "4",
+	            "label": "33%"
+	          },
+	          {
+	            "value": "3",
+	            "label": "25%"
+	          },
+	          {
+	            "value": "15",
+	            "label": "20%"
+	          },
+	          {
+	            "value": "2",
+	            "label": "16%"
+	          }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "cl_tb",
+            "label": "Container width tablet",
+            "default": "6",
+            "options": [
+	          {
+	            "value": "12",
+	            "label": "100%"
+	          },
+            {
+              "value": "8",
+              "label": "66%"
+            },
+	          {
+	            "value": "6",
+	            "label": "50%"
+	          },
+	          {
+	            "value": "4",
+	            "label": "33%"
+	          },
+	          {
+	            "value": "3",
+	            "label": "25%"
+	          }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "cl_mb",
+            "label": "Container width mobile",
+            "default": "12",
+            "options": [
+	          {
+	            "value": "12",
+	            "label": "100%"
+	          },
+	          {
+	            "value": "6",
+	            "label": "50%"
+	          }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "name": "Text",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Talk about your business"
+          },
+          {
+            "type": "richtext",
+            "id": "content",
+            "label": "Content",
+            "default": "<p>Share store details, promotions, or brand content with your customers.</p>"
+          },
+	       {
+	         "type": "select",
+	         "id": "order",
+	         "label": "Order postion mobile,tablet",
+	         "default": "1",
+	         "options": [
+	          {
+	            "value": "1",
+	            "label": "1"
+	          },
+	          {
+	            "value": "2",
+	            "label": "2"
+	          },
+	          {
+	            "value": "3",
+	            "label": "3"
+	          },
+	          {
+	            "value": "4",
+	            "label": "4"
+	          },
+	          {
+	            "value": "5",
+	            "label": "5"
+	          },
+	          {
+	            "value": "6",
+	            "label": "6"
+	          },
+            {
+              "value": "7",
+              "label": "7"
+            },
+            {
+              "value": "8",
+              "label": "8"
+            },
+            {
+              "value": "9",
+              "label": "9"
+            },
+            {
+              "value": "10",
+              "label": "10"
+            }
+	         ]
+	       },
+          {
+            "type": "select",
+            "id": "cl",
+            "label": "Container width",
+            "default": "3",
+            "options": [
+	          {
+	            "value": "12",
+	            "label": "100%"
+	          },
+            {
+              "value": "8",
+              "label": "66%"
+            },
+	          {
+	            "value": "6",
+	            "label": "50%"
+	          },
+	          {
+	            "value": "4",
+	            "label": "33%"
+	          },
+	          {
+	            "value": "3",
+	            "label": "25%"
+	          },
+	          {
+	            "value": "15",
+	            "label": "20%"
+	          },
+	          {
+	            "value": "2",
+	            "label": "16%"
+	          }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "cl_tb",
+            "label": "Container width tablet",
+            "default": "6",
+            "options": [
+	          {
+	            "value": "12",
+	            "label": "100%"
+	          },
+            {
+              "value": "8",
+              "label": "66%"
+            },
+	          {
+	            "value": "6",
+	            "label": "50%"
+	          },
+	          {
+	            "value": "4",
+	            "label": "33%"
+	          },
+	          {
+	            "value": "3",
+	            "label": "25%"
+	          }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "cl_mb",
+            "label": "Container width mobile",
+            "default": "12",
+            "options": [
+	          {
+	            "value": "12",
+	            "label": "100%"
+	          },
+	          {
+	            "value": "6",
+	            "label": "50%"
+	          }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "collection",
+        "name": "Featured Products",
+        "settings": [
+         {
+          "type":"text",
+          "id":"title",
+          "label":"Title",
+          "default":"Sale Products"
+          },
+          {
+           "type": "collection",
+           "id": "collection",
+           "label": "Collection to use"
+         },
+          {
+            "type": "range",
+            "id": "limit",
+            "min": 1,
+            "max": 20,
+            "step": 1,
+            "label": "Number of products to show",
+            "default": 3
+          },
+         {
+           "type": "select",
+           "id": "order",
+           "label": "Order postion mobile,tablet",
+           "default": "1",
+           "options": [
+            {
+              "value": "1",
+              "label": "1"
+            },
+            {
+              "value": "2",
+              "label": "2"
+            },
+            {
+              "value": "3",
+              "label": "3"
+            },
+            {
+              "value": "4",
+              "label": "4"
+            },
+            {
+              "value": "5",
+              "label": "5"
+            },
+            {
+              "value": "6",
+              "label": "6"
+            },
+            {
+              "value": "7",
+              "label": "7"
+            },
+            {
+              "value": "8",
+              "label": "8"
+            },
+            {
+              "value": "9",
+              "label": "9"
+            },
+            {
+              "value": "10",
+              "label": "10"
+            }
+           ]
+         },
+          {
+            "type": "select",
+            "id": "cl",
+            "label": "Container width",
+            "default": "3",
+            "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "8",
+              "label": "66%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            },
+            {
+              "value": "4",
+              "label": "33%"
+            },
+            {
+              "value": "3",
+              "label": "25%"
+            },
+            {
+              "value": "15",
+              "label": "20%"
+            },
+            {
+              "value": "2",
+              "label": "16%"
+            }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "cl_tb",
+            "label": "Container width tablet",
+            "default": "6",
+            "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "8",
+              "label": "66%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            },
+            {
+              "value": "4",
+              "label": "33%"
+            },
+            {
+              "value": "3",
+              "label": "25%"
+            }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "cl_mb",
+            "label": "Container width mobile",
+            "default": "12",
+            "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "post",
+        "name": "Recent Post",
+        "settings": [
+         {
+          "type":"text",
+          "id":"title",
+          "label":"Title",
+          "default":"Recent Post"
+          },
+          {
+           "type": "blog",
+           "id": "blog",
+           "label": "Blog to use"
+         },
+        {
+          "type": "select",
+          "id": "date",
+          "options": [
+            {
+              "value": "abbreviated_date",
+              "label": "Apr 19, 1994"
+            },
+            {
+              "value": "basic",
+              "label": "4/19/1994"
+            },
+            {
+              "value": "date",
+              "label": "April 19, 1994"
+            }
+          ],
+          "label": "Date format",
+          "info":"different format options display for various languages.",
+          "default": "date"
+        },
+          {
+            "type": "range",
+            "id": "limit",
+            "min": 1,
+            "max": 20,
+            "step": 1,
+            "label": "Number of products to show",
+            "default": 3
+          },
+         {
+           "type": "select",
+           "id": "order",
+           "label": "Order postion mobile,tablet",
+           "default": "1",
+           "options": [
+            {
+              "value": "1",
+              "label": "1"
+            },
+            {
+              "value": "2",
+              "label": "2"
+            },
+            {
+              "value": "3",
+              "label": "3"
+            },
+            {
+              "value": "4",
+              "label": "4"
+            },
+            {
+              "value": "5",
+              "label": "5"
+            },
+            {
+              "value": "6",
+              "label": "6"
+            },
+            {
+              "value": "7",
+              "label": "7"
+            },
+            {
+              "value": "8",
+              "label": "8"
+            },
+            {
+              "value": "9",
+              "label": "9"
+            },
+            {
+              "value": "10",
+              "label": "10"
+            }
+           ]
+         },
+          {
+            "type": "select",
+            "id": "cl",
+            "label": "Container width",
+            "default": "3",
+            "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "8",
+              "label": "66%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            },
+            {
+              "value": "4",
+              "label": "33%"
+            },
+            {
+              "value": "3",
+              "label": "25%"
+            },
+            {
+              "value": "15",
+              "label": "20%"
+            },
+            {
+              "value": "2",
+              "label": "16%"
+            }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "cl_tb",
+            "label": "Container width tablet",
+            "default": "6",
+            "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "8",
+              "label": "66%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            },
+            {
+              "value": "4",
+              "label": "33%"
+            },
+            {
+              "value": "3",
+              "label": "25%"
+            }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "cl_mb",
+            "label": "Container width mobile",
+            "default": "12",
+            "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "instagram",
+        "name": "Instagram feed",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Instagram"
+          },
+          {
+            "type": "text",
+            "id": "acc2",
+            "label": "User's photos via GraphQL (New Instagram API):",
+            "info":"If none is set, General Instagram Access Token is used. [How to get your Instagram Access Token via GraphQL API.](https://gecko5-docs.the4.co/installation/how-to-get-instagram-access-token)"
+          },
+          {
+            "type": "range",
+            "id": "limit",
+            "min": 1,
+            "max": 25,
+            "step": 1,
+            "unit": "img",
+            "label": "Number of photos",
+            "default": 9
+          },
+          {
+            "type": "select",
+            "id": "open_link",
+            "options": [
+              {
+                "value": "_self",
+                "label": "Current window (_self)"
+              },
+             {
+                "value": "_blank",
+                "label": "New window (_blank)"
+              }
+            ],
+            "label": "Open link in",
+            "default": "_blank"
+          },
+          {
+           "type": "select",
+           "id": "space",
+           "options": [
+             {
+               "value": "6",
+               "label": "6"
+             },
+             {
+               "value": "3",
+               "label": "3"
+             },
+             {
+               "value": "2",
+               "label": "2"
+             },
+             {
+               "value": "0",
+               "label": "0"
+             }
+           ],
+           "label": "spaces between photos",
+           "default": "2"
+          },
+          {
+            "type": "select",
+            "id": "rounded_ins",
+            "label": "Rounded corners for images",
+            "default": "0",
+            "options": [
+              {
+                "value": "0",
+                "label": "Disable"
+              },
+              {
+                "value": "1",
+                "label": "Style 1"
+              },
+              {
+                "value": "2",
+                "label": "Style 2"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "col_pr",
+            "label": "Photos per row",
+            "info": "How many photos you want to show per row",
+            "default": "4",
+            "options": [
+              {
+                "value": "6",
+                "label": "2"
+              },
+              {
+                "value": "4",
+                "label": "3"
+              },
+              {
+                "value": "3",
+                "label": "4"
+              },
+              {
+                "value": "15",
+                "label": "5"
+              },
+              {
+                "value": "2",
+                "label": "6"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "col_pr_tb",
+            "label": "Photos per row Tablet",
+            "default": "4",
+            "options": [
+              {
+                "value": "6",
+                "label": "2"
+              },
+              {
+                "value": "4",
+                "label": "3"
+              },
+              {
+                "value": "3",
+                "label": "4"
+              },
+              {
+                "value": "15",
+                "label": "5"
+              },
+              {
+                "value": "2",
+                "label": "6"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "col_pr_mb",
+            "label": "Photos per row Mobile",
+            "default": "4",
+            "options": [
+              {
+                "value": "12",
+                "label": "1"
+              },
+              {
+                "value": "6",
+                "label": "2"
+              },
+              {
+                "value": "4",
+                "label": "3"
+              },
+              {
+                "value": "3",
+                "label": "4"
+              },
+              {
+                "value": "15",
+                "label": "5"
+              },
+              {
+                "value": "2",
+                "label": "6"
+              }
+            ]
+          },
+         {
+           "type": "select",
+           "id": "order",
+           "label": "Order postion mobile,tablet",
+           "default": "1",
+           "options": [
+            {
+              "value": "1",
+              "label": "1"
+            },
+            {
+              "value": "2",
+              "label": "2"
+            },
+            {
+              "value": "3",
+              "label": "3"
+            },
+            {
+              "value": "4",
+              "label": "4"
+            },
+            {
+              "value": "5",
+              "label": "5"
+            },
+            {
+              "value": "6",
+              "label": "6"
+            },
+            {
+              "value": "7",
+              "label": "7"
+            },
+            {
+              "value": "8",
+              "label": "8"
+            },
+            {
+              "value": "9",
+              "label": "9"
+            },
+            {
+              "value": "10",
+              "label": "10"
+            }
+           ]
+         },
+          {
+            "type": "select",
+            "id": "cl",
+            "label": "Container width",
+            "default": "3",
+            "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "8",
+              "label": "66%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            },
+            {
+              "value": "4",
+              "label": "33%"
+            },
+            {
+              "value": "3",
+              "label": "25%"
+            },
+            {
+              "value": "15",
+              "label": "20%"
+            },
+            {
+              "value": "2",
+              "label": "16%"
+            }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "cl_tb",
+            "label": "Container width tablet",
+            "default": "6",
+            "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "8",
+              "label": "66%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            },
+            {
+              "value": "4",
+              "label": "33%"
+            },
+            {
+              "value": "3",
+              "label": "25%"
+            }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "cl_mb",
+            "label": "Container width mobile",
+            "default": "12",
+            "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "instagram2",
+        "name": "Instagram feed via APP",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "paragraph",
+            "content": "Firstly, you need to install [Section Feed App](https://apps.shopify.com/section-feed-by-maestrooo) to use this section"
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Instagram"
+          },
+          {
+            "type": "range",
+            "id": "limit",
+            "min": 1,
+            "max": 25,
+            "step": 1,
+            "unit": "img",
+            "label": "Number of photos",
+            "default": 9
+          },
+          {
+            "type": "select",
+            "id": "open_link",
+            "options": [
+              {
+                "value": "_self",
+                "label": "Current window (_self)"
+              },
+             {
+                "value": "_blank",
+                "label": "New window (_blank)"
+              }
+            ],
+            "label": "Open link in",
+            "default": "_blank"
+          },
+          {
+           "type": "select",
+           "id": "space",
+           "options": [
+             {
+               "value": "6",
+               "label": "6"
+             },
+             {
+               "value": "3",
+               "label": "3"
+             },
+             {
+               "value": "2",
+               "label": "2"
+             },
+             {
+               "value": "0",
+               "label": "0"
+             }
+           ],
+           "label": "spaces between photos",
+           "default": "2"
+          },
+          {
+            "type": "select",
+            "id": "rounded_ins",
+            "label": "Rounded corners for images",
+            "default": "0",
+            "options": [
+              {
+                "value": "0",
+                "label": "Disable"
+              },
+              {
+                "value": "1",
+                "label": "Style 1"
+              },
+              {
+                "value": "2",
+                "label": "Style 2"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "col_pr",
+            "label": "Photos per row",
+            "info": "How many photos you want to show per row",
+            "default": "4",
+            "options": [
+              {
+                "value": "6",
+                "label": "2"
+              },
+              {
+                "value": "4",
+                "label": "3"
+              },
+              {
+                "value": "3",
+                "label": "4"
+              },
+              {
+                "value": "15",
+                "label": "5"
+              },
+              {
+                "value": "2",
+                "label": "6"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "col_pr_tb",
+            "label": "Photos per row Tablet",
+            "default": "4",
+            "options": [
+              {
+                "value": "6",
+                "label": "2"
+              },
+              {
+                "value": "4",
+                "label": "3"
+              },
+              {
+                "value": "3",
+                "label": "4"
+              },
+              {
+                "value": "15",
+                "label": "5"
+              },
+              {
+                "value": "2",
+                "label": "6"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "col_pr_mb",
+            "label": "Photos per row Mobile",
+            "default": "4",
+            "options": [
+              {
+                "value": "12",
+                "label": "1"
+              },
+              {
+                "value": "6",
+                "label": "2"
+              },
+              {
+                "value": "4",
+                "label": "3"
+              },
+              {
+                "value": "3",
+                "label": "4"
+              },
+              {
+                "value": "15",
+                "label": "5"
+              },
+              {
+                "value": "2",
+                "label": "6"
+              }
+            ]
+          },
+         {
+           "type": "select",
+           "id": "order",
+           "label": "Order postion mobile,tablet",
+           "default": "1",
+           "options": [
+            {
+              "value": "1",
+              "label": "1"
+            },
+            {
+              "value": "2",
+              "label": "2"
+            },
+            {
+              "value": "3",
+              "label": "3"
+            },
+            {
+              "value": "4",
+              "label": "4"
+            },
+            {
+              "value": "5",
+              "label": "5"
+            },
+            {
+              "value": "6",
+              "label": "6"
+            },
+            {
+              "value": "7",
+              "label": "7"
+            },
+            {
+              "value": "8",
+              "label": "8"
+            },
+            {
+              "value": "9",
+              "label": "9"
+            },
+            {
+              "value": "10",
+              "label": "10"
+            }
+           ]
+         },
+          {
+            "type": "select",
+            "id": "cl",
+            "label": "Container width",
+            "default": "3",
+            "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "8",
+              "label": "66%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            },
+            {
+              "value": "4",
+              "label": "33%"
+            },
+            {
+              "value": "3",
+              "label": "25%"
+            },
+            {
+              "value": "15",
+              "label": "20%"
+            },
+            {
+              "value": "2",
+              "label": "16%"
+            }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "cl_tb",
+            "label": "Container width tablet",
+            "default": "6",
+            "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "8",
+              "label": "66%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            },
+            {
+              "value": "4",
+              "label": "33%"
+            },
+            {
+              "value": "3",
+              "label": "25%"
+            }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "cl_mb",
+            "label": "Container width mobile",
+            "default": "12",
+            "options": [
+            {
+              "value": "12",
+              "label": "100%"
+            },
+            {
+              "value": "6",
+              "label": "50%"
+            }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "html",
+        "name": "HTML",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "HTML"
+          },
+          {
+            "type": "html",
+            "id": "content",
+            "label": "Content",
+            "default": "<p>html code</p>"
+          },
+	       {
+	         "type": "select",
+	         "id": "order",
+	         "label": "Order postion mobile,tablet",
+	         "default": "1",
+	         "options": [
+	          {
+	            "value": "1",
+	            "label": "1"
+	          },
+	          {
+	            "value": "2",
+	            "label": "2"
+	          },
+	          {
+	            "value": "3",
+	            "label": "3"
+	          },
+	          {
+	            "value": "4",
+	            "label": "4"
+	          },
+	          {
+	            "value": "5",
+	            "label": "5"
+	          },
+	          {
+	            "value": "6",
+	            "label": "6"
+	          },
+            {
+              "value": "7",
+              "label": "7"
+            },
+            {
+              "value": "8",
+              "label": "8"
+            },
+            {
+              "value": "9",
+              "label": "9"
+            },
+            {
+              "value": "10",
+              "label": "10"
+            }
+	         ]
+	       },
+          {
+            "type": "select",
+            "id": "cl",
+            "label": "Container width",
+            "default": "3",
+            "options": [
+	          {
+	            "value": "12",
+	            "label": "100%"
+	          },
+            {
+              "value": "8",
+              "label": "66%"
+            },
+	          {
+	            "value": "6",
+	            "label": "50%"
+	          },
+	          {
+	            "value": "4",
+	            "label": "33%"
+	          },
+	          {
+	            "value": "3",
+	            "label": "25%"
+	          },
+	          {
+	            "value": "15",
+	            "label": "20%"
+	          },
+	          {
+	            "value": "2",
+	            "label": "16%"
+	          }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "cl_tb",
+            "label": "Container width tablet",
+            "default": "6",
+            "options": [
+	          {
+	            "value": "12",
+	            "label": "100%"
+	          },
+            {
+              "value": "8",
+              "label": "66%"
+            },
+	          {
+	            "value": "6",
+	            "label": "50%"
+	          },
+	          {
+	            "value": "4",
+	            "label": "33%"
+	          },
+	          {
+	            "value": "3",
+	            "label": "25%"
+	          }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "cl_mb",
+            "label": "Container width mobile",
+            "default": "12",
+            "options": [
+	          {
+	            "value": "12",
+	            "label": "100%"
+	          },
+	          {
+	            "value": "6",
+	            "label": "50%"
+	          }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

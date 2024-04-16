@@ -1,0 +1,96 @@
+{%- liquid 
+  assign ck_break_pr = true
+  assign arr_vl_filters_size = arr_vl_filters.size 
+  assign filter_vendor_size = arr_vl_filters | where:'filter_vendor%3d'| size 
+  assign filter_type_size = arr_vl_filters | where:'filter_type%3d' | size 
+  assign filter_tag_size = arr_vl_filters | where:'filter_tag%3d' | size 
+  assign filter_total_size = filter_vendor_size |plus:filter_type_size |plus:filter_tag_size -%}
+
+{%- if logic_and -%}
+
+  {%- for value_filter in arr_vl_filters -%}
+      
+      {%- assign get_fillter_vl = value_filter | split:'%3d' | last | downcase -%}
+      {%- assign get_fillter_vl2 = get_fillter_vl | replace:'+',' ' -%}
+
+      {%- if value_filter contains 'filter_vendor%3d' -%}
+          {%- assign pr_vendor_dow = product.vendor | url_encode| downcase -%}
+          {%- if get_fillter_vl == pr_vendor_dow or get_fillter_vl2 == pr_vendor_dow %}{% assign ck_break_pr = true %}{% else %}{% assign ck_break_pr = false %}{% break %}{% endif -%}
+      
+      {%- elsif value_filter contains 'filter_type%3d' -%}
+           {%- assign pr_type_dow = product.type | url_encode| downcase -%}
+           {%- if get_fillter_vl == pr_type_dow or get_fillter_vl2 == pr_type_dow %}{% assign ck_break_pr = true %}{% else %}{% assign ck_break_pr = false %}{% break %}{% endif -%}
+      
+      {%- elsif value_filter contains 'filter_tag%3d' -%}
+           {%- assign pr_tags_dow = product.tags |join:'ntt494nt'| url_encode | downcase |split:'ntt494nt' -%}
+           {%- if pr_tags_dow contains get_fillter_vl or pr_tags_dow contains get_fillter_vl2 %}{% assign ck_break_pr = true %}{% else %}{% assign ck_break_pr = false %}{% break %}{% endif -%}
+      
+      {%- elsif product.has_only_default_variant == false and arr_vl_filters_size > filter_total_size -%}
+
+          {%- assign get_fillter_name = value_filter | split:'%3d' | first | downcase | remove:'filter_' -%}
+          {%- assign get_fillter_name2 = get_fillter_name | replace:'+',' ' -%}
+          {%- assign get_fillter_name = get_fillter_name  | url_decode -%}
+          {%- assign get_fillter_name2 = get_fillter_name2  | url_decode -%}
+          {%- assign get_fillter_vl3 = get_fillter_vl | url_decode -%}
+          {%- assign get_fillter_vl4 = get_fillter_vl2 | url_decode -%}
+
+          {%- if product.options_by_name[get_fillter_name].values.size > 0 -%}
+             {%- assign options_by_name = product.options_by_name[get_fillter_name].values |join:'+nt+'| downcase |split:'+nt+' -%}
+          {% elsif product.options_by_name[get_fillter_name2].values.size > 0 -%}
+             {%- assign options_by_name = product.options_by_name[get_fillter_name2].values |join:'+nt+'| downcase |split:'+nt+' -%}
+          {%- endif -%}
+
+          {%- if options_by_name != blank -%}
+             {%- if options_by_name contains get_fillter_vl or options_by_name contains get_fillter_vl2 or options_by_name contains get_fillter_vl3 or options_by_name contains get_fillter_vl4 %}{% assign ck_break_pr = true %}{% else %}{% assign ck_break_pr = false %}{% break %}{% endif -%}
+          {%- else %}{% assign ck_break_pr = false %}{% break -%}
+          {%- endif -%}
+
+      {%- elsif arr_vl_filters_size > filter_total_size %}{% assign ck_break_pr = false %}{% break -%}
+      {%- endif -%}
+
+  {%- endfor -%}
+
+{%- else -%}
+
+  {% comment %}{%- if arr_vl_filters_size > 0 %}{%- assign ck_break_pr = false -%}{%- endif -%}{% endcomment %}
+  {%- for value_filter in arr_vl_filters -%}
+      {%- assign ck_break_pr = false -%}
+      {%- assign get_fillter_vl = value_filter | split:'%3d' | last | downcase -%}
+      {%- assign get_fillter_vl2 = get_fillter_vl | replace:'+',' ' -%}
+
+      {%- if value_filter contains 'filter_vendor%3d' -%}
+          {%- assign pr_vendor_dow = product.vendor | url_encode | downcase -%}
+          {%- if get_fillter_vl == pr_vendor_dow or get_fillter_vl2 == pr_vendor_dow %}{% assign ck_break_pr = true %}{% break %}{% endif -%}
+
+      {%- elsif value_filter contains 'filter_type%3d' -%}
+           {%- assign pr_type_dow = product.type | url_encode | downcase -%}
+           {%- if get_fillter_vl == pr_type_dow or get_fillter_vl2 == pr_type_dow %}{% assign ck_break_pr = true %}{% break %}{% endif -%}
+
+      {%- elsif value_filter contains 'filter_tag%3d' -%}
+           {%- assign pr_tags_dow = product.tags |join:'ntt494nt'| url_encode | downcase |split:'ntt494nt' -%}
+           {%- if pr_tags_dow contains get_fillter_vl or pr_tags_dow contains get_fillter_vl2 %}{% assign ck_break_pr = true %}{% break %}{% endif -%}
+
+      {%- elsif product.has_only_default_variant == false and arr_vl_filters_size > filter_total_size -%}
+          {%- assign get_fillter_name = value_filter | split:'%3d' | first | downcase | remove:'filter_' -%}
+          {%- assign get_fillter_name2 = get_fillter_name | replace:'+',' ' -%}
+          {%- assign get_fillter_name = get_fillter_name  | url_decode -%}
+          {%- assign get_fillter_name2 = get_fillter_name2  | url_decode -%}
+          {%- assign get_fillter_vl3 = get_fillter_vl | url_decode -%}
+          {%- assign get_fillter_vl4 = get_fillter_vl2 | url_decode -%}
+
+
+          {%- if product.options_by_name[get_fillter_name].values.size > 0 -%}
+            {%- assign options_by_name = product.options_by_name[get_fillter_name].values |join:'+nt+'| downcase |split:'+nt+' -%}
+          {%- elsif product.options_by_name[get_fillter_name2].values.size > 0 -%}
+            {%- assign options_by_name = product.options_by_name[get_fillter_name2].values |join:'+nt+'| downcase |split:'+nt+' -%}
+          {%- endif -%}
+          
+          {%- if options_by_name != blank -%}
+             {%- if options_by_name contains get_fillter_vl or options_by_name contains get_fillter_vl2 or options_by_name contains get_fillter_vl3 or options_by_name contains get_fillter_vl4 %}{% assign ck_break_pr = true %}{% break %}{% endif -%}
+          {%- endif -%}
+
+      {%- endif -%}
+  {%- endfor -%}
+
+{%- endif -%}
+{{-ck_break_pr | json -}}

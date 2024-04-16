@@ -1,0 +1,51 @@
+{%- liquid
+  assign search_url = routes.search_url
+  assign rtl = settings.use_rtl
+  if rtl 
+    assign ltr = false 
+  else 
+    assign ltr = true  
+  endif -%}
+<nav class="nt_navigation {{section.settings.align}} {{section.settings.hover}} nav_arrow_{{section.settings.arrow}}"> 
+   <ul id="nt_menu_id" class="nt_menu in_flex wrap al_center">
+   {%- for type in tp_blocks -%}
+     
+      {%- assign arrTyCurent = blocktp |remove:'t4,' | split:',' | where:type -%}
+      {%- assign arrblock = se_blocks | where: "type", type -%}
+      {%- assign block = arrblock[arrTyCurent.size] -%}
+      {%- assign blocktp = blocktp | append:',' | append:type -%}
+      {%- assign blockID = block.id -%}
+      
+      {%- case block.type -%}
+         {%- when 'dropdown' -%}
+            <li id="item_{{blockID}}" class="type_{{block.type}} menu_wid_{{block.settings.wid}} menu-item has-children menu_has_offsets menu_{{block.settings.pos}} pos_{{block.settings.pos}}" {{ block.shopify_attributes }}>
+               <a class="lh__1 flex al_center pr" href="{{block.settings.url}}" target="{{block.settings.open_link}}"{% if block.settings.cus_cl %} style="color:{{block.settings.cl}}"{% endif %}>{%- render 'title_menu',block:block -%}</a>
+               {%- if linklists[block.settings.menu].links.size > 0 -%}
+               <div class="sub-menu">
+                  {%- if block.settings.lazy_mn and admin_sp == false -%}
+                     <div class="lazy_menu lazyload" data-include="{{search_url}}?q={{blockID}}&view=header"><div class="lds_bginfinity pr"></div></div>
+                  {%- else -%}
+                     <div class="lazy_menu">{%- render 'menu_import',section:section,Current_id:blockID -%}</div>
+                  {%- endif -%}
+               </div>
+              {%- endif -%}
+            </li>
+         {%- when 'logo' -%}{%- render 'nt_logo', nt_logo:'li',class:'menu-item',class2:'lh__1 flex al_center pr' -%}
+         {%- when 'btn' -%}{% if block.settings.url != blank %}<li id="item_{{blockID}}" class="menu-item type_btn br_radius_{{block.settings.radius}}" {{ block.shopify_attributes }}><a class="button" href="{{block.settings.url}}" target="{{block.settings.open_link}}"{% if block.settings.cus_cl %} style="color:{{block.settings.cl}}"{% endif %}>{%- render 'title_menu',block:block -%}</a></li>{% endif %}
+         {%- when 'simple' -%}{% if block.settings.url != blank %}<li id="item_{{blockID}}" class="menu-item type_simple" {{ block.shopify_attributes }}><a class="lh__1 flex al_center pr" href="{{block.settings.url}}" target="{{block.settings.open_link}}"{% if block.settings.cus_cl %} style="color:{{block.settings.cl}}"{% endif %}>{%- render 'title_menu',block:block -%}</a></li>{% endif %}
+         {%- else -%}
+            <li id="item_{{blockID}}" class="type_{{block.type}} menu_wid_{{block.settings.wid}} menu-item has-children menu_has_offsets menu_{{block.settings.pos}} pos_{{block.settings.pos}}" {{ block.shopify_attributes }}>
+               <a class="lh__1 flex al_center pr" href="{{block.settings.url}}" target="{{block.settings.open_link}}"{% if block.settings.cus_cl %} style="color:{{block.settings.cl}}"{% endif %}>{%- render 'title_menu',block:block -%}</a>
+               <div class="{{block.settings.wid}} sub-menu"><div class="container"{% if  block.settings.wid != 'full nav_t4cnt' %} style="width:{{block.settings.cus_wid}}px"{% endif %}>
+                  {%- if block.settings.lazy_mn and admin_sp == false -%}
+                    <div class="row lazy_menu lazyload lazy_menu_mega" data-include="{{search_url}}?q={{blockID}}&view=header" data-jspackery='{ "itemSelector": ".sub-column-item","gutter": 0,"percentPosition": true,"originLeft": {{ltr}} }'><div class="lds_bginfinity pr"></div></div>
+                  {%- else -%}
+                    <div class="row lazy_menu unlazy_menu_mega" data-jspackery='{ "itemSelector": ".sub-column-item","gutter": 0,"percentPosition": true,"originLeft": {{ltr}} }'>{%- render 'menu_import',section:section,Current_id:blockID -%}</div>
+                  {%- endif -%}
+              </div></div>
+            </li>
+      {%- endcase -%}
+
+   {%- endfor -%}
+   </ul>
+</nav>

@@ -1,0 +1,362 @@
+{%- for block in section.blocks %}<div {{block.shopify_attributes}}></div>{% endfor -%}
+{%- capture min_html -%}
+  {%- if section.blocks.size > 0 -%}
+  {%- assign img_size_sw = '100x100' -%} 
+  {%- assign color_primary = settings.color_primary -%} 
+    {%- comment -%}<style id="cl_css_jsnt"></style>{%- endcomment -%}
+    <style id="cl_css_jsnt">
+      {%- capture cl_css_jsnt -%}
+        {%- for block in section.blocks -%}
+            {%- liquid
+              assign b_title = block.settings.title | split:';' 
+              if b_title == blank
+                continue
+              endif
+
+              assign title_h = b_title | join: '-kt4t-' | handleize | split:'-kt4t-'
+              assign color_1_c = block.settings.color_1_c -%}
+
+              {%- case block.type -%} 
+                 {%- when 'bg_color' -%}
+                    {%- assign color_2_c = block.settings.color_2_c -%}
+                    .bg_color_{{title_h | join: ',.bg_color_'}}{ {%-if color_1_c != blank -%}background-color: {{color_1_c}};{%-endif -%}{%-if color_1_c != blank and color_2_c != blank and color_2_c != 'rgba(0,0,0,0)' -%}background: -webkit-linear-gradient({{color_1_c}} 50%, {{color_2_c}} 50%);background: -o-linear-gradient({{color_1_c}} 50%, {{color_2_c}} 50%);background: -moz-linear-gradient({{color_1_c}} 50%, {{color_2_c}} 50%);background: linear-gradient({{color_1_c}} 50%, {{color_2_c}} 50%);{%-endif -%} }
+                    {%- if block.settings.color_img and block.settings.color_jpg != blank -%} .bg_color_{{title_h}}.lazyloaded{background-image: url('{{ block.settings.color_jpg | img_url: img_size_sw, crop: 'center' }}');}{%- endif -%}
+
+                 {%- when 'lb_menu' -%}
+                    .lb_menu_{{title_h| join: ',.lb_menu_'}}{ {%-if color_1_c != blank -%}background-color: {{color_1_c}};{%-endif -%}{% if block.settings.color_txt != blank %}color: {{block.settings.color_txt }}{% endif %} }
+
+                 {%- else -%}
+                    .nt_label.{{title_h| join: ',.nt_label.'}}{ {%-if color_1_c != blank -%}background-color: {{color_1_c}};{%-endif -%}{% if block.settings.color_txt != blank %}color: {{block.settings.color_txt }}{% endif %} }
+
+              {%- endcase -%}
+            
+        {%- endfor -%}
+      {%- endcapture -%}
+      {{cl_css_jsnt}}
+    </style>
+    {%- comment -%}{%- if section.blocks.first.shopify_attributes contains 'data-theme-editor' -%}{%- endif -%}{%- endcomment -%}
+      
+      <div id="admclnt" class="mfp-hide">
+        {%- comment -%}
+        <textarea id="myInputT4" class="pa op__0 pe_none">{{cl_css_jsnt}}</textarea>
+        <script>
+        function myFunctionT4() {
+          var copyText = document.getElementById("myInputT4");
+          copyText.select();
+          copyText.setSelectionRange(0, 99999);
+          document.execCommand("copy");
+          console.log('copyText.value');
+          console.log(copyText.value);
+          var tooltip = document.getElementById("myTooltipT4");
+          tooltip.innerHTML = "Copied code css to clipboard";
+        }
+
+        function outFuncT4() {
+          var tooltip = document.getElementById("myTooltipT4");
+          tooltip.innerHTML = "Copy code css to clipboard";
+        }
+        </script>
+        {%- endcomment -%}
+         <style>
+           a.put_asset_js.button,.tooltip_t4>button {
+             padding: 0;
+             min-height: auto;
+             box-shadow: inset 0 -2px 0 rgba(0,0,0,.15);
+             background-color: #00848e;
+             border-color: #00848e;
+             color: #ffffff;
+             border-radius: 5px;
+             font-size: 16px;
+           }
+          .put_asset_js span,.tooltip_t4>button {
+            padding: 8px 25px;
+            display: inline-block;
+          }
+          .put_asset_js.loading {
+              -webkit-animation-duration: 1s;
+              animation-duration: 1s;
+              -webkit-animation-duration: 1s;
+              animation-duration: 1s;
+              -webkit-animation-fill-mode: both;
+              animation-fill-mode: both;
+              -webkit-animation-iteration-count: infinite;
+              animation-iteration-count: infinite;
+              -webkit-animation-name: fadeInt4ad;
+              animation-name: fadeInt4ad;
+              pointer-events: none
+          }
+          .put_asset_js.loading span,.put_asset_js.t4_done span {
+             opacity: 0
+          }
+          .put_asset_js.loading .txt4_css_doing,
+          .put_asset_js.t4_done .txt4_css_done {
+             opacity: 1
+          }
+          @-webkit-keyframes fadeInt4ad {
+            from {
+              opacity: 0;
+            }
+
+            to {
+              opacity: 1;
+            }
+          }
+          @keyframes fadeInt4ad {
+            from {
+              opacity: 0;
+            }
+
+            to {
+              opacity: 1;
+            }
+          }
+          
+          #admclnt {
+              max-width: 95%;
+              background-color: #fff;
+              margin: 65px auto;
+              position: relative;
+              box-shadow: 4px 4px 17px rgba(0,0,0,.3);
+              text-align: center;
+              padding: 20px;
+              border: 2px dotted transparent;
+          }
+          #admclnt .col-auto {border: 2px dotted transparent;}
+          /* #admclnt .col-auto.selected {border-color: #e91e63} */
+          #admclnt .nt_label {
+              margin: 0 auto;
+          }
+          #admclnt .col-auto.selected {
+          background-image: repeating-linear-gradient(0deg, #d41616, #d41616 9px, transparent 9px, transparent 16px, #d41616 16px), repeating-linear-gradient(90deg, #d41616, #d41616 9px, transparent 9px, transparent 16px, #d41616 16px), repeating-linear-gradient(180deg, #d41616, #d41616 9px, transparent 9px, transparent 16px, #d41616 16px), repeating-linear-gradient(270deg, #d41616, #d41616 9px, transparent 9px, transparent 16px, #d41616 16px);
+          background-size: 2px calc(100% + 16px), calc(100% + 16px) 2px, 2px calc(100% + 16px) , calc(100% + 16px) 2px;
+          background-position: 0 0, 0 0, 100% 0, 0 100%;
+          background-repeat: no-repeat;
+          animation: borderAnimation 0.6s infinite linear;
+          }
+
+          @keyframes borderAnimation {
+          from { background-position: 0 0, -16px 0, 100% -16px, 0 100%; }
+          to { background-position: 0 -16px, 0 0, 100% 0, -16px 100%; }
+          }
+         .tip-box {
+            background-color: rgb(253, 247, 227);
+            box-shadow: rgb(238, 194, 0) 0px 3px 0px 0px inset, rgba(0, 0, 0, 0) 0px 0px 0px 0px inset, rgba(63, 63, 68, 0.05) 0px 0px 0px 1px, rgba(63, 63, 68, 0.15) 0px 1px 3px 0px;
+            color: rgb(33, 43, 54);
+            padding: 1.6rem;
+            font-weight: 500;
+          }
+          .tooltip_t4 {
+            position: relative;
+            display: inline-block;
+          }
+
+          .tooltip_t4 .tooltiptextt4 {
+            visibility: hidden;
+            width: 140px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 150%;
+            left: 50%;
+            margin-left: -75px;
+            opacity: 0;
+            transition: opacity 0.3s;
+          }
+
+          .tooltip_t4 .tooltiptextt4::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+          }
+
+          .tooltip_t4:hover .tooltiptextt4 {
+            visibility: visible;
+            opacity: 1;
+          }
+
+          .tip-box.css_important {
+                background-color: #fff;
+            box-shadow: inset 0.2rem 0 0 #de3618;
+            box-shadow: #de3618 0px 3px 0px 0px inset, rgba(0, 0, 0, 0) 0px 0px 0px 0px inset, rgba(63, 63, 68, 0.05) 0px 0px 0px 1px, rgba(63, 63, 68, 0.15) 0px 1px 3px 0px;
+            background-image: linear-gradient(rgba(251,234,229,.4),rgba(251,234,229,.4)),linear-gradient(rgba(251,234,229,.4),rgba(251,234,229,.4));
+            color: #bf0711;
+            border: 0;
+          }
+          .tip-box.css_important a {
+              color: #fff;
+              text-decoration: underline;
+              font-weight: 800;
+              padding: 1px 9px 4px;
+              background-color: #de3618;
+          }
+         </style>
+         <div class="tip-box mb__35">
+            <p class="mg__0"><strong>WARNING:</strong> Currently we only support maximum 200 custom colors. In case you want to get more custom color, please <a class="txt_under" target="_blank" href="https://the4.co/contact-us/">contact us HERE</a></p>
+         </div>
+
+         {%- comment -%}
+         <div class="tip-box mb__35 css_important">
+            <p class="mg__0"><strong>IMPORTANT: </strong>Click on the button to copy code css. Afterwards try to paste the code (e.g. ctrl+v or cmd+v ) in a <a target="_blank" href="/admin/themes/{{theme.id}}?{{'key=assets/sett_cl.css' | escape}}">file css here</a> , to code active.</p>
+         </div>
+         <div class="tooltip_t4">
+          <button class="button mb__60 pr oh_ tc" onclick="myFunctionT4()" onmouseout="outFuncT4()">
+            <span class="tooltiptextt4" id="myTooltipT4">Copy code css to clipboard</span>
+            Copy Code CSS
+            </button>
+          </div>
+         {%- endcomment -%}
+
+         <div class="tip-box mb__35 css_important">
+            <p class="mg__0"><strong>IMPORTANT: </strong>Click on the button 'Update on online store' to code active on live theme.</p>
+         </div>
+         <a href="#" class="put_asset_js button mb__60 pr oh tc" data-key='assets/sett_cl.css' data-sl='#cl_css_jsnt'>
+           <span class="txt4_css_do">Update on online store</span>
+           <span class="txt4_css_doing op__0 pa t__0 l__0 r__0 b__0">Updating style</span>
+           <span class="txt4_css_done op__0 pa t__0 l__0 r__0 b__0">Updated style</span>
+         </a>
+
+         <h3 class="section-title tc pr flex fl_center al_center fs__24 divider mb__30"><span class="mr__10 ml__10">Demo swatch, Label settings Preview:</span></h3>
+         <div class="row fl_center al_center mt__30">
+         {%- for block in section.blocks -%}
+           {%- if block.settings.title != "" -%}{%- assign title = block.settings.title | split:';' | first -%}{%- assign title_h = title | handleize -%}
+              <div class="col-auto pt__15 pb__15 tc" id="item_{{block.id}}">
+              {%- case block.type -%}
+                 {%- when 'bg_color' -%}
+                 <div class="swatch__list lh__1 nt_swatches_on_grid">
+                  <span class="nt_swatch_on_bg swatch__list--item pr ttip_nt tooltip_top">
+                    <span class="tt_txt">{{title}}</span>
+                    <span class="swatch__value bg_color_{{title_h}} lazyload"></span>
+                  </span>
+                 </div>
+
+                 {%- when 'lb_menu' -%}<span class="lbc_nav_mb lb_menu_{{title_h}}">{{title}}</span>
+
+                 {%- else -%}{%- assign splitTags = title | split:'badge_' | last -%}<span class="nt_label {{splitTags | handleize}}">{{splitTags}}</span>
+
+              {%- endcase -%}
+              <h5 class="mg__0 mt__5">{{forloop.index}}. {{ title}}</h5>
+            </div>
+           {%- endif -%}
+         {%- endfor -%}
+       </div>
+      </div>
+
+  {%- endif -%}
+{%- endcapture -%}
+{{min_html | strip_newlines | remove: "  "}}
+
+{%- schema -%}
+  {
+    "name": "Swatch, Label submenu",
+    "max_blocks": 200,
+    "settings": [
+      {
+      "type": "paragraph",
+      "content": "Set name the color and select the color code you want to customize."
+      },
+      {
+      "type": "paragraph",
+      "content": "Separate by a comma ; . If you want support multilingual"
+      },
+      {
+      "type": "paragraph",
+      "content": "Eg: yellow; jaune"
+      }
+    ],
+    "blocks": [
+      {
+        "type":"bg_color",
+        "name":"Swatch color",
+        "settings": [
+          {
+            "type": "textarea",
+            "id": "title",
+            "label": "Color Name",
+            "info": "eg: yellow"
+          },
+          {
+            "type": "color",
+            "id": "color_1_c",
+            "label": "Select color"
+          },
+          {
+            "type": "color",
+            "id": "color_2_c",
+            "label": "Select color 2 (optional)"
+          },
+          {
+            "type": "checkbox",
+            "id": "color_img",
+            "label": "Show image?"
+          },
+          {
+            "type": "image_picker",
+            "id": "color_jpg",
+            "label": "Color image",
+            "info": "100px x 100px recommended"
+          }
+        ]
+      },
+      {
+        "type":"lb_menu",
+        "name":"Label menu color",
+        "settings": [
+           {
+              "type": "textarea",
+              "id": "title",
+              "label": "Label Name",
+              "info": "eg: Sale"
+            },
+            {
+              "type": "color",
+              "id": "color_1_c",
+              "label": "Backgroung color"
+            },
+          {
+            "type": "color",
+            "id": "color_txt",
+            "label": "Text color",
+            "default":"#fff"
+          }
+        ]
+      },
+      {
+        "type":"nt_label",
+        "name":"Label product custom",
+        "settings": [
+            {
+            "type": "paragraph",
+            "content": "Add product tag to show label, ex: badge_Sale."
+            },
+           {
+              "type": "textarea",
+              "id": "title",
+              "label": "Label Name",
+              "info": "eg: Sale"
+            },
+            {
+              "type": "color",
+              "id": "color_1_c",
+              "label": "Backgroung color"
+            },
+          {
+            "type": "color",
+            "id": "color_txt",
+            "label": "Text color",
+            "default":"#fff"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}
+

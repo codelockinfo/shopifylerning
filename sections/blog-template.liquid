@@ -1,0 +1,625 @@
+{%- liquid
+  assign se_stts = section.settings
+  assign sett_equal = se_stts.use_eq_height
+  assign col = se_stts.col_pr
+  assign col_tb = se_stts.col_pr_tb
+  assign cl_mb = se_stts.col_pr_mb 
+  assign col_mb = '' | prepend:cl_mb
+  assign limit = se_stts.limit
+  assign use_pagination = se_stts.use_pagination
+  assign date = se_stts.date
+  assign by = 'blogs.article.by' | t
+  assign on = 'blogs.article.on' | t
+  assign read_more = 'blogs.article.read_more' | t   
+  assign show_au = se_stts.show_au
+  assign show_dt = se_stts.show_dt
+  assign show_cm = se_stts.show_cm
+  assign show_tg = se_stts.show_tg
+  assign art_des = se_stts.art_des
+  assign shop_des = se_stts.shop_des
+  assign source = se_stts.source
+  assign sid = section.id -%} 
+
+{%- paginate blog.articles by limit -%}
+{%- if paginate.current_page > 1 and use_pagination != 'default' -%}
+    {%- assign col_mb = ' pr_animated done' | prepend:cl_mb -%}
+    {%- render 'ajax_blog_load',art_des:art_des,arr_results:blog.articles,paginate:paginate,article:article,date:date,read_more:read_more,by:by,on:on,show_au:show_au,show_dt:show_dt,show_cm:show_cm,show_tg:show_tg,col:col,col_tb:col_tb,col_mb:col_mb,sett_equal:sett_equal -%}
+{%- else -%}
+     {%- if source != '0' and blog.all_tags.size > 0 -%}{%- assign blog_handle = blog.handle -%}
+        {%- if source == '1' -%}
+             <div class="nt_filter_block portfolio_filter blg_count_{{se_stts.count}} fwm tc mb__25">
+                <a class="dib cg chp br__40{% unless current_tags %} selected{% endunless %}" href="/blogs/{{blog_handle}}">{{ 'blogs.portfolio.filter_all' | t }}</a>
+                {%- for tag in blog.all_tags -%}
+                    {%- if current_tags contains tag -%}
+                          <a class="dib cg chp br__40 selected" href="/blogs/{{blog_handle}}">{{ tag }} <span class="blg_count">({{ tag.total_count }})</span></a>
+                    {%- else -%}
+                          <a class="dib cg chp br__40" href="/blogs/{{blog_handle}}/tagged/{{ tag | handleize }}">{{ tag }} <span class="blg_count">({{ tag.total_count }})</span></a>
+                    {%- endif -%}
+                {%- endfor -%}
+             </div>
+        {%- elsif section.blocks.size > 0 -%}{%- assign all_tags = blog.all_tags -%}
+             <div class="nt_filter_block portfolio_filter fwm tc mb__25">
+                <a class="dib cg chp br__40{% unless current_tags %} selected{% endunless %}" href="/blogs/{{blog_handle}}">{{ 'blogs.portfolio.filter_all' | t }}</a>
+                {%- for block in section.blocks -%}
+                    {%- assign tag = block.settings.title -%}
+                    {%- if current_tags contains tag -%}
+                          <a class="dib cg chp br__40 selected" href="/blogs/{{blog_handle}}">{{ tag }}</a>
+                    {%- elsif all_tags contains tag -%}
+                          <a class="dib cg chp br__40" href="/blogs/{{blog_handle}}/tagged/{{ tag | handleize }}">{{ tag }}</a>
+                    {%- endif -%}
+                {%- endfor -%}
+             </div>
+        {%- endif -%}
+     {%- endif -%}
+     <div class="nt_svg_loader dn"></div>
+     {%- if shop_des == 'masonry' -%}{%- assign rtl = settings.use_rtl -%}
+	     <div class="articles products art_des{{art_des}} nt_products_holder row des_cnt_{{se_stts.des_cnt}} {{se_stts.image_size}} {{se_stts.image_ratio}} position_{{se_stts.image_position}}{% if sett_equal %} equal_nt{% endif %}  js_isotope nt_isotope" data-isotope='{ "itemSelector": ".post_nt_loop", "layoutMode": "masonry","columnWidth":".grid-sizer","rtl": {{rtl}} }'>
+	     	<div class="col-lg-{{col}} col-md-{{col_tb}} col-{{col_mb}} grid-sizer"></div>
+	     	{%- if art_des == '1' or art_des == '1 tc' -%}
+	     	   {%- for article in blog.articles -%}{%- render "article_loop",article:article,date:date,by:by,on:on,show_au:show_au,show_dt:show_dt,show_cm:show_cm,col:col,col_tb:col_tb,col_mb:col_mb,sett_equal:sett_equal -%}{%- endfor -%}<!--split-->
+	     	{%- elsif art_des == '3' -%}
+           {%- for article in blog.articles -%}{%- render "article_loop2",article:article,date:date,by:by,on:on,show_au:show_au,show_dt:show_dt,show_cm:show_cm,col:col,col_tb:col_tb,col_mb:col_mb,sett_equal:sett_equal,show_rm:show_rm,show_cnt:show_cnt -%}{%- endfor -%}<!--split-->
+        {%- elsif art_des == '4' -%}
+           {%- for article in blog.articles -%}{%- render "article_loop3",article:article,date:date,by:by,on:on,show_au:show_au,show_dt:show_dt,show_cm:show_cm,col:col,col_tb:col_tb,col_mb:col_mb,sett_equal:sett_equal,show_rm:show_rm,show_cnt:show_cnt,read_more:read_more,show_tg:show_tg -%}{%- endfor -%}<!--split-->
+        {%- else -%}
+	     	   {%- for article in blog.articles -%}{%- render "article_loop1",article:article,date:date,by:by,on:on,show_au:show_au,show_dt:show_dt,show_cm:show_cm,col:col,col_tb:col_tb,col_mb:col_mb,sett_equal:sett_equal,show_rm:show_rm,show_cnt:show_cnt -%}{%- endfor -%}<!--split-->
+	     	{%- endif -%}
+	     </div>
+     {%- else -%}
+	     <div class="articles products art_des{{art_des}} nt_products_holder row des_cnt_{{se_stts.des_cnt}} {{se_stts.image_size}} {{se_stts.image_ratio}} position_{{se_stts.image_position}}{% if sett_equal %} equal_nt{% endif %}">
+        {%- if art_des == '1' or art_des == '1 tc' -%}
+           {%- for article in blog.articles -%}{%- render "article_loop",article:article,date:date,by:by,on:on,show_au:show_au,show_dt:show_dt,show_cm:show_cm,col:col,col_tb:col_tb,col_mb:col_mb,sett_equal:sett_equal -%}{%- endfor -%}<!--split-->
+        {%- elsif art_des == '3' -%}
+           {%- for article in blog.articles -%}{%- render "article_loop2",article:article,date:date,by:by,on:on,show_au:show_au,show_dt:show_dt,show_cm:show_cm,col:col,col_tb:col_tb,col_mb:col_mb,sett_equal:sett_equal,show_rm:show_rm,show_cnt:show_cnt -%}{%- endfor -%}<!--split-->
+        {%- elsif art_des == '4' -%}
+           {%- for article in blog.articles -%}{%- render "article_loop3",article:article,date:date,by:by,on:on,show_au:show_au,show_dt:show_dt,show_cm:show_cm,col:col,col_tb:col_tb,col_mb:col_mb,sett_equal:sett_equal,show_rm:show_rm,show_cnt:show_cnt,read_more:read_more,show_tg:show_tg -%}{%- endfor -%}<!--split-->
+        {%- else -%}
+           {%- for article in blog.articles -%}{%- render "article_loop1",article:article,date:date,by:by,on:on,show_au:show_au,show_dt:show_dt,show_cm:show_cm,col:col,col_tb:col_tb,col_mb:col_mb,sett_equal:sett_equal,show_rm:show_rm,show_cnt:show_cnt -%}{%- endfor -%}<!--split-->
+        {%- endif -%}
+	     </div>
+	 {%- endif -%}
+    {%- if paginate.pages > 1 -%}
+    <div class="products-footer tc mt__40 mb__60">
+      {%- if paginate.next.is_link and use_pagination != 'default' -%}
+      {%- if se_stts.use_bar_lm -%}{%- assign results_count = blog.articles_count -%}
+          <div class="js_progress_bar" data-tt='{{results_count}}'>
+            {%- assign current_pr_size = blog.articles.size | plus:paginate.current_offset -%}
+         <p class="mg__0 progress_txt fs__15">{{ 'collections.general.bar_with_count_html' | t:current_count:current_pr_size,total_count:results_count}}</p>
+        <div class="progress_bar pr oh"><div class="current_bar pa t__0 r__0 l__0 b__0" style="width: {{current_pr_size | times:100.0 | divided_by: results_count}}%"></div></div>
+      </div>
+      {%- endif -%}
+      <a data-get='{{ paginate.next.url }}' href="{{ blog.url }}" data-id="{{section.id}}" class="pr nt_cat_lm button button_{{se_stts.btn_style}} br_rd_{{se_stts.btn_rd}} btn_icon_{{se_stts.btn_icon}}">{{ 'blogs.section.load_more' | t }}</a>
+      {%- else -%}
+      {%- render 'pagination', paginate: paginate,class:'paginate_ajax',style:'style_2' -%}
+      {%- endif -%}
+    </div>
+    {%- endif -%}
+
+	{%- style -%}
+	  .portfolio_filter a {
+	    height: 40px;
+	    line-height: 40px;
+	    border: 1px solid transparent;
+	    padding: 0 20px;
+	  }
+	  .portfolio_filter a:focus,.portfolio_filter a:hover {
+	    color: #222;
+	  }
+	  .portfolio_filter a.selected {
+	    color: #222;border-color: #222;
+	  }
+	  .blg_count_false .blg_count{display: none}
+	.post_1>a.mb__15 {margin-bottom:25px}.post_nt_loop.post_2:hover a>.lazyloaded {opacity: 1;}.nt_single_blog .post_nt_loop {margin-bottom: {{se_stts.space}}px;}
+	{%- if art_des == '4' -%}
+		{%- assign overlay = se_stts.overlay | divided_by: 100.0 -%}
+		.inside-thumb {
+		    left: 30px;
+		    right: 30px;
+		    bottom: 30px;
+		    background: {{ se_stts.bg | color_modify: 'alpha', overlay }};
+		    padding: 20px;
+		}
+		.inside-thumb .post-meta,
+		.inside-thumb .post-time {
+			color: {{ se_stts.cl2}};
+		}
+		.inside-thumb a:not(:hover),.inside-thumb .post-meta .cw {
+		    color: {{ se_stts.cl}};
+		}
+		.des_cnt_1 .post-content {
+		    background: #f6f6f8;
+		    padding: 25px;
+        text-align:center
+		}
+		.des_cnt_2 .post-content {margin-top: 35px;}
+	{%- endif -%}
+	{%- endstyle -%}
+
+{%- endif -%}
+{%- endpaginate -%}
+
+{%- schema -%}
+  {
+    "name": "Blog Pages",
+    "class": "nt_section type_isotope",
+    "settings": [
+      {
+        "type": "header",
+        "content": "== General Settings"
+      },
+      {
+        "type": "select",
+        "id": "shop_des",
+        "options": [
+          {
+            "value": "default",
+            "label": "Default"
+          },
+          {
+            "value": "masonry",
+            "label": "Masonry"
+          }
+        ],
+        "label": "Layout design",
+        "default": "default"
+      },
+      {
+        "type": "select",
+        "id": "art_des",
+        "options": [
+          {
+            "value": "1",
+            "label": "Design 1"
+          },
+          {
+            "value": "1 tc",
+            "label": "Design 1 (center)"
+          },
+          {
+            "value": "2",
+            "label": "Design 2"
+          },
+          {
+            "value": "2 tc",
+            "label": "Design 2 (center)"
+          },
+          {
+            "value": "3",
+            "label": "Design 3"
+          },
+          {
+            "value": "4",
+            "label": "Design 4"
+          }
+        ],
+        "label": "Articles design",
+        "default": "1"
+      },
+      {
+        "type": "range",
+        "id": "limit",
+        "min": 1,
+        "max": 50,
+        "step": 1,
+        "label": "Articles per page",
+        "info": "Number of articles per page",
+        "default": 5
+      },
+      {
+        "type": "range",
+        "id": "space",
+        "min": 30,"max": 100,"step": 5,
+        "unit": "px",
+        "label": "Space between articles",
+        "default": 40
+      },
+      {
+        "type": "select",
+        "id": "use_pagination",
+        "label": "Pagination",
+        "default": "default",
+        "options": [
+          {
+            "value": "default",
+            "label": "Default"
+          },
+          {
+            "value": "more",
+            "label": "Load more button"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "use_bar_lm",
+        "label": "Show progress bar?",
+        "info": "Only active when you use 'Load more'",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "btn_rd",
+        "label": "Button pagination radius?",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "btn_style",
+        "label": "Button pagination style",
+        "default": "default",
+        "options": [
+          {
+            "value": "default",
+            "label": "Default"
+          },
+          {
+            "value": "primary",
+            "label": "Primary"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "date",
+        "options": [
+          {
+            "value": "abbreviated_date",
+            "label": "Apr 19, 1994"
+          },
+          {
+            "value": "basic",
+            "label": "4/19/1994"
+          },
+          {
+            "value": "date",
+            "label": "April 19, 1994"
+          }
+        ],
+        "label": "Date format",
+        "info":"different format options display for various languages.",
+        "default": "date"
+      },
+      {
+        "type": "select",
+        "id": "col_pr",
+        "label": "Articles columns (desktop)",
+        "info": "How many articles you want to show per row",
+        "default": "6",
+        "options": [
+          {
+            "value": "12",
+            "label": "1"
+          },
+          {
+            "value": "6",
+            "label": "2"
+          },
+          {
+            "value": "4",
+            "label": "3"
+          },
+          {
+            "value": "3",
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_pr_tb",
+        "label": "Articles columns (tablet)",
+        "default": "6",
+        "options": [
+          {
+            "value": "12",
+            "label": "1"
+          },
+          {
+            "value": "6",
+            "label": "2"
+          },
+          {
+            "value": "4",
+            "label": "3"
+          },
+          {
+            "value": "3",
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_pr_mb",
+        "label": "Articles columns (mobile)",
+        "default": "12",
+        "options": [
+          {
+            "value": "12",
+            "label": "1"
+          },
+          {
+            "value": "6",
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "show_au",
+        "label": "Show author?",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_dt",
+        "label": "Show date?",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_cm",
+        "label": "Show comment?",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "== Articles Design 4",
+        "info": "Only active when you use Articles Design 4"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_tg",
+        "label": "Show tag?",
+        "info": "Show tag categories. Will show when article tag exists",
+        "default": true
+      },
+      {
+        "type": "color",
+        "id": "cl",
+        "label": "Color Text",
+        "default": "#fff"
+      },
+      {
+        "type": "color",
+        "id": "cl2",
+        "label": "Color Text 2",
+        "default": "#878787"
+      },
+      {
+        "type": "color",
+        "id": "bg",
+        "label": "Background color",
+        "default": "#000"
+      },
+      {
+        "type": "range",
+        "id": "overlay",
+        "label": "Background Opacity",
+        "default": 90,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%"
+      },
+      {
+        "type": "paragraph",
+        "content": "—————————————————"
+      },
+      {
+        "type": "select",
+        "id": "des_cnt",
+        "label": "Content Design",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "Design 1"
+          },
+          {
+            "value": "2",
+            "label": "Design 2"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "== Design Image"
+      },
+      {
+        "type": "checkbox",
+        "id": "use_eq_height",
+        "label": "Use equal height images?",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "image_ratio",
+        "label": "Aspect Ratio",
+        "default": "ratio4_3",
+        "info": "Aspect Ratio Custom will settings in General panel.",
+        "options": [
+          {
+            "group": "Landscape",
+            "value": "ratio2_1",
+            "label": "2:1"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio16_9",
+            "label": "16:9"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio8_5",
+            "label": "8:5"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio3_2",
+            "label": "3:2"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio4_3",
+            "label": "4:3"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio_nt",
+            "label": "Ratio ASOS"
+          },
+          {
+            "group": "Squared",
+            "value": "ratio1_1",
+            "label": "1:1"
+          },
+          {
+            "group": "Portrait",
+            "value": "ratio2_3",
+            "label": "2:3"
+          },
+          {
+            "group": "Portrait",
+            "value": "ratio1_2",
+            "label": "1:2"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus1",
+            "label": "Ratio Custom 1"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus2",
+            "label": "Ratio Custom 2"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus3",
+            "label": "Ratio Custom 3"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus4",
+            "label": "Ratio Custom 4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "image_size",
+        "label": "Image Size",
+        "default": "nt_cover",
+        "options": [
+          {
+            "value": "nt_cover",
+            "label": "Full"
+          },
+          {
+            "value": "nt_contain",
+            "label": "Auto"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "image_position",
+        "info": "The first value is the horizontal position and the second value is the vertical.",
+        "options": [
+          {
+            "value": "default",
+            "label": "Default"
+          },
+          {
+            "value": "1",
+            "label": "Left Top"
+          },
+          {
+            "value": "2",
+            "label": "Left Center"
+          },
+          {
+            "value": "3",
+            "label": "Left Bottom"
+          },
+          {
+            "value": "4",
+            "label": "Right Top"
+          },
+          {
+            "value": "5",
+            "label": "Right Center"
+          },
+          {
+            "value": "6",
+            "label": "Right Bottom"
+          },
+          {
+            "value": "7",
+            "label": "Center Top"
+          },
+          {
+            "value": "8",
+            "label": "Center Center"
+          },
+          {
+            "value": "9",
+            "label": "Center Bottom"
+          }
+        ],
+        "label": "Image Position",
+        "default": "8"
+      },
+      {
+        "type": "header",
+        "content": "== Show filter by tag"
+      },
+      {
+        "type": "radio",
+        "id": "source",
+        "default": "0",
+        "label": "Show all \/ Manually block",
+        "options": [
+          {
+            "value": "0",
+            "label": "Disable"
+          },
+          {
+            "value": "1",
+            "label": "Show all"
+          },
+          {
+            "value": "2",
+            "label": "Manually block"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "count",
+        "label": "Show count?",
+        "info": "Count only show all. not working manually block",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "== Manually block:"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "tag",
+        "name": "Tag",
+        "limit": 10,
+        "settings": [
+           {
+             "type": "text",
+             "id": "title",
+             "label": "Tag Name"
+           }
+         ]
+       }
+    ]
+  }
+{% endschema %}

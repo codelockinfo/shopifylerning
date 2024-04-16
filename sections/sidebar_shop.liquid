@@ -1,0 +1,914 @@
+<div class="h3 mg__0 tu bgb cw visible-sm fs__16 pr">{{ 'collections.general.sidebar' | t }}<i class="close_pp pegk pe-7s-close fs__40 ml__5"></i></div>
+<div class="cat_shop_wrap">
+<div class="cat_fixcl-scroll">
+<div class="cat_fixcl-scroll-content css_ntbar">
+<div class="row no-gutters wrap_filter">{%- assign col_class= '12' -%} 
+{%- assign ck_hide_all = true -%}
+{%- if section.blocks.size > 0 -%}
+{%- if collection.all_tags.size > 0 -%}
+  {%- if current_tags -%}
+     {%- assign tags_dow = collection.tags | join: ',' | downcase -%}{%- assign tags_dow_arr = tags_dow | split:',' -%}{%- assign current_arr = current_tags | join: ',' | downcase -%}{%- assign current_tags = current_arr | split:',' -%}
+  {%- else -%}
+     {%- assign tags_dow = collection.all_tags | join: ',' | downcase -%}{%- assign tags_dow_arr = tags_dow | split:',' -%}
+  {%- endif -%}
+{%- endif -%}
+
+{%- if settings.shop_filters and settings.sort_enable -%}{%- assign ck_hide_all = false -%}
+  {%- assign sort_by = collection.sort_by | default: collection.default_sort_by -%}{%- assign sr_url = canonical_url -%}
+   <div class="col-12 col-md-{{col_class}} widget hidden_sortby_{{settings.use_hidden_cat}}">
+      <h5 class="widget-title">{{ 'collections.sorting.title' | t }}</h5>
+      <div class="loke_scroll">
+         <ul class="nt_filter_block nt_filter_sortby">
+            {%- for option in collection.sort_options -%}<li {%- if sort_by == option.value %} class="active"{% endif %}><a href="{{ sr_url | sort_by:option.value }}">{{  option.name }}</a></li>{%- endfor -%}
+         </ul>
+      </div>
+   </div>
+{%- endif -%}
+  {%- for block in section.blocks -%}
+     {%- case block.type -%}
+        {%- when 'category' -%}
+            <div class="col-12 col-md-{{col_class}} widget widget_product_categories cat_count_{{block.settings.count}}">
+               <h5 class="widget-title">{{ block.settings.title }}</h5>
+               <ul class="product-categories">
+                  {%- case block.settings.cat_source -%}
+                     {%- when '1' -%}
+                        {%- if collections.size > 0 -%}{%- assign ck_hide_all = false -%}
+                           {%- for category in collections -%}
+                              {%- if category.products.size > 0 -%}
+                                 <li class="cat-item{%- if collection.handle == category.handle %} current-cat{%- endif -%}"><a href="{{ category.url }}">{{category.title}}</a> <span class="cat_count">({{ category.all_products_count }})</span></li>
+                              {%- endif -%}
+                           {%- endfor -%}
+                        {%- endif -%}
+                     {%- else -%}
+                        {%- assign top_link_list = block.settings.cat_link_list -%}
+                        {%- for link in linklists[top_link_list].links -%}
+                            {%- if link.type == 'collection_link' or link.type == 'catalog_link' -%}{%- assign ck_hide_all = false -%}
+                              {%- if link.links != blank -%}
+                                   <li class="pr menu_nested cat-item{%- if link.active or link.child_active %} current-cat{%- endif -%}">
+                                      <a class="db has_cats_toggle pr__25" href="{{ link.url }}">{{link.title}} <span class="cat_count">({{ link.object.all_products_count | default:shop.products_count }})</span></a>
+                                      <ul class="sub-menu children dn">
+                                         {%- for child_link in link.links -%}
+                                             {%- if child_link.type == 'collection_link' or child_link.type == 'catalog_link' -%}
+                                             
+                                               {%- if child_link.links != blank -%}
+                                               <li class="pr menu_nested2 cat-item{%- if child_link.active or child_link.child_active %} current-cat{%- endif -%}">
+                                                  <a class="db has_cats_toggle_ pr__25" href="{{ child_link.url }}">{{child_link.title}} <span class="cat_count">({{ child_link.object.all_products_count | default:shop.products_count }})</span></a>
+                                                  <ul class="sub-menu children dn">
+                                                    {%- for third_link in child_link.links -%}
+                                                     {%- if third_link.type == 'collection_link' or third_link.type == 'catalog_link' -%}
+                                                     <li class="cat-item{%- if third_link.active %} current-cat{%- endif -%}">
+                                                        <a href="{{ third_link.url }}">{{third_link.title}} <span class="cat_count">({{ third_link.object.all_products_count | default:shop.products_count }})</span></a>
+                                                     </li>
+                                                     {%- endif -%}
+                                                    {%- endfor -%}
+                                                  </ul>
+                                                  <div class="btn_cats_toggle"><i class="facl facl-angle-down"></i></div>
+                                               </li>
+                                               {%- else -%}
+                                               <li class="cat-item{%- if child_link.active %} current-cat{%- endif -%}">
+                                                  <a href="{{ child_link.url }}">{{child_link.title}} <span class="cat_count">({{ child_link.object.all_products_count | default:shop.products_count }})</span></a>
+                                               </li>
+                                               {%- endif -%}
+
+                                             {%- endif -%}
+                                          {%- endfor -%}
+                                      </ul>
+                                      <div class="btn_cats_toggle"><i class="facl facl-angle-down"></i></div>
+                                    </li>
+                              {%- else -%}
+                                <li class="cat-item{%- if link.active %} current-cat{%- endif -%}"><a href="{{ link.url }}">{{link.title}} <span class="cat_count">({{ link.object.all_products_count |default:shop.products_count}})</a></span></li>
+                              {%- endif -%}
+                            {%- endif -%}
+                        {%- endfor -%}
+                  {%- endcase -%}
+               </ul>
+            </div>
+        {%- when 'collection' -%}
+            {%- liquid
+             assign on_sale_txt = 'products.product.on_sale' | t
+             assign save_js = 'products.product.save_js' | t: saved_amount:'saved_amount' -%}
+            <div class="col-12 col-md-{{col_class}} widget widget_product_list">
+               <h5 class="widget-title">{{ block.settings.title }}</h5>
+               {%- if block.settings.collection == blank -%}
+                  <p class="mg__0 mb__30">{{ 'homepage.onboarding.no_content' | t }}</p>
+               {%- else -%}{%- assign ck_hide_all = false -%}
+               <div class="product_list_widget">
+                  {%- for product in collections[block.settings.collection].products limit: block.settings.limit -%}
+                     {%- render 'pr_group_loop',product:product,c:collections[block.settings.collection],on_sale_txt:on_sale_txt,save_js:save_js -%}
+                  {%- endfor -%}
+               </div>
+               {%- endif -%}
+            </div>
+        {%- when 'post' -%}{%- assign date = block.settings.date -%}
+            <div class="col-12 col-md-{{col_class}} widget widget_post_list">
+               <h5 class="widget-title">{{ block.settings.title }}</h5>
+               {%- if block.settings.blog == blank -%}
+                  <p class="mg__0 mb__30">{{ 'homepage.onboarding.no_content' | t }}</p>
+               {%- else -%}{%- assign ck_hide_all = false -%}
+               <div class="post_list_widget">
+                  {%- for article in blogs[block.settings.blog].articles limit: block.settings.limit -%}
+                     {%- render 'ar_group_loop',article:article,date:date -%}
+                  {%- endfor -%}
+               </div>
+               {%- endif -%}
+            </div>
+        {%- when 'instagram' -%}{%- assign ck_hide_all = false -%}{%- assign col = block.settings.col_pr -%}{%- assign col_tb = block.settings.col_pr_tb -%}{%- assign col_mb = block.settings.col_pr_mb -%}
+            <div class="col-12 col-md-{{col_class}} widget widget_instagram">
+               <h5 class="widget-title">{{ block.settings.title }}</h5>
+               <div class="nt_instagram_wrap row equal_nt ins_spaces_{{block.settings.space}} ins_rounded_{{block.settings.rounded_ins}} nt_cover ratio1_1 position_8 js_nt_ist" data-id='{{col}}{{col_tb}}{{col_mb}}{{block.settings.limit}}{{block.settings.open_link}}' data-cl='{{col}}' data-cltb='{{col_tb}}' data-clmb='{{col_mb}}' data-acc='{{block.settings.acc2 | default:settings.global_acc}}' data-limit='{{block.settings.limit }}' data-target='{{block.settings.open_link}}'><div class="lds_bginfinity pr"></div></div>
+            </div>
+        {%- when 'instagram2' -%}{%- assign ck_hide_all = false -%}{%- assign col = block.settings.col_pr -%}{%- assign col_tb = block.settings.col_pr_tb -%}{%- assign col_mb = block.settings.col_pr_mb -%}
+            <div class="col-12 col-md-{{col_class}} widget widget_instagram">
+               <h5 class="widget-title">{{ block.settings.title }}</h5>
+               <div class="nt_instagram_wrap row equal_nt ins_spaces_{{block.settings.space}} ins_rounded_{{block.settings.rounded_ins}} nt_cover ratio1_1 position_8 js_nt_ist" data-id='{{col}}{{col_tb}}{{col_mb}}{{block.settings.limit}}{{block.settings.open_link}}' data-cl='{{col}}' data-cltb='{{col_tb}}' data-clmb='{{col_mb}}' data-acc='ins_19041994' data-limit='{{block.settings.limit }}' data-target='{{block.settings.open_link}}'><div class="lds_bginfinity pr"></div></div>
+            </div>
+        {%- when 'shipping' -%}{%- assign ck_hide_all = false -%}
+            <div class="col-12 col-md-{{col_class}} widget widget_shipping">
+               <h5 class="widget-title">{{ block.settings.title }}</h5>
+               {%- for i in (1..6) -%}
+                  {%- assign shipping = 'shipping_' | append:i -%}
+                  {%- assign shipping_id = block.settings[shipping] -%}
+                  {%- if shipping_id != blank -%}
+                     {%- assign shipping = shipping_id | replace: ' ,', ',' | replace: ', ', ',' | split: ',' -%}
+                        <div class="row no-gutters nt_shipping tl clearfix mt__30">
+                           {%- if shipping[0] != blank -%}<div class="icon medium cd col-auto"><i class="{%- if shipping[0] contains 'pe-' -%}pegk {{shipping[0]}}{%- else -%}las la-{{shipping[0]}}{%- endif -%}"></i></div>{%- endif -%}
+                           <div class="content col">
+                              <h3 class="title cd tu fs__14 mg__0 mb__5">{{shipping[1]}}</h3>
+                              <p class="mg__0">{{shipping[2]}}</p>
+                           </div>
+                        </div>
+                  {%- endif -%}
+               {%- endfor -%}
+            </div> 
+        {%- when 'html' -%}{%- assign ck_hide_all = false -%}
+            <div class="col-12 col-md-{{col_class}} widget widget_html">
+               <h5 class="widget-title">{{ block.settings.title }}</h5>
+               {%- if block.settings.page != blank -%}{{pages[block.settings.page].content}}{%- endif -%}
+            </div>
+        {%- when 'text' -%}{%- assign ck_hide_all = false -%}
+            <div class="col-12 col-md-{{col_class}} widget widget_text">
+               <h5 class="widget-title">{{ block.settings.title }}</h5>
+               {%- if block.settings.text != blank -%}{{block.settings.text}}{%- endif -%}
+            </div>
+        {%- when 'brand' %}{% if block.settings.hidden_block and tags_dow != blank %}{% continue %}{% endif %}{% render 'block_brand',tags_dow_arr:tags_dow_arr,block:block,col_class:col_class,current_tags:current_tags -%}
+        {%- when 'color' %}{% if block.settings.hidden_block and tags_dow != blank %}{% continue %}{% endif %}{% render 'block_color',tags_dow_arr:tags_dow_arr,block:block,col_class:col_class,current_tags:current_tags -%}
+        {%- else %}{% if block.settings.hidden_block and tags_dow != blank %}{% continue %}{% endif %}{% render 'block_other',tags_dow_arr:tags_dow_arr,block:block,col_class:col_class,current_tags:current_tags -%}
+     {%- endcase -%}
+  {%- endfor -%}
+  {%- if current_tags.size > 1 -%}<div class="col-12 tc mt__20"><a class="button clear_filter_js" href="{{collection.url}}">{{ 'collections.general.clear_filter' | t}}</a></div>{%- endif -%}
+
+{%- else -%}
+<div class="tc">{%- render 'no_blocks'-%}</div>   
+{%- endif -%}
+</div>
+</div>
+</div>
+</div>
+<style>.btn_sidebar {opacity: 1} .type_toolbar_sidebar{display: block}{%- if ck_hide_all -%}.cat_sidebar {opacity: 0;pointer-events: none;}.type_toolbar_sidebar.dn{display: none}{%- endif -%}</style>
+{%- schema -%}
+  {
+    "name": "Sidebar Shop",
+    "class": "nt_ajaxFilter section_sidebar_shop type_instagram",
+    "max_blocks": 56,
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Tags must start with group- and look like group-TAG-NAME where TAG-NAME can be anything you choose, group is a key word."
+      },
+      {
+        "type": "paragraph",
+        "content": "Works: color-Blue or color_Blue"
+      },
+      {
+        "type": "paragraph",
+        "content": "Doesn't work: colors-Blue, colors_Blue, colorBlue"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "category",
+        "name": "Categories",
+        "limit": 1,
+        "settings": [
+         { 
+          "type":"text",
+          "id":"title",
+          "label":"Categories",
+          "default":"Product Categories"
+          },
+          {
+           "type": "select",
+           "id": "cat_source",
+           "label": "Show all \/ Show a link list",
+           "options": [
+             {
+               "value": "1",
+               "label": "Show all"
+             },
+             {
+               "value": "2",
+               "label": "Show a link list"
+             }
+           ]
+         },
+          {
+           "type": "link_list",
+           "id": "cat_link_list",
+           "label": "Choose a link list"
+         },
+          {
+            "type": "checkbox",
+            "id": "count",
+            "label": "Show count?",
+            "default": true
+          }
+        ]
+      },
+      {
+        "type": "collection",
+        "name": "Featured Products",
+        "settings": [
+         {
+          "type":"text",
+          "id":"title",
+          "label":"Title",
+          "default":"Sale Products"
+          },
+          {
+           "type": "collection",
+           "id": "collection",
+           "label": "Collection to use"
+         },
+          {
+            "type": "range",
+            "id": "limit",
+            "min": 1,
+            "max": 20,
+            "step": 1,
+            "label": "Number of products to show",
+            "default": 3
+          }
+        ]
+      },
+      {
+        "type": "post",
+        "name": "Recent Post",
+        "settings": [
+         {
+          "type":"text",
+          "id":"title",
+          "label":"Title",
+          "default":"Recent Post"
+          },
+          {
+           "type": "blog",
+           "id": "blog",
+           "label": "Blog to use"
+         },
+        {
+          "type": "select",
+          "id": "date",
+          "options": [
+            {
+              "value": "abbreviated_date",
+              "label": "Apr 19, 1994"
+            },
+            {
+              "value": "basic",
+              "label": "4/19/1994"
+            },
+            {
+              "value": "date",
+              "label": "April 19, 1994"
+            }
+          ],
+          "label": "Date format",
+          "info":"different format options display for various languages.",
+          "default": "date"
+        },
+          {
+            "type": "range",
+            "id": "limit",
+            "min": 1,
+            "max": 20,
+            "step": 1,
+            "label": "Number of products to show",
+            "default": 3
+          }
+        ]
+      },
+      {
+        "type": "instagram",
+        "name": "Instagram feed",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Instagram"
+          },
+          {
+            "type": "text",
+            "id": "acc2",
+            "label": "User's photos via GraphQL (New Instagram API):",
+            "info":"If none is set, General Instagram Access Token is used. [How to get your Instagram Access Token via GraphQL API.](https://gecko5-docs.the4.co/installation/how-to-get-instagram-access-token)"
+          },
+          {
+            "type": "range",
+            "id": "limit",
+            "min": 1,
+            "max": 25,
+            "step": 1,
+            "unit": "img",
+            "label": "Number of photos",
+            "default": 9
+          },
+          {
+            "type": "select",
+            "id": "open_link",
+            "options": [
+              {
+                "value": "_self",
+                "label": "Current window (_self)"
+              },
+             {
+                "value": "_blank",
+                "label": "New window (_blank)"
+              }
+            ],
+            "label": "Open link in",
+            "default": "_blank"
+          },
+          {
+           "type": "select",
+           "id": "space",
+           "options": [
+             {
+               "value": "6",
+               "label": "6"
+             },
+             {
+               "value": "3",
+               "label": "3"
+             },
+             {
+               "value": "2",
+               "label": "2"
+             },
+             {
+               "value": "0",
+               "label": "0"
+             }
+           ],
+           "label": "spaces between photos",
+           "default": "2"
+          },
+          {
+            "type": "select",
+            "id": "rounded_ins",
+            "label": "Rounded corners for images",
+            "default": "0",
+            "options": [
+              {
+                "value": "0",
+                "label": "Disable"
+              },
+              {
+                "value": "1",
+                "label": "Style 1"
+              },
+              {
+                "value": "2",
+                "label": "Style 2"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "col_pr",
+            "label": "Photos per row",
+            "info": "How many photos you want to show per row",
+            "default": "4",
+            "options": [
+              {
+                "value": "6",
+                "label": "2"
+              },
+              {
+                "value": "4",
+                "label": "3"
+              },
+              {
+                "value": "3",
+                "label": "4"
+              },
+              {
+                "value": "15",
+                "label": "5"
+              },
+              {
+                "value": "2",
+                "label": "6"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "col_pr_tb",
+            "label": "Photos per row Tablet",
+            "default": "4",
+            "options": [
+              {
+                "value": "6",
+                "label": "2"
+              },
+              {
+                "value": "4",
+                "label": "3"
+              },
+              {
+                "value": "3",
+                "label": "4"
+              },
+              {
+                "value": "15",
+                "label": "5"
+              },
+              {
+                "value": "2",
+                "label": "6"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "col_pr_mb",
+            "label": "Photos per row Mobile",
+            "default": "4",
+            "options": [
+              {
+                "value": "12",
+                "label": "1"
+              },
+              {
+                "value": "6",
+                "label": "2"
+              },
+              {
+                "value": "4",
+                "label": "3"
+              },
+              {
+                "value": "3",
+                "label": "4"
+              },
+              {
+                "value": "15",
+                "label": "5"
+              },
+              {
+                "value": "2",
+                "label": "6"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "instagram2",
+        "name": "Instagram feed via APP",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "paragraph",
+            "content": "Firstly, you need to install [Section Feed App](https://apps.shopify.com/section-feed-by-maestrooo) to use this section"
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Instagram"
+          },
+          {
+            "type": "range",
+            "id": "limit",
+            "min": 1,
+            "max": 25,
+            "step": 1,
+            "unit": "img",
+            "label": "Number of photos",
+            "default": 9
+          },
+          {
+            "type": "select",
+            "id": "open_link",
+            "options": [
+              {
+                "value": "_self",
+                "label": "Current window (_self)"
+              },
+             {
+                "value": "_blank",
+                "label": "New window (_blank)"
+              }
+            ],
+            "label": "Open link in",
+            "default": "_blank"
+          },
+          {
+           "type": "select",
+           "id": "space",
+           "options": [
+             {
+               "value": "6",
+               "label": "6"
+             },
+             {
+               "value": "3",
+               "label": "3"
+             },
+             {
+               "value": "2",
+               "label": "2"
+             },
+             {
+               "value": "0",
+               "label": "0"
+             }
+           ],
+           "label": "spaces between photos",
+           "default": "2"
+          },
+          {
+            "type": "select",
+            "id": "rounded_ins",
+            "label": "Rounded corners for images",
+            "default": "0",
+            "options": [
+              {
+                "value": "0",
+                "label": "Disable"
+              },
+              {
+                "value": "1",
+                "label": "Style 1"
+              },
+              {
+                "value": "2",
+                "label": "Style 2"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "col_pr",
+            "label": "Photos per row",
+            "info": "How many photos you want to show per row",
+            "default": "4",
+            "options": [
+              {
+                "value": "6",
+                "label": "2"
+              },
+              {
+                "value": "4",
+                "label": "3"
+              },
+              {
+                "value": "3",
+                "label": "4"
+              },
+              {
+                "value": "15",
+                "label": "5"
+              },
+              {
+                "value": "2",
+                "label": "6"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "col_pr_tb",
+            "label": "Photos per row Tablet",
+            "default": "4",
+            "options": [
+              {
+                "value": "6",
+                "label": "2"
+              },
+              {
+                "value": "4",
+                "label": "3"
+              },
+              {
+                "value": "3",
+                "label": "4"
+              },
+              {
+                "value": "15",
+                "label": "5"
+              },
+              {
+                "value": "2",
+                "label": "6"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "col_pr_mb",
+            "label": "Photos per row Mobile",
+            "default": "4",
+            "options": [
+              {
+                "value": "12",
+                "label": "1"
+              },
+              {
+                "value": "6",
+                "label": "2"
+              },
+              {
+                "value": "4",
+                "label": "3"
+              },
+              {
+                "value": "3",
+                "label": "4"
+              },
+              {
+                "value": "15",
+                "label": "5"
+              },
+              {
+                "value": "2",
+                "label": "6"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "shipping",
+        "name": "SHIPPING DELIVERY",
+        "limit": 1,
+        "settings": [
+         {
+          "type":"text",
+          "id":"title",
+          "label":"Title",
+          "default":"Shipping & Delivery"
+         },
+        {
+          "type": "paragraph",
+          "content": "Example: pe-7s-car,Save up to 20%,limited time [Get icons Pe icon](http://themes-pixeden.com/font-demos/7-stroke/index.html)"
+        },
+        {
+          "type": "paragraph",
+          "content": "Example: phone,Save up to 20%,limited time [Get icons Line awesome](https://icons8.com/line-awesome)"
+        },
+         {
+           "type": "textarea",
+           "id": "shipping_1",
+           "label":"Shipping Block 1",
+           "default":"truck,FREE SHIPPING,Free shipping for all US order"
+         },
+         {
+           "type": "textarea",
+           "id": "shipping_2",
+           "label":"Shipping Block 2",
+           "default":"headset,SUPPORT 24/7,We support 24 hours a day"
+         },
+         {
+           "type": "textarea",
+           "id": "shipping_3",
+           "label":"Shipping Block 3",
+           "default":"exchange-alt,30 DAYS RETURN,You have 30 days to return"
+         },
+         {
+           "type": "textarea",
+           "id": "shipping_4",
+           "label":"Shipping Block 4"
+         },
+         {
+           "type": "textarea",
+           "id": "shipping_5",
+           "label":"Shipping Block 5"
+         },
+         {
+           "type": "textarea",
+           "id": "shipping_6",
+           "label":"Shipping Block 6"
+         }
+        ]
+      },
+      {
+        "type": "html",
+        "name": "Custom HTML",
+        "settings": [
+         {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Custom HTML"
+          },
+          {
+            "type": "page",
+            "id": "page",
+            "label": "Content page"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "name": "Text",
+        "settings": [
+            {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Talk about your brand"
+            },
+            {
+            "type": "richtext",
+            "id": "text",
+            "label": "Text",
+            "default": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>"
+            }
+         ]
+      },
+      {
+        "type": "brand",
+        "name": "By Brand",
+        "limit": 1,
+        "settings": [
+          {
+          "type": "checkbox",
+          "id": "hidden_block",
+          "label": "Hidden block?",
+          "info": "if checked block will be set to hidden.",
+          "default": false
+        },
+          { 
+          "type":"text",
+          "id":"title",
+          "label":"Filter by categories title",
+          "default":"By Brand"
+          },
+          {
+           "type": "textarea",
+           "id": "arra_enter",
+           "label": "Shop by tags list",
+           "info": "Separate by a comma, i.e \"Tag1, Tag2, Tag3\"."
+         },
+         {
+          "type": "checkbox",
+          "id": "use_auto_filter_tag",
+          "label": "Use auto filter groups?",
+          "default": false
+         },
+         { 
+          "type":"text",
+          "id":"key",
+          "label":"Filter key word",
+          "placeholder": "Vendor",
+          "default":"Vendor"
+          },
+          {
+           "type": "select",
+           "id": "style",
+           "default":"ck",
+           "label": "Design block filter:",
+           "options": [
+             {
+               "value": "df",
+               "label": "Deafult"
+             },
+             {
+               "value": "ck",
+               "label": "Checkbox"
+             },
+             {
+               "value": "tag",
+               "label": "Tag"
+             }
+           ]
+         },
+         {
+          "type": "paragraph",
+          "content": "Create tag filter groups in Shopify. This snippet is designed to group and separate out collection tags. Use admin extensions"
+          }
+        ]
+      },
+      {
+        "type": "color",
+        "name": "By Color",
+        "limit": 1,
+        "settings": [
+          {
+          "type": "checkbox",
+          "id": "hidden_block",
+          "label": "Hidden block?",
+          "info": "if checked block will be set to hidden.",
+          "default": false
+        },
+          { 
+          "type":"text",
+          "id":"title",
+          "label":"Filter by categories title",
+          "default":"By Color"
+          },
+          {
+           "type": "textarea",
+           "id": "arra_enter",
+           "label": "Shop by tags list",
+           "default":"Red,White,Brown,Blue, Black, Green, Grey, Sliver,Pink",
+           "info": "Separate by a comma, i.e \"Tag1, Tag2, Tag3\"."
+         },
+         {
+          "type": "checkbox",
+          "id": "use_auto_filter_tag",
+          "label": "Use auto filter groups?",
+          "default": false
+         },
+         { 
+          "type":"text",
+          "id":"key",
+          "label":"Filter key word",
+          "placeholder": "Color",
+          "default":"Color"
+          },
+         {
+          "type": "paragraph",
+          "content": "Create tag filter groups in Shopify. This snippet is designed to group and separate out collection tags. Use admin extensions"
+          }
+        ]
+      },
+      {
+        "type": "other",
+        "name": "By Other",
+        "settings": [
+          {
+          "type": "checkbox",
+          "id": "hidden_block",
+          "label": "Hidden block?",
+          "info": "if checked block will be set to hidden.",
+          "default": false
+        },
+          { 
+          "type":"text",
+          "id":"title",
+          "label":"Filter by categories title",
+          "default":"By Other"
+          },
+           {
+              "type": "textarea",
+              "id": "arra_enter",
+              "label": "Shop by tags list",
+              "info": "Separate by a comma, i.e \"Tag1, Tag2, Tag3\"."
+            },
+          {
+          "type": "checkbox",
+          "id": "use_auto_filter_tag",
+          "label": "Use auto filter groups?",
+          "default": false
+         },
+         { 
+          "type":"text",
+          "id":"key",
+          "label":"Filter key word",
+          "placeholder": "Other",
+          "default":"Other"
+          },
+          {
+           "type": "select",
+           "id": "style",
+           "default":"ck",
+           "label": "Design block filter:",
+           "options": [
+             {
+               "value": "df",
+               "label": "Deafult"
+             },
+             {
+               "value": "ck",
+               "label": "Checkbox"
+             },
+             {
+               "value": "tag",
+               "label": "Tag"
+             }
+           ]
+         },
+         {
+          "type": "paragraph",
+          "content": "Create tag filter groups in Shopify. This snippet is designed to group and separate out collection tags. Use admin extensions"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

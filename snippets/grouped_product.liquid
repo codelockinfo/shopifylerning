@@ -1,0 +1,72 @@
+<style>.group_table td{padding:10px;text-align:center}td.grouped-pr-list-item__thumb img{min-width:50px;max-width:100px}td.grouped-pr-list-item__label{text-align:left}.grouped-pr-list-item__info select,.grouped-pr-list-item__quantity .quantity{border-radius:2px;border-color:#ddd;max-width:200px;display:block;margin-left:auto;margin-right:auto}.grouped-pr-list-item__price ins{text-decoration:none}.fgr_frm .single_add_to_cart_button{min-width:230px!important}.grouped_pr_subtotal{font-size:20px;color:#222;font-weight:500;margin-bottom:10px}@media (max-width:767px){td.grouped-pr-list-item__thumb img{width:65px}.variations_form .quantity{min-width:100px;width:100px}.button.out_stock_groupedr{padding:5px 8px;white-space:nowrap;overflow:hidden;max-width:100px;text-overflow:ellipsis}.fgr_frm .single_add_to_cart_button{width:calc(100% - 50px);width:-webkit-calc(100% - 50px)}}</style>
+{%- liquid
+  assign outofstock = 'products.product.outofstock' | t
+  assign hd_up = 'group-' |append:pid 
+  assign linklists_title = linklists[hd_up].title
+  assign tt_cu_pr = 0
+  assign tt_cp_pr = 0 -%}
+{%- comment %}has_title:Complete your set
+{%- if pid == pr.id or pr.available == false %}{% continue %}{% endif -%}{% endcomment -%}
+{%- form 'product', product, id: "fgr_frm_id", class:'variations_form fgr_frm', novalidate: 'novalidate' -%}
+
+  {%- if linklists_title contains 'has_title:' %}<h3>{{linklists_title |remove:'has_title:' | strip }}</h3>{%- endif -%}
+  <table cellspacing="0" class="grouped-product-list group_table mb__20"> 
+    <tbody>
+      {%- for link in nav_up %}{% assign pr = link.object -%}
+
+          {%- assign currently = pr.selected_or_first_available_variant -%}
+          {%- assign cu_pr = currently.price -%}
+          {%- assign cp_pr = currently.compare_at_price | default:cu_pr -%}
+          {%- assign image = currently.featured_image | default:pr.featured_image -%}
+          {%- assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+          {%- assign cur_var_id = currently.id -%}
+
+          <tr id="grouped_pr_{{pr.id}}" class="grouped-pr-list-item js_item_group item_group_{{pr.available}}">
+             <td class="grouped-pr-list-item__thumb"><a href="{{pr.url}}"><img alt="{{pr.title | escape}}" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ img_url }}" data-widths="[80, 100, 200, 300, 400]" data-sizes="auto" class="js_fgr_img lazyload w__100 lz_op_ef"></a></td>
+             <td class="grouped-pr-list-item__info">
+                 <a href="{{pr.url}}" class="dib mb__10 fwm">{{pr.title}}</a>
+                 {%- if pr.available -%}
+                    {%- assign tt_cu_pr = tt_cu_pr | plus:cu_pr -%}
+                    {%- assign tt_cp_pr = tt_cp_pr | plus:cp_pr -%}
+                    {%- assign available_v = pr.variants | where: "available" -%}
+                    {%- assign available_v_1 = available_v.first -%}
+                   {%- if available_v.size < 2 -%}
+                      <input name="items[][id]" value="{{ available_v_1.id }}" type="hidden">
+                   {%- else -%}
+                      <select name="items[][id]" class="js_grp_vid mb__10">
+                       {%- for variant in available_v -%}
+                          <option data-img="{{variant.image | default:pr.featured_image | img_url: '1x1'}}" data-qty="{% if variant.inventory_management == blank or variant.inventory_policy == 'continue' %}9999{% else %}{{ variant.inventory_quantity }}{% endif %}" data-ogprice="{{variant.compare_at_price |default:variant.price}}" data-price="{{variant.price}}" value="{{ variant.id }}"{% if variant.id == cur_var_id %} selected="selected"{% endif %}>{{ variant.title | escape }}</option>
+                       {%- endfor -%}
+                      </select>
+                   {%- endif -%}
+                 {%- elsif pr.has_only_default_variant == false -%}
+                      <select class="js_grp_vid mb__10">
+                       {%- for variant in pr.variants -%}
+                          <option data-img="{{variant.image | default:pr.featured_image | img_url: '1x1'}}" data-qty="{% if variant.inventory_management == blank or variant.inventory_policy == 'continue' %}9999{% else %}{{ variant.inventory_quantity }}{% endif %}" data-ogprice="{{variant.compare_at_price |default:variant.price}}" data-price="{{variant.price}}" value="{{ variant.id }}"{% if variant.id == cur_var_id %} selected="selected"{% endif %}>{{ variant.title | escape }}</option>
+                       {%- endfor -%}
+                      </select>
+                 {%- endif -%}
+                 <div class="grouped-pr-list-item__price js_price_group" data-price='{{cu_pr}}' data-ogprice='{{cp_pr}}'>{% if cp_pr > cu_pr %}<del>{{cp_pr| money}}</del> <ins>{{cu_pr| money}}</ins>{% else %}{{cu_pr | money}}{% endif %}</div>
+             </td>
+             <td class="grouped-pr-list-item__quantity">
+                {%- if pr.available -%}
+                <div class="quantity pr">
+                  <input type="number" class="input-text qty text tc js_grp_qty qty_pr_js" step="1" min="0" max="{% if currently.inventory_management != null %}{{currently.inventory_quantity}}{% else %}9999{% endif %}" name="items[][quantity]" value="0" size="4" pattern="[0-9]*" inputmode="numeric">
+                  <div class="qty tc fs__14"><button type="button" class="plus db cb pa pd__0 pr__15 tr r__0"><i class="facl facl-plus"></i></button><button type="button" class="minus db cb pa pd__0 pl__15 tl l__0"><i class="facl facl-minus"></i></button></div>
+                </div>
+                {%- else -%}
+                <a rel="nofollow" href="{{pr.url}}" class="button out_stock_groupedr">{{outofstock}}</a>
+                {%- endif -%}
+             </td>
+          </tr>
+       {%- endfor -%}
+    </tbody>
+  </table>
+  <div class="variations_button">
+  <div class="grouped_pr_subtotal">{{'products.product.subtotal' | t}} <span class="grp_subtt_js grouped-pr-list-item__price">{{0| money}}</span></div> 
+  <button type="submit" class="single_add_to_cart_button button alt js_add_group" data-time='{{block.settings.time}}000' data-ani='{{block.settings.ani}}' disabled="disabled"><span>{{'products.product.add_to_cart' | t}}</span></button>
+  {%- render 'nt_add_w',class:"order-3",tooltip:"ttip_nt tooltip_top_left" -%}
+  </div>
+
+{%- endform -%}
+<div class="nt_pr_js op__0" data-include="/products/{{product.handle}}/?view=js{{call_cl}}"></div>

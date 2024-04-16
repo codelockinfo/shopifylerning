@@ -1,0 +1,13 @@
+{%- assign current_time = 'now' | date: "%H%M" | times: 1 -%}
+{%- assign current_day = 'now' | date: "%a" -%}
+{%- assign operation_days = settings.operation_days | split: ',' -%}
+{%- for d in operation_days -%}
+   {%- if d contains current_day -%}
+      {%- assign open_hours = d | split: ':' | last -%}
+      {%- assign open_time = open_hours | split: '-' | first | times: 1 -%}
+      {%- assign close_time = open_hours | split: '-' | last | times: 1 -%}
+      {%- if current_time >= open_time and current_time <= close_time -%}
+        {%- assign checkout_active = true -%}
+      {%- endif -%}
+   {%- endif -%}
+{%- endfor -%}

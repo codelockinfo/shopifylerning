@@ -1,0 +1,299 @@
+{%- comment -%}
+  The contents of the product.liquid template can be found in /sections/pr_summary.liquid
+{%- endcomment -%}
+
+{%- liquid
+  assign img_zoom_size = 'master'
+  assign img_size = product.images.size
+  assign eq_imgtb = settings.ratio_img_main
+  assign sett_pr = settings.design_products
+  assign des_pr_layout = settings.des_pr_layout
+  assign image = product.images[0] | default:settings.placeholder_img
+
+  case sett_pr
+    when '2'
+     assign singles_sp = 'sp-single-2'
+     assign cl_tb = '2'
+    when '3'
+     assign singles_sp = 'sp-single-3'
+     assign cl_tb = '3'
+    when '7'
+     assign singles_sp = 'sp-single-7'
+     assign cl_tb = '7'
+    when '4'
+     assign singles_sp = 'sp-single-4'
+     assign cl_tb = 'bottom'
+    when '5'
+     assign singles_sp = 'sp-single-5'
+     assign cl_tb = 'right'
+    when '6'
+     assign singles_sp = 'sp-single-6'
+     assign cl_tb = 'none'
+    else
+     assign singles_sp = 'sp-single-1'
+     assign cl_tb = 'left'
+  endcase
+
+  case settings.size_img_pr
+    when '1'
+     assign class_images = 'col-md-4'
+     assign class_summary = 'col-md-8'
+    when '2'
+     assign class_images = 'col-md-6'
+     assign class_summary = 'col-md-6'
+    when '3'
+     assign class_images = 'col-md-7'
+     assign class_summary = 'col-md-5'
+  endcase 
+  assign zoom_tp = settings.zoom_tp
+  assign pr_media = product.media
+  assign class_main = '12'
+  assign no_sidebar = true
+  assign pr_sidebar = settings.pr_sidebar
+  case pr_sidebar
+    when 'right'
+      assign no_sidebar = false
+      case settings.pr_size_sidebar
+        when '1'
+          assign class_main = '10 order-1'
+          assign class_sidebar = '2 order-12'
+        when '2'
+          assign class_main = '9 order-1'
+          assign class_sidebar = '3 order-12'
+         when '3'
+          assign class_main = '8 order-1'
+           assign class_sidebar = '4 order-12'
+      endcase
+    when 'left'
+      assign no_sidebar = false
+      case settings.pr_size_sidebar
+        when '1'
+          assign class_main = '10 order-lg-12 order-1'
+          assign class_sidebar = '2 order-lg-1 order-12'
+        when '2'
+          assign class_main = '9 order-lg-12 order-1'
+          assign class_sidebar = '3 order-lg-1 order-12'
+        when '3'
+          assign class_main = '8 order-lg-12 order-1'
+          assign class_sidebar = '4 order-lg-1 order-12'
+       endcase
+   endcase
+  assign currently_var = product.selected_or_first_available_variant
+  assign cur_var_id = currently_var.id
+  assign pid = product.id
+  assign hd_up = 'fbt-' |append:pid
+  assign fbt_tag = product.tags| where:'fbtt4_' | first | default:hd_up | remove:'fbtt4_'
+  assign nav_up = linklists[fbt_tag].links | where:'type','product_link'
+  assign nav_up_size = nav_up.size 
+  if product.available == false or settings.fbt_pos == '2'
+    assign nav_up_size = 0
+  endif
+  assign ck_next_pr = false
+  if settings.back_next_pr and collection != blank
+  assign ck_next_pr = true
+  endif -%}
+
+<div class="sp-single {{singles_sp}} des_pr_layout_{{des_pr_layout}} mb__60">
+  {%- if ck_next_pr or settings.breadcrumb_pr -%}
+  <div class="bgbl pt__20 pb__20 lh__1">
+   <div class="container">
+    <div class="row al_center">
+      <div class="col">{% if settings.breadcrumb_pr %}<nav class="sp-breadcrumb"><a href="{{ routes.root_url }}" class="dib">{{ 'general.breadcrumbs.home' | t }}</a>{% if collection.url != blank %}<i class="facl facl-angle-right"></i><a href="{{collection.url}}" class="dib">{{collection.title}}</a>{% endif %}<i class="facl facl-angle-right"></i>{{product.title}}</nav>{% endif %}</div>
+      {%- if ck_next_pr -%}
+      <div class="col-auto flex al_center">
+        {%- assign next_pr = collection.next_product -%}
+        {%- assign prev_pr = collection.previous_product -%}
+        
+        {%- if prev_pr -%}<a href="{{prev_pr.url}}" class="pl__5 pr__5 fs__18 cd chp ttip_nt tooltip_bottom_left"><i class="las la-angle-left"></i><span class="tt_txt">{{prev_pr.title}}</span></a>{%- endif -%}
+        <a href="{{collection.url}}" class="pl__5 pr__5 fs__20 cd chp ttip_nt tooltip_bottom_left"><i class="fwb iccl iccl-grid fs__15"></i><span class="tt_txt">{{'products.product.back_to' | t:title:collection.title}}</span></a>
+        {%- if next_pr -%}<a href="{{next_pr.url}}" class="pl__5 pr__5 fs__18 cd chp ttip_nt tooltip_bottom_left"><i class="las la-angle-right"></i><span class="tt_txt">{{next_pr.title}}</span></a>{%- endif -%}
+      </div>
+      {%- endif -%} 
+    </div>
+   </div>
+  </div>
+  {%- endif -%}
+
+  {%- if settings.pr_sidebar_full and pr_sidebar != 'none' -%}
+
+  <div class="container">
+    <div class="row">
+      {%- unless no_sidebar %}<div class="col-lg-{{class_sidebar}} col-12 sidebar sidebar_pr mt__40">{% section 'pr-sidebar' %}</div>{% endunless -%}
+      <div class="col-md-{{class_main}} col-12">
+        <div class="container container_cat cat_{{settings.pr_layout}}">
+            <div class="row product mt__40" id="product-{{product.id}}" data-featured-product-se data-id="_ppr">
+               <div class="col-12 thumb_{{cl_tb}}">
+                  <div class="row mb__50 pr_sticky_content"> 
+                     <div class="{{class_images}} col-12 pr product-images img_action_{{settings.main_click}} pr_sticky_img" data-pr-single-media-group>
+                        <div class="row theiaStickySidebar">
+                           {%- if image != blank and pr_media.size < 2 -%}{%- assign ratio = image.aspect_ratio -%}{%- assign iw = image.width -%}
+                              <div class="col-12">
+                                 <div class="p-thumb images sp-pr-gallery equal_nt {{settings.img_size_main}} {{settings.ratio_img_main}} position_{{settings.img_pos_main}}">
+                                    <div {% if image.alt contains 'imgt4_colorsolid' %}data-widths="[1]" {% endif %}class="img_ptw p_ptw p-item sp-pr-gallery__img w__100 nt_bg_lz lazyload" data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{ratio}}" data-sizes="auto" data-vid="{{image.variants.first.id}}" id="imgpr_{{ image.id }}" data-src="{{ image | img_url: img_zoom_size }}" data-width="{{ image.width }}" data-height="{{ image.height }}" data-cap="{{ alt | split:'|' | last | escape }}"{% if eq_imgtb == 'ratio_imgtrue' or true %} style="padding-top:{{ 1 | divided_by: ratio | times: 100}}%;"{% endif %}>
+                                       <img class="op_0 dn" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="{{ alt | split:'|' | last | escape }}">
+                                    </div>
+                                 </div>
+                                 {%- render 'product_labels',on:'singe' -%}
+                                 {%- render 'p_group_btns' -%}
+                              </div>
+                           {%- elsif pr_media.size > 0 -%}
+                              {%- render 'page_pr_img',call_cl:'_ppr',pr_media:pr_media,sett_pr:sett_pr,eq_imgtb:eq_imgtb,e_imgnv:settings.ratio_img_thumb -%}
+                           {%- endif -%}
+                           {%- if zoom_tp == '2' %}<div class="dt_img_zoom pa t__0 r__0 dib"></div>{% endif -%}
+                        </div>
+                     </div>
+                     <div class="{{class_summary}} col-12 product-infors pr_sticky_su"><div class="theiaStickySidebar">{%- section 'pr_summary' -%}{% if des_pr_layout == '2' %}{%- section 'pr_description' -%}{% if settings.social_pr %}<div class="social-share tc mt__ 40">{% if settings.share_source == '1' %}{%- render 'social-sharing' -%}{% else %}<div class="nt-social nt__addthis addthis_inline_share_toolbox_icxz"></div>{% endif %}</div>{% endif %}{% endif %}</div></div>
+                  </div>
+               </div>
+            </div>
+        </div>
+        {%- if nav_up_size > 0 %}<div id="wrap_fbt" class="container">{%- render 'fbt_snipet',nav_up:nav_up,currently_var:currently_var,cur_var_id:cur_var_id,pid:pid -%}</div>{% endif -%}
+        {%- if des_pr_layout == '1' %}<div id="wrap_des_pr"><div class="container container_des">{%- section 'pr_description' -%}</div></div>{% endif -%}
+        {%- section 'product-recommendations' -%}
+        {%- section 'recently_viewed' -%}
+      </div>
+    </div>
+  </div>
+
+  {%- else -%}
+
+  <div class="container container_cat cat_{{settings.pr_layout}}">
+      <div class="row product mt__40" id="product-{{product.id}}" data-featured-product-se data-id="_ppr">
+         {%- unless no_sidebar %}<div class="col-lg-{{class_sidebar}} col-12 sidebar sidebar_pr">{% section 'pr-sidebar' %}</div>{% endunless -%}
+         <div class="col-md-{{class_main}} col-12 thumb_{{cl_tb}}">
+            <div class="row mb__50 pr_sticky_content">
+               <div class="{{class_images}} col-12 pr product-images img_action_{{settings.main_click}} pr_sticky_img" data-pr-single-media-group>
+                  <div class="row theiaStickySidebar">
+                     {%- if image != blank and pr_media.size < 2 -%}{%- assign ratio = image.aspect_ratio -%}{%- assign iw = image.width -%}
+                        <div class="col-12">
+                           <div class="p-thumb images sp-pr-gallery equal_nt {{settings.img_size_main}} {{settings.ratio_img_main}} position_{{settings.img_pos_main}}">
+                              <div class="img_ptw p_ptw p-item sp-pr-gallery__img w__100 nt_bg_lz lazyload" data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{ratio}}" data-sizes="auto" data-vid="{{image.variants.first.id}}" id="imgpr_{{ image.id }}" data-src="{{ image | img_url: img_zoom_size }}" data-width="{{ image.width }}" data-height="{{ image.height }}" data-cap="{{ alt | split:'|' | last | escape }}"{% if eq_imgtb == 'ratio_imgtrue' or true %} style="padding-top:{{ 1 | divided_by: ratio | times: 100}}%;"{% endif %}>
+                                 <img class="op_0 dn" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="{{ alt | split:'|' | last | escape }}">
+                              </div>
+                           </div>
+                           {%- render 'product_labels',on:'singe' -%}
+                           {%- render 'p_group_btns' -%}
+                        </div>
+                     {%- elsif pr_media.size > 0 -%}
+                        {%- render 'page_pr_img',call_cl:'_ppr',pr_media:pr_media,sett_pr:sett_pr,eq_imgtb:eq_imgtb,e_imgnv:settings.ratio_img_thumb -%}
+                     {%- endif -%}
+                     {%- if zoom_tp == '2' %}<div class="dt_img_zoom pa t__0 r__0 dib"></div>{% endif -%}
+                  </div>
+               </div>
+               <div class="{{class_summary}} col-12 product-infors pr_sticky_su"><div class="theiaStickySidebar">{%- section 'pr_summary' -%}{% if des_pr_layout == '2' %}{%- section 'pr_description' -%}{% if settings.social_pr %}<div class="social-share tc mt__ 40">{% if settings.share_source == '1' %}{%- render 'social-sharing' -%}{% else %}<div class="nt-social nt__addthis addthis_inline_share_toolbox_icxz"></div>{% endif %}</div>{% endif %}{% endif %}</div></div>
+            </div>
+         </div>
+      </div>
+  </div>
+  {%- if nav_up_size > 0 %}<div id="wrap_fbt" class="container">{%- render 'fbt_snipet',nav_up:nav_up,currently_var:currently_var,cur_var_id:cur_var_id,pid:pid -%}</div>{% endif -%}
+  {%- if des_pr_layout == '1' %}<div id="wrap_des_pr"><div class="container container_des">{%- section 'pr_description' -%}</div></div>{% endif -%}
+  {%- section 'product-recommendations' -%}
+  {%- section 'recently_viewed' -%}
+
+  {%- endif -%}
+
+</div>
+<script type="application/ld+json">{%- assign current_variant = product.selected_or_first_available_variant | default:product.variants.first -%}{%- assign image = product.featured_image | default: product.images.first -%}
+{
+  "@context": "http://schema.org/",
+  "@type": "Product",
+  "name": {{ product.title | json }},
+  "url": "{{ shop.url }}{{ product.url }}",
+  {%- if image != blank -%}
+    {%- assign image_size = image.width | append: 'x' -%}
+    "image": [
+      "https:{{ image.src | img_url: image_size }}"
+    ],
+  {%- endif -%}
+  "description": {{ product.description | strip_html | escape | strip_newlines | json }},
+  "sku": "{{ current_variant.sku |default:current_variant.id }}",
+  "mpn": "{{ current_variant.barcode}}",
+  "productID": "{{ product.id }}",
+  "brand": {
+    "@type": "Thing",
+    "name": "{{ product.vendor | escape }}"
+  },
+  {%- if product.price_varies -%}
+  "offers": [
+    {%- capture not_change -%}
+       "@type" : "Offer",
+       "availability" : "http://schema.org/{% if product.available %}InStock{% else %}OutOfStock{% endif %}",
+       "priceCurrency" : "{{ cart.currency.iso_code }}",
+       "itemCondition": "https://schema.org/NewCondition",
+       "priceValidUntil": "{{ 'now' | date: '%s' | plus: 31536000 | date: '%Y-%m-%d' | uri_encode | replace:'+','%20' }}",
+    {%- endcapture -%}
+    {%- assign shop_secure_url = shop.secure_url -%}
+    {%- for variant in product.variants -%}{%- assign barcode_size = variant.barcode.size -%}
+      {
+        {{not_change}}
+        "sku": "{{ variant.sku | default: variant.id }}",
+        "price" : "{{ variant.price | divided_by: 100.00 }}",
+        "mpn": "{{ variant.barcode }}",
+        {%- if barcode_size == 12 or barcode_size == 13 or barcode_size == 14 -%}"gtin{{barcode_size}}": "{{ variant.barcode }}",{%- endif -%}
+        "url" : "{{ shop_secure_url }}{{ variant.url }}"
+      }{% unless forloop.last %},{% endunless -%}
+    {%- endfor -%}
+  ]
+  {%- else -%}
+  "offers": {
+        "@type" : "Offer",
+        "sku": "{{ current_variant.sku |default: current_variant.id }}",
+        "availability" : "http://schema.org/{% if product.available %}InStock{% else %}OutOfStock{% endif %}",
+        "price" : "{{ product.price | divided_by: 100.00 }}",
+        "priceCurrency" : "{{ cart.currency.iso_code }}",
+        "itemCondition": "https://schema.org/NewCondition",
+        "url" : "{{ shop.secure_url }}{{ product.url }}",
+        "mpn": "{{ current_variant.barcode }}",
+        {%- assign barcode_size = current_variant.barcode.size -%}{%- if barcode_size == 12 or barcode_size == 13 or barcode_size == 14 -%}"gtin{{barcode_size}}": "{{ variant.barcode }}",{%- endif -%}
+        "priceValidUntil": "{{ 'now' | date: '%s' | plus: 31536000 | date: '%Y-%m-%d' | uri_encode | replace:'+','%20' }}"
+  }
+  {%- endif -%}
+    {%- assign review_app = settings.app_review |default:'1' -%}
+    {%- case review_app -%}
+      {%- when '1' -%}
+       {%- assign meta_spr = product.metafields.spr.reviews -%}
+       {%- assign ratingname = meta_spr | split: 'itemprop="name" content="' | last | split: '"' | first -%}
+       {%- assign ratingCount = meta_spr | split: 'reviewCount" content="' | last | split: '"' | first -%}
+        {%- if ratingCount != "0" and ratingCount != blank and ratingname == product.title -%}
+        ,"aggregateRating": {
+         "@type": "AggregateRating",
+         "ratingCount": {{ ratingCount | plus: 0 }},
+         "ratingValue": {{ meta_spr | split: 'ratingValue" content="' | last | split: '"' | first | plus: 0 }}
+        }
+        {%- endif -%}
+      {%- when '2' -%}{%- assign aggregateRating = product.metafields.ryviu.product_reviews_info | split: ";" -%}{%- assign ratingCount = aggregateRating[0] -%}
+        {%- if ratingCount != "0" and ratingCount != blank -%}
+        ,"aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingCount": {{ ratingCount | plus: 0 }},
+        "ratingValue": {{ aggregateRating[1] | plus: 0 }}
+        }
+        {%- endif -%}
+      {%- when '3' -%}{%- assign ratingCount = product.metafields.ali.reviews_count -%}
+        {%- if ratingCount != "0" and ratingCount != blank -%}
+        ,"aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingCount": {{ ratingCount }},
+        "ratingValue": {{ product.metafields.ali.reviews_average }}
+        }
+        {%- endif -%}
+      {%- when '4' -%}{%- assign ratingCount = product.metafields.loox.num_reviews -%}
+        {%- if ratingCount != "0" and ratingCount != blank -%}
+        ,"aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingCount": {{ ratingCount }},
+        "ratingValue": {{ product.metafields.loox.avg_rating }}
+        }
+        {%- endif -%}
+      {%- when 'stamped' -%}{%- assign ratingCount = product.metafields.stamped.reviews_count -%}
+        {%- if ratingCount != "0" and ratingCount != blank -%}
+        ,"aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingCount": {{ ratingCount }},
+        "ratingValue": {{ product.metafields.stamped.reviews_average }}
+        }
+        {%- endif -%}
+    {%- endcase -%}
+}
+</script>
+

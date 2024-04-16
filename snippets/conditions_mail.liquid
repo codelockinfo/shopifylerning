@@ -1,0 +1,7 @@
+<div></div>
+{%- assign page_url = pages[stt_link].url -%}
+<{{html}} class="agree_checkbox agree_mail pr dib {{margin}}">
+	<input type="checkbox" id="new_check_agree_{{sid}}" name="new_check_agree_{{sid}}" class="css_agree_ck mr__5" required="required">
+	<label for="new_check_agree_{{sid}}">{%- if page_url != blank %}{{ 'general.agree_mail.link_conditions_html' | t:link: page_url }}{%- else -%}{{ 'general.agree_mail.link_conditions_emty' | t }}{%- endif -%}</label>
+	<svg class="dn scl_selected"><use xlink:href="#scl_selected"></use></svg>
+</{{html}}>

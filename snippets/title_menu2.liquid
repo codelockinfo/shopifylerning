@@ -1,0 +1,11 @@
+{%- liquid
+  assign icon = block.settings.icon
+  if icon != blank
+    assign arr_icon = icon | split:','
+    assign icon_class1 = arr_icon[1] | default:'las'
+  endif
+ assign img_size = '40x'  -%}
+
+{%- if block.settings.icons_op == '2' and icon != blank %}<i class="{{arr_icon[1] | default:'las'}} la-{{arr_icon[0]}}"></i>
+{%- elsif block.settings.icons_op == '1' and block.settings.image != blank %}<i class="dib img_ic"><img class="img_catk_mb" src="{{block.settings.image | img_url:img_size }}" alt="{{block.settings.image.alt}}"></i>{% endif -%}
+{{block.settings.title }}{% if block.settings.lb != blank %}<span class="lbc_nav" style="background-color: {{block.settings.lb_cl}}">{{block.settings.lb}}</span>{% endif -%}

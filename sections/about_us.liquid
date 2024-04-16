@@ -1,0 +1,202 @@
+<div class="nt_se_{{section.id}} {{section.settings.layout}}">
+   <div class="row">
+     <div class="offset-md-2 col-12 col-md-8 tc">
+       {%- if section.blocks.size > 0 -%}
+          {%- for block in section.blocks -%}
+            {%- case block.type -%}
+               {%- when 'heading' -%}
+                   {%- render 'block_title',block:block,block_title:'mb__25' -%}
+               {%- when 'image' -%}{%- assign image = block.settings.image -%}
+                 <div class="mb__15 about_us_img border_{{block.settings.use_border}} pr oh" {{ block.shopify_attributes }}>
+                  {%- if image != blank -%} 
+                    {%- assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+                    <img class="lazyload lz_op_ef w__100" src="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20{{image.width}}%20{{image.height}}%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3C%2Fsvg%3E" data-src="{{ img_url }}" data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]" data-sizes="auto" alt="{{image.alt | escape}}">
+                  {%- else -%}
+                    <img class="lazyload lz_op_ef w__100" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" style="max-height: 400px" data-src="https://cdn.shopify.com/s/files/1/0259/8538/4520/files/shopping-gift-wrap_1x1.jpg?v=1572830468" alt="">
+                  {%- endif -%}
+                  <span class="fr_br_1"></span><span class="fr_br_2"></span><span class="fr_br_3"></span><span class="fr_br_4"></span>
+                  {%- if block.settings.video_url != blank -%}<div class="pa l__0 t__0 r__0 b__0 w__100 h__100 flex fl_center al_center"><a class="nt_mfp_video flex fl_center al_center video-control__play" href="{{block.settings.video_url}}" target="_blank"><svg aria-hidden="true" focusable="false" role="presentation" class="icon icon-play" viewBox="0 0 20 40"><path fill-rule="evenodd" clip-rule="evenodd" d="M23.6 16.8L7 1.5C5.6.3 4 .2 2.9.7 1.6 1.4.8 2.7.7 3.8v31.7c0 1.8 1.1 3.3 3.1 3.3 1.5 0 2.5-.5 3.4-1.4l16.4-15.7c1.5-1.4 1.5-3.6 0-4.9z"></path></svg></a></div>{%- endif -%}
+                </div>
+               {%- when 'text' -%}
+                <div class="mb__15 about_us_txt" {{ block.shopify_attributes }}>{{block.settings.text}}</div> 
+               {%- else -%}{%- assign image = block.settings.image -%}
+                <div class="mb__15 about_us_sig tc" {{ block.shopify_attributes }}><img class="lazyload lz_op_ef"{% if image != blank %} {% assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}src="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20{{image.width}}%20{{image.height}}%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3C%2Fsvg%3E" data-src="{{ img_url }}" data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]" data-sizes="auto" style="max-width:{{image.width}}px"{% else %} src="//cdn.shopify.com/s/files/1/0259/8538/4520/files/signature_150x.png?v=1572830297"{% endif %} alt="{{image.alt | escape}}"></div>
+            {%- endcase -%}
+          {%- endfor -%}
+       {%- else -%}
+       <div class="tc">{%- render 'no_blocks'-%}</div>   
+       {%- endif -%}
+     </div>
+   </div>
+</div>
+{%- render 'section_css' -%}
+{%- schema -%}
+  {
+    "name": "About us",
+    "class": "type_about_us",
+    "max_blocks": 20,
+    "settings": [
+      {
+        "type": "header","content": "== Design Options"
+      },
+      {
+        "type": "select","id": "layout","default": "nt_full","label": "Layout",
+        "options": [
+            { "value": "container", "label": "Container"},
+            { "value": "nt_full", "label": "Full Width"}
+        ]
+      },
+      {
+        "type": "color","id": "cl_bg","label": "Background color","default": "#fff"
+      },
+      {
+        "type": "text",
+        "id": "mg",
+        "label": "Margin",
+        "info":"Margin top, margin right, margin bottom, margin left. If you not use to blank",
+        "default": "50px,,20px,",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd",
+        "label": "Padding",
+        "info":"Padding top, padding right, padding bottom, padding left. If you not use to blank",
+        "placeholder": "50px,,50px,"
+      },
+     {
+        "type": "header",
+        "content": "== Design Mobile Options"
+      },
+      {
+        "type": "text",
+        "id": "mg_mb",
+        "label": "Margin",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd_mb",
+        "label": "Padding",
+        "placeholder": "50px,,50px,"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "heading",
+        "name": "Heading",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text","id": "title","label": "Heading","default":"ABOUT US"
+          },
+          {
+            "type": "textarea","id": "sub_title","label": "Sub Text","default":"wellcome to gecko"
+          },
+          {
+            "type": "select",
+            "id": "sub_font",
+            "default": "2",
+            "options": [
+             {
+                "value": "1",
+                "label": "Body font"
+             },
+             {
+                "value": "2",
+                "label": "Sub title font"
+              }
+            ],
+            "label": "Sub Text use font:"
+          },
+          {
+            "type": "select","id": "style_title","label": "Design Title:",
+            "options": [
+                { "value": "title_1", "label": "Design 1"},
+                { "value": "title_2", "label": "Design 2"},
+                { "value": "title_3", "label": "Design 3"},
+                { "value": "title_4", "label": "Design 4"},
+                { "value": "title_5 lazyload", "label": "Design 5"},
+                { "value": "title_6", "label": "Design 6"},
+                { "value": "title_7 +la", "label": "Design 7 (with line-awesome)"},
+               {
+                  "value": "title_8",
+                  "label": "Design 8"
+                },
+               {
+                  "value": "title_9",
+                  "label": "Design 9"
+                },
+               {
+                  "value": "title_10",
+                  "label": "Design 10"
+                },
+               {
+                  "value": "title_11",
+                  "label": "Design 11"
+                },
+               {
+                  "value": "title_12",
+                  "label": "Design 12"
+                },
+               {
+                  "value": "title_13",
+                  "label": "Design 13"
+                }
+            ]
+          },
+          {
+            "type": "text","id": "ic_tt","label": "Style 7 icon line-awesome","default": "gem"
+          },
+          {
+            "type": "checkbox","id": "show_clpr","label": "Use icon color primary?","default": false
+          },
+          {
+            "type": "paragraph","content": "[Get icons Line awesome](https://icons8.com/line-awesome)"
+          }
+        ]
+      },
+      {
+        "type": "image",
+        "name": "Image",
+        "settings": [
+         {
+          "type":"image_picker","id":"image","label":"Image"
+          },
+          {
+            "type": "checkbox","id": "use_border","label": "Use border?","default": true
+          },
+          {
+             "id": "video_url","type": "video_url","label": "Video URL","accept": ["youtube", "vimeo"],"default": "https://www.youtube.com/watch?v=_9VUPq3SxOc","info": "Accepts YouTube,vimeo links"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "name": "Content",
+        "settings": [
+         {
+          "type":"richtext","id":"text","label":"Content","default":"<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>"
+          }
+        ]
+      },
+      {
+        "type": "sig",
+        "name": "Your signature",
+        "limit": 1,
+        "settings": [
+           {
+            "type":"image_picker","id":"image","label":"Image Your signature"
+            }
+         ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "5. About us",
+        "category": "V. Text",
+        "blocks": [{"type": "heading"},{"type": "image"},{"type": "text"},{"type": "sig"}]
+      }
+    ]
+  }
+{% endschema %}

@@ -1,0 +1,514 @@
+{%- liquid
+  assign section_blocks = section.blocks
+  if section_blocks.size > 2
+    assign class_1 = 'tl_lg col-md-12'
+    assign class_2 = 'col-md-12'
+  else
+    assign class_1 = 'tl_lg col-md-12'
+    assign class_2 = 'col-md-12 tr_lg'
+  endif -%}
+  
+<div class="h__top bgbl pt__10 pb__10 fs__12 flex fl_center al_center"><div class="container">
+   <div class="row al_center">
+      {%- for block in section_blocks -%}<div class="col-lg-{{block.settings.col}} col-12 tc {% cycle class_1, class_2, 'col-md-12 tr_lg' %} dn_{{block.settings.hide}}_1024">
+        {%- case block.type -%}
+          {%- when 'cur' -%}
+            {%- if settings.show_locale_selector and shop.published_locales.size > 1 %}{% render 'languages',class_2:'mr__15' %}{% endif -%}
+            {%- if settings.show_multiple_currencies %}{% render 'currencies' %}{% endif -%}
+          {%- when 'social' -%}
+            {%- if block.settings.social == '1' -%}{%- render 'social-sharing',class_tooltip:'ttip_nt tooltip_bottom_right',border_bl:block.settings.border_bl,black_true:block.settings.black_bl -%}
+            {%- elsif block.settings.social == '2' -%}{% if forloop.last %}{% assign class_tooltip = 'ttip_nt tooltip_bottom_left' %}{% else %}{% assign class_tooltip = 'ttip_nt tooltip_bottom_right' %}{% endif %}{%- render 'social-sharing',follow_social:true,class_tooltip:class_tooltip,border_bl:block.settings.border_bl,black_true:block.settings.black_bl -%}{%- endif -%}
+          {%- else -%}
+             {%- assign array_txt = block.settings.text |remove:'<p>' |remove:'</p>' | split:';;;' | compact -%}
+             {%- if block.type == 'text2' and array_txt.size > 1 -%}
+             <div class="header-text">
+               <div class="row nt_slider js_carousel" data-flickity='{ "fade":{{ block.settings.effect }},"cellAlign": "center","imagesLoaded": 0,"lazyLoad": 0,"freeScroll": 0,"wrapAround": true,"autoPlay" : {{ block.settings.au_time | times: 1000 }},"pauseAutoPlayOnHover" : true, "rightToLeft": false, "prevNextButtons": false,"pageDots": false, "contain" : 1,"adaptiveHeight" : 1,"dragThreshold" : 5,"percentPosition": 1 }'>
+                 {%- for txt in array_txt %}<div class="col-12 item_slide_ht"><p>{{txt | strip_newlines }}</p></div>{% endfor -%}
+               </div>
+             </div>
+             {%- else -%}
+             <div class="header-text">{{block.settings.text}}</div>
+             {%- endif -%}
+        {%- endcase -%}
+      </div>{%- endfor -%}
+   </div>
+</div></div>
+
+  {%- style -%}.h__top {min-height:{{section.settings.height}}px;font-size:{{section.settings.fontsize}}px;}
+  {%- if settings.h_transparent and settings.header_design != '7' and settings.h_tr_top and template.name == 'index' -%}
+  {%- assign bg_op = section.settings.bg_op_tr | divided_by: 100.0 -%}.h__top { background-color: {{ section.settings.bg_tr | color_modify: 'alpha', bg_op }};{% if section.settings.show_border_tr %}border-bottom: 1px solid {{ section.settings.bd_cl_tr }};{% endif %};color:{{section.settings.cl_tr}} } .header-text >.cg,.h__top .nt_currency,.h__top .header-text a,.h__top .nt-social .cb { color:{{section.settings.cl_tr}}  } .h__top .cr,a[title="#cr"],.h__top .header-text a[title="#cr"] { color:{{section.settings.cl_cr_tr}}  } .header-text >a:not(.cg),.dark_mode_true .header-text>a:not(.cg) { color:{{section.settings.cl_a_tr}}  } 
+  {%- else -%}
+  {%- assign bg_op = section.settings.bg_op | divided_by: 100.0 -%}.h__top{ background-color: {{ section.settings.bg | color_modify: 'alpha', bg_op }};{% if section.settings.show_border %}border-bottom: 1px solid {{ section.settings.bd_cl }};{% endif %}color:{{section.settings.cl}} } .header-text >.cg,.h__top .nt_currency,.h__top .header-text a,.h__top .nt-social .cb { color:{{section.settings.cl}}  } .h__top .cr,a[title="#cr"],.h__top .header-text a[title="#cr"] { color:{{section.settings.cl_cr}}  } .header-text >a:not(.cg),.dark_mode_true .header-text>a:not(.cg) { color:{{section.settings.cl_a}}  } 
+  {%- endif -%}{%- endstyle -%}
+
+{%- schema -%}
+  {
+    "name": "Top Bar",
+    "max_blocks": 3,
+    "class": "type_carousel",
+    "settings": [
+      {
+        "type": "range",
+        "id": "height",
+        "label": "Min Height",
+        "default": 41,
+        "min": 20,
+        "max": 120,
+        "step": 1,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "fontsize",
+        "label": "Font size",
+        "default": 12,
+        "min": 12,
+        "max": 15,
+        "step": 0.5,
+        "unit": "px"
+      },
+      {
+        "type": "color",
+        "id": "cl",
+        "label": "Text Color",
+        "default": "#878787"
+      },
+      {
+        "type": "color",
+        "id": "cl_a",
+        "label": "Link Color",
+        "default": "#222"
+      },
+      {
+        "type": "color",
+        "id": "cl_cr",
+        "label": "Color class 'cr', href '#cr'",
+        "default": "#ec0101"
+      },
+      {
+        "type": "color",
+        "id": "bg",
+        "label": "Background Color",
+        "default": "#f6f6f8"
+      },
+      {
+        "type": "range",
+        "id": "bg_op",
+        "label": "Background opacity",
+        "default": 100,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_border",
+        "label": "Show border bottom?",
+        "default": false
+      },
+      {
+        "type": "color",
+        "id": "bd_cl",
+        "label": "Border Color",
+        "default": "#000"
+      },
+      {
+        "type": "header",
+        "content": "== Header Top Transparent Color:"
+      },
+      {
+        "type": "color",
+        "id": "cl_tr",
+        "label": "Text Color",
+        "default": "#fff"
+      },
+      {
+        "type": "color",
+        "id": "cl_a_tr",
+        "label": "Link Color",
+        "default": "#fff"
+      },
+      {
+        "type": "color",
+        "id": "cl_cr_tr",
+        "label": "Color class 'cr'",
+        "default": "#ec0101"
+      },
+      {
+        "type": "color",
+        "id": "bg_tr",
+        "label": "Background Color",
+        "default": "#000"
+      },
+      {
+        "type": "range",
+        "id": "bg_op_tr",
+        "label": "Background opacity",
+        "default": 10,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_border_tr",
+        "label": "Show border bottom?",
+        "default": false
+      },
+      {
+        "type": "color",
+        "id": "bd_cl_tr",
+        "label": "Border Color",
+        "default": "#b3b3b3"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "text",
+        "name": "Custom text",
+        "settings": [
+            {
+              "type": "html",
+              "id": "text",
+              "label": "Text",
+              "info": "Place here text you want to see.",
+              "default": "Summer sale discount off <span class=\"cr\">50%<\/span>! <a href=\"\/shop\">Shop Now<\/a>"
+            },
+            {
+              "type": "checkbox",
+              "id": "hide",
+              "label": "Hide on tablet, mobile?",
+              "default": false
+            },
+            {
+              "type": "select",
+              "id": "col",
+              "default": "4",
+              "options": [
+              {
+                "value": "1",
+                "label": "1/12 (8.333333%)"
+              },
+              {
+                "value": "2",
+                "label": "2/12 (16.666667%)"
+              },
+              {
+                "value": "3",
+                "label": "3/12 (25%)"
+              },
+              {
+                "value": "4",
+                "label": "4/12 (33.333333%)"
+              },
+              {
+                "value": "6",
+                "label": "6/12 (50%)"
+              },
+              {
+                "value": "7",
+                "label": "7/12 (58.333333%)"
+              },
+              {
+                "value": "8",
+                "label": "8/12 (66.666667%)"
+              },
+              {
+                "value": "9",
+                "label": "9/12 (75%)"
+              },
+              {
+                "value": "10",
+                "label": "10/12 (83.333333%)"
+              },
+              {
+                "value": "11",
+                "label": "11/12 (91.666667%)"
+              },
+              {
+                "value": "12",
+                "label": "12/12 (100%)"
+              }
+            ],
+            "label": "Width col:"
+          }
+        ]
+      },
+      {
+        "type": "text2",
+        "name": "Rich text",
+        "settings": [
+            {
+              "type": "richtext",
+              "id": "text",
+              "label": "Content",
+              "default": "<p>Welcome customers to your store.</p>"
+            },
+            {
+              "type": "select",
+              "id": "effect",
+              "label": "Effect Slider",
+              "default": "1",
+              "options": [
+                {
+                  "value": "1",
+                  "label": "Fade"
+                },
+                {
+                  "value": "0",
+                  "label": "Slide"
+                }
+              ]
+            },
+            {
+              "type": "range",
+              "id": "au_time",
+              "min": 1,
+              "max": 30,
+              "step": 0.5,
+              "label": "Autoplay Speed in second.",
+              "unit": "sec",
+              "default": 3.5
+            },
+            {
+              "type": "checkbox",
+              "id": "hide",
+              "label": "Hide on tablet, mobile?",
+              "default": false
+            },
+            {
+              "type": "select",
+              "id": "col",
+              "default": "4",
+              "options": [
+              {
+                "value": "1",
+                "label": "1/12 (8.333333%)"
+              },
+              {
+                "value": "2",
+                "label": "2/12 (16.666667%)"
+              },
+              {
+                "value": "3",
+                "label": "3/12 (25%)"
+              },
+              {
+                "value": "4",
+                "label": "4/12 (33.333333%)"
+              },
+              {
+                "value": "6",
+                "label": "6/12 (50%)"
+              },
+              {
+                "value": "7",
+                "label": "7/12 (58.333333%)"
+              },
+              {
+                "value": "8",
+                "label": "8/12 (66.666667%)"
+              },
+              {
+                "value": "9",
+                "label": "9/12 (75%)"
+              },
+              {
+                "value": "10",
+                "label": "10/12 (83.333333%)"
+              },
+              {
+                "value": "11",
+                "label": "11/12 (91.666667%)"
+              },
+              {
+                "value": "12",
+                "label": "12/12 (100%)"
+              }
+            ],
+            "label": "Width col:"
+          }
+        ]
+      },
+      {
+        "type": "cur",
+        "name": "Currency, Language",
+        "limit": 1,
+        "settings": [
+            {
+              "type": "checkbox",
+              "id": "hide",
+              "label": "Hide on tablet, mobile?",
+              "default": false
+            },
+            {
+              "type": "select",
+              "id": "col",
+              "default": "4",
+              "options": [
+              {
+                "value": "1",
+                "label": "1/12 (8.333333%)"
+              },
+              {
+                "value": "2",
+                "label": "2/12 (16.666667%)"
+              },
+              {
+                "value": "3",
+                "label": "3/12 (25%)"
+              },
+              {
+                "value": "4",
+                "label": "4/12 (33.333333%)"
+              },
+              {
+                "value": "6",
+                "label": "6/12 (50%)"
+              },
+              {
+                "value": "7",
+                "label": "7/12 (58.333333%)"
+              },
+              {
+                "value": "8",
+                "label": "8/12 (66.666667%)"
+              },
+              {
+                "value": "9",
+                "label": "9/12 (75%)"
+              },
+              {
+                "value": "10",
+                "label": "10/12 (83.333333%)"
+              },
+              {
+                "value": "11",
+                "label": "11/12 (91.666667%)"
+              },
+              {
+                "value": "12",
+                "label": "12/12 (100%)"
+              }
+            ],
+            "label": "Width col:"
+          }
+        ]
+      },
+      {
+        "type": "social",
+        "name": "Social",
+        "limit": 1,
+        "settings": [
+            {
+              "type": "select",
+              "id": "social",
+              "options": [
+                {
+                  "value": "1",
+                  "label": "Share"
+                },
+                {
+                  "value": "2",
+                  "label": "Follow"
+                }
+              ],
+              "label": "___ Social:",
+              "default": "2"
+            },
+            {
+              "type": "checkbox",
+              "id": "border_bl",
+              "label": "Enable border?",
+              "default": false
+            },
+            {
+              "type": "checkbox",
+              "id": "black_bl",
+              "label": "Enable Black Style?",
+              "default": false
+            },
+            {
+              "type": "checkbox",
+              "id": "hide",
+              "label": "Hide on tablet, mobile?",
+              "default": false
+            },
+            {
+              "type": "select",
+              "id": "col",
+              "default": "4",
+              "options": [
+              {
+                "value": "1",
+                "label": "1/12 (8.333333%)"
+              },
+              {
+                "value": "2",
+                "label": "2/12 (16.666667%)"
+              },
+              {
+                "value": "3",
+                "label": "3/12 (25%)"
+              },
+              {
+                "value": "4",
+                "label": "4/12 (33.333333%)"
+              },
+              {
+                "value": "6",
+                "label": "6/12 (50%)"
+              },
+              {
+                "value": "7",
+                "label": "7/12 (58.333333%)"
+              },
+              {
+                "value": "8",
+                "label": "8/12 (66.666667%)"
+              },
+              {
+                "value": "9",
+                "label": "9/12 (75%)"
+              },
+              {
+                "value": "10",
+                "label": "10/12 (83.333333%)"
+              },
+              {
+                "value": "11",
+                "label": "11/12 (91.666667%)"
+              },
+              {
+                "value": "12",
+                "label": "12/12 (100%)"
+              }
+            ],
+            "label": "Width col:"
+          }
+        ]
+      }
+    ],
+    "default": {
+      "blocks": [
+        {
+          "type": "text",
+            "settings": {
+              "text": "<i class=\"pegk pe-7s-call\"><\/i> +01 23456789 <i class=\"pegk pe-7s-mail ml__15\"><\/i> <a class=\"cg\" href=\"mailto:Gecko@domain.com\">Gecko@domain.com<\/a>"
+            }
+        },
+        {
+          "type": "text",
+            "settings": {
+              "text": "Summer sale discount off <span class=\"cr\">50%<\/span>! <a href=\"\/shop\">Shop Now<\/a>"
+            }
+        },
+        {
+          "type": "cur"
+        }
+      ]
+    }
+  }
+{% endschema %}

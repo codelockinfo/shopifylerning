@@ -1,0 +1,381 @@
+{%- assign only_icon = 'only_icon_' | append:settings.only_icon -%}
+{%- assign routes_search_url = routes.search_url -%}
+<ul id="menu_mb_ul" class="nt_mb_menu">
+   {%- if section.blocks.size > 0 -%}
+      {%- for block in section.blocks -%}
+         {%- assign block_stts = block.settings -%}
+         {%- case block.type -%}
+            {%- when 'help' -%}
+               <li id="item_mb_help" class="menu-item item-level-0 menu-item-infos"><p class="menu_infos_title">{{block_stts.title}}</p><div class="menu_infos_text">{{block_stts.text}}</div></li>
+            
+            {%- when 'cur' -%}
+               {%- unless settings.show_multiple_currencies -%}{% continue %}{%- endunless -%}
+               {%- if settings.flag_currency -%}{%- assign fl = 'flagst4' -%}{%- endif -%}
+               {%- assign sz = settings.size_currency -%}{%- assign cart_iso_code = cart.currency.iso_code -%}
+
+               {%- if settings.currency_type == '1' and shop.enabled_currencies.size > 1 -%}
+
+                  {%- if linklists.currency-the4.links.size > 0 -%}
+                    {%- assign ck_iso_code = '#'|append:cart_iso_code -%}{%- assign links_cur = linklists.currency-the4.links | where: "url", ck_iso_code -%}
+                    <li id="item_mb_cur" class="menu-item item-level-0 menu-item-has-children only_icon_false currencies" {{ block.shopify_attributes }}>
+                       <a rel="nofollow" data-no-instant href="#"><span class="current dib {{fl}} lazyload flagst4-{{sz}} flagst4-{{cart_iso_code}}">{{links_cur.first.title|default:cart_iso_code}}</span><span class="nav_link_icon ml__5"></span></a>
+                       <ul class="sub-menu">
+                       {%- for link_cur in linklists.currency-the4.links -%}{%- assign iso_code = link_cur.url |remove:'#'|remove:' ' -%}
+                             <li><a class="currency-item cg db {{fl}} lazyload flagst4-{{sz}} flagst4-{{iso_code}}{% if iso_code == cart_iso_code %} selected{% endif %}" href="/" data-no-instant rel="nofollow" data-currency="{{iso_code}}">{{link_cur.title}}</a></li>
+                       {%- endfor -%}
+                       </ul>
+                   </li>
+                  {%- else -%}
+                    <li id="item_mb_cur" class="menu-item item-level-0 menu-item-has-children only_icon_false currencies" {{ block.shopify_attributes }}>
+                       <a rel="nofollow" data-no-instant href="#"><span class="current dib {{fl}} lazyload flagst4-{{sz}} flagst4-{{cart_iso_code}}">{{cart_iso_code}}</span><span class="nav_link_icon ml__5"></span></a>
+                       <ul class="sub-menu">
+                       {%- for currency in shop.enabled_currencies -%}{%- assign iso_code = currency.iso_code -%}
+                             <li><a class="currency-item cg db {{fl}} lazyload flagst4-{{sz}} flagst4-{{iso_code}}{% if iso_code == cart_iso_code %} selected{% endif %}" href="/" data-no-instant rel="nofollow" data-currency="{{iso_code}}">{{iso_code}}</a></li>
+                       {%- endfor -%}
+                       </ul>
+                   </li>
+                  {%- endif -%}
+
+               {%- elsif settings.currency_type == '2' -%}
+                  {%- assign supported_codes = settings.supported_currencies | split: '|' -%}
+                  <li id="item_mb_cur" class="menu-item item-level-0 menu-item-has-children only_icon_false currencies" {{ block.shopify_attributes }}>
+                     <a rel="nofollow" data-no-instant href="#"><span class="current dib {{fl}} lazyload flagst4-{{sz}} flagst4-{{cart_iso_code}}">{{cart_iso_code}}</span><span class="nav_link_icon ml__5"></span></a>
+                     <ul class="sub-menu">
+                      <li><a class="currency-item cg db {{fl}} lazyload flagst4-{{sz}} flagst4-T4D dn" href="/" data-no-instant rel="nofollow" data-currency="T4D"></a></li>
+                     {%- for code in supported_codes -%}
+                          {%- assign array_money = code | split: '-' -%}
+                          {%- assign data_currency = array_money | first | upcase | strip | remove:' ' -%}
+                          {%- assign name_money = array_money | last | strip -%}
+                           <li><a class="currency-item cg db {{fl}} lazyload flagst4-{{sz}} flagst4-{{data_currency}}" href="/" data-no-instant rel="nofollow" data-currency="{{data_currency}}">{{name_money}}</a></li>
+                     {%- endfor -%}
+                     </ul>
+                 </li>
+               {%- endif -%}
+
+            {%- when 'lang' -%}
+                {%- liquid
+                  unless settings.show_locale_selector and shop.published_locales.size > 1
+                    continue
+                  endunless
+                  assign current_locale = request.locale
+                  assign current_locale_iso_code = current_locale.iso_code -%}
+                <li id="item_mb_lang" class="menu-item item-level-0 menu-item-has-children only_icon_false languages" {{ block.shopify_attributes }}>
+                   <a rel="nofollow" data-no-instant href="#"><span class="current dib {{fl}} lazyload flagst4-{{sz}} flagst4-{{current_locale_iso_code}}">{{current_locale.endonym_name}}</span><span class="nav_link_icon ml__5"></span></a>
+                   <ul class="sub-menu">
+                    {%- for locale in shop.published_locales -%}{%- assign iso_code = locale.iso_code -%}
+                         <li><a class="lang-item cg db {{fl}} lazyload flagst4-{{sz}} flagst4-{{iso_code}}{% if iso_code == current_locale_iso_code %} selected{% endif %}" href="/" data-no-instant rel="nofollow" data-currency="{{iso_code}}">{{locale.endonym_name}}</a></li>
+                   {%- endfor -%}
+                   </ul>
+               </li>
+            
+            {%- when 'wis' -%}
+              {%- unless settings.show_wis %}{% continue %}{% endunless %}<li id="item_mb_wis" class="menu-item item-level-0 menu-item-btns menu-item-wishlist"><a class="js_link_wis" href="{% if settings.wishlist_type != '3' or settings.enable_growave == false %}{{ routes_search_url }}/?view=wish{% else %}/pages/wishlist{% endif %}"><span class="iconbtns">{{ 'general.mobile_menu.wishlist' | t }}</span></a></li>
+            
+            {%- when 'compe' -%}
+              {%- unless settings.enable_compe %}{% continue %}{% endunless %}<li id="item_mb_compe" class="menu-item item-level-0 menu-item-btns menu-item-compare"><a class="js_link_cp" href="{{ routes_search_url }}/?view=compe"><span class="iconbtns">{{ 'general.mobile_menu.compare' | t }}</span></a></li>
+
+            {%- when 'sea' -%}<li id="item_mb_sea" class="menu-item item-level-0 menu-item-btns menu-item-sea push_side" data-id="#nt_search_canvas"><a href="{{ routes_search_url }}"><span class="iconbtns">{{ 'general.mobile_menu.search' | t }}</span></a></li>
+            {%- when 'acc' -%}
+              {%- if shop.customer_accounts_enabled -%}
+                {% capture the_snippet_auth %}{% render 'socialshopwave-widget-auth' %}{% endcapture %}
+                 {% if the_snippet_auth contains 'Liquid error' or settings.growave_social_login == false or settings.enable_growave == false %}
+                    {%- if customer -%}
+                      <li id="item_mb_acc" class="menu-item item-level-0 menu-item-btns menu-item-acount menu-item-has-children only_icon_false">
+                         <a href="{{routes.account_url}}"><span class="iconbtns">{{ 'general.mobile_menu.my_account' | t }}</span><span class="nav_link_icon ml__5"></span></a>
+                         <ul class="sub-menu">
+                            <li><a href="{{routes.account_url}}">{{ 'general.account_text.dashboard' | t }}</a></li>
+                            <li><a href="{{routes.account_addresses_url}}">{{ 'general.account_text.addresses' | t }}</a></li>
+                            <li><a href="{{routes.account_logout_url}}" data-no-instant>{{ 'general.account_text.logout' | t }}</a></li>
+                         </ul>
+                      </li>
+                    {%- else -%}
+                      <li id="item_mb_acc" class="menu-item item-level-0 menu-item-btns menu-item-acount"><a href="{{routes.account_login_url}}" class="push_side" data-id="#nt_login_canvas"><span class="iconbtns">{{ 'general.mobile_menu.login_register' | t }}</span></a></li>
+                    {%- endif -%}
+                 {%- else -%}
+                  
+                    {% if customer %}
+                    <li class="ssw-tprofile ssw-dropdown">
+                      <a class="ssw-dropdown-toggle" data-toggle="ssw-dropdown" href="javascript:void(0);">
+                        <i class="ssw-icon-user"></i>
+                        {{ customer.first_name }}
+                        {% if customer.last_name != 'Unknown' %}
+                        {{ customer.last_name | slice:0 | upcase }}.
+                        {% endif %}
+                        <i class="ssw-icon-down-open-big"></i>
+                      </a>
+                      <ul class="ssw-dropdown-menu" role="menu" aria-labelledby="dLabel">
+                        <li id="customer_myorders_li"><a tabindex="-1" href="{{routes.account_url}}">{{ 'socialshopwave.my_orders' | t }}</a></li>
+                        {% render 'ssw-widget-dropdown' %}
+                        <li class="ssw-divider"></li>
+                        <li><a id="customer_logout_link" tabindex="-1" href="{{routes.account_logout_url}}" data-no-instant>{{ 'socialshopwave.logout' | t }}</a></li>
+                      </ul>
+                    </li>
+                    {% else %}
+                    <li>
+                      <a id="customer_login_link" href="javascript:void(0);" data-toggle="ssw-modal" data-target="#login_modal" onclick="trackShopStats('login_popup_view', 'all')">{{ 'socialshopwave.log_in' | t }}</a>
+                    </li>
+                    <li>
+                      <a id="customer_register_link" data-toggle="ssw-modal" data-target="#signup_modal" href="javascript:void(0);" onclick="trackShopStats('login_popup_view', 'all')">{{ 'socialshopwave.sign_up' | t }}</a>
+                    </li>
+                    {% endif %}
+                 {%- endif -%}
+              {%- endif -%}
+            {%- when 'menu' -%}
+
+               {%- if linklists[block_stts.menu].links.size > 0 -%}
+                   <li id="item_{{block.id}}" class="menu-item item-level-0 menu-item-has-children {{only_icon}}" {{ block.shopify_attributes }}>
+                     <a href="{{block_stts.url}}" target="{{block_stts.open_link}}"><span class="nav_link_txt flex al_center">{% if block_stts.icon != blank %}<i class="las la-{{block_stts.icon | strip }} mr__10 fs__20"></i>{% endif %}{{block_stts.title}}{% if block_stts.lb != blank %}<span class="lbc_nav_mb ml__5" style="background-color: {{block_stts.lb_cl | default:'#01bad4'}}">{{block_stts.lb}}</span>{% endif %}</span><span class="nav_link_icon ml__5"></span></a>
+                     <ul class="sub-menu">
+                        {%- for link in linklists[block_stts.menu].links -%}
+
+                           {%- assign arrlt = link.title | split: '[' -%}
+                           {%- if link.links != blank -%}
+                              <li class="menu-item item-level-1 menu-item-has-children {{only_icon}}{% if link.active %} current_item{% endif %}">
+                                 <a href="{{link.url}}"><span class="nav_link_txt flex al_center">{%- render 'lb_inc_mb',arrlt:arrlt -%}</span><span class="nav_link_icon ml__5"></span></a>
+                                 <ul class="sub-sub-menu">
+                                    {%- for child_link in link.links -%}
+
+                                       {%- assign arrlt = child_link.title | split: '[' -%}
+                                       {%- if child_link.links != blank -%}
+                                          <li id="item_{{block.id}}" class="menu-item item-level-2 menu-item-has-children {{only_icon}}{% if child_link.active %} current_item{% endif %}">
+                                             <a href="{{child_link.url}}"><span class="nav_link_txt flex al_center">{%- render 'lb_inc_mb',arrlt:arrlt -%}</span><span class="nav_link_icon ml__5"></span></a>
+                                             <ul class="sub-sub-sub-menu">
+
+                                                {%- for grandchild_link in child_link.links -%}
+                                                {%- assign arrlt = grandchild_link.title | split: '[' -%}
+                                                <li class="menu-item item-level-3{% if grandchild_link.active %} current_item{% endif %}"><a href="{{grandchild_link.url}}">{%- render 'lb_inc_mb',arrlt:arrlt -%}</a></li>
+                                                {%- endfor -%}
+
+                                             </ul>
+                                          </li>
+                                       {%- else -%}
+                                           <li class="menu-item item-level-2{% if child_link.active %} current_item{% endif %}"><a href="{{child_link.url}}">{%- render 'lb_inc_mb',arrlt:arrlt -%}</a></li>
+                                       {%- endif -%}
+
+                                    {%- endfor -%}
+                                 </ul>
+                              </li>
+                           {%- else -%}
+                              <li class="menu-item item-level-1{% if link.active %} current_item{% endif %}"><a href="{{link.url}}">{%- render 'lb_inc_mb',arrlt:arrlt -%}</a></li>
+                           {%- endif -%}
+
+                        {%- endfor -%}
+                     </ul>
+                  </li>
+               {%- else -%}
+                   <li id="item_{{block.id}}" class="menu-item item-level-0"><a href="{{block_stts.url}}" target="{{block_stts.open_link}}">{% if block_stts.icon != blank %}<i class="las la-{{block_stts.icon | strip }} mr__10 fs__20"></i>{% endif %}{{block_stts.title }}{% if block_stts.lb != blank %}<span class="lbc_nav_mb ml__5" style="background-color: {{block_stts.lb_cl | default:'#01bad4'}}">{{block_stts.lb}}</span>{% endif %}</a></li>
+               {%- endif -%}
+
+            {%- when 'catpr' -%}
+            
+               {%- capture get_sub_cat -%}
+                      {%- for i in (1..25) -%}
+                      {%- assign cat = 'cat' | append:i -%}
+                      {%- assign url = 'url' | append:i -%}
+                      {%- assign image = 'image' | append:i -%}
+                      {%- assign cat_id = block_stts[cat] -%}
+                      {%- assign url_id = block_stts[url] -%}
+                      {%- assign image_id = block_stts[image] -%}
+                      {%- assign collection = collections[cat_id] -%}
+
+                          {%- if collection == blank and url_id == blank %}{% continue %}{% endif %}{% assign image = image_id | default:collection.image -%}
+                           <div class="cat_grid_item cat_space_item">
+                            <div class="cat_grid_item__content pr oh">
+                               <a href="{{ url_id|default:collection.url }}" class="db cat_grid_item__link">
+                                {%- if image != blank -%}
+                                <div class="cat_grid_item__overlay item__position nt_bg_lz lazyload" data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{image.aspect_ratio}}" data-sizes="auto" data-parent-fit="width" style="padding-top:{{ 1 | divided_by: image.aspect_ratio | times: 100}}%;"></div>
+                                {%- else -%}
+                                <div class="cat_grid_item__overlay item__position nt_bg_lz" style="padding-top:100%;"></div>
+                                {%- endif -%}
+                               </a>
+                               <div class="cat_grid_item__wrapper pe_none"><div class="cat_grid_item__title h3">{{ collection.title }}</div></div>
+                            </div>
+                           </div>
+                         
+                      {%- endfor -%}
+               {%- endcapture -%}
+
+               {%- if get_sub_cat != blank -%}
+                   <li id="item_{{block.id}}" class="menu-item menu-item-cat item-level-0 menu-item-has-children {{only_icon}}" {{ block.shopify_attributes }}>
+                     <a href="{{block_stts.url}}" target="{{block_stts.open_link}}"><span class="nav_link_txt flex al_center">{% if block_stts.icon != blank %}<i class="las la-{{block_stts.icon | strip }} mr__10 fs__20"></i>{% endif %}{{block_stts.title}}{% if block_stts.lb != blank %}<span class="lbc_nav_mb ml__5" style="background-color: {{block_stts.lb_cl | default:'#01bad4'}}">{{block_stts.lb}}</span>{% endif %}</span><span class="nav_link_icon ml__5"></span></a>
+                     <ul class="sub-menu equal_nt cat_design_2">{{get_sub_cat}}</ul>
+                  </li>
+               {%- else -%}
+                   <li id="item_{{block.id}}" class="menu-item item-level-0"><a href="{{block_stts.url}}" target="{{block_stts.open_link}}">{% if block_stts.icon != blank %}<i class="las la-{{block_stts.icon | strip }} mr__10 fs__20"></i>{% endif %}{{block_stts.title }}{% if block_stts.lb != blank %}<span class="lbc_nav_mb ml__5" style="background-color: {{block_stts.lb_cl | default:'#01bad4'}}">{{block_stts.lb}}</span>{% endif %}</a></li>
+               {%- endif -%}
+
+         {%- endcase -%}
+      {%- endfor -%}
+   {%- else -%}
+      <li><a href="/admin/themes/">Create your mobile menu sidebar and config from Section > Mobile Menu</a></li>
+   {%- endif -%}
+</ul>
+{%- comment -%}
+{%- for i in (1..25) -%}
+      {"type": "paragraph","content": "#{{i}} ——————————————"},{"label": " Collection #{{i}}","id": "cat{{i}}", "type": "collection"},{"type": "image_picker","id": "image{{i}}","label": "Image #{{i}}"},
+{%- endfor -%}
+{%- endcomment -%}
+{%- schema -%}
+  {
+    "name": "Mobile Menu",
+    /*"class": "mb_nav_tab active",*/
+    "max_blocks": 30,
+    "blocks": [
+      {
+        "type": "menu",
+        "name": "Menu item",
+        "settings": [
+                  {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Heading"
+          },
+          {
+             "type": "url",
+             "id": "url",
+             "label": "Link"
+          },
+          {
+            "type": "select",
+            "id": "open_link",
+            "options": [
+              {
+                "value": "_self",
+                "label": "Current window (_self)"
+              },
+             {
+                "value": "_blank",
+                "label": "New window (_blank)"
+              }
+            ],
+            "label": "Open link in"
+          },
+          {
+            "type": "link_list",
+            "id": "menu",
+            "label": "Add menu"
+          },
+          {
+            "id": "icon",
+            "type": "text",
+            "label": "Icon",
+            "info":"Ex:user [Line awesome icons](https://icons8.com/line-awesome)"
+          },
+          {
+            "type":"text",
+            "id":"lb",
+            "label":"Label text"
+          },
+          {
+            "type":"color",
+            "id":"lb_cl",
+            "label":"Label color"
+          }
+        ]
+      },
+      {
+        "type": "catpr",
+        "name": "Collection Image List",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Collection title"
+          },
+          {
+             "type": "url",
+             "id": "url",
+             "label": "Link"
+          },
+          {
+            "id": "icon",
+            "type": "text",
+            "label": "Icon",
+            "info":"Ex:user [Line awesome icons](https://icons8.com/line-awesome)"
+          },
+          {
+            "type":"text",
+            "id":"lb",
+            "label":"Label text"
+          },
+          {
+            "type":"color",
+            "id":"lb_cl",
+            "label":"Label color"
+          },
+          {
+            "type": "header",
+            "content": "== List collection"
+          },
+          {"type": "paragraph","content": "Leave link empty to use 'collection url'."},
+          {"type": "paragraph","content": "#1 ——————————————"},{"label": " Collection #1","id": "cat1", "type": "collection"},{"label": "Link #1 (optional)","id": "url1", "type": "url"},{"type": "image_picker","id": "image1","label": "Image #1"},{"type": "paragraph","content": "#2 ——————————————"},{"label": " Collection #2","id": "cat2", "type": "collection"},{"label": "Link #2 (optional)","id": "url2", "type": "url"},{"type": "image_picker","id": "image2","label": "Image #2"},{"type": "paragraph","content": "#3 ——————————————"},{"label": " Collection #3","id": "cat3", "type": "collection"},{"label": "Link #3 (optional)","id": "url3", "type": "url"},{"type": "image_picker","id": "image3","label": "Image #3"},{"type": "paragraph","content": "#4 ——————————————"},{"label": " Collection #4","id": "cat4", "type": "collection"},{"label": "Link #4 (optional)","id": "url4", "type": "url"},{"type": "image_picker","id": "image4","label": "Image #4"},{"type": "paragraph","content": "#5 ——————————————"},{"label": " Collection #5","id": "cat5", "type": "collection"},{"label": "Link #5 (optional)","id": "url5", "type": "url"},{"type": "image_picker","id": "image5","label": "Image #5"},{"type": "paragraph","content": "#6 ——————————————"},{"label": " Collection #6","id": "cat6", "type": "collection"},{"label": "Link #6 (optional)","id": "url6", "type": "url"},{"type": "image_picker","id": "image6","label": "Image #6"},{"type": "paragraph","content": "#7 ——————————————"},{"label": " Collection #7","id": "cat7", "type": "collection"},{"label": "Link #7 (optional)","id": "url7", "type": "url"},{"type": "image_picker","id": "image7","label": "Image #7"},{"type": "paragraph","content": "#8 ——————————————"},{"label": " Collection #8","id": "cat8", "type": "collection"},{"label": "Link #8 (optional)","id": "url8", "type": "url"},{"type": "image_picker","id": "image8","label": "Image #8"},{"type": "paragraph","content": "#9 ——————————————"},{"label": " Collection #9","id": "cat9", "type": "collection"},{"label": "Link #9 (optional)","id": "url9", "type": "url"},{"type": "image_picker","id": "image9","label": "Image #9"},{"type": "paragraph","content": "#10 ——————————————"},{"label": " Collection #10","id": "cat10", "type": "collection"},{"label": "Link #1 (optional)0","id": "url10", "type": "url"},{"type": "image_picker","id": "image10","label": "Image #10"},{"type": "paragraph","content": "#11 ——————————————"},{"label": " Collection #11","id": "cat11", "type": "collection"},{"label": "Link #1 (optional)1","id": "url11", "type": "url"},{"type": "image_picker","id": "image11","label": "Image #11"},{"type": "paragraph","content": "#12 ——————————————"},{"label": " Collection #12","id": "cat12", "type": "collection"},{"label": "Link #1 (optional)2","id": "url12", "type": "url"},{"type": "image_picker","id": "image12","label": "Image #12"},{"type": "paragraph","content": "#13 ——————————————"},{"label": " Collection #13","id": "cat13", "type": "collection"},{"label": "Link #1 (optional)3","id": "url13", "type": "url"},{"type": "image_picker","id": "image13","label": "Image #13"},{"type": "paragraph","content": "#14 ——————————————"},{"label": " Collection #14","id": "cat14", "type": "collection"},{"label": "Link #1 (optional)4","id": "url14", "type": "url"},{"type": "image_picker","id": "image14","label": "Image #14"},{"type": "paragraph","content": "#15 ——————————————"},{"label": " Collection #15","id": "cat15", "type": "collection"},{"label": "Link #1 (optional)5","id": "url15", "type": "url"},{"type": "image_picker","id": "image15","label": "Image #15"},{"type": "paragraph","content": "#16 ——————————————"},{"label": " Collection #16","id": "cat16", "type": "collection"},{"label": "Link #1 (optional)6","id": "url16", "type": "url"},{"type": "image_picker","id": "image16","label": "Image #16"},{"type": "paragraph","content": "#17 ——————————————"},{"label": " Collection #17","id": "cat17", "type": "collection"},{"label": "Link #1 (optional)7","id": "url17", "type": "url"},{"type": "image_picker","id": "image17","label": "Image #17"},{"type": "paragraph","content": "#18 ——————————————"},{"label": " Collection #18","id": "cat18", "type": "collection"},{"label": "Link #1 (optional)8","id": "url18", "type": "url"},{"type": "image_picker","id": "image18","label": "Image #18"},{"type": "paragraph","content": "#19 ——————————————"},{"label": " Collection #19","id": "cat19", "type": "collection"},{"label": "Link #1 (optional)9","id": "url19", "type": "url"},{"type": "image_picker","id": "image19","label": "Image #19"},{"type": "paragraph","content": "#20 ——————————————"},{"label": " Collection #20","id": "cat20", "type": "collection"},{"label": "Link #2 (optional)0","id": "url20", "type": "url"},{"type": "image_picker","id": "image20","label": "Image #20"},{"type": "paragraph","content": "#21 ——————————————"},{"label": " Collection #21","id": "cat21", "type": "collection"},{"label": "Link #2 (optional)1","id": "url21", "type": "url"},{"type": "image_picker","id": "image21","label": "Image #21"},{"type": "paragraph","content": "#22 ——————————————"},{"label": " Collection #22","id": "cat22", "type": "collection"},{"label": "Link #2 (optional)2","id": "url22", "type": "url"},{"type": "image_picker","id": "image22","label": "Image #22"},{"type": "paragraph","content": "#23 ——————————————"},{"label": " Collection #23","id": "cat23", "type": "collection"},{"label": "Link #2 (optional)3","id": "url23", "type": "url"},{"type": "image_picker","id": "image23","label": "Image #23"},{"type": "paragraph","content": "#24 ——————————————"},{"label": " Collection #24","id": "cat24", "type": "collection"},{"label": "Link #2 (optional)4","id": "url24", "type": "url"},{"type": "image_picker","id": "image24","label": "Image #24"},{"type": "paragraph","content": "#25 ——————————————"},{"label": " Collection #25","id": "cat25", "type": "collection"},{"label": "Link #2 (optional)5","id": "url25", "type": "url"},{"type": "image_picker","id": "image25","label": "Image #25"}
+        ]
+      },
+      {
+        "type": "wis",
+        "name": "Wishlist",
+        "limit": 1
+      },
+      {
+        "type": "compe",
+        "name": "Compare",
+        "limit": 1
+      },
+      {
+        "type": "sea",
+        "name": "Search",
+        "limit": 1
+      },
+      {
+        "type": "acc",
+        "name": "Account",
+        "limit": 1
+      },
+      {
+        "type": "help",
+        "name": "Help text",
+        "limit": 1,
+        "settings": [
+         {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Need help?"
+         },
+         {
+            "type": "html",
+            "id": "text",
+            "label": "Content",
+            "default": "<i class=\"pegk pe-7s-call fwb mr__10\"><\/i>+01 23456789<br><i class=\"pegk pe-7s-mail fwb mr__10\"><\/i><a class=\"cg\" href=\"mailto:kalles@domain.com\">kalles@domain.com<\/a>"
+         }
+        ]
+      },
+      {
+        "type": "cur",
+        "name": "Currency",
+        "limit": 1
+      },
+      {
+        "type": "lang",
+        "name": "Languages",
+        "limit": 1
+      }
+    ],
+    "default": {
+      "blocks": [
+        { "type": "menu" },
+        { "type": "menu" },
+        { "type": "menu" },
+        { "type": "menu" },
+        { "type": "wis" },
+        { "type": "sea" },
+        { "type": "acc" },
+        { "type": "help" },
+        { "type": "lang" },
+        { "type": "cur" }
+      ]
+    }
+  }
+{% endschema %}

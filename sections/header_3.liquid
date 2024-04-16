@@ -1,0 +1,1228 @@
+{%- liquid
+  assign se_blocks = section.blocks 
+  assign tp_blocks = se_blocks | map: 'type' | join: ',' | remove:',link2' | remove:',link' | remove:',pr' | remove:',banner' | remove:',html' | remove:',cat' | split: ','
+  assign blocktp = 't4'
+  assign admin_sp = request.design_mode
+  assign h__bgimg = settings.h__bgimg -%}
+
+{%- if template.suffix == "header" and template.name == 'search' -%}
+  {%- render 'menu_import',section:section -%}
+{%- else -%}
+  <div class="header__mid{% if h__bgimg != blank %} lazyload h__lz_img" data-bgset="{{ h__bgimg | img_url: '1x1' }}" data-ratio="{{h__bgimg.aspect_ratio}}" data-sizes="auto"{% else %}"{% endif %}><div class="container">
+     <div class="row al_center css_h_se">
+        <div class="col-md-4 col-3 dn_lg">{%- render 'push_menu' -%}</div>
+        <div class="col-lg-2 col-md-4 col-6 tc tl_lg">{%- render 'nt_logo' with 'div' -%}</div>
+        <div class="col dn db_lg">{%- render 'menu_inc',admin_sp:admin_sp,se_blocks:se_blocks,tp_blocks:tp_blocks -%}</div>
+        <div class="col-lg-auto col-md-4 col-3 tr col_group_btns">{%- render 'nt_group_btns' -%}</div>
+        {%- comment -%}col-8 col-lg-2{%- endcomment -%}
+     </div>
+  </div></div> 
+
+  {%- if admin_sp -%}
+      {%- assign arr_sub = 'link,link2,banner,html,pr,cat' -%}
+      {%- for block in se_blocks %}<div {% if arr_sub contains block.type %}{% assign id_data = block.id %} {{ block.shopify_attributes }}{% else %}{% assign id_data2 = block.id %}{% endif %}id="bkjs_{{id_data}}" data-id='{{id_data2}}'></div>{% endfor -%}
+  {%- endif -%}
+  <style>.header__mid .css_h_se {min-height: {{section.settings.height}}px}.nt_menu >li>a{height:{{section.settings.height}}px}</style>
+{%- endif -%}
+
+{%- schema -%}
+  {
+    "name": "Header Design 3",
+    "max_blocks": 80,
+    "class": "sp_header_mid",
+	  "settings": [
+      {
+        "type": "range",
+        "id": "height",
+        "label": "== Custom header height",
+        "min": 60,
+        "max": 160,
+        "step": 1,
+        "unit": "px",
+        "default": 62
+      },
+      {
+        "type": "checkbox",
+        "id": "arrow",
+        "label": "Show dropdown arrow?",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "== Mega menu"
+      },
+      {
+        "type": "select",
+        "id": "align",
+         "options": [
+          {
+            "value": "tl",
+            "label": "Left"
+          },
+          {
+            "value": "tc",
+            "label": "Center"
+          },
+          {
+            "value": "tr",
+            "label": "Right"
+          }
+         ],
+        "label": "Main menu align:",
+        "default": "tc"
+      },
+	    {
+	      "type": "select",
+	      "id": "hover",
+	      "options": [
+	        {
+	          "value": "hover_side_up",
+	          "label": "Hover Slide Up"
+	        },
+	        {
+	          "value": "hover_fade_in",
+	          "label": "Hover Fade In"
+	        }
+	      ],
+	      "label": "Hover effect:",
+	      "default": "hover_side_up"
+	    }
+	  ],
+    "blocks": [
+      {
+        "type": "mega",
+        "name": "Mega Menu (Parent)",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Heading"
+          },
+         {
+            "type": "url",
+            "id": "url",
+            "label": "Link"
+         },
+          {
+            "type": "select",
+            "id": "open_link",
+            "options": [
+              {
+                "value": "_self",
+                "label": "Current window (_self)"
+              },
+             {
+                "value": "_blank",
+                "label": "New window (_blank)"
+              }
+            ],
+            "label": "Open link in"
+          },
+          {
+            "id": "icon",
+            "type": "text",
+            "label": "Icon",
+            "info":"[Get icons Line awesome](https://icons8.com/line-awesome)"
+          },
+          {
+            "type": "checkbox",
+            "id": "cus_cl",
+            "label": "Use cusom heading color?",
+            "default": false
+          },
+          {
+            "type":"color",
+            "id":"cl",
+            "default": "#ec0101",
+            "label":"Heading color"
+          },
+          {
+            "type":"text",
+            "id":"lb",
+            "label":"Label text"
+          },
+          {
+            "type":"color",
+            "id":"lb_cl",
+            "label":"Label color"
+          },
+          {
+            "type": "checkbox",
+            "id": "lazy_mn",
+            "label": "Enable Lazy menu?",
+            "info": "improve page load speed",
+            "default": true
+          },
+          {
+            "type": "select",
+            "id": "pos",
+            "options": [
+              {
+                "value": "default",
+                "label": "Default"
+              },
+              {
+                "value": "center",
+                "label": "Center"
+              }
+            ],
+            "label": "Position Submenu:"
+          },
+          {
+            "type": "select",
+            "id": "wid",
+            "options": [
+              {
+                "value": "cus",
+                "label": "Custom"
+              },
+              {
+                "value": "full",
+                "label": "Full Width"
+              },
+              {
+                "value": "full nav_t4cnt",
+                "label": "Content Full Width"
+              }
+            ],
+            "label": "Width Submenu:"
+          },
+          {
+            "type": "range",
+            "id": "cus_wid",
+            "label": "== Custom Width",
+            "min": 200,
+            "max": 1200,
+            "step": 50,
+            "unit": "px",
+            "default": 1200
+          }
+        ]
+      },
+      {
+        "type": "dropdown",
+        "name": "Dropdown Menu (lv 1)",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Heading"
+          },
+         {
+            "type": "url",
+            "id": "url",
+            "label": "Link"
+         },
+          {
+            "type": "select",
+            "id": "open_link",
+            "options": [
+              {
+                "value": "_self",
+                "label": "Current window (_self)"
+              },
+             {
+                "value": "_blank",
+                "label": "New window (_blank)"
+              }
+            ],
+            "label": "Open link in"
+          },
+          {
+            "type": "link_list",
+            "id": "menu",
+            "label": "Add menu"
+          },
+          {
+            "id": "icon",
+            "type": "text",
+            "label": "Icon",
+            "info":"[Get icons Line awesome](https://icons8.com/line-awesome)"
+          },
+          {
+            "type": "checkbox",
+            "id": "cus_cl",
+            "label": "Use cusom heading color?",
+            "default": false
+          },
+          {
+            "type":"color",
+            "id":"cl",
+            "default": "#ec0101",
+            "label":"Heading color"
+          },
+          {
+            "type":"text",
+            "id":"lb",
+            "label":"Label text"
+          },
+          {
+            "type":"color",
+            "id":"lb_cl",
+            "label":"Label color"
+          },
+          {
+            "type": "checkbox",
+            "id": "lazy_mn",
+            "label": "Enable Lazy menu?",
+            "info": "improve page load speed",
+            "default": true
+          },
+          {
+            "type": "select",
+            "id": "pos",
+            "options": [
+              {
+                "value": "right",
+                "label": "Right"
+              },
+              {
+                "value": "left",
+                "label": "Left"
+              }
+            ],
+            "label": "Position Submenu:"
+          }
+        ]
+      },
+      {
+        "type": "simple",
+        "name":"Item no children (lv 1)",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Heading"
+          },
+         {
+            "type": "url",
+            "id": "url",
+            "label": "Link",
+            "default": "/"
+         },
+          {
+            "type": "select",
+            "id": "open_link",
+            "options": [
+              {
+                "value": "_self",
+                "label": "Current window (_self)"
+              },
+             {
+                "value": "_blank",
+                "label": "New window (_blank)"
+              }
+            ],
+            "label": "Open link in"
+          },
+          {
+            "id": "icon",
+            "type": "text",
+            "label": "Icon",
+            "info":"[Get icons Line awesome](https://icons8.com/line-awesome)"
+          },
+          {
+            "type": "checkbox",
+            "id": "cus_cl",
+            "label": "Use cusom heading color?",
+            "default": false
+          },
+          {
+            "type":"color",
+            "id":"cl",
+            "default": "#ec0101",
+            "label":"Heading color"
+          },
+          {
+            "type":"text",
+            "id":"lb",
+            "label":"Label text"
+          },
+          {
+            "type":"color",
+            "id":"lb_cl",
+            "label":"Label color"
+          }
+        ]
+      },
+      /*{
+        "type": "btn",
+        "name":"Call to action (lv 1)",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Button",
+            "default": "Buy Now"
+          },
+          {
+            "type": "url",
+            "id": "url",
+            "label": "Button link",
+            "default": "/"
+          },
+          {
+            "type": "select",
+            "id": "open_link",
+            "options": [
+              {
+                "value": "_self",
+                "label": "Current window (_self)"
+              },
+             {
+                "value": "_blank",
+                "label": "New window (_blank)"
+              }
+            ],
+            "label": "Open link in"
+          },
+          {
+            "id": "icon",
+            "type": "text",
+            "label": "Icon",
+            "info":"[Get icons Line awesome](https://icons8.com/line-awesome)"
+          },
+          {
+            "type":"text",
+            "id":"lb",
+            "label":"Label text"
+          },
+          {
+            "type":"color",
+            "id":"lb_cl",
+            "label":"Label color"
+          },
+          {
+            "type": "checkbox",
+            "id": "radius",
+            "label": "Use border radius?"
+          }
+        ]
+      },*/
+      {
+        "type": "link",
+        "name":"Linklist (child)",
+        "settings": [
+          {
+            "type": "text",
+            "id": "tt_hd",
+            "label": "Heading",
+            "default": "Heading"
+          },
+         {
+            "type": "url",
+            "id": "url",
+            "label": "Link"
+         },
+          {
+            "type": "select",
+            "id": "open_link",
+            "options": [
+              {
+                "value": "_self",
+                "label": "Current window (_self)"
+              },
+             {
+                "value": "_blank",
+                "label": "New window (_blank)"
+              }
+            ],
+            "label": "Open link in"
+          },
+          {
+            "type": "link_list",
+            "id": "menu",
+            "label": "Add menu"
+          },
+           {
+            "type": "select",
+            "id": "col",
+            "default": "4",
+            "options": [
+              {
+                "value": "1",
+                "label": "1/12 (8.333333%)"
+              },
+              {
+                "value": "2",
+                "label": "2/12 (16.666667%)"
+              },
+              {
+                "value": "3",
+                "label": "3/12 (25%)"
+              },
+              {
+                "value": "4",
+                "label": "4/12 (33.333333%)"
+              },
+              {
+                "value": "6",
+                "label": "6/12 (50%)"
+              },
+              {
+                "value": "7",
+                "label": "7/12 (58.333333%)"
+              },
+              {
+                "value": "8",
+                "label": "8/12 (66.666667%)"
+              },
+              {
+                "value": "9",
+                "label": "9/12 (75%)"
+              },
+              {
+                "value": "10",
+                "label": "10/12 (83.333333%)"
+              },
+              {
+                "value": "11",
+                "label": "11/12 (91.666667%)"
+              },
+              {
+                "value": "12",
+                "label": "12/12 (100%)"
+              }
+            ],
+            "label": "Width col:"
+           }
+        ]
+      },
+      {
+        "type": "link2",
+        "name":"Linklist 2 ( child )",
+        "settings": [
+          {
+            "type": "select",
+            "id": "col",
+            "default": "4",
+            "options": [
+              {
+                "value": "1",
+                "label": "1/12 (8.333333%)"
+              },
+              {
+                "value": "2",
+                "label": "2/12 (16.666667%)"
+              },
+              {
+                "value": "3",
+                "label": "3/12 (25%)"
+              },
+              {
+                "value": "4",
+                "label": "4/12 (33.333333%)"
+              },
+              {
+                "value": "6",
+                "label": "6/12 (50%)"
+              },
+              {
+                "value": "7",
+                "label": "7/12 (58.333333%)"
+              },
+              {
+                "value": "8",
+                "label": "8/12 (66.666667%)"
+              },
+              {
+                "value": "9",
+                "label": "9/12 (75%)"
+              },
+              {
+                "value": "10",
+                "label": "10/12 (83.333333%)"
+              },
+              {
+                "value": "11",
+                "label": "11/12 (91.666667%)"
+              },
+              {
+                "value": "12",
+                "label": "12/12 (100%)"
+              }
+            ],
+            "label": "Width col:"
+          },
+          {
+            "type": "link_list",
+            "id": "menu", 
+            "label": "Add menu"
+          }
+           
+        ]
+      },
+      {
+        "type": "pr",
+        "name":"Product (child)",
+        "settings": [
+          {
+            "type": "range",
+            "id": "limit",
+            "min": 1,
+            "max": 10,
+            "step": 1,
+            "label": "Products per page",
+            "info": "Number of products per page",
+            "default": 6
+          },
+          {
+            "id": "id_cat",
+            "type": "collection",
+            "label": "Collection"
+          },
+          {
+            "type": "range",
+            "id": "column_pr",
+            "label": "Column Product",
+            "min": 1,
+            "max": 6,
+            "step": 1,
+            "default": 1
+          },
+          {
+            "type": "select",
+            "id": "pr_des",
+            "label": "Design product",
+            "default": "1",
+            "options": [
+              {
+                "value": "1",
+                "label": "Design 1"
+              },
+              {
+                "value": "1 tc",
+                "label": "Design 1 (center)"
+              },
+              {
+                "value": "2",
+                "label": "Design 2"
+              }
+            ]
+          },
+          {
+            "type": "checkbox",
+            "id": "show_vendor",
+            "label": "Show product vendors",
+            "default": false
+          },
+          {
+            "type": "select",
+            "id": "pr_lay",
+            "label": "Layout product",
+            "default": "2",
+            "options": [
+              {
+                "value": "1",
+                "label": "Grid"
+              },
+              {
+                "value": "2",
+                "label": "Slider"
+              }
+            ]
+          },
+          {
+            "type": "header",
+            "content": "== Countdown timer"
+          },
+          {
+            "type": "paragraph",
+            "content": "Countdown to the end sale date will be shown. Be sure you have set final date of the product sale price. product.metafields.meta.countdown ( 2017\/08\/17 )"
+          },
+          {
+            "type": "checkbox",
+            "id": "use_cdt",
+            "default": false,
+            "label": "Use countdown timer?"
+          },
+          {
+            "type": "checkbox",
+            "id": "round_cd",
+            "default": false,
+            "label": "Round countdown timer?"
+          },
+          {
+            "type": "select",
+            "id": "cdt_des",
+            "label": "Countdown Design:",
+            "default": "1",
+            "options": [
+              {
+                "value": "1",
+                "label": "Design 1"
+              },
+              {
+                "value": "2",
+                "label": "Design 2"
+              },
+              {
+                "value": "3",
+                "label": "Design 3"
+              },
+              {
+                "value": "4",
+                "label": "Design 4"
+              },
+              {
+                "value": "5",
+                "label": "Design 5"
+              }
+            ]
+          },
+          {
+            "type": "header",
+            "content": "== Design Image"
+          },
+          {
+            "type": "checkbox",
+            "id": "use_eq_height",
+            "label": "Use equal height images?",
+            "default": false
+          },
+          {
+            "type": "select",
+            "id": "image_ratio",
+            "label": "Aspect Ratio",
+            "default": "ratio_nt",
+            "info": "Aspect Ratio Custom will settings in General panel.",
+            "options": [
+              {
+                "group": "Landscape",
+                "value": "ratio2_1",
+                "label": "2:1"
+              },
+              {
+                "group": "Landscape",
+                "value": "ratio16_9",
+                "label": "16:9"
+              },
+              {
+                "group": "Landscape",
+                "value": "ratio8_5",
+                "label": "8:5"
+              },
+              {
+                "group": "Landscape",
+                "value": "ratio3_2",
+                "label": "3:2"
+              },
+              {
+                "group": "Landscape",
+                "value": "ratio4_3",
+                "label": "4:3"
+              },
+              {
+                "group": "Landscape",
+                "value": "ratio_nt",
+                "label": "Ratio ASOS"
+              },
+              {
+                "group": "Squared",
+                "value": "ratio1_1",
+                "label": "1:1"
+              },
+              {
+                "group": "Portrait",
+                "value": "ratio2_3",
+                "label": "2:3"
+              },
+              {
+                "group": "Portrait",
+                "value": "ratio1_2",
+                "label": "1:2"
+              },
+              {
+                "group": "Custom",
+                "value": "ratio_cus1",
+                "label": "Ratio Custom 1"
+              },
+              {
+                "group": "Custom",
+                "value": "ratio_cus2",
+                "label": "Ratio Custom 2"
+              },
+              {
+                "group": "Custom",
+                "value": "ratio_cus3",
+                "label": "Ratio Custom 3"
+              },
+              {
+                "group": "Custom",
+                "value": "ratio_cus4",
+                "label": "Ratio Custom 4"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "image_size",
+            "label": "Image Size",
+            "default": "nt_cover",
+            "options": [
+              {
+                "value": "nt_cover",
+                "label": "Full"
+              },
+              {
+                "value": "nt_contain",
+                "label": "Auto"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "image_position",
+            "info": "The first value is the horizontal position and the second value is the vertical.",
+            "options": [
+              {
+                "value": "default",
+                "label": "Default"
+              },
+              {
+                "value": "1",
+                "label": "Left Top"
+              },
+              {
+                "value": "2",
+                "label": "Left Center"
+              },
+              {
+                "value": "3",
+                "label": "Left Bottom"
+              },
+              {
+                "value": "4",
+                "label": "Right Top"
+              },
+              {
+                "value": "5",
+                "label": "Right Center"
+              },
+              {
+                "value": "6",
+                "label": "Right Bottom"
+              },
+              {
+                "value": "7",
+                "label": "Center Top"
+              },
+              {
+                "value": "8",
+                "label": "Center Center"
+              },
+              {
+                "value": "9",
+                "label": "Center Bottom"
+              }
+            ],
+            "label": "Image Position",
+            "default": "8"
+          }, 
+           {
+            "type": "select",
+            "id": "col",
+            "default": "4",
+            "options": [
+              {
+                "value": "1",
+                "label": "1/12 (8.333333%)"
+              },
+              {
+                "value": "2",
+                "label": "2/12 (16.666667%)"
+              },
+              {
+                "value": "3",
+                "label": "3/12 (25%)"
+              },
+              {
+                "value": "4",
+                "label": "4/12 (33.333333%)"
+              },
+              {
+                "value": "6",
+                "label": "6/12 (50%)"
+              },
+              {
+                "value": "7",
+                "label": "7/12 (58.333333%)"
+              },
+              {
+                "value": "8",
+                "label": "8/12 (66.666667%)"
+              },
+              {
+                "value": "9",
+                "label": "9/12 (75%)"
+              },
+              {
+                "value": "10",
+                "label": "10/12 (83.333333%)"
+              },
+              {
+                "value": "11",
+                "label": "11/12 (91.666667%)"
+              },
+              {
+                "value": "12",
+                "label": "12/12 (100%)"
+              }
+            ],
+            "label": "Width col:"
+           }
+        ]
+      },
+      {
+        "type": "cat",
+        "name":"Collection (child)",
+        "settings": [
+         {
+           "type": "image_picker",
+           "id": "image",
+           "label": "Image"
+         },   
+         {
+           "type": "select",
+           "id": "cat_design",
+           "options": [
+            {
+               "value": "1",
+               "label": "Default"
+             },
+             {
+               "value": "2",
+               "label": "Design 2"
+             },
+             /*{
+               "value": "3",
+               "label": "Design 3"
+             },
+             {
+               "value": "4",
+               "label": "Design 4"
+             },
+             {
+               "value": "5",
+               "label": "Design 5"
+             },*/
+             {
+               "value": "6",
+               "label": "Design 3"
+             }
+           ],
+           "label": "Collections design",
+           "default": "1"
+         },
+        {
+          "type": "checkbox",
+          "id": "hoverz",
+          "label": "Enable zoom image on hover?",
+          "default": true
+        },
+         {
+            "id": "collection",
+            "type": "collection",
+            "label": "Collection"
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Title block (optional)",
+            "info": "Leave empty to use 'collection title' title."
+          },
+         {
+          "type": "select",
+          "id": "col",
+          "default": "4",
+          "options": [
+            {
+              "value": "1",
+              "label": "1/12 (8.333333%)"
+            },
+            {
+              "value": "2",
+              "label": "2/12 (16.666667%)"
+            },
+            {
+              "value": "3",
+              "label": "3/12 (25%)"
+            },
+            {
+              "value": "4",
+              "label": "4/12 (33.333333%)"
+            },
+            {
+              "value": "6",
+              "label": "6/12 (50%)"
+            },
+            {
+              "value": "7",
+              "label": "7/12 (58.333333%)"
+            },
+            {
+              "value": "8",
+              "label": "8/12 (66.666667%)"
+            },
+            {
+              "value": "9",
+              "label": "9/12 (75%)"
+            },
+            {
+              "value": "10",
+              "label": "10/12 (83.333333%)"
+            },
+            {
+              "value": "11",
+              "label": "11/12 (91.666667%)"
+            },
+            {
+              "value": "12",
+              "label": "12/12 (100%)"
+            }
+          ],
+          "label": "Width col:"
+         }
+        ]
+      },
+      {
+        "type": "banner",
+        "name":"Banner (child)",
+        "settings": [
+        {
+           "type": "image_picker",
+           "id": "image",
+           "label": "Image"
+         },
+         {
+          "label": "Link to (Optional)",
+          "id": "url",
+          "type": "url"
+        },
+          {
+            "type": "select",
+            "id": "open_link",
+            "options": [
+              {
+                "value": "_self",
+                "label": "Current window (_self)"
+              },
+             {
+                "value": "_blank",
+                "label": "New window (_blank)"
+              }
+            ],
+            "label": "Open link in"
+          },
+         {
+         "type": "header",
+         "content": "== Content Settings"
+         },
+        {
+          "type": "html",
+          "id": "html",
+          "label": "Content HTML:",
+          "default": "<h3 class=\"fs__30 mg__0 lh__1 cw mb__10\">lighting collections<\/h3><h4 class=\"fs__16 mg__0 cw\">Explorer<\/h4>"
+        },
+       {
+          "type": "range",
+          "id": "cap_v_pos",
+          "label": "Content vertical position",
+          "default": 50,
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%"
+       },
+       {
+          "type": "range",
+          "id": "cap_h_pos",
+          "label": "Content horizontal position",
+          "default": 50,
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%"
+       },
+        {
+         "type": "select",
+         "id": "txt_align",
+         "options": [
+          {
+             "value": "tl",
+             "label": "Left"
+           },
+           {
+             "value": "tc",
+             "label": "Center"
+           },
+           {
+             "value": "tr",
+             "label": "Right"
+           }
+         ],
+         "label": "Text alignment",
+         "default": "tc"
+        },
+        {
+          "type": "color",
+          "id": "cl_txt",
+          "label": "Text",
+          "default": "#fff"
+        },
+        {
+          "type": "color",
+          "id": "cl_overlay",
+          "label": "Overlay",
+          "default": "#000"
+        },
+        {
+          "type": "range",
+          "id": "cl_opacity",
+          "label": "Overlay opacity",
+          "default": 0,
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%"
+        },
+         {
+          "type": "select",
+          "id": "col",
+          "default": "4",
+          "options": [
+            {
+              "value": "1",
+              "label": "1/12 (8.333333%)"
+            },
+            {
+              "value": "2",
+              "label": "2/12 (16.666667%)"
+            },
+            {
+              "value": "3",
+              "label": "3/12 (25%)"
+            },
+            {
+              "value": "4",
+              "label": "4/12 (33.333333%)"
+            },
+            {
+              "value": "6",
+              "label": "6/12 (50%)"
+            },
+            {
+              "value": "7",
+              "label": "7/12 (58.333333%)"
+            },
+            {
+              "value": "8",
+              "label": "8/12 (66.666667%)"
+            },
+            {
+              "value": "9",
+              "label": "9/12 (75%)"
+            },
+            {
+              "value": "10",
+              "label": "10/12 (83.333333%)"
+            },
+            {
+              "value": "11",
+              "label": "11/12 (91.666667%)"
+            },
+            {
+              "value": "12",
+              "label": "12/12 (100%)"
+            }
+          ],
+          "label": "Width col:"
+         }
+        ]
+      },
+      {
+        "type": "html",
+        "name":"HTML ( child )",
+        "settings": [
+          {
+            "type": "html",
+            "id": "html",
+            "label": "HTML custom",
+            "default": "HTML custom code"
+          },
+         {
+          "type": "select",
+          "id": "col",
+          "default": "4",
+          "options": [
+            {
+              "value": "1",
+              "label": "1/12 (8.333333%)"
+            },
+            {
+              "value": "2",
+              "label": "2/12 (16.666667%)"
+            },
+            {
+              "value": "3",
+              "label": "3/12 (25%)"
+            },
+            {
+              "value": "4",
+              "label": "4/12 (33.333333%)"
+            },
+            {
+              "value": "6",
+              "label": "6/12 (50%)"
+            },
+            {
+              "value": "7",
+              "label": "7/12 (58.333333%)"
+            },
+            {
+              "value": "8",
+              "label": "8/12 (66.666667%)"
+            },
+            {
+              "value": "9",
+              "label": "9/12 (75%)"
+            },
+            {
+              "value": "10",
+              "label": "10/12 (83.333333%)"
+            },
+            {
+              "value": "11",
+              "label": "11/12 (91.666667%)"
+            },
+            {
+              "value": "12",
+              "label": "12/12 (100%)"
+            }
+          ],
+          "label": "Width col:"
+         }
+        ]
+      }
+   ],
+    "default": {
+      "blocks": [
+        {
+          "type": "simple",
+          "settings": {
+            "title": "Heading 1","url":"#"
+          }
+        },
+        {
+          "type": "simple",
+          "settings": {
+            "title": "Heading 2","url":"#"
+          }
+        }
+      ]
+    }
+  }
+{% endschema %}

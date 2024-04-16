@@ -1,0 +1,66 @@
+{%- liquid
+  assign img_zoom_size = 'master'
+  assign image_size = '1024x1024'
+  if alt contains '_' or alt contains '|'
+   assign img_alt = alt | split:'|' | first | strip | downcase
+   
+    if img_alt contains 't4option' 
+
+       assign alt_arr0 = img_alt |remove:'t4option'| split:'_'
+       assign index_alt = alt_arr0 | first | plus:0
+       assign index_alt2 = alt_arr0 | last | plus:0
+       if index_alt == 0
+         assign ops_name_arr = ops_name_1
+       elsif index_alt == 1
+         assign ops_name_arr = ops_name_2
+       else
+         assign ops_name_arr = ops_name_3
+       endif
+       assign alt_arr = ops_name[index_alt] | append:'_' | append:ops_name_arr[index_alt2] | split:'_'
+     
+    else
+      assign alt_arr = img_alt | split:'_'
+    endif
+    assign txt_alt = alt | split:'|' | last | escape | strip
+    
+  else
+   assign alt_arr = 'not4 ntt4' | split:' ' 
+   assign txt_alt = alt | escape
+  endif
+  assign enable_vlooping = settings.enable_vlooping
+  assign media_type = media.media_type
+  assign se_id = 'product-template'
+  assign image = media.preview_image
+  assign ratio = image.aspect_ratio
+  if alt contains 'imgt4_colorsolid'
+    assign img_zoom_size = '1x1'
+  endif -%}
+
+{%- case media_type -%}
+  {%- when 'image' -%} 
+   <div {% if alt contains 'imgt4_colorsolid' %}data-widths="[1]" {% endif %}data-grname="{{alt_arr | first | handleize }}" data-grpvl="{{alt_arr | last | handleize}}" class="img_ptw p_ptw js-sl-item p-item sp-pr-gallery__img w__100 nt_bg_lz lazyload media_id_{{media.id}}" data-mdid="{{media.id}}" data-mdtype="image" data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{ratio}}" data-rationav="{{ratio_nav}}" data-sizes="auto" data-src="{{ image | img_url: img_zoom_size }}" data-width="{{ image.width }}" data-height="{{ image.height }}" data-cap="{{ txt_alt }}"{% if eq_imgtb == 'ratio_imgtrue' %} style="padding-top:{{ 1 | divided_by: ratio | times: 100}}%;"{% endif %}>
+      <noscript><img src="{{ image | img_url: img_zoom_size }}" loading="lazy" alt="{{ txt_alt }}"></noscript>
+   </div>
+  {%- when 'external_video' -%}
+   <div data-grname="{{alt_arr | first | handleize }}" data-grpvl="{{alt_arr | last | handleize}}" data-mdid="{{media.id}}" data-mdtype="external_video" data-vhost="{{ media.host }}" class="js-sl-item p-item p-i-video w__100" data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{ratio}}" data-rationav="{{ratio_nav}}">
+      <div data-media-id="{{ se_id }}-{{ media.id }}" data-pr-md-tp-video data-looping="{{ enable_vlooping }}" data-video-id="{{ media.external_id }}" class="pr-single__media  pr oh nt_bg_lz"{% if eq_imgtb == 'ratio_imgtrue' %}  style="padding-top: {{ 1 | divided_by:ratio | times: 100 }}%;"{% endif %}>
+        {{ media | external_video_tag: class: 'media-video pa t__0 l__0 w__100 h__100' }}
+      </div>
+   </div>
+  {%- when 'video' -%}
+   <div data-grname="{{alt_arr | first | handleize }}" data-grpvl="{{alt_arr | last | handleize}}" data-mdid="{{media.id}}" data-mdtype="video" class="js-sl-item p-item p-i-video w__100" data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{ratio}}" data-rationav="{{ratio_nav}}">
+      <div data-media-id="{{ se_id }}-{{ media.id }}" data-pr-md-tp-video data-pr-md-tp-video5 data-looping="{{ enable_vlooping }}" class="pr-single__media pr oh nt_bg_lz"{% if eq_imgtb == 'ratio_imgtrue' %} style="padding-top: {{ 1 | divided_by: ratio | times: 100 }}%"{% endif %}>
+        {{ media | video_tag: class: 'media-video pa t__0 l__0 w__100 h__100', image_size: image_size }}
+      </div>
+   </div>
+  {%- when 'model' -%}
+   <div data-grname="{{alt_arr | first | handleize }}" data-grpvl="{{alt_arr | last | handleize}}" data-mdid="{{media.id}}" data-mdtype="model" class="js-sl-item p-item p-i-model w__100" data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{ratio}}" data-rationav="{{ratio_nav}}">
+      <div data-media-id="{{ se_id }}-{{ media.id }}" data-pr-md-tp-model class="pr-single__media pr oh nt_bg_lz"{% if eq_imgtb == 'ratio_imgtrue' %} style="padding-top: {{ 1 | divided_by: ratio | times: 100 }}%"{% endif %}>
+        {{ media | model_viewer_tag: class: 'media-model pa t__0 l__0 w__100 h__100',image_size: image_size, reveal: 'interaction', toggleable: true, data-model-id: media.id }}
+      </div>
+   </div>
+  {%- else -%}
+   <div data-grname="{{alt_arr | first | handleize }}" data-grpvl="{{alt_arr | last | handleize}}" data-mdid="{{media.id}}" data-mdtype="media" class="js-sl-item p-item w__100 nt_bg_lz"{% if eq_imgtb == 'ratio_imgtrue' %} style="padding-top: {{ 1 | divided_by: ratio | times: 100 }}%"{% endif %} data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{ratio}}" data-rationav="{{ratio_nav}}">
+      <div class="pr-single__media pa t__0 l__0 r__0 b__0">{{ media | media_tag: class: 'media-item', image_size: image_size }}</div>
+   </div>
+{%- endcase -%}

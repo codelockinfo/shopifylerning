@@ -1,0 +1,522 @@
+{%- liquid
+   assign after_action_atc = settings.after_action_atc
+   assign inc_price = settings.price_format
+   assign use_rating = settings.use_pr_rating
+   assign inc_rating = settings.app_review
+   assign show_color = settings.show_pr_color
+   assign show_cl_type = settings.show_color_type
+   assign show_size = settings.show_pr_size
+   assign sett_equal = section.settings.use_eq_height
+   assign show_vendor = section.settings.show_vendor 
+   assign inc_pr = section.settings.pr_des
+   assign limit = section.settings.limit
+   assign col = section.settings.col_pr
+   assign col_tb = '4'
+   assign col_mb = ' pr_animated done' | prepend:'12'
+   assign display_type = section.settings.display_type
+   assign pid = product.id
+   assign rid = 'related_' | append:pid
+   assign pr_link = linklists[rid].links
+   assign use_cdt = section.settings.use_cdt
+   assign txt_cd = 'products.grid_items.offer_end_in' | t
+   assign collection = collections['all']
+   assign admin_sp = request.design_mode -%}
+   {%- if admin_sp and collection.products.size > 0 -%}
+   <div id="mfp_re_upsell" class="popup_uppr_wrap mfp-hide">
+      {%- render 'section_title' -%}
+       <div class="products nt_products_holder nt_slider row row_pr_{{inc_pr}} cdt_des_{{section.settings.cdt_des}} round_cd_{{section.settings.round_cd}} {{section.settings.image_size}} {{section.settings.image_ratio}} position_{{section.settings.image_position}} space_{{section.settings.space}}{% if sett_equal %} equal_nt{% endif %}" data-flickityjs='{"draggable":0,"imagesLoaded": 0, "contain": 1, "groupCells": true, "dragThreshold" : 5, "cellAlign": "center","wrapAround": 0,"prevNextButtons": 1,"percentPosition": 1,"pageDots": 0, "rightToLeft": {{settings.use_rtl}}, "autoPlay":0 }'>
+        {%- if inc_pr == '1' or inc_pr == '1 tc' -%}
+        {%- for product in collection.products limit:limit -%}{%- render 'pr_loop_grid_1',product:product,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}{%- endfor -%}
+        {%- else -%}
+        {%- for product in collection.products limit:limit -%}{%- render 'pr_loop_grid_2',product:product,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}{%- endfor -%}
+        {%- endif -%}
+      </div>
+      <style>#mfp_re_upsell {background-color: #fff;}.popup_uppr_wrap {max-width:{% if col == "2" %}1100{% else %}950{% endif %}px !important;margin:30px auto;padding:30px;}</style>
+  </div>
+   {%- elsif recommendations.performed -%}
+       {%- if recommendations.products_count > 0 -%}
+         {%- render 'section_title' -%}
+         <div class="products nt_products_holder nt_slider row row_pr_{{inc_pr}} cdt_des_{{section.settings.cdt_des}} round_cd_{{section.settings.round_cd}} {{section.settings.image_size}} {{section.settings.image_ratio}} position_{{section.settings.image_position}} space_{{section.settings.space}}{% if sett_equal %} equal_nt{% endif %}" data-flickity='{"draggable":0,"imagesLoaded": 0, "contain": 1, "groupCells": true, "dragThreshold" : 5, "cellAlign": "center","wrapAround": 0,"prevNextButtons": 1,"percentPosition": 1,"pageDots": 0, "rightToLeft": {{settings.use_rtl}}, "autoPlay":0 }'>
+          {%- if inc_pr == '1' or inc_pr == '1 tc' -%}
+          {%- for product in recommendations.products limit:limit -%}{%- render 'pr_loop_grid_1',product:product,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}{%- endfor -%}
+          {%- else -%}
+          {%- for product in recommendations.products limit:limit -%}{%- render 'pr_loop_grid_2',product:product,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}{%- endfor -%}
+          {%- endif -%}
+        </div>
+        <style>.popup_uppr_wrap {max-width:{% if col == "2" %}1100{% else %}950{% endif %}px !important;margin:30px auto;padding:30px;}</style>
+       {%- endif -%}
+
+   {%- endif -%}
+
+{%- schema -%}
+{
+  "name": "Recommendations Popup ATC",
+  "class": "tp_se_cdt",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Config enable/disable on Theme settings: Cart, Search Widget ---> 2. SHOPPING CART WIDGET"
+    },
+    {
+      "type": "header",
+      "content": "== Title Settings"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "You may also like"
+    },
+    {
+      "type": "textarea",
+      "id": "sub_title",
+      "label": "Sub Text"
+    },
+    {
+      "type": "select",
+      "id": "sub_font",
+      "default": "2",
+      "options": [
+       {
+          "value": "1",
+          "label": "Body font"
+       },
+       {
+          "value": "2",
+          "label": "Sub title font"
+        }
+      ],
+      "label": "Sub Text use font:"
+    },
+      {
+        "type": "select",
+        "id": "style_title",
+        "default": "title_2",
+        "options": [
+         {
+            "value": "title_1",
+            "label": "Design 1"
+         },
+         {
+            "value": "title_2",
+            "label": "Design 2"
+          },
+         {
+            "value": "title_3",
+            "label": "Design 3"
+          },
+         {
+            "value": "title_4",
+            "label": "Design 4"
+          },
+         {
+            "value": "title_5 lazyload",
+            "label": "Design 5"
+          },
+         {
+            "value": "title_6",
+            "label": "Design 6"
+          },
+         {
+            "value": "title_7 +la",
+            "label": "Design 7 (with line-awesome)"
+          },
+         {
+            "value": "title_8",
+            "label": "Design 8"
+          },
+         {
+            "value": "title_9",
+            "label": "Design 9"
+          },
+         {
+            "value": "title_11",
+            "label": "Design 11"
+          },
+         {
+            "value": "title_12",
+            "label": "Design 12"
+          },
+         {
+            "value": "title_13",
+            "label": "Design 13"
+          }
+        ],
+        "label": "Design Title:"
+      },
+      {
+        "type": "text",
+        "id": "ic_tt",
+        "label": "Style 7 icon line-awesome",
+        "default": "gem"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_clpr",
+        "label": "Use icon color primary?",
+        "default": false
+      },
+      {
+        "type": "paragraph",
+        "content": "[Get icons Line awesome](https://icons8.com/line-awesome)"
+      },
+   {
+     "type": "header",
+     "content": "== General Configuration"
+   },
+     {
+       "type": "select",
+       "id": "display_type",
+       "default": "3",
+       "options": [
+         {
+           "value": "1",
+           "label": "By Collection"
+         },
+         {
+           "value": "2",
+           "label": "By Linklist"
+         },
+         {
+           "value": "3",
+           "label": "Dynamic recommendations"
+         }
+       ],
+       "info": "Dynamic recommendations change and improve with time. [Learn more](https://shopify.dev/tutorials/develop-theme-recommended-products)",
+       "label": "Select type to show"
+     },
+      {
+        "type": "paragraph",
+        "content": "Only working when you use 'Show popup recommendations'. You can set list product with a linklist menu"
+      },
+      /*{
+        "type": "select",
+        "id": "re_after_cart",
+        "options": [
+          {
+            "value": "1",
+            "label": "Dynamic recommendations"
+          },
+          {
+            "value": "2",
+            "label": "Choose collection + linklist"
+          }
+        ],
+        "label": "Recommendations source:",
+        "default": "1"
+      },
+      {
+        "id": "cat_after_cart",
+        "type": "collection",
+        "label": "Collection",
+        "info": "Products already in cart or sold out will be hidden."
+      },*/
+      {
+        "type": "range",
+        "id": "limit",
+        "label": "Number of Products to display",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+        "default": 6,
+        "info":"Dynamic recommendations, up to a maximum of ten"
+      },
+      {
+        "type": "range",
+        "id": "space",
+        "min": 20,"max": 50,"step": 10,
+        "unit": "px",
+        "label": "Space between products",
+        "default": 30
+      },
+      {
+        "type": "select",
+        "id": "col_pr",
+        "label": "Products per row (desktop)",
+        "info": "How many products you want to show per row",
+        "default": "3",
+        "options": [
+          {
+            "value": "6",
+            "label": "2"
+          },
+          {
+            "value": "4",
+            "label": "3"
+          },
+          {
+            "value": "3",
+            "label": "4"
+          },
+          {
+            "value": "15",
+            "label": "5"
+          },
+          {
+            "value": "2",
+            "label": "6"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_pr_tb",
+        "label": "Products per row (tablet)",
+        "default": "3",
+        "options": [
+          {
+            "value": "6",
+            "label": "2"
+          },
+          {
+            "value": "4",
+            "label": "3"
+          },
+          {
+            "value": "3",
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_pr_mb",
+        "label": "Products per row (mobile)",
+        "default": "6",
+        "options": [
+          {
+            "value": "12",
+            "label": "1"
+          },
+          {
+            "value": "6",
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "pr_des",
+        "label": "Design product",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "Design 1"
+          },
+          {
+            "value": "1 tc",
+            "label": "Design 1 (center)"
+          },
+          {
+            "value": "2",
+            "label": "Design 2"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "show_vendor",
+        "label": "Show product vendors",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "== Countdown timer"
+      },
+      {
+        "type": "paragraph",
+        "content": "Countdown to the end sale date will be shown. Be sure you have set final date of the product sale price. product.metafields.meta.countdown ( 2017\/08\/17 )"
+      },
+      {
+        "type": "checkbox",
+        "id": "use_cdt",
+        "default": false,
+        "label": "Use countdown timer?"
+      },
+      {
+        "type": "checkbox",
+        "id": "round_cd",
+        "default": false,
+        "label": "Round countdown timer?"
+      },
+      {
+        "type": "select",
+        "id": "cdt_des",
+        "label": "Countdown Design:",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "Design 1"
+          },
+          {
+            "value": "2",
+            "label": "Design 2"
+          },
+          {
+            "value": "3",
+            "label": "Design 3"
+          },
+          {
+            "value": "4",
+            "label": "Design 4"
+          },
+          {
+            "value": "5",
+            "label": "Design 5"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "== Design Image"
+      },
+      {
+        "type": "checkbox",
+        "id": "use_eq_height",
+        "label": "Use equal height images?",
+        "default": false
+      },
+      {
+        "type": "select",
+        "id": "image_ratio",
+        "label": "Aspect Ratio",
+        "default": "ratio_nt",
+        "info": "Aspect Ratio Custom will settings in General panel.",
+        "options": [
+          {
+            "group": "Landscape",
+            "value": "ratio2_1",
+            "label": "2:1"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio16_9",
+            "label": "16:9"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio8_5",
+            "label": "8:5"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio3_2",
+            "label": "3:2"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio4_3",
+            "label": "4:3"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio_nt",
+            "label": "Ratio ASOS"
+          },
+          {
+            "group": "Squared",
+            "value": "ratio1_1",
+            "label": "1:1"
+          },
+          {
+            "group": "Portrait",
+            "value": "ratio2_3",
+            "label": "2:3"
+          },
+          {
+            "group": "Portrait",
+            "value": "ratio1_2",
+            "label": "1:2"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus1",
+            "label": "Ratio Custom 1"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus2",
+            "label": "Ratio Custom 2"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus3",
+            "label": "Ratio Custom 3"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus4",
+            "label": "Ratio Custom 4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "image_size",
+        "label": "Image Size",
+        "default": "nt_cover",
+        "options": [
+          {
+            "value": "nt_cover",
+            "label": "Full"
+          },
+          {
+            "value": "nt_contain",
+            "label": "Auto"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "image_position",
+        "info": "The first value is the horizontal position and the second value is the vertical.",
+        "options": [
+          {
+            "value": "default",
+            "label": "Default"
+          },
+          {
+            "value": "1",
+            "label": "Left Top"
+          },
+          {
+            "value": "2",
+            "label": "Left Center"
+          },
+          {
+            "value": "3",
+            "label": "Left Bottom"
+          },
+          {
+            "value": "4",
+            "label": "Right Top"
+          },
+          {
+            "value": "5",
+            "label": "Right Center"
+          },
+          {
+            "value": "6",
+            "label": "Right Bottom"
+          },
+          {
+            "value": "7",
+            "label": "Center Top"
+          },
+          {
+            "value": "8",
+            "label": "Center Center"
+          },
+          {
+            "value": "9",
+            "label": "Center Bottom"
+          }
+        ],
+        "label": "Image Position",
+        "default": "8"
+      }
+  ]
+}
+{% endschema %}

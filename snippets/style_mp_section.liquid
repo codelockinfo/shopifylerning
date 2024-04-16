@@ -1,0 +1,39 @@
+{%- if section.settings.section_bg_color != blank or section.settings.section_margin_top != blank or section.settings.section_margin_bottom != blank or section.settings.section_margin_left != blank or section.settings.section_margin_right != blank or section.settings.section_padding_top != blank or section.settings.section_padding_right != blank or section.settings.section_padding_bottom != blank or section.settings.section_padding_left != blank -%}
+{%- capture style_block_section -%}
+   {%- assign section_margin_top = section.settings.section_margin_top -%}
+   {%- assign section_margin_bottom = section.settings.section_margin_bottom -%}
+   {%- assign section_margin_left = section.settings.section_margin_left -%}
+   {%- assign section_margin_right = section.settings.section_margin_right -%}
+   {%- assign section_padding_top = section.settings.section_padding_top -%}
+   {%- assign section_padding_right = section.settings.section_padding_right -%}
+   {%- assign section_padding_bottom = section.settings.section_padding_bottom -%}
+   {%- assign section_padding_left = section.settings.section_padding_left -%}
+   .nt_custom_{{section.id}} {
+   {%- if section_margin_top != blank -%}
+       margin-top: {{section_margin_top}} !important;
+   {%- endif -%}
+   {%- if section_margin_bottom != blank -%}
+       margin-bottom: {{section_margin_bottom}} !important;
+   {%- endif -%}
+   {%- if section_margin_left != blank -%}
+       margin-left: {{section_margin_left}} !important;
+   {%- endif -%}
+   {%- if section_margin_right != blank -%}
+       margin-right: {{section_margin_right}} !important;
+   {%- endif -%}
+   {%- if section_padding_top != blank -%}
+       padding-top: {{section_padding_top}} !important;
+   {%- endif -%}
+   {%- if section_padding_right != blank -%}
+       padding-right: {{section_padding_right}} !important;
+   {%- endif -%}
+   {%- if section_padding_bottom != blank -%}
+       padding-bottom: {{section_padding_bottom}} !important;
+   {%- endif -%}
+   {%- if section_padding_left != blank -%}
+       padding-left: {{section_padding_left}} !important;
+   {%- endif -%}
+   }
+{%- endcapture -%}
+<style type="text/css">{{ style_block_section | remove:" "}}{%- if section.settings.section_bg_color != blank -%}#shopify-section-{{section.id}} {background-color: {{section.settings.section_bg_color}}}{%- endif -%}</style>
+{%- endif -%}

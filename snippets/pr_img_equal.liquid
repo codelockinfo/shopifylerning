@@ -1,0 +1,4 @@
+{%- render 'product_labels',product:product -%}{%- assign image = product.images[0] | default:settings.placeholder_img -%}
+<a data-linkhref class="db" href="{{url_last}}">
+	<div {% if image.alt contains 'imgt4_colorsolid' %}data-widths="[1]" {% endif %}class="pr_lazy_img main-img nt_img_ratio lazyload nt_bg_lz" data-id="{{image.id}}" data-bgset="{{ image | img_url: '1x1' }}" data-parent-fit="width" data-wiis data-ratio="{{image.aspect_ratio}}" data-sizes="auto"></div>
+</a>

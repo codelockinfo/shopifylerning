@@ -1,0 +1,55 @@
+{%- liquid
+   layout none
+   assign collection = collections[settings.search_prs_suggest]
+   assign limit = 5 
+   assign search_pr_type = search.terms
+   assign check = true 
+   assign show_search_suggest = settings.show_search_suggest
+   assign on_sale_txt = 'products.product.on_sale' | t
+   assign save_js = 'products.product.save_js' | t: saved_amount:'saved_amount' -%}
+   
+<div class="nt_mini_cart flex column h__100">
+   <div class="mini_cart_header flex fl_between al_center"><h3 class="widget-title tu fs__16 mg__0">{{ 'general.search.title' | t }}</h3><i class="close_pp pegk pe-7s-close ts__03 cd"></i></div>
+   <div class="mini_cart_wrap">
+      <form action="{{ routes.search_url }}" method="get" class="search_header mini_search_frm pr js_frm_search" role="search">
+         <input type="hidden" name="type" value="product">
+         <input type="hidden" name="options[unavailable_products]" value="{{settings.unavailable_prs}}">
+         <input type="hidden" name="options[prefix]" value="{{settings.prefix}}">
+         {%- if shop.types[0] == blank and shop.types.size == 1 %}{% assign check = false %}{% endif -%}
+         {%- if settings.filter_type_search and shop.types.size > 0 and check -%}
+         <div class="frm_search_cat mb__20">
+             <select name="product_type">
+               <option value="*">{{ 'general.search.all_cat' | t }}</option>
+               {%- for product_type in shop.types -%}{%- if product_type == blank %}{% continue-%}{% endif -%}<option value="{{product_type}}"{% if search_pr_type == product_type %} selected="selected"{% endif %}>{{product_type}}</option>{%- endfor -%}
+             </select>
+         </div>
+         {%- endif -%}
+        <div class="frm_search_input pr oh">
+           <input class="search_header__input js_iput_search" autocomplete="off" type="text" name="q" placeholder="{{ 'general.search.placeholder' | t }}">
+           <button class="search_header__submit js_btn_search{% if settings.ajax_search %} pe_none{% endif %}" type="submit"><i class="iccl iccl-search"></i></button>
+        </div>
+        <div class="ld_bar_search"></div>
+      </form>
+      <div class="search_header__prs fwsb cd{% if collection == blank or show_search_suggest == false %} dn{% endif %}">
+         {%- if collection != blank and show_search_suggest %}<span class="h_suggest">{{ 'general.search.suggest' | t }}</span>{% endif %}<span class="h_result dn">{{ 'general.search.result' | t }}</span><span class="h_results dn">{{ 'general.search.results' | t }}</span>
+      </div> 
+      <div class="search_header__content mini_cart_content fixcl-scroll widget{% if collection == blank or show_search_suggest == false %} dn{% endif %}">
+         <div class="fixcl-scroll-content product_list_widget">
+            <div class="skeleton_wrap skeleton_js dn">
+               {%- for i in (1..4) -%}
+               <div class="row mb__10 pb__10">
+                  <div class="col-auto widget_img_pr"><div class="skeleton_img"></div></div>
+                  <div class="col widget_if_pr"><div class="skeleton_txt1"></div><div class="skeleton_txt2"></div></div>
+               </div>
+               {%- endfor -%}
+            </div>
+            <div class="js_prs_search">
+            {%- if collection != blank and show_search_suggest -%}
+               {%- for product in collection.products limit:limit -%}{%- render 'pr_group_loop',product:product,on_sale_txt:on_sale_txt,save_js:save_js -%}{%- endfor -%}
+               {%- if collection.all_products_count > limit -%}<a href="{{collection.url}}" class="btn db fwsb detail_link">{{ 'general.search.view_all' | t }} <i class="las la-arrow-right fs__18"></i></a>{%- endif -%}
+            {%- endif -%}
+            </div>
+         </div>
+      </div>
+   </div>
+</div>

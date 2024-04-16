@@ -1,0 +1,86 @@
+{%- layout none -%}
+
+{%- form 'customer_login', novalidate: 'novalidate', class: 'nt_mini_cart flex column h__100 is_selected' -%}
+  <div class="mini_cart_header flex fl_between al_center"><div class="h3 widget-title tu fs__16 mg__0">{{ 'general.account_text.login_title' | t }}</div><i class="close_pp pegk pe-7s-close ts__03 cd"></i></div>
+  <div class="mini_cart_wrap">
+     <div class="mini_cart_content fixcl-scroll">
+        <div class="fixcl-scroll-content">
+          {%- if settings.checkout_url != blank -%}<input type="hidden" name="checkout_url" value="{{settings.checkout_url}}" />{%- endif -%}
+          {%- if form.errors -%}
+            <div class="form-message form-message--error">
+              <h2 class="h3 form-message__title " tabindex="-1" data-form-status>{{ 'contact.form.error_heading' | t }}</h2>
+              {{ form.errors | default_errors }}
+            </div>
+          {%- endif -%}
+          <p class="form-row">
+          <label for="CustomerEmail">{{ 'customer.login.email' | t }} <span class="required">*</span></label>
+          <input type="email" name="customer[email]" id="CustomerEmail" autocomplete="email" autocorrect="off" autocapitalize="off">
+          </p>
+          {%- if form.password_needed -%}
+          <p class="form-row">
+            <label for="CustomerPassword">{{ 'customer.login.password' | t }} <span class="required">*</span></label>
+            <input type="password" value="" name="customer[password]"id="CustomerPassword">
+          </p>
+          {%- endif -%}
+            <input type="submit" class="button button_primary w__100 tu js_add_ld" value="{{ 'customer.login.sign_in' | t }}">
+            <br>
+            <p class="mb__10 mt__20">{{ 'general.account_text.new_customer' | t }} <a data-no-instant rel="nofollow" href='/' data-id='#RegisterForm' class="link_acc">{{ 'general.account_text.create_account' | t }}</a></p>
+            {%- if form.password_needed -%}<p>{{ 'general.account_text.lost_pass' | t }} <a data-no-instant rel="nofollow" href="#recover" data-id='#RecoverForm'class="link_acc">{{ 'general.account_text.recover_pass' | t }}</a></p>{%- endif -%}
+        </div>
+     </div>
+  </div>
+{%- endform -%}
+{%- form 'recover_customer_password', id:'RecoverForm', class: 'nt_mini_cart flex column h__100' -%}
+  <div class="mini_cart_header flex fl_between al_center"><div class="h3 widget-title tu fs__16 mg__0">{{ 'general.account_text.recover_pass_title' | t }}</div><i class="close_pp pegk pe-7s-close ts__03 cd"></i></div>
+  <div class="mini_cart_wrap">
+     <div class="mini_cart_content fixcl-scroll">
+        <div class="fixcl-scroll-content">
+          <p class="form-row">
+              <label for="RecoverEmail">{{ 'customer.recover_password.email' | t }}</label>
+              <input type="email" value="" name="email" id="RecoverEmail" class="input-full" autocorrect="off" autocapitalize="off">
+             
+             {%- if form.errors -%}
+               <span id="RecoverEmail-email-error" class="input-error-message">
+                 <i class="facl facl-attention cr mr__5"></i>
+                 <span>{{ form.errors.messages['form'] }}</span>
+               </span>
+             {%- endif -%}
+          </p>
+          <input type="submit" class="button button_primary w__100 tu js_add_ld" value="{{ 'customer.recover_password.submit' | t }}">
+          <br>
+          <p class="mb__10 mt__20">{{ 'general.account_text.remembered_pass' | t }} <a data-no-instant rel="nofollow" href='/' data-id='#customer_login' class="link_acc">{{ 'general.account_text.back_login' | t }}</a></p>
+        </div>
+     </div>
+  </div>
+{%- endform -%}
+{%- form 'create_customer', id: 'RegisterForm', novalidate: 'novalidate', class: 'nt_mini_cart flex column h__100' -%}
+  <div class="mini_cart_header flex fl_between al_center"><div class="h3 widget-title tu fs__16 mg__0">{{ 'general.account_text.register_title' | t }}</div><i class="close_pp pegk pe-7s-close ts__03 cd"></i></div>
+  <div class="mini_cart_wrap">
+     <div class="mini_cart_content fixcl-scroll">
+        <div class="fixcl-scroll-content">
+          <p class="form-row">
+           <label for="{{ formId }}-FirstName">{{ 'customer.register.first_name' | t }}</label>
+           <input type="text" name="customer[first_name]" id="{{ formId }}-FirstName" {% if form.first_name %}value="{{ form.first_name }}"{% endif %} autocomplete="given-name">
+          </p>
+          <p class="form-row">
+           <label for="{{ formId }}-LastName">{{ 'customer.register.last_name' | t }}</label>
+           <input type="text" name="customer[last_name]" id="{{ formId }}-LastName" {% if form.last_name %}value="{{ form.last_name }}"{% endif %} autocomplete="family-name">
+          </p>
+          <p class="form-row">
+           <label for="{{ formId }}-email">{{ 'customer.register.email' | t }} <span class="required">*</span></label>
+           <input type="email" name="customer[email]" id="{{ formId }}-email" class=""{% if form.email %} value="{{ form.email }}"{% endif %} autocorrect="off" autocapitalize="off" autocomplete="email" aria-required="true">
+          </p>
+          <p class="form-row">
+           <label for="{{ formId }}-password">{{ 'customer.register.password' | t }} <span class="required">*</span></label>
+           <input type="password" name="customer[password]" id="{{ formId }}-password" class="" aria-required="true">
+           </p>
+           {%- if settings.use_privacy_policy -%}
+            <p class="form-row tl fs__13">{%- if settings.privacy_policy_link != blank -%}{{ 'customer.register.privacy_policy_html' | t:link: pages[settings.privacy_policy_link].url }}{%- else -%}{{ 'customer.register.privacy_policy' | t }}{%- endif -%}</p>
+           {%- endif -%}
+           <input type="submit" value="{{ 'customer.register.submit' | t }}" class="button button_primary w__100 tu js_add_ld">
+           <br>
+           <p class="mb__10 mt__20">{{ 'general.account_text.have_acc' | t }} <a data-no-instant rel="nofollow" href='/' data-id='#customer_login' class="link_acc">{{ 'general.account_text.login_here' | t }}</a></p>
+        </div>
+     </div>
+  </div>
+{%- endform -%}

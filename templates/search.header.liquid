@@ -1,0 +1,26 @@
+{%- liquid
+  layout none
+	capture html
+		case settings.header_design
+		when '3'
+		section 'header_3'
+		when '1'
+		section 'header_1'
+		when '2'
+		section 'header_2'
+		when '4'
+		section 'header_4'
+		when '5'
+		section 'header_5'
+		when '6'
+		section 'header_6'
+		when '8'
+		section 'header_8'
+		when '9'
+		section 'header_9'
+		else
+		section 'header_7'
+		endcase
+	endcapture
+	assign arr =  html | split:'[nt_cl]' 
+	echo arr[1] -%}

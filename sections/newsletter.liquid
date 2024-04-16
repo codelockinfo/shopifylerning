@@ -1,0 +1,343 @@
+{%- liquid
+  assign sid = section.id
+  assign image = section.settings.image -%}
+
+<div class="newsletter_se {{section.settings.layout}} content_pos_{{section.settings.pos}} _color_scheme_{{section.settings.color}} newl_des_{{section.settings.newl_des}}">
+  <div class="nt_se_{{sid}} nt_bg_overlay pr oh cover_norepeat tc{%- if image != blank %} lazyload nt_parallax_{{section.settings.use_pr}}{%- endif -%}"{% if image != blank %} data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{image.aspect_ratio}}" data-sizes="auto" data-parent-fit="cover"{% endif %}>
+      <div class="container pr z_100">
+        {%- render 'section_title',section:section,section_title:'mb__30' -%}
+        {%- render 'newsletter',class:'in_flex',btn_icon:section.settings.btn_icon,newl_des:section.settings.newl_des,sid:sid -%}
+      </div>
+  </div>
+</div>
+{%- render 'section_css' -%}
+{%- style -%}
+.nt_se_{{sid}} {background-color: {{section.settings.se_bg}};}
+.nt_se_{{sid}}.nt_bg_overlay:after{ background-color: {{section.settings.cl_overlay}};opacity: {{section.settings.cl_opacity | divided_by: 100.00}} }
+.nt_se_{{sid}} .section-title {
+  color:{{section.settings.cl_t}};
+}
+.nt_se_{{sid}} .section-subtitle {
+  color:{{section.settings.cl_st}};
+}
+.nt_se_{{sid}}{
+  color:{{section.settings.cl_all}};
+}
+.nt_se_{{sid}} .signup-newsletter-form,.nt_se_{{sid}} .signup-newsletter-form input.input-text {
+    border-color: {{section.settings.cl_bd}};
+}
+.nt_se_{{sid}} .signup-newsletter-form input.input-text {
+    color:{{section.settings.cl_ip}};
+}
+.nt_se_{{sid}} .signup-newsletter-form .submit-btn {
+    color:{{section.settings.cl_btn}};
+    background-color: {{section.settings.bg_btn}};
+}
+{%- endstyle -%}
+{%- schema -%}
+  {
+    "name": "Newsletter",
+    "class": "nt_section type_newsletter",
+    "settings": [
+      {
+        "type": "header",
+        "content": "== Title Settings"
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Subscribe to our newsletter"
+      },
+      {
+        "type": "textarea",
+        "id": "sub_title",
+        "label": "Sub Heading",
+        "default": "A short sentence describing what someone will receive by subscribing"
+      },
+      {
+        "type": "select",
+        "id": "sub_font",
+        "default": "2",
+        "options": [
+         {
+            "value": "1",
+            "label": "Body font"
+         },
+         {
+            "value": "2",
+            "label": "Sub title font"
+          }
+        ],
+        "label": "Sub Text use font:"
+      },
+      {
+        "type": "select",
+        "id": "style_title",
+        "options": [
+         {
+            "value": "title_1",
+            "label": "Design 1"
+         },
+         {
+            "value": "title_2",
+            "label": "Design 2"
+          },
+         {
+            "value": "title_3",
+            "label": "Design 3"
+          },
+         {
+            "value": "title_4",
+            "label": "Design 4"
+          },
+         {
+            "value": "title_5 lazyload",
+            "label": "Design 5"
+          },
+         {
+            "value": "title_6",
+            "label": "Design 6"
+          },
+         {
+            "value": "title_7 +la",
+            "label": "Design 7 (with line-awesome)"
+          },
+         {
+            "value": "title_8",
+            "label": "Design 8"
+          },
+         {
+            "value": "title_9",
+            "label": "Design 9"
+          },
+         {
+            "value": "title_10",
+            "label": "Design 10"
+          },
+         {
+            "value": "title_11",
+            "label": "Design 11"
+          },
+         {
+            "value": "title_12",
+            "label": "Design 12"
+          },
+         {
+            "value": "title_13",
+            "label": "Design 13"
+          }
+        ],
+        "label": "Design Title:"
+      },
+      {
+        "type": "text",
+        "id": "ic_tt",
+        "label": "Style 7 icon line-awesome",
+        "default": "pencil-alt"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_clpr",
+        "label": "Use icon color primary?",
+        "default": false
+      },
+      {
+        "type": "paragraph",
+        "content": "[Get icons Line awesome](https://icons8.com/line-awesome)"
+      },
+      {
+        "type": "header",
+        "content": "== General Settings"
+      },
+      {
+        "type": "color",
+        "id": "cl_all",
+        "label": "Color Text",
+        "default": "#878787"
+      },
+      {
+        "type": "color",
+        "id": "cl_t",
+        "label": "Color Heading",
+        "default": "#222"
+      },
+      {
+        "type": "color",
+        "id": "cl_st",
+        "label": "Color Sub Heading",
+        "default": "#8B8784"
+      },
+      {
+        "type": "color",
+        "id": "cl_bd",
+        "label": "Border Color",
+        "default": "#222"
+      },
+      {
+        "type": "color",
+        "id": "cl_ip",
+        "label": "Input Color",
+        "default": "#222"
+      },
+      {
+        "type": "color",
+        "id": "cl_btn",
+        "label": "Button Color",
+        "default": "#fff"
+      },
+      {
+        "type": "color",
+        "id": "bg_btn",
+        "label": "Button Background Color",
+        "default": "#222"
+      },
+      {
+        "type": "select",
+        "id": "newl_des",
+        "label": "Newsletter Design:",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "Design 1"
+          },
+          {
+            "value": "2",
+            "label": "Design 2"
+          },
+          {
+            "value": "3",
+            "label": "Design 3"
+          },
+          {
+            "value": "4",
+            "label": "Design 4"
+          },
+          {
+            "value": "5",
+            "label": "Design 5"
+          },
+          {
+            "value": "6",
+            "label": "Design 6"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "btn_icon",
+        "label": "Button icon?",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "== Background Options"
+      },
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Background Image"
+      },
+      {
+        "type": "color",
+        "id": "cl_overlay",
+        "label": "Overlay",
+        "default": "#000"
+      },
+      {
+        "type": "range",
+        "id": "cl_opacity",
+        "label": "Overlay opacity",
+        "default": 0,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%"
+      },
+      {
+        "type": "color",
+        "id": "se_bg",
+        "label": "Background color",
+        "default": "#fff"
+      },
+      /*{
+        "type": "select",
+        "id": "color",
+        "options": [
+         {
+            "value": "dark",
+            "label": "Dark"
+         },
+         {
+            "value": "light",
+            "label": "Light"
+          }
+        ],
+        "label": "Color scheme"
+      },*/
+      {
+        "type": "header",
+        "content": "== Design Options"
+      },
+      {
+        "type": "checkbox",
+        "id": "use_pr",
+        "label": "Enable parallax scroll?",
+        "default": false
+      },
+      {
+        "type": "select",
+        "id": "layout",
+        "options": [
+         {
+            "value": "container",
+            "label": "Container"
+         },
+         {
+            "value": "nt_full",
+            "label": "Full Width"
+          }
+        ],
+        "label": "Layout"
+      },
+      {
+        "type": "text",
+        "id": "mg",
+        "label": "Margin",
+        "info":"Margin top, margin right, margin bottom, margin left. If you not use to blank",
+        "default": "50px,,50px,",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd",
+        "label": "Padding",
+        "info":"Padding top, padding right, padding bottom, padding left. If you not use to blank",
+        "placeholder": "50px,,50px,"
+      },
+     {
+        "type": "header",
+        "content": "== Design Mobile Options"
+      },
+      {
+        "type": "text",
+        "id": "mg_mb",
+        "label": "Margin",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd_mb",
+        "label": "Padding",
+        "placeholder": "50px,,50px,"
+      }
+    ],
+    "presets": [
+      {
+        "name": "1. Newsletter",
+        "category": "VI. Promotional"
+      }
+    ]
+  }
+{% endschema %}

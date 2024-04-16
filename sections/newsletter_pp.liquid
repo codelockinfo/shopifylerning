@@ -1,0 +1,331 @@
+{%- liquid
+  assign enable_new_pp = settings.enable_new_pp
+   assign se_blocks = section.blocks
+   if section.settings.des == '1'
+     assign class_cl = '12'
+     assign class_des = '1'
+   else
+     assign class_cl = '6'
+     assign class_des = '2'
+   endif -%}
+{%- for i in (1..1) %}{% unless section.settings[request.page_type] or se_blocks.size == 0 %}{% break %}{% endunless -%}
+
+<div class="popup_new_wrap container mobile_new_{{section.settings.mb}} new_pp_des_{{class_des}} bgw mfp-with-anim" data-stt='{ "number_pages": {{section.settings.number_pages}},"pp_version": {{section.settings.pp_version}},"after": "{{section.settings.after}}","time_delay": {{section.settings.time_delay}}000,"scroll_delay": {{section.settings.scroll_delay}},"day_next": {{section.settings.day_next}} }'>
+	<div class="row no-gutters al_center fl_center">
+		{%- for block in se_blocks -%}
+		{%- case block.type -%}
+		{%- when 'img' -%}{% assign image = block.settings.image %}
+
+		   {%- if image == blank %}{% continue %}{% endif -%}
+		   {%- assign ratio = image.aspect_ratio -%}
+			<div class="col-12 col-md-{{class_cl}}">
+				<div class="popup_new_img">
+               <div class="pr_lazy_img nt_bg_lz lazyload" data-bgset="{{ image | img_url: '1x1' }}" data-parent-fit="width" data-ratio="{{ratio}}" data-sizes="auto" style="padding-top:{{ 1 | divided_by: ratio | times: 100}}%;"></div>
+				</div>
+			</div>
+		{%- else %}
+			<div class="col-12 col-md-{{class_cl}} tc">
+				<div class="popup_new_content newl_des_{{block.settings.newl_des}}">
+					<h3>{{block.settings.title}}</h3>
+					 {{block.settings.sub | strip}}
+					 {%- render 'newsletter',class:'flex wrap',btn_icon:block.settings.btn_icon,newl_des:block.settings.newl_des,sid:section.id -%}
+					 {%- if block.settings.txt != blank %}<div class="popup_new_footer">{{block.settings.txt}}</div>{% endif -%}
+					 {%- if block.settings.txt2 != blank and block.settings.btn_ck -%}
+						 <div class="popup_new_checkzone pr dib">
+						 	<input type="checkbox" id="new_check_show" class="css_agree_ck mr__5">
+						 	<label for="new_check_show">{{block.settings.txt2}}</label>
+						 	<svg class="dn scl_selected"><use xlink:href="#scl_selected"></use></svg>
+						 </div>
+               {%- endif -%}
+				</div>
+			</div>
+		{%- endcase -%}
+		{%- endfor -%}
+	</div>
+</div>
+
+<style>
+	.popup_new_wrap{max-width:530px;padding:0}.new_pp_des_2.popup_new_wrap{max-width:800px}.popup_new_content{padding:30px}.popup_new_content h3{font-size:18px;line-height:30px;margin-top:0}.popup_new_content form{margin:10px 0}.popup_new_checkzone,.popup_new_footer{font-size:12px}
+	{%- if section.settings.fix_h -%}
+  .new_pp_des_1.popup_new_wrap .pr_lazy_img{padding-top:150px!important}
+	{%- endif -%}
+	{%- if section.settings.fix_h_mb -%}
+  @media (max-width:767px){.popup_new_wrap .pr_lazy_img{padding-top:150px!important}}
+	{%- endif -%}
+</style>
+{%- endfor -%}
+
+{%- schema -%}
+  {
+    "name": "Newsletter popup",
+    "class":"mfp-hide",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Config enable/disable on Theme settings: General settings ---> SHOP SECTION SETTINGS"
+      },
+      {
+        "type": "paragraph",
+        "content": "Show promo popup to users when they enter the site."
+      },
+     {
+        "type": "select",
+        "id": "des",
+        "label": "Layout design:",
+        "default": "2",
+        "options": [
+          {
+            "value": "1",
+            "label": "Design 1"
+          },
+          {
+            "value": "2",
+            "label": "Design 2"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "fix_h",
+        "label": "Fix height image?",
+        "info": "only active when 'use design 1'",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "fix_h_mb",
+        "label": "Fix height image on mobile?",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "mb",
+        "label": "Show for mobile devices?",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "Select page to display:"
+      },
+      {
+        "type": "checkbox",
+        "id": "index",
+        "label": "Home page",
+        "default": true,
+        "info": "Popup Newsletter will display on home page"
+      },
+      {
+        "type": "checkbox",
+        "id": "product",
+        "label": "Product page",
+        "default": false,
+        "info": "Popup Newsletter will display on Product page"
+      },
+      {
+        "type": "checkbox",
+        "id": "collection",
+        "label": "Collection page",
+        "default": false,
+        "info": "Popup Newsletter will display on Collection page"
+      },
+      {
+        "type": "checkbox",
+        "id": "article",
+        "label": "Article page",
+        "default": false,
+        "info": "Popup Newsletter will display on Article page"
+      },
+      {
+        "type": "checkbox",
+        "id": "blog",
+        "label": "Blog page",
+        "default": false,
+        "info": "Popup Newsletter will display on Blog page"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart",
+        "label": "Cart page",
+        "default": false,
+        "info": "Popup Newsletter will display on Cart page"
+      },
+      {
+        "type": "checkbox",
+        "id": "page",
+        "label": "Other page",
+        "default": false,
+        "info": "Popup Newsletter will display on Other page"
+      },
+      {
+        "type": "header",
+        "content": "Show popup after Settings"
+      },
+      {
+        "type": "range",
+        "id": "number_pages",
+        "min": 0,
+        "max": 10,
+        "step": 1,
+        "label": "Show after number of pages visited",
+        "info": "You can choose how much pages user should change before popup will be shown.",
+        "default": 0
+      },
+      {
+        "type": "range",
+        "id": "pp_version",
+        "min": 1,
+        "max": 100,
+        "step": 1,
+        "label": "Popup version",
+        "info": "If you change your promo popup you can increase its version to show the popup to all visitors again.",
+        "default": 1
+      },
+      {
+        "type": "range",
+        "id": "day_next",
+        "min": 0,
+        "max": 30,
+        "step": 1,
+        "unit": "day",
+        "label": "Day next show (n)",
+        "info": "if user close the popup, next show will be after 'n' days",
+        "default": 7
+      },
+      {
+        "type": "select",
+        "id": "after",
+        "label": "Show popup after",
+        "default": "scroll",
+        "options": [
+          {
+            "value": "time",
+            "label": "Some time"
+          },
+          {
+            "value": "scroll",
+            "label": "User scroll"
+          }
+        ]
+      },
+      {
+        "type": "range",
+        "id": "time_delay",
+        "min": 1,
+        "max": 50,
+        "step": 1,
+        "unit": "sec",
+        "label": "== Popup delay",
+        "info": "Show popup after some time (in seconds).",
+        "default": 2
+      },
+      {
+        "type": "range",
+        "id": "scroll_delay",
+        "min": 100,
+        "max": 5000, 
+        "step": 50,
+        "label": "== Show after user scroll down the page",
+        "info": "Set the number of pixels users have to scroll down before popup opens.",
+        "default": 800
+      }
+    ],
+    "blocks": [
+      {
+        "type": "img",
+        "name": "Image",
+        "limit": 1,
+        "settings": [
+		      {
+		        "type": "image_picker",
+		        "id": "image",
+		        "label": "Image"
+		      }/*,
+		      {
+		        "type": "select",
+		        "id": "img_size",
+		        "label": "Image Size:",
+		        "default": "cover",
+		        "options": [
+		          {
+		            "value": "contain",
+		            "label": "Default"
+		          },
+		          {
+		            "value": "cover",
+		            "label": "Cover"
+		          }
+		        ]
+		      }*/
+        ]
+      },
+      {
+        "type": "content",
+        "name": "Content",
+        "limit": 1,
+        "settings": [
+		      {
+		        "type": "textarea",
+		        "id": "title",
+		        "label": "Heading",
+		        "default": "Sign up our newsletter and save 25% off for the next purchase!"
+		      },
+		      {
+		        "type": "textarea",
+		        "id": "sub",
+		        "label": "Sub Heading",
+		        "default": "Subscribe to our newsletters and don’t miss new arrivals, the latest fashion updates and our promotions."
+		      },
+		      {
+		        "type": "select",
+		        "id": "newl_des",
+		        "label": "Newsletter Design:",
+		        "default": "1",
+		        "options": [
+		          {
+		            "value": "1",
+		            "label": "Design 1"
+		          },
+		          {
+		            "value": "2",
+		            "label": "Design 2"
+		          },
+		          {
+		            "value": "3",
+		            "label": "Design 3"
+		          }
+		        ]
+		      },
+		      {
+		        "type": "checkbox",
+		        "id": "btn_icon",
+		        "label": "Button icon?",
+		        "default": false
+		      },
+		      {
+		        "type": "textarea",
+		        "id": "txt",
+		        "label": "Text 2",
+		        "default": "Your Information will never be shared with any third party."
+		      },
+		      {
+		        "type": "checkbox",
+		        "id": "btn_ck",
+		        "label": "Show 'Do not show it anymore.'?",
+		        "default": true
+		      },
+		      {
+		        "type": "textarea",
+		        "id": "txt2",
+		        "label": "Text 3",
+		        "default": "Do not show it anymore."
+		      }
+         ]
+      }
+    ],
+    "default": {
+      "blocks": [
+        { "type": "img" },{ "type": "content" }
+      ]
+    }
+  }
+{% endschema %}

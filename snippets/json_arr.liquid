@@ -1,0 +1,72 @@
+{%- capture json_arr -%}
+{
+"id": {{product.id}},
+"ck_so_un": {{ck_so_un}},
+"ntsoldout": {{ntsoldout}},
+"unvariants": {{unvariants}},
+"title": {{product.title | json}},
+"url": {{product.url | json}},
+"handle": {{product.handle | json}},
+"price": {{product.price| json}},
+"price_min": {{product.price_min| json}},
+"price_max": {{product.price_max| json}},
+"available": {{product.available | json}},
+"price_varies": {{product.price_varies| json}},
+"compare_at_price": {{product.compare_at_price| json}},
+"compare_at_price_min": {{product.compare_at_price_min| json}},
+"compare_at_price_max": {{product.compare_at_price_max| json}},
+"compare_at_price_varies": {{product.compare_at_price_varies| json}},
+"variants": [
+{%- for variant in pr_variants -%}{%- assign vh1 = variant.option1 | escape | downcase | remove:' ' -%}{%- assign vh2 = variant.option2 | escape | downcase | remove:' ' -%}{%- assign vh3 = variant.option3 | escape | downcase | remove:' ' -%}
+{
+"id": {{variant.id}},
+"title": "{{vh1 }}{%- if options_size == 2 %} / {% endif -%}{{vh2 }}{%- if options_size == 3 %} / {% endif -%}{{vh3 }}",
+"option1": {{vh1 | json}},
+"option2": {{vh2 | json | default:null}},
+"option3": {{vh3 | json | default:null}},
+"sku": {{variant.sku | json}},
+"requires_shipping": {{variant.requires_shipping}},
+"taxable": {{variant.taxable |json}},
+"featured_image": {%- if variant.featured_media.id != blank -%}{
+    "id": {{variant.featured_media.id | json}}
+  }{%- else-%}null{%-endif-%},
+"available": {{variant.available}},
+"public_title": "{{vh1 }}{%- if options_size == 2 %} / {% endif -%}{{vh2 }}{%- if options_size == 3 %} / {% endif -%}{{vh3 }}",
+"options": [
+"{{vh1 }}"
+{%- if options_size == 2 -%},"{{vh2 }}"{%- endif -%}
+{%- if options_size == 3 -%},"{{vh3 }}"{%- endif -%}
+],
+"price": {{variant.price| json}},
+"weight": {{variant.weight| json}},
+"compare_at_price": {{variant.compare_at_price | json}},
+"inventory_quantity": {{variant.inventory_quantity | json}},
+"inventory_management": {{variant.inventory_management | json}},
+"inventory_policy": {{variant.inventory_policy | json}},
+"incoming": {{ variant.incoming }},
+"next_incoming_date": {{ variant.next_incoming_date | date: format: settings.date_in | json }},
+"barcode": {{variant.barcode | json}},
+"unit_price_measurement":
+	{%- if variant.unit_price_measurement -%}{
+    "unit_price": {{variant.unit_price | json}},
+	   {%- capture unit_price_base_unit -%}
+	      {%- if variant.unit_price_measurement -%}
+	        {%- if variant.unit_price_measurement.reference_value != 1 -%}
+	          {{- variant.unit_price_measurement.reference_value -}}
+	        {%- endif -%}
+	        {{ variant.unit_price_measurement.reference_unit }}
+	      {%- endif -%}
+	   {%- endcapture -%}
+    "unit_base": {{unit_price_base_unit | json}}
+  }
+  {%- else-%}null{%-endif-%}
+}{%- if forloop.last == false -%},{%- endif -%}
+{%- endfor -%}
+],
+"options": [
+{%- for option in product.options -%}
+{{ option | json}}{%- if forloop.last == false -%},{%- endif -%}
+{%-endfor -%}
+]
+}
+{%- endcapture -%}

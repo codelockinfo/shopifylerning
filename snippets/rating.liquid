@@ -1,0 +1,17 @@
+{%- case inc_rating -%}            
+    {%- when '1' -%}
+       <div class="shopify-product-reviews-badge star-rating" data-id="{{ product.id }}"></div>
+    {%- when '2' -%}
+       <div class="ryviu-collection star-rating"><ryviu-widget-total collection=1 reviews_data="{{product.metafields.ryviu.product_reviews_info  | escape  }}" product_id="{{product.id}}" handle="{{product.handle}}"></ryviu-widget-total></div>  
+    {%- when '3' -%}
+       <div product-id="{{ product.id }}" class="arv-collection arv-collection--{{ product.id }} star-rating"></div>
+    {%- when '4' -%}
+       <div class="loox-rating star-rating" data-id="{{ product.id }}" data-rating="{{ product.metafields.loox.avg_rating }}" data-raters="{{ product.metafields.loox.num_reviews }}"></div>
+    {%- when '5' -%}
+      <div class="star-rating">
+        {%- capture the_snippet_review_avg %}{% render 'ssw-widget-avg-rate-listing', product:product %}{% endcapture -%}
+        {%- unless the_snippet_review_avg contains 'Liquid error' -%}{{ the_snippet_review_avg }}{%- endunless -%}
+      </div>
+    {%- else -%}
+      <div class="star-rating">{%- render 'review_grid_other',product:product -%}</div>
+{%- endcase -%}

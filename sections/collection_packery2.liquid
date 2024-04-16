@@ -1,0 +1,568 @@
+{%- liquid
+  assign rtl = settings.use_rtl
+  if rtl 
+    assign ltr = false 
+  else 
+    assign ltr = true  
+  endif
+  assign se_stts = section.settings
+  assign layout = se_stts.layout
+  assign image = se_stts.image
+  assign use_pagination = se_stts.use_pagination 
+  assign sett_equal = se_stts.use_eq_height
+  assign show_vendor = se_stts.show_vendor
+  assign col = se_stts.col_pr
+  assign col_tb = se_stts.col_pr_tb
+  assign col_mb = ' pr_animated done' | prepend:se_stts.col_pr_mb
+  assign inc_pr = '1'
+  assign limit = se_stts.limit
+  assign sid = section.id 
+  assign inc_price = settings.price_format
+  assign use_rating = settings.use_pr_rating
+  assign inc_rating = settings.app_review
+  assign show_color = settings.show_pr_color
+  assign show_cl_type = settings.show_color_type
+  assign show_size = settings.show_pr_size
+  assign current_page = '1'
+  assign use_cdt = se_stts.use_cdt
+  assign txt_cd = 'products.grid_items.offer_end_in' | t
+  assign ck_noPr = true
+  if layout == 'wrap'
+   assign html_layout = '<div class="container">__</div>' | split:'__'
+  else
+   assign html_layout = '__' | split:'__'
+  endif -%}
+
+  <div class="nt_se_{{sid}} {{layout}}{%- if image != blank %} hide_bgimg_{{se_stts.hide_bgimg}} lazyload se_t4_bg nt_parallax_{{se_stts.use_pr}}{%- endif -%}"{% if image != blank %} data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{image.aspect_ratio}}" data-sizes="auto" data-parent-fit="cover"{% endif %}>
+    {{-html_layout[0]-}}
+    {%- render 'section_title',section:section -%}
+    <div class="js_packery nt_packery products nt_products_holder row fl_center row_pr_{{inc_pr}} cdt_des_{{se_stts.cdt_des}} round_cd_{{se_stts.round_cd}} {{se_stts.image_size}} {{se_stts.image_ratio}} position_{{se_stts.image_position}} space_{{se_stts.space}}{%- if sett_equal %} equal_nt{%- endif -%}" data-packery='{ "itemSelector": ".pr_grid_item","gutter": 0,"percentPosition": true,"originLeft": {{ltr}} }'>
+        {%- if section.blocks.size > 0 -%}
+          {%- for block in section.blocks %}
+            {%- liquid
+            assign link = block.settings.product2
+            assign stt_pr = all_products[block.settings.product]
+            if link.type == "product_link" and link != blank
+              assign product = link.object
+            elsif stt_pr != blank
+              assign product = stt_pr
+            else
+              continue
+            endif
+            assign ck_noPr = false
+            if block.settings.set_pr 
+              assign col = '6' 
+            else 
+              assign col = '3' 
+            endif
+            render 'pr_loop_grid_1',product:product,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}
+          {%- endfor -%}
+        {%- endif -%}
+        {%- if ck_noPr -%}
+           {%- for i in (1..14) -%}
+              <div class="pr_animated mt__30 pr_grid_item product nt_pr desgin__1 col-6 col-lg-{% cycle 'group1':'3','6','3','3','3','3','3','3','3','6','3','3','3' %} col-md-3 done">
+                 <div class="product-inner pr">
+                   <div class="product-image pr oh"><a class="db" href="/admin/products">{% capture current %}{% cycle 'group2':'1','2','3','4','5','6','7','8' -%}{% endcapture %}<div class="pr_lazy_img main-img nt_img_ratio nt_bg_lz lazyload" style="padding-top:100%" data-bg="{{ 'product-' | append:current | append:'.jpg' | asset_url }}"></div></a></div>
+                   <div class="product-info mt__15"><h3 class="product-title pr fs__14 mg__0 fwm"><a class="cd chp" href="/admin/products">{{ 'homepage.onboarding.product_title' | t }}</a></h3><span class="price dib mb__5"><del>$59.00</del><ins>$39.00</ins></span></div>
+                </div>
+              </div>
+           {%- endfor -%}
+        {%- endif -%}
+    </div>
+    {{-html_layout[1]-}}
+  </div>
+{%- render 'section_css' -%}
+{%- schema -%}
+  {
+    "name": "Packery Manually",
+    "class": "nt_section type_collection_packery2 type_packery tp_se_cdt",
+    "max_blocks": 20,
+    "settings": [
+      {
+        "type": "header",
+        "content": "== Title Settings"
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Packery collection"
+      },
+      {
+        "type": "textarea",
+        "id": "sub_title",
+        "label": "Sub Text"
+      },
+      {
+        "type": "select",
+        "id": "sub_font",
+        "default": "2",
+        "options": [
+         {
+            "value": "1",
+            "label": "Body font"
+         },
+         {
+            "value": "2",
+            "label": "Sub title font"
+          }
+        ],
+        "label": "Sub Text use font:"
+      },
+      {
+        "type": "select",
+        "id": "style_title",
+        "options": [
+         {
+            "value": "title_1",
+            "label": "Design 1"
+         },
+         {
+            "value": "title_2",
+            "label": "Design 2"
+          },
+         {
+            "value": "title_3",
+            "label": "Design 3"
+          },
+         {
+            "value": "title_4",
+            "label": "Design 4"
+          },
+         {
+            "value": "title_5 lazyload",
+            "label": "Design 5"
+          },
+         {
+            "value": "title_6",
+            "label": "Design 6"
+          },
+         {
+            "value": "title_7 +la",
+            "label": "Design 7 (with line-awesome)"
+          },
+         {
+            "value": "title_8",
+            "label": "Design 8"
+          },
+         {
+            "value": "title_9",
+            "label": "Design 9"
+          },
+         {
+            "value": "title_10",
+            "label": "Design 10"
+          },
+         {
+            "value": "title_11",
+            "label": "Design 11"
+          },
+         {
+            "value": "title_12",
+            "label": "Design 12"
+          },
+         {
+            "value": "title_13",
+            "label": "Design 13"
+          }
+        ],
+        "label": "Design Title:"
+      },
+      {
+        "type": "text",
+        "id": "ic_tt",
+        "label": "Style 7 icon line-awesome",
+        "default": "gem"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_clpr",
+        "label": "Use icon color primary?",
+        "default": false
+      },
+      {
+        "type": "paragraph",
+        "content": "[Get icons Line awesome](https://icons8.com/line-awesome)"
+      },
+      {
+        "type": "header",
+        "content": "== General Settings"
+      },
+      {
+        "type": "range",
+        "id": "space",
+        "min": 20,"max": 50,"step": 10,
+        "unit": "px",
+        "label": "Space between products",
+        "default": 30
+      },
+      {
+        "type": "select",
+        "id": "col_pr",
+        "label": "Products per row (desktop)",
+        "info": "How many products you want to show per row",
+        "default": "3",
+        "options": [
+          {
+            "value": "6",
+            "label": "2"
+          },
+          {
+            "value": "4",
+            "label": "3"
+          },
+          {
+            "value": "3",
+            "label": "4"
+          },
+          {
+            "value": "15",
+            "label": "5"
+          },
+          {
+            "value": "2",
+            "label": "6"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_pr_tb",
+        "label": "Products per row (tablet)",
+        "default": "3",
+        "options": [
+          {
+            "value": "6",
+            "label": "2"
+          },
+          {
+            "value": "4",
+            "label": "3"
+          },
+          {
+            "value": "3",
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_pr_mb",
+        "label": "Products per row (mobile)",
+        "default": "6",
+        "options": [
+          {
+            "value": "12",
+            "label": "1"
+          },
+          {
+            "value": "6",
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "show_vendor",
+        "label": "Show product vendors",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "== Countdown timer"
+      },
+      {
+        "type": "paragraph",
+        "content": "Countdown to the end sale date will be shown. Be sure you have set final date of the product sale price. product.metafields.meta.countdown ( 2017\/08\/17 )"
+      },
+      {
+        "type": "checkbox",
+        "id": "use_cdt",
+        "default": false,
+        "label": "Use countdown timer?"
+      },
+      {
+        "type": "checkbox",
+        "id": "round_cd",
+        "default": false,
+        "label": "Round countdown timer?"
+      },
+      {
+        "type": "select",
+        "id": "cdt_des",
+        "label": "Countdown Design:",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "Design 1"
+          },
+          {
+            "value": "2",
+            "label": "Design 2"
+          },
+          {
+            "value": "3",
+            "label": "Design 3"
+          },
+          {
+            "value": "4",
+            "label": "Design 4"
+          },
+          {
+            "value": "5",
+            "label": "Design 5"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "== Design Image"
+      },
+      {
+        "type": "checkbox",
+        "id": "use_eq_height",
+        "label": "Use equal height images?",
+        "default": false
+      },
+      {
+        "type": "select",
+        "id": "image_ratio",
+        "label": "Aspect Ratio",
+        "default": "ratio_nt",
+        "info": "Aspect Ratio Custom will settings in General panel.",
+        "options": [
+          {
+            "group": "Landscape",
+            "value": "ratio2_1",
+            "label": "2:1"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio16_9",
+            "label": "16:9"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio8_5",
+            "label": "8:5"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio3_2",
+            "label": "3:2"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio4_3",
+            "label": "4:3"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio_nt",
+            "label": "Ratio ASOS"
+          },
+          {
+            "group": "Squared",
+            "value": "ratio1_1",
+            "label": "1:1"
+          },
+          {
+            "group": "Portrait",
+            "value": "ratio2_3",
+            "label": "2:3"
+          },
+          {
+            "group": "Portrait",
+            "value": "ratio1_2",
+            "label": "1:2"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus1",
+            "label": "Ratio Custom 1"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus2",
+            "label": "Ratio Custom 2"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus3",
+            "label": "Ratio Custom 3"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus4",
+            "label": "Ratio Custom 4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "image_size",
+        "label": "Image Size",
+        "default": "nt_cover",
+        "options": [
+          {
+            "value": "nt_cover",
+            "label": "Full"
+          },
+          {
+            "value": "nt_contain",
+            "label": "Auto"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "image_position",
+        "info": "The first value is the horizontal position and the second value is the vertical.",
+        "options": [
+          {
+            "value": "default",
+            "label": "Default"
+          },
+          {
+            "value": "1",
+            "label": "Left Top"
+          },
+          {
+            "value": "2",
+            "label": "Left Center"
+          },
+          {
+            "value": "3",
+            "label": "Left Bottom"
+          },
+          {
+            "value": "4",
+            "label": "Right Top"
+          },
+          {
+            "value": "5",
+            "label": "Right Center"
+          },
+          {
+            "value": "6",
+            "label": "Right Bottom"
+          },
+          {
+            "value": "7",
+            "label": "Center Top"
+          },
+          {
+            "value": "8",
+            "label": "Center Center"
+          },
+          {
+            "value": "9",
+            "label": "Center Bottom"
+          }
+        ],
+        "label": "Image Position",
+        "default": "8"
+      },
+      {
+        "type": "header",
+        "content": "== Design Options"
+      },
+      {
+        "type": "select","id": "layout","default": "wrap","label": "Layout",
+        "options": [
+            { "value": "container", "label": "Container"},
+            { "value": "wrap", "label": "Wrapped Container"},
+            { "value": "nt_full", "label": "Full Width"}
+        ]
+      },
+      {
+        "type": "color","id": "cl_bg","label": "Background color"
+      },
+      {
+        "type": "image_picker","id": "image","label": "Background Image"
+      },
+      {
+        "type": "text",
+        "id": "mg",
+        "label": "Margin",
+        "info":"Margin top, margin right, margin bottom, margin left. If you not use to blank",
+        "default": "50px,,50px,",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd",
+        "label": "Padding",
+        "info":"Padding top, padding right, padding bottom, padding left. If you not use to blank",
+        "placeholder": "50px,,50px,"
+      },
+     {
+        "type": "header",
+        "content": "== Design Mobile Options"
+      },
+      {
+        "type": "text",
+        "id": "mg_mb",
+        "label": "Margin",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd_mb",
+        "label": "Padding",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "header",
+        "content": "== Manually Settings"
+      }/*,
+      {
+        "type": "paragraph",
+        "content": "Only up to 20 products can be selected at the host site, even if you create another section."
+      }*/
+    ],
+    "blocks": [
+      {
+        "type": "product",
+        "name": "Product",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "info": "Only show on admin editor, a key word reminiscent of the selected products.",
+            "label": "Title (optional)"
+          },
+          {
+            "type": "url",
+            "id": "product2",
+            "info": "Only active when choose link product",
+            "label": "== Choose Product (recommended)"
+          },
+          {
+            "type": "product",
+            "id": "product",
+            "info": "Limit choose 20 product in a page",
+            "label": "== Choose Product (deprecated)"
+          },
+          {
+            "type": "paragraph",
+            "content": "We use the link instead of the product type because to avoid the limit of 20 products per shopify page"
+          },
+          {
+            "type": "checkbox",
+            "id": "set_pr",
+            "label": "Set is a featured product?",
+            "default": false
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "9. Packery collection Manually",
+        "category": "I. Collections"
+      }
+    ]
+  }
+{% endschema %}

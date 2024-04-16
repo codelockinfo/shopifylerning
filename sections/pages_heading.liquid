@@ -1,0 +1,237 @@
+{%- liquid 
+  assign se_id = section.id
+  assign se_stts = section.settings
+  assign se_bks = section.blocks
+  assign parallax = se_stts.parallax 
+  assign image = se_stts.image -%}
+
+  {%- capture bk_contents -%}
+    {%- if se_bks.size > 0 -%}
+       <div class="container pr z_100">
+          {%- for block in se_bks -%}
+            {%- case block.type -%}
+               {%- when '1' -%}<h1 class="mb__5 cw">{{ page.title}}</h1>
+               {%- else -%}{% if block.settings.text == blank %}{% continue %}{% endif %}<p class="mg__0">{{ block.settings.text }}</p>
+            {%- endcase -%}
+          {%- endfor -%}
+       </div>
+    {%- endif -%}
+  {%- endcapture -%}
+  
+{%- if image != blank -%}
+  <div class="page-head tc pr oh page_bg_img page_head_{{se_id}}">
+     <div class="parallax-inner nt_parallax_{{parallax}} lazyload nt_bg_lz pa t__0 l__0 r__0 b__0" data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{image.aspect_ratio}}" data-sizes="auto" data-parent-fit="cover"></div>
+     {{-bk_contents-}}
+  </div>
+{%- else -%}
+  <div class="page-head tc pr oh page_head_{{se_id}}">{{bk_contents}}</div>
+{%- endif -%}
+
+{%- style -%}
+.page_head_{{se_id}} {padding: {{se_stts.padding}}px 0}
+.page_head_{{se_id}}:before {
+  background-color: {{se_stts.color}};opacity: {{se_stts.overlay | divided_by: 100.0}}
+}
+{%- unless parallax -%}
+.page_head_{{se_id}} .parallax-inner {
+     background-repeat: {{se_stts.bg_repeat}};
+    background-size: {{se_stts.bg_size}};
+    background-attachment: {{se_stts.bg_att}};
+    background-position: {{se_stts.bg_pos | replace: '_', ' ' }};
+}
+{%- endunless -%}
+{%- endstyle -%}
+{%- schema -%}
+  {
+    "name": "Page heading",
+    "class": "page_section_heading",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "== Background Image"
+      },
+      {
+        "type": "checkbox",
+        "id": "parallax",
+        "label": "Use scroll parallax?",
+        "default": false
+      },
+      {
+        "type": "color",
+        "id": "color",
+        "label": "Background color",
+        "default": "#000"
+      },
+      {
+        "type": "range",
+        "id": "overlay",
+        "label": "Background overlay",
+        "default": 54,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%"
+      },
+      {
+        "type": "range",
+        "id": "padding",
+        "label": "Padding Space",
+        "default": 50,
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "unit": "px"
+      },
+      {
+        "type": "header",
+        "content": "== Background Config:"
+      },
+      {
+        "type": "paragraph",
+        "content": "Not active when you enable scroll parallax."
+      },
+      {
+        "type": "select",
+        "id": "bg_pos",
+        "label": "Background Image Position",
+        "default": "center center",
+        "options": [
+          {
+            "value": "left top",
+            "label": "Left Top"
+          },
+          {
+            "value": "left center",
+            "label": "Left Center"
+          },
+          {
+            "value": "left bottom",
+            "label": "Left Bottom"
+          },
+          {
+            "value": "center top",
+            "label": "Center Top"
+          },
+          {
+            "value": "center center",
+            "label": "Center Center"
+          },
+          {
+            "value": "center bottom",
+            "label": "Center Bottom"
+          },
+          {
+            "value": "right top",
+            "label": "Right Top"
+          },
+          {
+            "value": "right center",
+            "label": "Right Center"
+          },
+          {
+            "value": "right bottom",
+            "label": "Right Bottom"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "bg_repeat",
+        "options": [
+          {
+            "value": "no-repeat",
+            "label": "No Repeat"
+          },
+          {
+            "value": "repeat",
+            "label": "Repeat All"
+          },
+          {
+            "value": "repeat-x",
+            "label": "Repeat Horizontally"
+          },
+          {
+            "value": "repeat-y",
+            "label": "Repeat Vertically"
+          },
+          {
+            "value": "inherit",
+            "label": "Inherit"
+          }
+        ],
+        "label": "___ Background Repeat",
+        "default": "no-repeat",
+        "info": "[Specifies how to repeat the background images](https:\/\/w3schools.com\/cssref\/pr_background-repeat.asp)"
+      },
+      {
+        "type": "select",
+        "id": "bg_size",
+        "options": [
+          {
+            "value": "auto",
+            "label": "Auto"
+          },
+          {
+            "value": "inherit",
+            "label": "Inherit"
+          },
+          {
+            "value": "cover",
+            "label": "Cover"
+          },
+          {
+            "value": "contain",
+            "label": "Contain"
+          }
+        ],
+        "label": "___ Background Size",
+        "default": "cover",
+        "info": "[Specifies the size of the background images](https:\/\/w3schools.com\/cssref\/css3_pr_background-size.asp)"
+      },
+      {
+        "type": "select",
+        "id": "bg_att",
+        "options": [
+          {
+            "value": "fixed",
+            "label": "Fixed"
+          },
+          {
+            "value": "scroll",
+            "label": "Scroll"
+          },
+          {
+            "value": "inherit",
+            "label": "Inherit"
+          }
+        ],
+        "label": "___ Background Attachment",
+        "default": "scroll",
+        "info": "[Specifies whether the background images are fixed or scrolls with the rest of the page](https:\/\/w3schools.com\/cssref\/pr_background-attachment.asp)"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "1",
+        "name": "Title",
+        "limit": 1
+      },
+      {
+        "type": "2",
+        "name": "Description",
+        "limit": 1,
+        "settings": [
+         {
+          "type":"richtext","id":"text","label":"Content","default":"<p>Follow your passion, and sucess will follow you</p>"
+          }
+        ]
+      }
+    ],
+    "default": {
+      "blocks": [
+        { "type": "1" }
+      ]
+    }
+  }
+{% endschema %}

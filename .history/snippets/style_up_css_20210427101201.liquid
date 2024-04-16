@@ -1,0 +1,385 @@
+{%- assign search_url = routes.search_url -%}
+<div class="admin_t4_tools t4_tools_btns">
+  <button class="admin_t4_tools_btn"><i class="las la-tools"></i><i class="las la-times"></i></button>
+  <div class="admin_t4_tools__content">
+  <ul>
+    <li><a href="https://gecko5-docs.the4.co/?locale=en" class="admin_t4_tools__item admin_t4_tools__item--separated" target="_blank"><i class="las la-book mr__5"></i>View documentation</a></li>
+    {%- if settings.enable_tag %}<li><a id="enable_tag" class="admin_t4_tools__item" href="{{routes.cart_url}}/?view=t4-import-tags"><svg viewBox="0 0 24 24" class="admin_t4_tools__svg"><use xlink:href="#scl_adt4ld"></use></svg><i class="las la-tags mr__5"></i>Auto create product tags</a></li>{% endif -%}
+    {%- if settings.enable_meta %}<li><a class="admin_t4_tools__item admin_t4_tools__item--separated" href="{{search_url}}?type=product&options%5Bunavailable_products%5D=last&options%5Bprefix%5D=last&q=*&view=meta_ntt4"><svg viewBox="0 0 24 24" class="admin_t4_tools__svg"><use xlink:href="#scl_adt4ld"></use></svg><i class="las la-edit mr__5"></i>Edit Metafield with your products</a></li>{% endif -%}
+    <li><a class="admin_t4_tools__item" href="{{search_url}}"><svg viewBox="0 0 24 24" class="admin_t4_tools__svg"><use xlink:href="#scl_adt4ld"></use></svg><i class="las la-search mr__5"></i>Go to search page to config settings</a></li>
+    {%- if settings.wishlist_type != "0" and settings.wishlist_type != "3" -%}<li><a class="admin_t4_tools__item" href="{{search_url}}/?view=wish"><svg viewBox="0 0 24 24" class="admin_t4_tools__svg"><use xlink:href="#scl_adt4ld"></use></svg><i class="lar la-heart mr__5"></i>Go to wishlist page to config settings</a></li>{% endif -%}
+    {%- if settings.enable_compe %}<li><a class="admin_t4_tools__item" href="{{search_url}}/?view=compe"><svg viewBox="0 0 24 24" class="admin_t4_tools__svg"><use xlink:href="#scl_adt4ld"></use></svg><i class="las la-sync mr__5"></i>Go to compare page to config settings</a></li>{% endif -%}
+  </ul>
+  </div>
+</div>
+<div id="adgliconsymbols" class="hide dn"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><symbol id="scl_adt4ld"><svg version="1.1" class="t4_L9" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 100 100" enable-background="new 0 0 0 0" xml:space="preserve"><path d="M73,50c0-12.7-10.3-23-23-23S27,37.3,27,50 M30.9,50c0-10.5,8.5-19.1,19.1-19.1S69.1,39.5,69.1,50" transform="rotate(65.9135 50 50)"><animateTransform attributeName="transform" attributeType="XML" type="rotate" dur="1s" from="0 50 50" to="360 50 50" repeatCount="indefinite"></animateTransform></path></svg></div>
+<section id="purchase_codet4" data-email='{{shop.email |default:"no_email"}}' class="hide hidden">
+   <h2 id="heading_codet4">Start your business journey with Gecko</h2>
+   <p id="txt_codet4">Use Gecko and explore all the tools and services you need to start, run, and grow your business.<br>We know that Gecko will make your life easier by improving your workflow. With the tools that Gecko gives you,<br> you will realize your true design potential without the need to know any coding.<br> We would be glad if you help us to improve our theme, installation process or documentation.</p>
+   <p id="res_codet4" class="fs__16 dn"></p>
+   <input placeholder="Enter your purchase code" id="ipt_codet4" type="text">
+   <a id="btn_codet4" href="https://lic.the4.co/" class="pr oh">
+      <svg xmlns="http://www.w3.org/2000/svg" width="45" height="40" viewBox="0 0 38 38" class="imp_icon_ld"> <defs> <linearGradient x1="8.042%" y1="0%" x2="65.682%" y2="23.865%" id="a"> <stop stop-color="#fff" stop-opacity="0" offset="0%"></stop> <stop stop-color="#fff" stop-opacity=".631" offset="63.146%"></stop> <stop stop-color="#fff" offset="100%"></stop> </linearGradient> </defs> <g fill="none" fill-rule="evenodd"> <g transform="translate(1 1)"> <path d="M36 18c0-9.94-8.06-18-18-18" id="Oval-2" stroke="url(#a)" stroke-width="2" transform="rotate(152.865 18 18)"> <animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="0.9s" repeatCount="indefinite"></animateTransform> </path> <circle fill="#fff" cx="36" cy="18" r="1" transform="rotate(152.865 18 18)"> <animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="0.9s" repeatCount="indefinite"></animateTransform> </circle> </g> </g></svg>
+      <span>Start Gecko</span>
+   </a>
+   <p id="minor_codet4">
+      <a href="https://bit.ly/2tHbq4e" target="_blank">Where Is My Purchase Code?</a>
+      <a href="https://bit.ly/3gnT8cA" target="_blank">Buy A New License?</a>
+   </p>
+</section>
+<style>
+.t4_tools_btns {
+    position: fixed;
+    top: 35%;
+    right: 0;
+    z-index: 400;
+    visibility: hidden;
+    opacity: 0;
+    transform: scale(0);
+    -webkit-transform: scale(0);
+    -ms-transform: scale(0);
+    -webkit-transition: all .25s ease-in-out;
+    transition: all .25s ease-in-out;
+}
+.show_admin_t4_pp i,.admin_t4_tools_btn .la-times {
+    display: none;
+    opacity: 0;
+    transition: opacity 300ms;
+}
+.show_admin_t4_pp .la-times {display: inline-block;opacity: 1;}
+.t4_tools_btns.on_show {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+    -webkit-transform: scale(1);
+    -ms-transform: scale(1);
+}
+.admin_t4_tools_btn {
+  position: relative;
+    text-align: center;
+    cursor: pointer;
+    height: 70px;
+    line-height: 1.2;
+    width: 80px;
+    -webkit-transition: transform .3s ease .4s, background-color .25s ease;
+    transition: transform .3s ease .4s, background-color .25s ease;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    perspective: 800px;
+    -webkit-perspective: 800px;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 600;
+    font-size: 15px;
+    border: 4px double #fff;
+    border-radius: 4px;
+    box-shadow: 0 5px 15px 0 rgba(0,0,0,0.15);
+    background-color: #008060;
+}
+.admin_t4_tools_btn:hover,.admin_t4_tools_btn:focus {
+    background-color: #004c3f;
+    color: #ffffff;
+    border-color: #fff;
+}
+.admin_t4_tools_btn i{font-size: 32px;}
+.admin_t4_tools__content {
+    padding: 0.5em 0;
+    position: absolute;
+    width: 356px;
+    top: 76px;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #d2d5d9;
+    box-shadow: 0 5px 30px 5px rgb(66 71 76 / 10%);
+    display: none;
+    opacity: 0;
+    transition: opacity 300ms;
+}
+.admin_t4_tools__content>ul {
+    list-style: none;
+}
+.admin_t4_tools__item {
+    position: relative;
+    width: 100%;
+    white-space: unset;
+    text-align: left;
+    padding-top: 11.25px;
+    padding-bottom: 11.25px;
+    line-height: 1;
+    display: inline-block;
+    padding-left: 24px;
+    padding-right: 24px;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: normal;
+    border: 1px solid transparent;
+    border-left: 3px solid;
+    border-left-color: transparent;
+    color: #42474c;
+    transition-property: border-color, fill;
+    transition-duration: 300ms;
+}
+.admin_t4_tools__item i {
+    font-size: 12px;
+    padding: 3px;
+    border: 1px solid rgba(201, 204, 207, 1);
+    border-radius: 2px;
+    margin-right: 7px;
+    background-color: #f4f6f8;
+    color: #5c5f62;
+}
+.admin_t4_tools__item:hover, .admin_t4_tools__item:focus {
+    border-left-color: #008060;
+    background-color: #f0f1f2;
+    color: #212326;
+}
+.admin_t4_tools__item--separated {
+    position: relative;
+}
+.admin_t4_tools__item--separated::after {
+    content: '';
+    position: absolute;
+    bottom: -1.625px;
+    border-bottom: 1px solid #d2d5d9;
+    left: calc(24px - 3px);
+    right: 24px;
+}
+svg.admin_t4_tools__svg {
+    width: 26px;
+    fill: #008060;
+    position: absolute;
+    left: 0;
+    top: 6px;
+    display: none;
+    opacity: 0;
+    transition: opacity 300ms;
+}
+.show_admin_t4_pp + .admin_t4_tools__content,.show_admin_t4_svg>svg.admin_t4_tools__svg {
+    display: block;
+    opacity: 1;
+}
+
+
+#alet_css_t4 {
+    font-size: 14px;
+    line-height: 1;
+    padding: 15px 10px;
+    border-radius: 3px;
+    background: rgba(0,0,0,.88);
+    box-shadow: 0 0 0 1px rgba(63,63,68,.05), 0 1px 3px 0 rgba(63,63,68,.15);
+    color: #fff;
+    max-width: 200px;
+    position: fixed;
+    right: 90px;
+    top: 46%;
+    margin-left: -100px;
+    opacity: 0;
+    transform: translateY(70px);
+    transition: transform .4s ease,opacity .4s ease;
+    pointer-events: none;
+    z-index: 500
+}
+#alet_css_t4.active {
+    transform: translateY(0);
+    opacity: 1;
+}
+#purchase_codet4 {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #f2e0cf;
+    z-index: 100000;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+  -ms-flex-direction: column;
+  flex-direction: column;
+    text-align: center;
+    padding: 5%;
+    background: #f4f6f8;
+    border: 1px solid #dfe3e8;
+}
+#purchase_codet4:not(.hidden):not(.hide) {
+    display: -ms-flexbox !important;
+    display: flex !important;
+}
+#heading_codet4 {
+    font-weight: 800;
+    line-height: 1.1;
+    font-size: 40px;
+    margin: 0;
+    color: #000639;
+}
+#txt_codet4 {
+    color: #000639;
+    margin-top: 1em;
+    margin-bottom: 1.375em;
+}
+#ipt_codet4 {
+    text-align: center;
+    max-width: 400px;
+    height: 50px;
+    width: 100%;
+    margin: 0 0 15px;
+    padding: 1em 1em;
+    color: #212b35;
+    font-size: 1em;
+    box-shadow: 0 0 0 1px #c4cdd5;
+    border: 0;
+    border-radius: 5px;
+    background-color: #ffffff;
+    transition: padding 150ms;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    &:not(.t4Warning):focus {
+      outline: 0;
+      box-shadow: 0 0 0 2px #5c6ac4;
+    }
+}
+#ipt_codet4.t4Warning {
+  border: dashed 2px #ec0101;
+  box-shadow: none;
+}
+#ipt_codet4.t4Warning2 {
+ border-style: solid;
+}
+#btn_codet4 {
+      margin-top: 8px;
+    display: inline-block;
+    padding: 1.0625em 1.875em;
+    border-radius: 5px;
+    font-weight: 700;
+    font-size: 1em;
+    line-height: 1.133;
+    -webkit-font-smoothing: antialiased;
+    transition: 150ms ease;
+    transition-property: background-color, border-color, box-shadow, color;
+    text-align: center;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    box-shadow: 0 5px 15px 0 rgba(0,0,0,0.15);
+    background-color: #5c6ac4;
+    color: #ffffff;
+    text-transform: uppercase;
+    min-width: 300px;
+    min-height: 40px;
+}
+#minor_codet4 a {
+    margin-top: 15px;
+    color: #454f5b;
+    font-size: 14px;
+        display: block;
+    text-decoration: underline;
+}
+#minor_codet4 a:last-child {
+    margin-top: 10px;
+}
+#res_codet4 {
+    color: #5c6ac4;
+    font-weight: 500;
+}
+#btn_codet4:hover, #btn_codet4:focus {
+    background-color: #202e78;
+    color: #ffffff;
+}
+#btn_codet4:hover {
+    box-shadow: 0 5px 25px 0 rgba(0,0,0,0.25);
+}
+#btn_codet4.loading {
+  pointer-events: none;
+}
+#btn_codet4.loading>span{
+  opacity: 0;visibility: hidden
+}
+#btn_codet4.loading>svg{
+  visibility: visible
+}
+#minor_codet4 a:hover,#minor_codet4 a:focus {
+color: #5c6ac4;
+}
+.imp_icon_ld {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -15px;
+    margin-left: -15px;
+    visibility: hidden;
+    pointer-events: none;
+}
+@-webkit-keyframes shaket4code {
+  from,
+  to {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    -webkit-transform: translate3d(-10px, 0, 0);
+    transform: translate3d(-10px, 0, 0);
+  }
+
+  20%,
+  40%,
+  60%,
+  80% {
+    -webkit-transform: translate3d(10px, 0, 0);
+    transform: translate3d(10px, 0, 0);
+  }
+}
+
+@keyframes shaket4code {
+  from,
+  to {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    -webkit-transform: translate3d(-10px, 0, 0);
+    transform: translate3d(-10px, 0, 0);
+  }
+
+  20%,
+  40%,
+  60%,
+  80% {
+    -webkit-transform: translate3d(10px, 0, 0);
+    transform: translate3d(10px, 0, 0);
+  }
+}
+
+.shaket4code {
+  -webkit-animation-name: shaket4code;
+  animation-name: shaket4code;
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+</style>

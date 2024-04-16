@@ -1,0 +1,751 @@
+{%- for i in (1..1) %}{% unless section.settings.show %}{% break %}{% endunless -%}
+   
+    {%- assign inc_price = settings.price_format -%}
+    {%- assign use_rating = settings.use_pr_rating -%}
+    {%- assign inc_rating = settings.app_review -%}
+    {%- assign show_color = settings.show_pr_color -%}
+    {%- assign show_cl_type = settings.show_color_type -%}
+    {%- assign show_size = settings.show_pr_size -%}
+   {%- assign sett_equal = section.settings.use_eq_height -%}
+   {%- assign show_vendor = section.settings.show_vendor -%}
+   {%- assign inc_pr = section.settings.pr_des -%}
+   {%- assign limit = section.settings.limit -%}
+   {%- assign col = ' pr_animated' | prepend:section.settings.col_pr -%}{%- assign col_tb = section.settings.col_pr_tb -%}{%- assign col_mb = section.settings.col_pr_mb -%}
+   {%- assign use_cdt = section.settings.use_cdt -%}
+   {%- assign txt_cd = 'products.grid_items.offer_end_in' | t -%}
+
+   {%- if search.performed and search.results_count > 0 -%}
+      {%- paginate search.results by limit -%}
+        {%- assign sortby = section.settings.sortby | plus:0 -%}
+        {%- case sortby -%}
+            {%- when 5 or 6 -%}
+               {%- assign results = search.results | sort: 'price' -%}
+            {%- when 7 or 8 -%}
+               {%- assign results = search.results | sort: 'published_at' -%}
+            {%- else -%}
+               {%- assign results = search.results -%}
+        {%- endcase -%}
+        {%- assign modu = sortby | modulo:2 -%}
+        
+        <div class="container">
+           {%- render 'section_title' -%}
+           <div class="sortby_{{sortby}} products nt_products_holder nt_slider row row_pr_{{inc_pr}} cdt_des_{{section.settings.cdt_des}} round_cd_{{section.settings.round_cd}} {{section.settings.image_size}} {{section.settings.image_ratio}} position_{{section.settings.image_position}} space_{{section.settings.space}} prev_next_{{section.settings.btn_color}} btn_owl_{{section.settings.btn_owl}} dot_owl_{{section.settings.dot_owl}} dot_color_{{section.settings.dot_color}} btn_vi_{{section.settings.btn_vi}}{% if sett_equal %} equal_nt{% endif %}" data-flickityjs='{"imagesLoaded": 0,"adaptiveHeight": 0, "contain": 1, "groupCells": "100%", "dragThreshold" : 5, "cellAlign": "left","wrapAround": {{section.settings.loop}},"prevNextButtons": {{section.settings.button}},"percentPosition": 1,"pageDots": {{section.settings.dot}}, "autoPlay" : {{ section.settings.au_time | times: 1000 }}, "pauseAutoPlayOnHover" : {{section.settings.au_hover}}, "rightToLeft": {{settings.use_rtl}} }'>
+            {%- if sortby == 1 -%}
+              {%- assign array = search.terms | remove: 'id:' | split:' OR ' -%}
+              {%- if inc_pr == '1' or inc_pr == '1 tc' -%}
+                {%- for i in array -%}{%- assign j = i | plus:0 -%}{%- assign item = results | where: "id", j -%}
+                  {%- if item == blank %}{% continue %}{% endif -%}
+                  {%- render 'pr_loop_grid_1',product:item[0],use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}
+                {%- endfor -%}
+              {%- else -%}
+                {%- for i in array -%}{%- assign j = i | plus:0 -%}{%- assign item = results | where: "id", j -%}
+                  {%- if item == blank %}{% continue %}{% endif -%}
+                  {%- render 'pr_loop_grid_2',product:item[0],use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}
+                {%- endfor -%}
+              {%- endif -%}
+              {%- comment -%}
+                {%- assign array = search.terms | remove: 'id:' | split:' OR ' -%}
+                {%- for i in array -%}{%- assign j = i | plus:0 -%}{%- assign item = results | where: "id", j -%}
+                  {%- if item == blank %}{% continue %}{% endif -%}
+                  {%- include inc_pr,product: item[0] -%}
+                {%- endfor -%}
+              {%- endcomment -%}
+            {%- elsif sortby == 2 -%}
+              {%- assign array = search.terms | remove: 'id:' | split:' OR ' -%}
+              {%- if inc_pr == '1' or inc_pr == '1 tc' -%}
+                {%- for i in array reversed -%}{%- assign j = i | plus:0 -%}{%- assign item = results | where: "id", j -%}
+                  {%- if item == blank %}{% continue %}{% endif -%}
+                  {%- render 'pr_loop_grid_1',product:item[0],use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}
+                {%- endfor -%}
+              {%- else -%}
+                {%- for i in array reversed -%}{%- assign j = i | plus:0 -%}{%- assign item = results | where: "id", j -%}
+                  {%- if item == blank %}{% continue %}{% endif -%}
+                  {%- render 'pr_loop_grid_2',product:item[0],use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}
+                {%- endfor -%}
+              {%- endif -%}
+              {%- comment -%}
+                {%- assign array = search.terms | remove: 'id:' | split:' OR ' -%}
+                {%- for i in array reversed -%}{%- assign j = i | plus:0 -%}{%- assign item = results | where: "id", j -%}
+                  {%- if item == blank %}{% continue %}{% endif -%}
+                  {%- include inc_pr,product: item[0] -%}
+                {%- endfor -%}
+              {%- endcomment -%}
+            {%- else -%}
+              {%- if modu == 0 -%}
+                {%- if inc_pr == '1' or inc_pr == '1 tc' -%}
+                  {%- for product in results -%}
+                    {%- render 'pr_loop_grid_1',product:product,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}
+                  {%- endfor -%}
+                {%- else -%}
+                  {%- for product in results -%}
+                    {%- render 'pr_loop_grid_2',product:product,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}
+                  {%- endfor -%}
+                {%- endif -%} 
+                {%- comment -%}{%- for product in results -%}{%- include inc_pr -%}{%- endfor -%}{%- endcomment -%}
+              {%- else -%}
+                {%- if inc_pr == '1' or inc_pr == '1 tc' -%}
+                  {%- for product in results reversed -%}
+                    {%- render 'pr_loop_grid_1',product:product,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}
+                  {%- endfor -%}
+                {%- else -%}
+                  {%- for product in results reversed -%}
+                    {%- render 'pr_loop_grid_2',product:product,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}
+                  {%- endfor -%}
+                {%- endif -%} 
+                {%- comment -%}{%- for product in results reversed -%}{%- include inc_pr -%}{%- endfor -%}{%- endcomment -%}
+              {%- endif -%}
+            {%- endif -%}
+           </div>
+        </div>
+        {%- endpaginate -%}
+   {%- elsif search.performed and search.results_count == 0 -%}
+        <!-- no product -->
+   {%- else -%}
+       <div class="related product-extra mt__60" id="recently_wrap" data-section-type="product-recently" data-get='{{ routes.search_url }}' data-unpr='{{section.settings.unavailable_prs}}' data-id="id:{{product.id|default:19041994}}" data-limit="{{limit}}" data-expands="-1"><div class="lds_bginfinity pr"></div></div>
+   {%- endif -%}
+
+{%- endfor -%}
+{%- schema -%}
+{
+  "name": "Product recently viewed",
+  "class": "tp_se_cdt",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show",
+      "label": "Show product recently viewed?",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "unavailable_prs",
+      "options": [
+        {
+          "value": "hide",
+          "label": "Hide"
+        },
+        {
+          "value": "show",
+          "label": "Show"
+        }
+      ],
+      "label": "Unavailable products",
+      "default": "show"
+    },
+    {
+      "type": "paragraph",
+      "content": "Specifies whether to display results for unavailable products. The three possible options are show, hide. Set to hide to exclude unavailable products from the search results."
+    },
+    {
+      "type": "header",
+      "content": "== Title Settings"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Recently viewed products"
+    },
+    {
+      "type": "textarea",
+      "id": "sub_title",
+      "label": "Sub Text"
+    },
+      {
+        "type": "select",
+        "id": "sub_font",
+        "default": "2",
+        "options": [
+         {
+            "value": "1",
+            "label": "Body font"
+         },
+         {
+            "value": "2",
+            "label": "Sub title font"
+          }
+        ],
+        "label": "Sub Text use font:"
+      },
+      {
+        "type": "select",
+        "id": "style_title",
+        "options": [
+         {
+            "value": "title_1",
+            "label": "Design 1"
+         },
+         {
+            "value": "title_2",
+            "label": "Design 2"
+          },
+         {
+            "value": "title_3",
+            "label": "Design 3"
+          },
+         {
+            "value": "title_4",
+            "label": "Design 4"
+          },
+         {
+            "value": "title_5 lazyload",
+            "label": "Design 5"
+          },
+         {
+            "value": "title_6",
+            "label": "Design 6"
+          },
+         {
+            "value": "title_7 +la",
+            "label": "Design 7 (with line-awesome)"
+          },
+         {
+            "value": "title_8",
+            "label": "Design 8"
+          },
+         {
+            "value": "title_9",
+            "label": "Design 9"
+          },
+         {
+            "value": "title_11",
+            "label": "Design 11"
+          },
+         {
+            "value": "title_12",
+            "label": "Design 12"
+          },
+         {
+            "value": "title_13",
+            "label": "Design 13"
+          }
+        ],
+        "label": "Design Title:"
+      },
+      {
+        "type": "text",
+        "id": "ic_tt",
+        "label": "Style 7 icon line-awesome",
+        "default": "gem"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_clpr",
+        "label": "Use icon color primary?",
+        "default": false
+      },
+      {
+        "type": "paragraph",
+        "content": "[Get icons Line awesome](https://icons8.com/line-awesome)"
+      },
+   {
+     "type": "header",
+     "content": "== General Configuration"
+   },
+      {
+        "type": "range",
+        "id": "limit",
+        "label": "Number of Products to display",
+        "min": 1,
+        "max": 20,
+        "step": 1,
+        "default": 6
+      },
+      {
+        "type": "select",
+        "id": "sortby",
+        "options": [
+          {
+            "value": "1",
+            "label": "Time Added, New To Old"
+          },
+          {
+            "value": "2",
+            "label": "Time Added, Old To New"
+          },
+          {
+            "value": "3",
+            "label": "Alphabetically, Z-A"
+          },
+          {
+            "value": "4",
+            "label": "Alphabetically, A-Z"
+          },
+          {
+            "value": "5",
+            "label": "Price, High To Low"
+          },
+          {
+            "value": "6",
+            "label": "Price, Low To High"
+          },
+          {
+            "value": "7",
+            "label": "Date published, New To Old"
+          },
+          {
+            "value": "8",
+            "label": "Date published, Old To New"
+          }
+        ],
+        "label": "Sort By",
+        "default": "3"
+      },
+      {
+        "type": "range",
+        "id": "space",
+        "min": 20,"max": 50,"step": 10,
+        "unit": "px",
+        "label": "Space between products",
+        "default": 30
+      },
+      {
+        "type": "select",
+        "id": "col_pr",
+        "label": "Products per row (desktop)",
+        "info": "How many products you want to show per row",
+        "default": "3",
+        "options": [
+          {
+            "value": "6",
+            "label": "2"
+          },
+          {
+            "value": "4",
+            "label": "3"
+          },
+          {
+            "value": "3",
+            "label": "4"
+          },
+          {
+            "value": "15",
+            "label": "5"
+          },
+          {
+            "value": "2",
+            "label": "6"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_pr_tb",
+        "label": "Products per row (tablet)",
+        "default": "3",
+        "options": [
+          {
+            "value": "6",
+            "label": "2"
+          },
+          {
+            "value": "4",
+            "label": "3"
+          },
+          {
+            "value": "3",
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_pr_mb",
+        "label": "Products per row (mobile)",
+        "default": "6",
+        "options": [
+          {
+            "value": "12",
+            "label": "1"
+          },
+          {
+            "value": "6",
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "pr_des",
+        "label": "Design product",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "Design 1"
+          },
+          {
+            "value": "1 tc",
+            "label": "Design 1 (center)"
+          },
+          {
+            "value": "2",
+            "label": "Design 2"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "show_vendor",
+        "label": "Show product vendors",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "== Countdown timer"
+      },
+      {
+        "type": "paragraph",
+        "content": "Countdown to the end sale date will be shown. Be sure you have set final date of the product sale price. product.metafields.meta.countdown ( 2017\/08\/17 )"
+      },
+      {
+        "type": "checkbox",
+        "id": "use_cdt",
+        "default": false,
+        "label": "Use countdown timer?"
+      },
+      {
+        "type": "checkbox",
+        "id": "round_cd",
+        "default": false,
+        "label": "Round countdown timer?"
+      },
+      {
+        "type": "select",
+        "id": "cdt_des",
+        "label": "Countdown Design:",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "Design 1"
+          },
+          {
+            "value": "2",
+            "label": "Design 2"
+          },
+          {
+            "value": "3",
+            "label": "Design 3"
+          },
+          {
+            "value": "4",
+            "label": "Design 4"
+          },
+          {
+            "value": "5",
+            "label": "Design 5"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "== Slider Settings"
+      },
+      {
+        "type": "checkbox",
+        "id": "loop",
+        "label": "Use Loop?",
+        "info": "At the end of cells, wrap-around to the other end for infinite scrolling.",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "au_time",
+        "min": 0,
+        "max": 30,
+        "step": 0.5,
+        "label": "Autoplay Speed in second.",
+        "info": "Set is '0' to disable autoplay.",
+        "unit": "sec",
+        "default": 0
+      },
+      {
+        "type": "checkbox",
+        "id": "au_hover",
+        "label": "Pause Autoplay On Hover?",
+        "info": "Auto-playing will pause when the user hovers over the carousel.",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "== Prev Next Button, Page Dot Settings"
+      },
+      {
+        "type": "paragraph",
+        "content": "—————————————————"
+      },
+      {
+        "type": "paragraph",
+        "content": "Prev Next Button:"
+      },
+      {
+        "type": "checkbox",
+        "id": "button",
+        "label": "Enable Prev Next Button?",
+        "info": "Creates and enables previous & next buttons.",
+        "default": false
+      },
+      {
+        "type": "select",
+        "id": "btn_vi",
+        "label": "Visible:",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "always"
+          },
+          {
+            "value": "2",
+            "label": "Only hover"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "btn_owl",
+        "label": "Style",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "Style 1"
+          },
+          {
+            "value": "2",
+            "label": "Style 2"
+          },
+          {
+            "value": "3",
+            "label": "Style 3"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "btn_color",
+        "label": "Color",
+        "default": "0",
+        "options": [
+          {
+            "value": "0",
+            "label": "Transparent"
+          },
+          {
+            "value": "1",
+            "label": "Gray"
+          },
+          {
+            "value": "2",
+            "label": "White"
+          },
+          {
+            "value": "3",
+            "label": "Primary"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": "—————————————————"
+      },
+      {
+        "type": "paragraph",
+        "content": "Page Dot:"
+      },
+      {
+        "type": "checkbox",
+        "id": "dot",
+        "label": "Enable Page Dot?",
+        "info": "Creates and enables page dots.",
+        "default": false
+      },
+      {
+        "type": "select",
+        "id": "dot_owl",
+        "label": "Style",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "Style 1"
+          },
+          {
+            "value": "2",
+            "label": "Style 2"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "dot_color",
+        "label": "Color",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "Dark"
+          },
+          {
+            "value": "2",
+            "label": "Light"
+          },
+          {
+            "value": "3",
+            "label": "Primary"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "== Design Image"
+      },
+      {
+        "type": "checkbox",
+        "id": "use_eq_height",
+        "label": "Use equal height images?",
+        "default": false
+      },
+      {
+        "type": "select",
+        "id": "image_ratio",
+        "label": "Aspect Ratio",
+        "default": "ratio_nt",
+        "info": "Aspect Ratio Custom will settings in General panel.",
+        "options": [
+          {
+            "group": "Landscape",
+            "value": "ratio2_1",
+            "label": "2:1"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio16_9",
+            "label": "16:9"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio8_5",
+            "label": "8:5"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio3_2",
+            "label": "3:2"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio4_3",
+            "label": "4:3"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio_nt",
+            "label": "Ratio ASOS"
+          },
+          {
+            "group": "Squared",
+            "value": "ratio1_1",
+            "label": "1:1"
+          },
+          {
+            "group": "Portrait",
+            "value": "ratio2_3",
+            "label": "2:3"
+          },
+          {
+            "group": "Portrait",
+            "value": "ratio1_2",
+            "label": "1:2"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus1",
+            "label": "Ratio Custom 1"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus2",
+            "label": "Ratio Custom 2"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus3",
+            "label": "Ratio Custom 3"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus4",
+            "label": "Ratio Custom 4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "image_size",
+        "label": "Image Size",
+        "default": "nt_cover",
+        "options": [
+          {
+            "value": "nt_cover",
+            "label": "Full"
+          },
+          {
+            "value": "nt_contain",
+            "label": "Auto"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "image_position",
+        "info": "The first value is the horizontal position and the second value is the vertical.",
+        "options": [
+          {
+            "value": "default",
+            "label": "Default"
+          },
+          {
+            "value": "1",
+            "label": "Left Top"
+          },
+          {
+            "value": "2",
+            "label": "Left Center"
+          },
+          {
+            "value": "3",
+            "label": "Left Bottom"
+          },
+          {
+            "value": "4",
+            "label": "Right Top"
+          },
+          {
+            "value": "5",
+            "label": "Right Center"
+          },
+          {
+            "value": "6",
+            "label": "Right Bottom"
+          },
+          {
+            "value": "7",
+            "label": "Center Top"
+          },
+          {
+            "value": "8",
+            "label": "Center Center"
+          },
+          {
+            "value": "9",
+            "label": "Center Bottom"
+          }
+        ],
+        "label": "Image Position",
+        "default": "8"
+      }
+  ]
+}
+{% endschema %}

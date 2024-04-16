@@ -1,0 +1,790 @@
+{%- comment -%}
+	<!-- category -->
+	<div class="inc_lz inc_cat_laz" data-include='/search/?section_id=1568682649893'><div class="lds_bginfinity pr"></div></div>
+	<!-- collection -->
+	<div class="inc_lz inc_pr_laz" data-include='/search/?section_id=1568682639714'><div class="lds_bginfinity pr"></div></div>
+	<!-- lookbook -->
+	<div class="inc_lz inc_lb_laz" data-include='/search/?section_id=1572841417725'><div class="lds_bginfinity pr"></div></div>
+	<!-- gallery -->
+	<div class="inc_lz inc_gl_laz" data-include='/search/?section_id=1580698285781'><div class="lds_bginfinity pr"></div></div>
+	<!-- instagram shop -->
+	<div class="inc_lz inc_ins_laz" data-include='/search/?section_id=1580118776907'><div class="lds_bginfinity pr"></div></div>
+  Comments may not ajsear right after they are submitted, either to be checked by Shopify's spam filter
+  or to await moderation. When a comment is submitted, the browser is redirected to a page
+  that includes the new comment id in its URL.
+    Example: http://shopname.myshopify.com/blogs/news/2022072-my-post?comment=3721372
+
+  if comment.status == 'pending'
+   assign number_of_comments = article.comments_count | plus: 1
+  else
+   assign number_of_comments = article.comments_count 
+  endif
+{%- endcomment -%}
+{%- liquid
+   assign number_of_comments = article.comments_count
+   assign article_id = article.id -%}
+<div class="container container_cat cat_{{section.settings.ptf_layout}} mt__60 mb__60">
+	{%- for block in section.blocks -%}
+	  {%- case block.type -%}
+	   {%- when 'content' -%}
+			<div class="post-content mt__50 inl_cnt_js"><article id="post-{{article.id}}" class="post-{{article.id}} post type-post">{{ article.content }}</article></div>
+		{%- when 'infos' -%}
+		     {%- if block.settings.cat or block.settings.author or block.settings.tags -%}
+		        <div class="row portfolio-meta mt__40 tc">
+		        	{%- if block.settings.cat -%}
+		        	<div class="col-md-4 col-12">
+		        	   <span class="cd mb__5 tu ls__2 db f__mont fwb">{{ 'blogs.portfolio.category' | t }}</span>
+		        	   <a href="{{blog.url}}">{{blog.title}}</a>
+		        	</div>
+		        	{%- endif -%}
+		        	{%- if block.settings.author -%}
+		        	<div class="col-md-4 col-12">
+		        	   <span class="cd mb__5 tu ls__2 db f__mont fwb">{{ 'blogs.portfolio.author' | t }}</span>
+		        	   <span class="cd">{{ article.author | replace_first: 'ad clnt', 'admin' | capitalize }}</span>
+		        	</div>
+		        	{%- endif -%}
+		        	{%- if block.settings.tags and article.tags.size > 0 -%}
+		        	<div class="col-md-4 col-12">
+		        	   <span class="cd mb__5 tu ls__2 db f__mont fwb">{{ 'blogs.portfolio.tags' | t }}</span>
+		        	   {%- for tag in article.tags %}<a href="{{ blog.url }}/tagged/{{ tag | handle }}">{{ tag | capitalize }}</a>{% unless forloop.last %}, {% endunless %}{% endfor -%}
+		        	</div>
+		        	{%- endif -%}
+		        </div>
+		     {%- endif -%}
+		{%- when 'social' -%} 
+
+			<div class="social-share tc mt__60 social_des_{{block.settings.des}}">{%- render 'social-sharing',class_tooltip:'ttip_nt tooltip_top',follow_social:block.settings.follow,nt_tooltip:block.settings.tooltip -%}</div>
+	   {%- when 'nav' -%}
+	   
+	      <div class="blog-navigation mt__60 fs__40 tc">
+	      	{%- if blog.previous_article %}<a href="{{blog.previous_article.url}}" class="pl__30 pr__30 cd chp ttip_nt tooltip_top_right"><i class="pegk pe-7s-angle-left"></i><span class="tt_txt">{{blog.previous_article.title}}</span></a>{% else %}<a href="{{blog.url}}" class="pl__30 pr__30 cd op__0"><i class="pegk pe-7s-angle-left"></i></a>{% endif -%}
+	      	<a href="{{blog.url}}" class="pl__30 pr__30 cd chp ttip_nt tooltip_top"><i class="pegk pe-7s-keypad"></i><span class="tt_txt">{{'blogs.article.back_to' | t:title:blog.title}}</span></a>
+	      	{%- if blog.next_article %}<a href="{{blog.next_article.url}}" class="pl__30 pr__30 cd chp ttip_nt tooltip_top_left"><i class="pegk pe-7s-angle-right"></i><span class="tt_txt">{{blog.next_article.title}}</span></a>{% else %}<a href="{{blog.url}}" class="pl__30 pr__30 cd op__0"><i class="pegk pe-7s-angle-right"></i></a>{% endif -%}
+	      </div>
+		{%- when 'related' -%}{% if blog.articles_count < 2 %}{% continue %}{% endif -%}
+			<div class="post-related mt__50">
+			   <h4 class="mg__0 mb__30 tu{% if block.settings.t_center %} tc fwb{% endif %}">{{block.settings.title}}</h4>
+	         
+	         {%- assign sett_equal = block.settings.use_eq_height -%}
+			   <div class="nt_slider row {{block.settings.image_size}} {{block.settings.image_ratio}} position_{{block.settings.image_position}}{% if sett_equal %} equal_nt{% endif %} js_carousel nt_slider prev_next_{{block.settings.btn_color}} btn_owl_{{block.settings.btn_owl}} dot_owl_{{block.settings.dot_owl}} dot_color_{{block.settings.dot_color}} btn_vi_{{block.settings.btn_vi}}" data-flickity='{"imagesLoaded": 0,"adaptiveHeight": 1, "contain": 1, "groupCells": "100%", "dragThreshold" : 5, "cellAlign": "left","wrapAround": {{block.settings.loop}},"prevNextButtons": {{block.settings.button}},"percentPosition": 1,"pageDots": {{block.settings.dot}}, "autoPlay" : {{ block.settings.au_time | times: 1000 }}, "pauseAutoPlayOnHover" : {{block.settings.au_hover}}, "rightToLeft": {{settings.use_rtl}} }'>
+			   	{%- assign date = block.settings.date -%}
+			   	{%- assign index = 0 -%}
+	            {%- assign limit = block.settings.limit -%}
+					{%- assign col = block.settings.col_pr -%}
+					{%- assign col_tb = block.settings.col_pr_tb -%} 
+					{%- assign col_mb = ' pr_animated_done' | prepend:block.settings.col_pr_mb -%}
+
+			   	{%- for art in blog.articles -%}
+			   	{%- if art.id == article_id -%}{% continue %}{% endif -%}
+			   	{%- assign index = index |plus:1 -%}{%- assign image = art.image -%}
+	                  <div class="post-{{article.id}} portfolio-item ptf_nt_loop col-lg-{{col}} col-md-{{col_tb}} col-{{col_mb}} mb__30">
+	                    {%- if image -%}
+	                      <a href="{{art.url}}" class="mask db pr chp"><div class="lazyload nt_bg_lz pr_lazy_img" data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{image.aspect_ratio}}" data-sizes="auto"{% if sett_equal == false %} style="padding-top:{{ 1 | divided_by: image.aspect_ratio | times: 100}}%;"{% endif %}></div></a>
+	                      <div class="pa tc ts__03 portfolio-title">
+	                          <h4 class="fs__14 tu mg__0"><a class="cd chp" href="{{art.url}}">{{art.title}}</a></h4>
+	                          {%- if art.tags.size > 0 -%}<span class="nt_filter_block">
+	                            {%- for tag in art.tags limit:5 -%}
+	                              <a class="cd chp" href="{{ blogs[blog.handle].url }}/tagged/{{ tag | handle }}">{{ tag }}</a>{% unless forloop.last %}, {% endunless %}
+	                            {%- endfor -%}
+	                          </span>{%- endif -%}
+	                      </div>
+	                    {%- else -%}                      
+	                      <div class="tc portfolio-title">
+	                          <h4 class="fs__14 tu mg__0"><a class="cd chp" href="{{art.url}}">{{art.title}}</a></h4>
+	                          {%- if art.tags.size > 0 -%}<span class="nt_filter_block">
+	                            {%- for tag in art.tags limit:5 -%}
+	                              <a class="cd chp" href="{{ blogs[blog.handle].url }}/tagged/{{ tag | handle }}">{{ tag }}</a>{% unless forloop.last %}, {% endunless %}
+	                            {%- endfor -%}
+	                          </span>{%- endif -%}
+	                      </div>
+	                    {%- endif -%}
+	                  </div>
+			   	{%- if index == limit -%}{% break %}{% endif -%}
+					{%- endfor -%}
+			   </div>
+			</div>
+		{%- when 'comments' -%}{% unless blog.comments_enabled? %}{% continue %}{% endunless -%}
+		   <div class="mt__40 comments_block">
+			  {%- if number_of_comments > 0 -%}
+			    <hr>
+			    <h2 class="mg__0 h3 fs__16 mb__30 tu fs__24">{{ 'blogs.comments.comments_title_html' | t: count: number_of_comments,title:article.title }}</h2>
+			    {%- paginate article.comments by 5 -%}
+	         {%- comment -%}
+	           #comments is required, it is used as an anchor link by Shopify.
+	         {%- endcomment -%}
+			    <div id="comments" class="row">
+
+	            {%- if comment.status == 'pending' and none -%}
+		             {%- comment -%}
+		               If a comment was just submitted with no blank field, show it.
+		             {%- endcomment -%}
+	               <div id="{{ comment.id }}" class="comment col-12 mb__30">{%- render 'comment', comment:comment -%}</div>
+	            {%- endif -%}
+	            {%- for comment in article.comments -%}
+			         <div id="{{ comment.id }}" class="comment col-12 mb__30">{%- render 'comment', comment:comment -%}</div>
+	            {%- endfor -%}
+			    	{%- if paginate.pages > 1 -%}
+			    	<div class="col-12 mt__60">{%- render 'pagination', paginate: paginate -%}</div>
+			    	{%- endif -%}
+			    </div>
+			    
+			    {%- endpaginate -%}
+			  {%- endif -%}
+
+			  <hr>
+	        
+	        {%- form 'new_comment', article -%}{%- assign formId = 'CommentForm' -%}
+		      <h2 class="mg__0 h3 fs__16 mb__5 tu">{{ 'blogs.comments.title' | t }}</h2>
+		      <p class="comment-notes mb__30">{{ 'blogs.comments.comments_note_html' | t }}</p>
+
+		      {%- assign post_message = 'blogs.comments.success' -%}
+		      {%- if blog.moderated? and comment.status == 'pending' -%}
+		        {%- assign post_message = 'blogs.comments.success_moderated' -%}
+		      {%- elsif comment.status == 'unapproved' or comment.status == 'spam' -%}
+		        {%- assign post_message = 'blogs.comments.unapproved' -%}
+		      {%- endif -%}
+		      {%- render 'form-status', form: form, form_id: formId, success_message: post_message -%}
+
+				 <div class="row">
+				  	<div class="col-12 col-md-6 mb__25">
+	                <label for="{{ formId }}-author">{{ 'blogs.comments.name' | t }} <span class="required">*</span></label>
+	                <input type="text" name="comment[author]" id="{{ formId }}-author" class="input-full{% if form.errors contains 'author' %} input--error{% endif %}" value="{{ form.author | default:customer.name }}"{% if form.errors contains 'author' %} aria-invalid="true" aria-describedby="{{ formId}}-author-error"{% endif %}>
+	                {% if form.errors contains 'author' %}
+	                  <span id="{{ formId}}-author-error" class="input-error-message">
+	                    <i class="facl facl-attention cr mr__5"></i>
+	                    <span>{{ 'blogs.comments.name' | t }} {{ form.errors.messages['author'] }}.</span>
+	                  </span>
+	                {% endif %}
+				  	</div>
+				  	<div class="col-12 col-md-6 mb__25">
+	                <label for="{{ formId }}-email">{{ 'blogs.comments.email' | t }} <span class="required">*</span></label>
+	                <input type="email" name="comment[email]" id="{{ formId }}-email" class="input-full{% if form.errors contains 'email' %} input--error{% endif %}" value="{{ form.email | default:customer.email }}" autocorrect="off" autocapitalize="off" {% if form.errors contains 'email' %} aria-invalid="true" aria-describedby="{{ formId}}-email-error"{% endif %}>
+	                {% if form.errors contains 'email' %}
+	                  <span id="{{ formId}}-email-error" class="input-error-message">
+	                    <i class="facl facl-attention cr mr__5"></i>
+	                    <span>{{ form.errors.translated_fields['email'] | capitalize }} {{ form.errors.messages['email'] }}.</span>
+	                  </span>
+	                {% endif %}
+				  	</div>
+				  	<div class="col-12 mb__25">
+	                <label for="{{ formId }}-body">{{ 'blogs.comments.message' | t }} <span class="required">*</span></label>
+	                <textarea cols="45" rows="8" name="comment[body]" id="{{ formId }}-body" class="input-full{% if form.errors contains 'body' %} input--error{% endif %}"{% if form.errors contains 'body' %} aria-invalid="true" aria-describedby="{{ formId}}-body-error"{% endif %}>{{ form.body }}</textarea>
+	                {% if form.errors contains 'body' %}
+	                  <span id="{{ formId}}-body-error" class="input-error-message">
+	                    <i class="facl facl-attention cr mr__5"></i>
+	                    <span>{{ 'blogs.comments.message' | t }} {{ form.errors.messages['body'] }}.</span>
+	                  </span>
+	                {% endif %}
+				  	</div>
+				 </div>
+
+	         {%- if blog.moderated? %}<p class="fine-print f__libre">{{ 'blogs.comments.moderated' | t }}</p>{% endif -%}
+	         <input type="submit" class="button" value="{{ 'blogs.comments.post' | t }}">
+			  {%- endform -%}
+			</div>
+		{%- else -%}{{block.settings.html}}
+	   {%- endcase -%}
+	{%- endfor -%}
+
+	<style>
+	#shopify-section-article-template>div:first-child,#comments >.comment:last-child {margin: 0}
+	#shopify-section-article-template>div:last-of-type {margin-bottom: 60px}
+	#CommentForm-body {min-height: 230px}
+	.comment__content p {margin-bottom: 5px}
+	.col_avatar_cm {padding-right: 5px}
+	.rtl_true .col_avatar_cm {padding-right: 0;padding-left: 5px}
+	.blog-navigation a {font-size: 40px}
+	.portfolio-item .mask:before {
+	  content: '';
+	  position: absolute;
+	  background: rgba(246,246,246,.9);
+	  left: 0;
+	  top: 50%;
+	  width: 100%;
+	  height: 0;
+	  opacity: 0;
+	  transition: all .3s;
+	  z-index: 1;
+	}
+	.portfolio-item .portfolio-title.pa {
+	  top: 50%;
+	  left: 50%;
+	  opacity: 0;
+	  width: 100%;
+	  padding: 0 30px;
+	  -webkit-transform: translate(-50%,-120%);
+	  -ms-transform: translate(-50%,-120%);
+	  -o-transform: translate(-50%,-120%);
+	  transform: translate(-50%,-120%);
+	  z-index: 2;
+	}
+	.portfolio-item:hover .mask:before {
+	  top: 0;
+	  height: 100%;
+	  opacity: 1;
+	}
+	.portfolio-item:hover .portfolio-title.pa {
+	  opacity: 1;
+	  -webkit-transform: translate(-50%,-50%);
+	  -ms-transform: translate(-50%,-50%);
+	  -o-transform: translate(-50%,-50%);
+	  transform: translate(-50%,-50%);
+	}
+	.social_des_2 .nt-social a {
+	    width: 32px;
+	    height: 32px;
+	    line-height: 32px;
+	    border-radius: 50%;
+	    background: #000;
+	    color: #fff;
+	}
+	.portfolio-meta [class*=col-]:not(:last-child) {
+    border-right: 1px solid #d3d3d3;
+    }
+	</style> 
+</div>
+
+{%- schema -%}
+  {
+    "name": "portfolio Posts",
+    "max_blocks": 10,
+    "class": "type_carousel",
+    "settings": [
+      {
+        "type": "header",
+        "content": "== General Settings"
+      },
+      {
+        "type": "select",
+        "id": "ptf_layout",
+        "default": "default",
+        "options": [
+          {
+            "value": "default",
+            "label": "Default"
+          },
+          {
+            "value": "wide",
+            "label": "Wide (1600px)"
+          },
+          {
+            "value": "full",
+            "label": "full Width"
+          }
+        ],
+        "label": "Portfolio Width"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "content",
+        "name": "Article content",
+        "limit": 1
+      },
+      {
+        "type": "infos",
+        "name": "Infos",
+        "limit": 1,
+        "settings": [
+         {
+           "type": "checkbox",
+           "id": "cat",
+           "label": "Enable category?",
+           "default": true
+         },
+         {
+           "type": "checkbox",
+           "id": "author",
+           "label": "Enable author?",
+           "default": true
+         },
+         {
+           "type": "checkbox",
+           "id": "tags",
+           "label": "Enable tags?",
+           "default": true
+         }
+        ]
+      },
+      {
+        "type": "social",
+        "name": "Social",
+        "limit": 1,
+        "settings": [
+         {
+           "type": "checkbox",
+           "id": "follow",
+           "label": "Enable follow social?",
+           "default": false
+         },
+         {
+           "type": "checkbox",
+           "id": "tooltip",
+           "label": "Enable tooltip?",
+           "default": true
+         },
+	     {
+	        "type": "select",
+	        "id": "des",
+	        "options": [
+	          {
+	            "value": "1",
+	            "label": "Design 1"
+	          },
+	          {
+	            "value": "2",
+	            "label": "Design 2"
+	          }
+	        ],
+	        "label": "Design social:",
+	        "default": "2"
+	      }
+        ]
+      },
+      {
+        "type": "nav",
+        "name": "Navigation",
+        "limit": 1
+      },
+      {
+        "type": "related",
+        "name": "Post related",
+        "limit": 1,
+        "settings": [
+         {
+           "type": "text",
+           "id": "title",
+           "label": "Heading",
+           "default": "Related Portfolio"
+         },
+         {
+           "type": "checkbox",
+           "id": "t_center",
+           "label": "Enable heading center?",
+           "default": true
+         },
+	      {
+	        "type": "range",
+	        "id": "limit",
+	        "min": 1,
+	        "max": 10,
+	        "step": 1,
+	        "label": "Articles per page",
+	        "info": "Number of articles per page",
+	        "default": 5
+	      },
+	      {
+	        "type": "select",
+	        "id": "date",
+	        "options": [
+	          {
+	            "value": "abbreviated_date",
+	            "label": "Apr 19, 1994"
+	          },
+	          {
+	            "value": "basic",
+	            "label": "4/19/1994"
+	          },
+	          {
+	            "value": "date",
+	            "label": "April 19, 1994"
+	          }
+	        ],
+	        "label": "Date format",
+	        "info":"different format options display for various languages.",
+	        "default": "date"
+	       },
+	      {
+	        "type": "select",
+	        "id": "col_pr",
+	        "label": "Articles columns (desktop)",
+	        "info": "How many articles you want to show per row",
+	        "default": "4",
+	        "options": [
+	          {
+	            "value": "6",
+	            "label": "2"
+	          },
+	          {
+	            "value": "4",
+	            "label": "3"
+	          },
+	          {
+	            "value": "3",
+	            "label": "4"
+	          }
+	        ]
+	      },
+	      {
+	        "type": "select",
+	        "id": "col_pr_tb",
+	        "label": "Articles columns (tablet)",
+	        "default": "4",
+	        "options": [
+	          {
+	            "value": "6",
+	            "label": "2"
+	          },
+	          {
+	            "value": "4",
+	            "label": "3"
+	          },
+	          {
+	            "value": "3",
+	            "label": "4"
+	          }
+	        ]
+	      },
+	      {
+	        "type": "select",
+	        "id": "col_pr_mb",
+	        "label": "Articles columns (mobile)",
+	        "default": "12",
+	        "options": [
+	          {
+	            "value": "12",
+	            "label": "1"
+	          },
+	          {
+	            "value": "6",
+	            "label": "2"
+	          }
+	        ]
+	      },
+	      {
+	        "type": "header",
+	        "content": "== Slider Settings"
+	      },
+	      {
+	        "type": "checkbox",
+	        "id": "loop",
+	        "label": "Use Loop?",
+	        "info": "At the end of cells, wrap-around to the other end for infinite scrolling.",
+	        "default": false
+	      },
+	      {
+	        "type": "range",
+	        "id": "au_time",
+	        "min": 0,
+	        "max": 30,
+	        "step": 0.5,
+	        "label": "Autoplay Speed in second.",
+	        "info": "Set is '0' to disable autoplay.",
+	        "unit": "sec",
+	        "default": 0
+	      },
+	      {
+	        "type": "checkbox",
+	        "id": "au_hover",
+	        "label": "Pause Autoplay On Hover?",
+	        "info": "Auto-playing will pause when the user hovers over the carousel.",
+	        "default": true
+	      },
+	      {
+	        "type": "header",
+	        "content": "== Prev Next Button, Page Dot Settings"
+	      },
+	      {
+	        "type": "paragraph",
+	        "content": "—————————————————"
+	      },
+	      {
+	        "type": "paragraph",
+	        "content": "Prev Next Button:"
+	      },
+	      {
+	        "type": "checkbox",
+	        "id": "button",
+	        "label": "Enable Prev Next Button?",
+	        "info": "Creates and enables previous & next buttons.",
+	        "default": true
+	      },
+	      {
+	        "type": "select",
+	        "id": "btn_vi",
+	        "label": "Visible:",
+	        "default": "2",
+	        "options": [
+	          {
+	            "value": "1",
+	            "label": "always"
+	          },
+	          {
+	            "value": "2",
+	            "label": "Only hover"
+	          }
+	        ]
+	      },
+	      {
+	        "type": "select",
+	        "id": "btn_owl",
+	        "label": "Style",
+	        "default": "1",
+	        "options": [
+	          {
+	            "value": "1",
+	            "label": "Style 1"
+	          },
+	          {
+	            "value": "2",
+	            "label": "Style 2"
+	          },
+	          {
+	            "value": "3",
+	            "label": "Style 3"
+	          }
+	        ]
+	      },
+	      {
+	        "type": "select",
+	        "id": "btn_color",
+	        "label": "Color",
+	        "default": "0",
+	        "options": [
+	          {
+	            "value": "0",
+	            "label": "Transparent"
+	          },
+	          {
+	            "value": "1",
+	            "label": "Gray"
+	          },
+	          {
+	            "value": "2",
+	            "label": "White"
+	          },
+	          {
+	            "value": "3",
+	            "label": "Primary"
+	          }
+	        ]
+	      },
+	      {
+	        "type": "paragraph",
+	        "content": "—————————————————"
+	      },
+	      {
+	        "type": "paragraph",
+	        "content": "Page Dot:"
+	      },
+	      {
+	        "type": "checkbox",
+	        "id": "dot",
+	        "label": "Enable Page Dot?",
+	        "info": "Creates and enables page dots.",
+	        "default": true
+	      },
+	      {
+	        "type": "select",
+	        "id": "dot_owl",
+	        "label": "Style",
+	        "default": "1",
+	        "options": [
+	          {
+	            "value": "1",
+	            "label": "Style 1"
+	          },
+	          {
+	            "value": "2",
+	            "label": "Style 2"
+	          }
+	        ]
+	      },
+	      {
+	        "type": "select",
+	        "id": "dot_color",
+	        "label": "Color",
+	        "default": "1",
+	        "options": [
+	          {
+	            "value": "1",
+	            "label": "Dark"
+	          },
+	          {
+	            "value": "2",
+	            "label": "Light"
+	          },
+	          {
+	            "value": "3",
+	            "label": "Primary"
+	          }
+	        ]
+	      },
+	      {
+	        "type": "header",
+	        "content": "== Design Image"
+	      },
+	      {
+	        "type": "checkbox",
+	        "id": "use_eq_height",
+	        "label": "Use equal height images?",
+	        "default": false
+	      },
+	      {
+	        "type": "select",
+	        "id": "image_ratio",
+	        "label": "Aspect Ratio",
+	        "default": "ratio_nt",
+	        "info": "Aspect Ratio Custom will settings in General panel.",
+	        "options": [
+	          {
+	            "group": "Landscape",
+	            "value": "ratio2_1",
+	            "label": "2:1"
+	          },
+	          {
+	            "group": "Landscape",
+	            "value": "ratio16_9",
+	            "label": "16:9"
+	          },
+	          {
+	            "group": "Landscape",
+	            "value": "ratio8_5",
+	            "label": "8:5"
+	          },
+	          {
+	            "group": "Landscape",
+	            "value": "ratio3_2",
+	            "label": "3:2"
+	          },
+	          {
+	            "group": "Landscape",
+	            "value": "ratio4_3",
+	            "label": "4:3"
+	          },
+	          {
+	            "group": "Landscape",
+	            "value": "ratio_nt",
+	            "label": "Ratio ASOS"
+	          },
+	          {
+	            "group": "Squared",
+	            "value": "ratio1_1",
+	            "label": "1:1"
+	          },
+	          {
+	            "group": "Portrait",
+	            "value": "ratio2_3",
+	            "label": "2:3"
+	          },
+	          {
+	            "group": "Portrait",
+	            "value": "ratio1_2",
+	            "label": "1:2"
+	          },
+	          {
+	            "group": "Custom",
+	            "value": "ratio_cus1",
+	            "label": "Ratio Custom 1"
+	          },
+	          {
+	            "group": "Custom",
+	            "value": "ratio_cus2",
+	            "label": "Ratio Custom 2"
+	          },
+	          {
+	            "group": "Custom",
+	            "value": "ratio_cus3",
+	            "label": "Ratio Custom 3"
+	          },
+	          {
+	            "group": "Custom",
+	            "value": "ratio_cus4",
+	            "label": "Ratio Custom 4"
+	          }
+	        ]
+	      },
+	      {
+	        "type": "select",
+	        "id": "image_size",
+	        "label": "Image Size",
+	        "default": "nt_cover",
+	        "options": [
+	          {
+	            "value": "nt_cover",
+	            "label": "Full"
+	          },
+	          {
+	            "value": "nt_contain",
+	            "label": "Auto"
+	          }
+	        ]
+	      },
+	      {
+	        "type": "select",
+	        "id": "image_position",
+	        "info": "The first value is the horizontal position and the second value is the vertical.",
+	        "options": [
+	          {
+	            "value": "default",
+	            "label": "Default"
+	          },
+	          {
+	            "value": "1",
+	            "label": "Left Top"
+	          },
+	          {
+	            "value": "2",
+	            "label": "Left Center"
+	          },
+	          {
+	            "value": "3",
+	            "label": "Left Bottom"
+	          },
+	          {
+	            "value": "4",
+	            "label": "Right Top"
+	          },
+	          {
+	            "value": "5",
+	            "label": "Right Center"
+	          },
+	          {
+	            "value": "6",
+	            "label": "Right Bottom"
+	          },
+	          {
+	            "value": "7",
+	            "label": "Center Top"
+	          },
+	          {
+	            "value": "8",
+	            "label": "Center Center"
+	          },
+	          {
+	            "value": "9",
+	            "label": "Center Bottom"
+	          }
+	        ],
+	        "label": "Image Position",
+	        "default": "8"
+	      }
+	      ]
+      },
+      {
+        "type": "comments",
+        "name": "Comments List",
+        "limit": 1
+      },
+      {
+        "type": "html",
+        "name": "Custom HTML",
+        "settings": [
+         {
+           "type": "html",
+           "id": "html",
+           "label": "Custom HTML",
+           "default": "<div>Custom HTML</div>"
+         }
+        ]
+      }
+   ],
+    "default": {
+      "blocks": [
+        { "type": "content" },{ "type": "infos" },{ "type": "social" },{ "type": "nav" },{ "type": "related" }
+      ]
+    }
+  }
+{% endschema %}
+
+

@@ -1,0 +1,199 @@
+{%- liquid 
+  assign sid = section.id
+  assign image = section.settings.image
+  assign cl_heading = section.settings.cl_heading
+  assign cl_opacity = section.settings.cl_opacity | divided_by: 100.00 -%}
+
+<div class="nt_se_{{sid}} pr oh {{section.settings.layout}}">
+    {%- if image != blank %}{% assign ratio = image.aspect_ratio %}{% assign img_url_1_1 = image | img_url: '1x1' -%}
+      {%- if section.settings.use_pr -%}
+      <div class="parallax-inner nt_parallax_{{section.settings.use_pr}} pa t__0 l__0 r__0 b__0 lazyload" style="background-image: url({{img_url_1_1}})" data-bgset="{{ img_url_1_1 }}" data-ratio="{{ratio}}" data-sizes="auto" data-parent-fit="cover"></div>
+      {%- else -%}
+      <div class="pa t__0 l__0 r__0 b__0 bg_rp_norepeat bg_sz_cover lazyload item__position {{section.settings.img_align}}" style="background-image: url({{img_url_1_1}})" data-bgset="{{ img_url_1_1 }}" data-ratio="{{ratio}}" data-sizes="auto" data-parent-fit="cover"></div>
+      {%- endif -%}
+    {%- endif -%}
+    {%- if section.settings.html != blank %}<div class="wrap_section our-store tc pr z_100" style="max-width: {{section.settings.max_width}}px;color: {{cl_heading}};background: {{section.settings.bg_cl | color_modify: 'alpha', cl_opacity}};">{{section.settings.html}}</div>{% endif -%}
+</div>
+
+{%- render 'section_css' -%}
+
+{% comment %}<style>
+.our-store h3 {
+    font-size: 20px;
+}
+.our-store h4 {
+    font-size: 14px;
+}
+.our-store p {
+    margin-bottom: 0;
+}
+.our-store {
+    width: 90%;
+    margin: auto;
+    padding: 40px 20px;
+}
+.our-store .separate {
+    height: 2px;
+    margin: 20px auto;
+    width: 80px;
+}
+.our-store h3, .our-store h4 {
+    font-weight: bold;
+    color: currentcolor
+}
+.our-store .separate {
+    background: currentColor;
+}
+@media (min-width: 768px) {
+  .our-store {
+      padding: 60px;
+  }
+}
+</style>{% endcomment %}
+
+{%- schema -%}
+  {
+    "name": "Store information",
+    "class": "nt_section type_store_info",
+    "settings": [
+      {
+        "type": "range",
+        "id": "max_width",
+        "label": "Max Width",
+        "default": 700,
+        "min": 300,
+        "max": 700,
+        "step": 5,
+        "unit": "px"
+      },
+      {
+         "type": "html",
+         "id": "html",
+         "label": "Content HTML",
+         "default": "<h3>Gecko Store<\/h3><p>184 Main Rd E, St Albans VIC 3021, Australia<\/p><div class=\"separate\"><\/div><h4>Opening Hours<\/h4><p>Monday to Friday: 9:00 AM – 9:00 PM<br>Saturday to Sunday: 9:30 AM – 8:00 PM<\/p>"
+       },
+      {
+         "type": "image_picker",
+         "id": "image",
+         "label": "Image"
+       },
+      {
+        "type": "checkbox",
+        "id": "use_pr",
+        "label": "Enable parallax scroll?",
+        "default": false
+      },
+      {
+        "type": "select",
+        "id": "img_align",
+        "default": "center",
+        "options": [
+         {
+            "value": "top",
+            "label": "Top"
+         },
+         {
+            "value": "center",
+            "label": "Middle"
+         },
+         {
+            "value": "bottom",
+            "label": "Bottom"
+         }
+        ],
+        "label": "Image alignment",
+        "info":"Not active when enable parallax"
+      },
+      {
+        "type": "header",
+        "content": "== Color"
+      },
+      {
+        "type": "color",
+        "id": "cl_heading",
+        "label": "Text",
+        "default": "#fff"
+      },
+      {
+        "type": "color",
+        "id": "bg_cl",
+        "label": "Background",
+        "default": "#b59677"
+      },
+      {
+        "type": "range",
+        "id": "cl_opacity",
+        "label": "Background opacity",
+        "default": 80,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%"
+      },
+      {
+        "type": "header",
+        "content": "== Design Options"
+      },
+      {
+        "type": "select",
+        "id": "layout",
+        "default": "nt_full",
+        "options": [
+         {
+            "value": "container",
+            "label": "Container"
+         },
+         {
+            "value": "nt_full",
+            "label": "Full Width"
+          }
+        ],
+        "label": "Layout"
+      },
+      {
+        "type": "color",
+        "id": "cl_bg",
+        "label": "Background color",
+        "default": "#f5f5f5"
+      },
+      {
+        "type": "text",
+        "id": "mg",
+        "label": "Margin",
+        "info":"Margin top, margin right, margin bottom, margin left. If you not use to blank",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd",
+        "label": "Padding",
+        "info":"Padding top, padding right, padding bottom, padding left. If you not use to blank",
+        "default": "120px,,120px,",
+        "placeholder": "50px,,50px,"
+      },
+     {
+        "type": "header",
+        "content": "== Design Mobile Options"
+      },
+      {
+        "type": "text",
+        "id": "mg_mb",
+        "label": "Margin",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd_mb",
+        "label": "Padding",
+        "default": "50px,,50px,",
+        "placeholder": "50px,,50px,"
+      }
+    ],
+    "presets": [
+      {
+        "name": "2. Store information",
+        "category": "Others"
+      }
+    ]
+  }
+{% endschema %}

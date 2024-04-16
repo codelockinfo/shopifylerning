@@ -1,0 +1,550 @@
+{%- liquid
+  assign sett_equal = section.settings.use_eq_height
+  assign col = section.settings.col_pr
+  assign col_tb = section.settings.col_pr_tb 
+  assign col_mb = '' | prepend:section.settings.col_pr_mb
+  assign limit = section.settings.limit
+  assign use_pagination = section.settings.use_pagination
+  assign blog_owl = blogs[section.settings.blog]
+  assign date = section.settings.date
+  assign by = 'blogs.article.by' | t
+  assign on = 'blogs.article.on' | t 
+  assign show_au = section.settings.show_au
+  assign show_dt = section.settings.show_dt
+  assign sid = section.id -%}
+
+{%- for i in (1..1) -%}{%- if blog_owl == blank %}{% break %}{% endif -%}
+    <div class="nt_se_{{sid}} {{section.settings.layout}}">
+      <div class="articles row no-gutters {{section.settings.image_size}} {{section.settings.image_ratio}} position_{{section.settings.image_position}}{% if sett_equal %} equal_nt{% endif %} js_carousel nt_slider prev_next_{{section.settings.btn_color}} btn_owl_{{section.settings.btn_owl}} dot_owl_{{section.settings.dot_owl}} dot_color_{{section.settings.dot_color}} btn_vi_{{section.settings.btn_vi}}" data-flickity='{"imagesLoaded": 0,"adaptiveHeight": 1, "contain": 1, "groupCells": "100%", "dragThreshold" : 5, "cellAlign": "left","wrapAround": {{section.settings.loop}},"prevNextButtons": {{section.settings.button}},"percentPosition": 1,"pageDots": {{section.settings.dot}}, "autoPlay" : {{ section.settings.au_time | times: 1000 }}, "pauseAutoPlayOnHover" : {{section.settings.au_hover}}, "rightToLeft": {{settings.use_rtl}} }'>
+        {%- for article in blog_owl.articles limit:limit -%}{%- assign art_url = article.url %}{% assign image = article.image -%}
+          <article class="post-{{article.id}} post_nt_loop post_2 post-thumbnail pr oh col-lg-{{col}} col-md-{{col_tb}} col-{{col_mb}}">
+              {%- if image -%}
+              <a class="db oh bgd" href="{{art_url}}">
+                 <div class="lazyload nt_bg_lz pr_lazy_img" data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{image.aspect_ratio}}" data-sizes="auto"{% if sett_equal == false %} style="padding-top:{{ 1 | divided_by: image.aspect_ratio | times: 100}}%;"{% endif %}></div>
+              </a>
+              {%- endif -%}
+              <div class="pa tc cg w__100">
+                 <div class="post-meta fs__12">
+                    {%- if show_au -%}<span class="post-author mr__5">{{ by }} <span class="cw">{{ article.author | replace_first: 'ad clnt', 'admin' }}</span></span>{%- endif -%}
+                    {%- if article.tags.size > 0 -%}
+                    <span class="cat pr">{{ 'blogs.article.in' | t }} 
+                      {%- for tag in article.tags limit:5 -%}
+                        <a href="{{ blogs[blog_owl.handle].url }}/tagged/{{ tag | handle }}" rel="category {{ tag | handle }}">{{ tag }}</a>{% unless forloop.last %}, {% endunless %}
+                      {%- endfor -%}
+                     </span>
+                    {%- endif -%}
+                    {%- if show_cm -%}
+                       {%- if article.comments_count > 0 %}{% assign cm_link = '#comments' %}{% else %}{% assign cm_link = '#comment_form' %}{% endif -%}
+                       <a href="{{ art_url }}{{cm_link}}"> {{ 'blogs.comments.with_count' | t: count: article.comments_count }}</a>
+                    {%- endif -%}
+                 </div>
+                  <h2 class="post-title fs__14 ls__2 mt__10 mb__5 tu"><a class="chp" href="{{art_url}}">{{article.title}}</a></h2>
+                 {%- if show_dt -%}<span class="post-time cg"><time class="entry-date">{{ article.published_at | time_tag: format: date }}</time></span>{%- endif -%}
+              </div>
+           </article>
+        {%- endfor -%}
+      </div>
+    </div>
+{%- endfor -%}
+
+{%- style -%}
+.no-gutters {
+    margin-right: 0;
+    margin-left: 0;
+}
+.no-gutters .post-thumbnail {
+    padding-right: 0;
+    padding-left: 0;
+}
+{%- assign overlay = section.settings.overlay | divided_by: 100.0 -%}
+.nt_se_blog-slider .post-thumbnail>div {
+    background: {{ section.settings.bg | color_modify: 'alpha', overlay }};
+    padding: 20px;
+    bottom: 0;
+}
+.nt_se_blog-slider .post-thumbnail a:not(:hover),.nt_se_blog-slider .post-thumbnail .post-meta .cw {
+    color: {{ section.settings.cl}};
+}
+.nt_se_blog-slider .post-thumbnail .post-meta,
+.nt_se_blog-slider .post-thumbnail .post-time {
+  color: {{ section.settings.cl2}};
+}
+{%- endstyle -%}
+
+{%- schema -%}
+  {
+    "name": "Blog Slider",
+    "class": "nt_section type_carousel",
+    "settings": [
+      {
+        "type": "header",
+        "content": "== General Settings"
+      },
+      {
+        "id": "blog",
+        "type": "blog",
+        "label": "Blog"
+      },
+      {
+        "type": "range",
+        "id": "limit",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+        "label": "Articles per page",
+        "info": "Number of articles per page",
+        "default": 6
+      },
+      {
+        "type": "select",
+        "id": "date",
+        "options": [
+          {
+            "value": "abbreviated_date",
+            "label": "Apr 19, 1994"
+          },
+          {
+            "value": "basic",
+            "label": "4/19/1994"
+          },
+          {
+            "value": "date",
+            "label": "April 19, 1994"
+          }
+        ],
+        "label": "Date format",
+        "info":"different format options display for various languages.",
+        "default": "date"
+      },
+      {
+        "type": "select",
+        "id": "col_pr",
+        "label": "Articles columns (desktop)",
+        "info": "How many articles you want to show per row",
+        "default": "4",
+        "options": [
+          {
+            "value": "6",
+            "label": "2"
+          },
+          {
+            "value": "4",
+            "label": "3"
+          },
+          {
+            "value": "3",
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_pr_tb",
+        "label": "Articles columns (tablet)",
+        "default": "4",
+        "options": [
+          {
+            "value": "6",
+            "label": "2"
+          },
+          {
+            "value": "4",
+            "label": "3"
+          },
+          {
+            "value": "3",
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_pr_mb",
+        "label": "Articles columns (mobile)",
+        "default": "12",
+        "options": [
+          {
+            "value": "12",
+            "label": "1"
+          },
+          {
+            "value": "6",
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "show_au",
+        "label": "Show author?",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_dt",
+        "label": "Show date?",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "== Slider Settings"
+      },
+      {
+        "type": "checkbox",
+        "id": "loop",
+        "label": "Use Loop?",
+        "info": "At the end of cells, wrap-around to the other end for infinite scrolling.",
+        "default": false
+      },
+      {
+        "type": "range",
+        "id": "au_time",
+        "min": 0,
+        "max": 30,
+        "step": 0.5,
+        "label": "Autoplay Speed in second.",
+        "info": "Set is '0' to disable autoplay.",
+        "unit": "sec",
+        "default": 0
+      },
+      {
+        "type": "checkbox",
+        "id": "au_hover",
+        "label": "Pause Autoplay On Hover?",
+        "info": "Auto-playing will pause when the user hovers over the carousel.",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "== Prev Next Button, Page Dot Settings"
+      },
+      {
+        "type": "paragraph",
+        "content": "—————————————————"
+      },
+      {
+        "type": "paragraph",
+        "content": "Prev Next Button:"
+      },
+      {
+        "type": "checkbox",
+        "id": "button",
+        "label": "Enable Prev Next Button?",
+        "info": "Creates and enables previous & next buttons.",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "btn_vi",
+        "label": "Visible:",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "always"
+          },
+          {
+            "value": "2",
+            "label": "Only hover"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "btn_owl",
+        "label": "Style",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "Style 1"
+          },
+          {
+            "value": "2",
+            "label": "Style 2"
+          },
+          {
+            "value": "3",
+            "label": "Style 3"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "btn_color",
+        "label": "Color",
+        "default": "0",
+        "options": [
+          {
+            "value": "0",
+            "label": "Transparent"
+          },
+          {
+            "value": "1",
+            "label": "Gray"
+          },
+          {
+            "value": "2",
+            "label": "White"
+          },
+          {
+            "value": "3",
+            "label": "Primary"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": "—————————————————"
+      },
+      {
+        "type": "paragraph",
+        "content": "Page Dot:"
+      },
+      {
+        "type": "checkbox",
+        "id": "dot",
+        "label": "Enable Page Dot?",
+        "info": "Creates and enables page dots.",
+        "default": false
+      },
+      {
+        "type": "select",
+        "id": "dot_owl",
+        "label": "Style",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "Style 1"
+          },
+          {
+            "value": "2",
+            "label": "Style 2"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "dot_color",
+        "label": "Color",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "Dark"
+          },
+          {
+            "value": "2",
+            "label": "Light"
+          },
+          {
+            "value": "3",
+            "label": "Primary"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "== Color Articles Design"
+      },
+      {
+        "type": "color",
+        "id": "cl",
+        "label": "Color Text",
+        "default": "#fff"
+      },
+      {
+        "type": "color",
+        "id": "cl2",
+        "label": "Color Text 2",
+        "default": "#878787"
+      },
+      {
+        "type": "color",
+        "id": "bg",
+        "label": "Background color",
+        "default": "#000"
+      },
+      {
+        "type": "range",
+        "id": "overlay",
+        "label": "Background Opacity",
+        "default": 80,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%"
+      },
+      {
+        "type": "header",
+        "content": "== Design Image"
+      },
+      {
+        "type": "checkbox",
+        "id": "use_eq_height",
+        "label": "Use equal height images?",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "image_ratio",
+        "label": "Aspect Ratio",
+        "default": "ratio4_3",
+        "info": "Aspect Ratio Custom will settings in General panel.",
+        "options": [
+          {
+            "group": "Landscape",
+            "value": "ratio2_1",
+            "label": "2:1"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio16_9",
+            "label": "16:9"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio8_5",
+            "label": "8:5"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio3_2",
+            "label": "3:2"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio4_3",
+            "label": "4:3"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio_nt",
+            "label": "Ratio ASOS"
+          },
+          {
+            "group": "Squared",
+            "value": "ratio1_1",
+            "label": "1:1"
+          },
+          {
+            "group": "Portrait",
+            "value": "ratio2_3",
+            "label": "2:3"
+          },
+          {
+            "group": "Portrait",
+            "value": "ratio1_2",
+            "label": "1:2"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus1",
+            "label": "Ratio Custom 1"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus2",
+            "label": "Ratio Custom 2"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus3",
+            "label": "Ratio Custom 3"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus4",
+            "label": "Ratio Custom 4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "image_size",
+        "label": "Image Size",
+        "default": "nt_cover",
+        "options": [
+          {
+            "value": "nt_cover",
+            "label": "Full"
+          },
+          {
+            "value": "nt_contain",
+            "label": "Auto"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "image_position",
+        "info": "The first value is the horizontal position and the second value is the vertical.",
+        "options": [
+          {
+            "value": "default",
+            "label": "Default"
+          },
+          {
+            "value": "1",
+            "label": "Left Top"
+          },
+          {
+            "value": "2",
+            "label": "Left Center"
+          },
+          {
+            "value": "3",
+            "label": "Left Bottom"
+          },
+          {
+            "value": "4",
+            "label": "Right Top"
+          },
+          {
+            "value": "5",
+            "label": "Right Center"
+          },
+          {
+            "value": "6",
+            "label": "Right Bottom"
+          },
+          {
+            "value": "7",
+            "label": "Center Top"
+          },
+          {
+            "value": "8",
+            "label": "Center Center"
+          },
+          {
+            "value": "9",
+            "label": "Center Bottom"
+          }
+        ],
+        "label": "Image Position",
+        "default": "8"
+      },
+      {
+        "type": "header",
+        "content": "== Design Options"
+      },
+      {
+        "type": "select",
+        "id": "layout",
+        "default": "nt_full",
+        "options": [
+         {
+            "value": "container",
+            "label": "Container"
+         },
+         {
+            "value": "nt_full",
+            "label": "Full Width"
+          }
+        ],
+        "label": "Layout"
+      }
+    ]
+  }
+{% endschema %}

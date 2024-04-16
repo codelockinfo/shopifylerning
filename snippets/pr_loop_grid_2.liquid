@@ -1,0 +1,55 @@
+{%- liquid
+  assign pr_id = product.id 
+  assign pr_options = product.options_with_values
+  assign color_count = 0
+  if pr_options.size > 0 and show_color
+    assign color_ck = settings.color_ck | append:',color,colors,couleur,colour'
+    assign get_color = color_ck | downcase | replace: ' ,', ',' | replace: ', ', ',' | split: ',' | uniq
+    for option in pr_options
+      assign name = option.name | downcase
+      if get_color contains name
+        assign color_count = option.values.size
+        if show_cl_type == '2'
+          assign pr_option = forloop.index
+          assign nt_option = 'option'| append:pr_option
+          assign color_variants = product.variants | where: "available" | map:nt_option | uniq
+          assign color_count = color_variants.size
+        endif
+        break
+      endif
+    endfor
+  endif
+  assign countdown = time_meta | default:product.metafields.meta.countdown
+  assign pr_hdl = product.handle
+  assign product_url = product.url
+  assign images_0 = product.images[0] | default:settings.placeholder_img
+  assign get_locale = product_url | split:'/products/' | first
+  assign pr_cdt = false
+  if countdown != blank and use_cdt
+    assign pr_cdt = true
+  endif -%}
+  {%- capture pr_url %}{{get_locale}}{{url_cat}}/products/{{pr_hdl}}{% endcapture -%}
+
+<div data-page="{{page_t4}}" class="col-lg-{{col}} col-md-{{col_tb}} col-{{col_mb}} mt__30 pr_grid_item product nt_pr desgin__2 tc{% if pr_cdt %} pr_has_cdt4{% endif %}">
+   <div class="product-inner pr">
+      {%- if pr_cdt -%}
+        <div class="pr_wr_dcimg pr oh">
+          <div class="product-image pr oh lazyload" data-include="{{pr_url}}/?view=img{{sett_equal}}"><div class="nt_bg_lz nt_fk_lz"{% unless sett_equal %} style="padding-top:{{ 1 | divided_by: images_0.aspect_ratio | times: 100}}%;"{% endunless %}></div>{%- unless settings.hide_btns %}<div class="space_pr_mb"></div>{% endunless -%}</div>
+          <div class="pr_deal_dt pa pe_none op__0">
+            <span class="pr_title_dt">{{txt_cd}}</span> <span class="pr_coun_dt" data-date="{{countdown}}"></span>
+          </div>
+        </div>
+      {%- else -%}
+        <div class="product-image pr oh lazyload" data-include="{{pr_url}}/?view=img{{sett_equal}}"><div class="nt_bg_lz nt_fk_lz"{% unless sett_equal %} style="padding-top:{{ 1 | divided_by: images_0.aspect_ratio | times: 100}}%;"{% endunless %}></div>{%- unless settings.hide_btns %}<div class="space_pr_mb"></div>{% endunless -%}</div>
+      {%- endif -%}
+      <div class="product-info mt__15">
+         {%- if product.vendor.size > 0 and show_vendor -%}<div class="product-brand"><a class="cg chp" href="{{ product.vendor | url_for_vendor }}">{{ product.vendor }}</a></div>{%- endif -%}
+         <h3 class="product-title pr fs__14 mg__0 fwm"><a class="cd chp" href="{{product.url | within: collection}}">{{product.title}}</a></h3>
+         <span class="price dib mb__5">{%- render 'product_price',product:product,inc_price:inc_price -%}</span>
+         {%- if use_rating -%}{%- render 'rating',product:product,inc_rating:inc_rating -%}{%- endif -%}
+         {%- if color_count > 0 -%}
+         <div class="swatch__list_js swatch__list lh__1 nt_swatches_on_grid lazyload" data-colorCount="{{color_count}}" data-include="{{pr_url}}/?view=sw{{sett_equal}}"></div>
+         {%- endif -%}
+      </div>
+   </div>
+</div>

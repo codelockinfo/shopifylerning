@@ -1,0 +1,410 @@
+{%- liquid
+layout 'theme.prd-additional' 
+capture list_pages 
+  section 'page_meta_ntt4'
+endcapture
+capture list_imgs
+  section 'img_meta_ntt4'
+endcapture
+assign list_pages = list_pages | split:'<!--split-->'
+assign list_pages_arr = list_pages[1] | replace:';;;;;;',';;;' | split:';;;' | uniq
+assign list_pages_arr_size = list_pages_arr | size  
+assign list_imgs = list_imgs | split:'<!--split-->'
+assign list_imgs_arr = list_imgs[1] | replace:';;;;;;',';;;' | remove:'files/'| split:';;;' | uniq
+assign list_imgs_arr_size = list_imgs_arr | size 
+assign searchTerms = search.terms
+assign searchCount = search.results_count -%}
+
+{%- if list_pages_arr_size > 0 -%}
+{%- capture html_list_pages -%}
+{%- for page in list_pages_arr -%}<option value="{{page}}">{{pages[page].title}}</option>{%- endfor -%}
+{%- endcapture -%}
+{%- endif -%}
+
+{%- if list_imgs_arr_size > 0 -%}
+{%- capture html_list_imgs -%}
+{%- for img in list_imgs_arr -%}<option value="{{img}}">Image #{{forloop.index}}</option>{%- endfor -%}
+{%- endcapture -%}
+{%- endif -%}
+
+<div class="t4-title-section">
+  <h1>Edit metafield in products v1.0</h1>
+</div>
+<div class="header-bar" id="myHeader">
+  <div class="row align-items-center justify-content-between">
+    <div class="col-12 col-lg-auto">
+      <div class="t4-search-bar">
+        <form action="{{routes.search_url}}" method="get" autocomplete="off" class="form-inline box-search">
+          <div class="form-group">
+            <label for="inputSearch" class="sr-only">Search</label>
+            <input type="text" value="{% if searchTerms != '*' %}{{searchTerms}}{% endif %}" name="q" id="inputSearch" class="form-control search" placeholder="Search for product" required aria-describedby="search">
+            <input type="hidden" name="type" value="product">
+            <input type="hidden" name="options[unavailable_products]" value="last">
+            <input type="hidden" name="options[prefix]" value="last">
+          </div>
+          <div class="t4-btn t4-btn-search position-absolute">
+            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                 viewBox="0 0 24 24" style="enable-background:new 0 0 24 24;" xml:space="preserve">
+              <path d="M22.424,21.576l-5.176-5.174c1.397-1.592,2.246-3.677,2.246-5.957c0-4.987-4.059-9.044-9.047-9.044
+                       C5.458,1.4,1.4,5.458,1.4,10.444s4.059,9.044,9.047,9.044c2.277,0,4.36-0.846,5.952-2.239l5.177,5.175
+                       C21.693,22.542,21.847,22.6,22,22.6c0.154,0,0.307-0.059,0.424-0.176C22.659,22.19,22.659,21.81,22.424,21.576z M10.447,18.288
+                       c-4.327,0-7.847-3.519-7.847-7.844S6.12,2.6,10.447,2.6c4.327,0,7.847,3.519,7.847,7.844S14.774,18.288,10.447,18.288z"/>
+            </svg>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="col-12 col-lg-auto">
+      <div class="t4-btns">
+        <a href="#" class="t4-btn btn btn-primary btn_add_selected" data-toggle="modal" data-target="#allSelectedModal">Add Selected Products<span class="d-inline-block ml-1">(<span class="ud_sum">0</span>)</span></a>
+        {%- comment %}<a href="#" class="t4-btn btn btn-primary btn_add_all" data-toggle="modal" data-target="#allAddModal">Add All Product<span class="d-inline-block ml-1">({{shop.products_count}})</span></a>{% endcomment -%}
+        <a target="_blank" href="https://gecko5-docs.the4.co/installation/easy-metafield-editor#2-preview-a-new-awesome-feature" class="t4-btn btn btn-outline-primary">Document</a>
+        <a target="_blank" href="https://youtu.be/zkf88T-RhwU" class="t4-btn btn btn-primary btn-youtube">
+          <svg viewBox="0 -62 512.00199 512" xmlns="http://www.w3.org/2000/svg"><path d="m334.808594 170.992188-113.113282-61.890626c-6.503906-3.558593-14.191406-3.425781-20.566406.351563-6.378906 3.78125-10.183594 10.460937-10.183594 17.875v122.71875c0 7.378906 3.78125 14.046875 10.117188 17.832031 3.308594 1.976563 6.976562 2.96875 10.652344 2.96875 3.367187 0 6.742187-.832031 9.847656-2.503906l113.117188-60.824219c6.714843-3.613281 10.90625-10.59375 10.9375-18.222656.027343-7.628906-4.113282-14.640625-10.808594-18.304687zm-113.859375 63.617187v-91.71875l84.539062 46.257813zm0 0"/><path d="m508.234375 91.527344-.023437-.234375c-.433594-4.121094-4.75-40.777344-22.570313-59.421875-20.597656-21.929688-43.949219-24.59375-55.179687-25.871094-.929688-.105469-1.78125-.203125-2.542969-.304688l-.894531-.09375c-67.6875-4.921874-169.910157-5.5937495-170.933594-5.59765575l-.089844-.00390625-.089844.00390625c-1.023437.00390625-103.246094.67578175-171.542968 5.59765575l-.902344.09375c-.726563.097657-1.527344.1875-2.398438.289063-11.101562 1.28125-34.203125 3.949219-54.859375 26.671875-16.972656 18.445312-21.878906 54.316406-22.382812 58.347656l-.058594.523438c-.152344 1.714844-3.765625 42.539062-3.765625 83.523437v38.3125c0 40.984375 3.613281 81.808594 3.765625 83.527344l.027344.257813c.433593 4.054687 4.746093 40.039062 22.484375 58.691406 19.367187 21.195312 43.855468 24 57.027344 25.507812 2.082031.238282 3.875.441406 5.097656.65625l1.183594.164063c39.082031 3.71875 161.617187 5.550781 166.8125 5.625l.15625.003906.15625-.003906c1.023437-.003907 103.242187-.675781 170.929687-5.597657l.894531-.09375c.855469-.113281 1.816406-.214843 2.871094-.324218 11.039062-1.171875 34.015625-3.605469 54.386719-26.019532 16.972656-18.449218 21.882812-54.320312 22.382812-58.347656l.058594-.523437c.152344-1.71875 3.769531-42.539063 3.769531-83.523438v-38.3125c-.003906-40.984375-3.617187-81.804687-3.769531-83.523437zm-26.238281 121.835937c0 37.933594-3.3125 77-3.625 80.585938-1.273438 9.878906-6.449219 32.574219-14.71875 41.5625-12.75 14.027343-25.847656 15.417969-35.410156 16.429687-1.15625.121094-2.226563.238282-3.195313.359375-65.46875 4.734375-163.832031 5.460938-168.363281 5.488281-5.082032-.074218-125.824219-1.921874-163.714844-5.441406-1.941406-.316406-4.039062-.558594-6.25-.808594-11.214844-1.285156-26.566406-3.042968-38.371094-16.027343l-.277344-.296875c-8.125-8.464844-13.152343-29.6875-14.429687-41.148438-.238281-2.710937-3.636719-42.238281-3.636719-80.703125v-38.3125c0-37.890625 3.304688-76.914062 3.625-80.574219 1.519532-11.636718 6.792969-32.957031 14.71875-41.574218 13.140625-14.453125 26.996094-16.054688 36.160156-17.113282.875-.101562 1.691407-.195312 2.445313-.292968 66.421875-4.757813 165.492187-5.464844 169.046875-5.492188 3.554688.023438 102.589844.734375 168.421875 5.492188.808594.101562 1.691406.203125 2.640625.3125 9.425781 1.074218 23.671875 2.699218 36.746094 16.644531l.121094.128906c8.125 8.464844 13.152343 30.058594 14.429687 41.75.226563 2.558594 3.636719 42.171875 3.636719 80.71875zm0 0"/></svg>
+          <span>Tutorial</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{%- comment -%}
+<!-- Modal add all -->
+<div class="modal fade" id="allAddModal" tabindex="-1" role="dialog" aria-labelledby="allAddModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header align-items-center">
+        <h5 class="modal-title" id="exampleModalLabel">Add metafield for all products</h5>
+        <button type="button" class="btn btn-secondary btn-css-white" data-dismiss="modal">Close</button>
+      </div>
+      <div class="modal-body">
+        <div class="row justify-content-center align-items-center">
+          <div class="col-12">
+            <div class="product-inner-">
+              <form class="meta-feilds" id="prd_all" action="#" method="POST">
+              
+                <div class="form-group my-3 mb-2">
+                  <label for="short_description-1234">1. Short description</label>
+                  <textarea placeholder="Enter a Short description" class="form-control" id="short_description-1234" name="meta.description_excerpt" data-method="{%if shop.metafields.meta.description_excerpt%}PUT{%else%}POST{%endif%}" rows="3">
+                    {{-shop.metafields.meta.description_excerpt-}}
+                  </textarea>
+                </div>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="description_excerpt2" data-check="description_excerpt>
+                  <label class="custom-control-label" for="description_excerpt2">Override this field data for all products</label>
+                </div>
+                
+                {%- if list_pages_arr_size > 0 -%}
+                <div class="form-group my-3 mb-2">
+                  <label for="size_guide-{{product.id}}">2. Size guide page</label>
+                  {%- assign page_size_chart = shop.metafields.meta.page_size_chart -%}
+                  {%- assign key = 'page_size_chart' -%}
+                  <select class="form-control js_select_data" id="size_guide-{{product.id}}" name="meta.{{key}}" data-method="{%if page_size_chart != blank%}PUT{%else%}POST{%endif%}">
+                    {%- if page_size_chart != blank -%}
+                    {%- assign page_size_chart_2 = page_size_chart |append:'" selected="selected'-%}
+                    <option value="">No choose page</option>{{html_list_pages | replace:page_size_chart,page_size_chart_2}}
+                    {%- else -%}
+                    <option value="" selected="selected">No choose page</option>{{html_list_pages}}
+                    {%- endif -%}
+                  </select>
+                </div>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="{{key}}">
+                  <label class="custom-control-label" for="{{key}}">Override this field data for all products</label>
+                </div>
+                {%- endif -%}
+                {%- if list_imgs_arr_size > 0 -%}
+                <div class="form-group my-3 mb-2">
+                  <label for="size_guide-{{product.id}}">3. Size guide image</label>
+                  {%- assign img_size_chart = shop.metafields.meta.img_size_chart -%}
+                  {%- assign key = 'img_size_chart' -%}
+                  <select class="form-control js_select_data" id="size_guide-{{product.id}}" name="meta.{{key}}" data-method="{%if img_size_chart != blank%}PUT{%else%}POST{%endif%}">
+                    {%- if img_size_chart != blank -%}
+                    {%- assign img_size_chart_2 = img_size_chart |append:'" selected="selected'-%}
+                    <option value="">No choose Image</option>{{html_list_imgs | replace:img_size_chart,img_size_chart_2}}
+                    {%- else -%}
+                    <option selected="selected" value="">No choose Image</option>{{html_list_imgs}}
+                    {%- endif -%}
+                  </select>
+                </div>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="{{key}}">
+                  <label class="custom-control-label" for="{{key}}">Override this field data for all products</label>
+                </div>
+                <button type="button" class="btn btn_css_2 my-2" data-toggle="modal" data-target="#sizeimgModal">Preview List Image</button>
+                {%- endif -%}
+                
+                  <h6 class="mt-4">Custom Tabs:</h6>
+                  {%- assign total = 5 -%}
+                  {%- for i in (1..total)  %}{% assign cus_tab = 'cus_tab_' |append:i -%}
+                    <div class="form-group my-3 mb-2">
+                      <label>Custom Tab {{i}}</label>
+                      {%- assign external = shop.metafields.additions[cus_tab] -%}
+                      {%- if external != blank -%}
+                          <input placeholder="Custom tab name" type="text" class="js_data_namespace form-control mb-2 inputnew" value="{{- external | split:'|||' | first -}}">           
+                          <textarea placeholder="Custom tab content" class="js_data_namespace js_data_textarea form-control inputnew" rows="3">
+                            {{- external | split:'|||' | last -}}
+                          </textarea>
+                          <input type="hidden" name="additions.cus_tab_{{i}}" class="js_data_groupTxt" value="{{external}}" data-method="{%if external != blank %}PUT{%else%}POST{%endif%}">
+                      {%- else -%}
+                          <input placeholder="Custom tab name" type="text" class="js_data_namespace form-control mb-2 inputnew" value="">           
+                          <textarea placeholder="Custom tab content" class="js_data_namespace js_data_textarea form-control inputnew" rows="3"></textarea>
+                          <input type="hidden" name="additions.cus_tab_{{i}}" class="js_data_groupTxt" value="" data-method="POST">
+                      {%- endif -%}
+                        <div class="custom-control custom-checkbox my-2">
+                          <input type="checkbox" class="custom-control-input" id="custom_tab_{{i}}" data-check='cus_tab_{{i}}'>
+                          <label class="custom-control-label" for="custom_tab_{{i}}">Override this field data for all products</label>
+                        </div>
+                    </div>
+                  {%- endfor -%}
+                    <h6 class="mt-5">Custom your metafields:</h6>
+                    {%- for i in (1..4) %}{% assign cus_tab = 'cus_meta_' |append:i -%}
+                      <div class="form-group my-3 mb-2">
+                        <label>Your metafield {{i}}</label>
+                        {%- assign external = shop.metafields.metast4[cus_tab] -%}
+                        {%- if external != blank -%}
+                            <input placeholder="Name" type="text" class="js_data_namespace form-control mb-2 inputnew" value="{{- external | split:'|||' | first -}}">           
+                            <textarea placeholder="Content" class="js_data_namespace js_data_textarea form-control inputnew" rows="3">
+                              {{- external | split:'|||' | last -}}
+                            </textarea>
+                            <input type="hidden" name="metast4.cus_meta_{{i}}" class="js_data_groupTxt" value="{{external}}" data-method="{%if external != blank %}PUT{%else%}POST{%endif%}">
+                        {%- else -%}
+                            <input placeholder="Name" type="text" class="js_data_namespace form-control mb-2 inputnew" value="">           
+                            <textarea placeholder="Content" class="js_data_namespace js_data_textarea form-control inputnew" rows="3"></textarea>
+                            <input type="hidden" name="metast4.cus_meta_{{i}}" class="js_data_groupTxt" value="" data-method="POST">
+                        {%- endif -%}
+                        {% assign cus_tab_output = 'product.metafields.metast4.cus_meta_' |append:i | append:'}}' | prepend:'{{' -%}
+                        <small>Use to output: {{cus_tab_output}}</small>
+                      </div>
+                      <div class="custom-control custom-checkbox my-2">
+                        <input type="checkbox" class="custom-control-input" id="all_cus_meta_{{i}}" data-check='cus_meta_{{i}}'>
+                        <label class="custom-control-label" for="all_cus_meta_{{i}}">Override this field data for all products</label>
+                      </div>
+                    {%- endfor -%}
+                
+              </form>
+            </div>
+          </div>
+        </div>  
+      </div>
+
+      <div class="modal-footer t4-btns justify-content-center">
+        <button type="button" class="btn btn-primary t4-btn loading_white btn_save_all">Update Metafields</button>
+        <small class="text-center mt-3">If you have pressed the button, please wait until the data has been run, don't close it, my friend!</small>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- End add all -->
+{%- endcomment -%}
+
+<!-- Modal Selected all -->
+<div class="modal fade" id="allSelectedModal" tabindex="-1" role="dialog" aria-labelledby="allAddModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header align-items-center">
+        <h5 class="modal-title" id="exampleModalLabel">Add metafield for selected products</h5>
+        <button type="button" class="btn btn-secondary btn-css-white" data-dismiss="modal">Close</button>
+      </div>
+      <div class="modal-body">
+        <div class="row justify-content-center align-items-center">
+          <div class="col-12">
+            <div class="product-inner-">
+              <form class="meta-feilds" id="prd_selected" action="#" method="POST">
+                <div class="form-group my-3 mb-2">
+                  <label for="short_description-1234">1. Short description</label>
+                  <textarea placeholder="Enter a Short description" class="form-control" name="meta.description_excerpt" data-method="{%if shop.metafields.meta.description_excerpt%}PUT{%else%}POST{%endif%}" rows="3"></textarea>
+                </div>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="description_excerpt" data-check="description_excerpt">
+                  <label class="custom-control-label" for="description_excerpt">Override this field data for all products</label>
+                </div>
+                {%- if list_pages_arr_size > 0 -%}
+                <div class="form-group my-3 mb-2">
+                  <label for="size_guide-{{product.id}}">2. Size guide page</label>
+                  {%- assign page_size_chart = shop.metafields.meta.page_size_chart -%}
+                  {%- assign key = 'page_size_chart' -%}
+                  <select class="form-control js_select_data" id="size_guide-{{product.id}}" name="meta.{{key}}" data-method="{%if page_size_chart != blank%}PUT{%else%}POST{%endif%}">
+                    {%- if page_size_chart != blank -%}
+                    {%- assign page_size_chart_2 = page_size_chart |append:'" selected="selected'-%}
+                    <option value="">No choose page</option>{{html_list_pages | replace:page_size_chart,page_size_chart_2}}
+                    {%- else -%}
+                    <option value="" selected="selected">No choose page</option>{{html_list_pages}}
+                    {%- endif -%}
+                  </select>
+                </div>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="{{key}}">
+                  <label class="custom-control-label" for="{{key}}">Override this field data for all products</label>
+                </div>
+                {%- endif -%}
+                {%- if list_imgs_arr_size > 0 -%}
+                <div class="form-group my-3 mb-2">
+                  <label for="size_guide-{{product.id}}">3. Size guide image</label>
+                  {%- assign img_size_chart = shop.metafields.meta.img_size_chart -%}
+                  {%- assign key = 'img_size_chart' -%}
+                  <select class="form-control js_select_data" id="size_guide-{{product.id}}" name="meta.{{key}}" data-method="{%if img_size_chart != blank%}PUT{%else%}POST{%endif%}">
+                    {%- if img_size_chart != blank -%}
+                    {%- assign img_size_chart_2 = img_size_chart |append:'" selected="selected'-%}
+                    <option value="">No choose Image</option>{{html_list_imgs | replace:img_size_chart,img_size_chart_2}}
+                    {%- else -%}
+                    <option selected="selected" value="">No choose Image</option>{{html_list_imgs}}
+                    {%- endif -%}
+                  </select>
+                </div>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="{{key}}">
+                  <label class="custom-control-label" for="{{key}}">Override this field data for all products</label>
+                </div>
+                <button type="button" class="btn btn_css_2 my-2" data-toggle="modal" data-target="#sizeimgModal">Preview List Image</button>
+                {%- endif -%}
+                
+                  <h6 class="mt-4">Custom Tabs:</h6>
+                  {%- assign total = 5 -%}
+                  {%- for i in (1..total)  %}{% assign cus_tab = 'cus_tab_' |append:i -%}
+                    <div class="form-group my-3 mb-2">
+                      <label>Custom Tab {{i}}</label>
+                      {%- assign external = shop.metafields.additions[cus_tab] -%}
+                      {%- if external != blank -%}
+                          <input placeholder="Custom tab name" type="text" class="js_data_namespace form-control mb-2 inputnew" value="{{- external | split:'|||' | first -}}">           
+                          <textarea placeholder="Custom tab content" class="js_data_namespace js_data_textarea form-control inputnew" rows="3">
+                            {{- external | split:'|||' | last -}}
+                          </textarea>
+                          <input type="hidden" name="additions.cus_tab_{{i}}" class="js_data_groupTxt" value="{{external}}" data-method="{%if external != blank %}PUT{%else%}POST{%endif%}">
+                      {%- else -%}
+                          <input placeholder="Custom tab name" type="text" class="js_data_namespace form-control mb-2 inputnew" value="">           
+                          <textarea placeholder="Custom tab content" class="js_data_namespace js_data_textarea form-control inputnew" rows="3"></textarea>
+                          <input type="hidden" name="additions.cus_tab_{{i}}" class="js_data_groupTxt" value="" data-method="POST">
+                      {%- endif -%}
+                        <div class="custom-control custom-checkbox my-2">
+                          <input type="checkbox" class="custom-control-input" id="custom_tab_{{i}}" data-check='cus_tab_{{i}}'>
+                          <label class="custom-control-label" for="custom_tab_{{i}}">Override this field data for all products</label>
+                        </div>
+                    </div>
+                  {%- endfor -%}
+
+                    {%- comment -%}
+                    <h6 class="mt-5">Custom your metafields:</h6>
+                    {%- for i in (1..4) %}{% assign cus_tab = 'cus_meta_' |append:i -%}
+                      <div class="form-group my-3 mb-2">
+                        <label>Your metafield {{i}}</label>
+                        {%- assign external = shop.metafields.metast4[cus_tab] -%}
+                        {%- if external != blank -%}
+                            <input placeholder="Name" type="text" class="js_data_namespace form-control mb-2 inputnew" value="{{- external | split:'|||' | first -}}">           
+                            <textarea placeholder="Content" class="js_data_namespace js_data_textarea form-control inputnew" rows="3">
+                              {{- external | split:'|||' | last -}}
+                            </textarea>
+                            <input type="hidden" name="metast4.cus_meta_{{i}}" class="js_data_groupTxt" value="{{external}}" data-method="{%if external != blank %}PUT{%else%}POST{%endif%}">
+                        {%- else -%}
+                            <input placeholder="Name" type="text" class="js_data_namespace form-control mb-2 inputnew" value="">           
+                            <textarea placeholder="Content" class="js_data_namespace js_data_textarea form-control inputnew" rows="3"></textarea>
+                            <input type="hidden" name="metast4.cus_meta_{{i}}" class="js_data_groupTxt" value="" data-method="POST">
+                        {%- endif -%}
+                        {% assign cus_tab_output = 'product.metafields.metast4.cus_meta_' |append:i | append:'}}' | prepend:'{{' -%}
+                        <small>Use to output: {{cus_tab_output}}</small>
+                      </div>
+                      <div class="custom-control custom-checkbox my-2">
+                        <input type="checkbox" class="custom-control-input" id="cus_meta_{{i}}" data-check='cus_meta_{{i}}'>
+                        <label class="custom-control-label" for="cus_meta_{{i}}">Override this field data for all products</label>
+                      </div>
+                    {%- endfor -%}
+                    {%- endcomment -%}
+              </form>
+            </div>
+          </div>
+        </div>  
+      </div>
+
+      <div class="modal-footer t4-btns justify-content-center">
+        <button type="button" class="btn btn-primary t4-btn loading_white btn_selected_all">Update Metafields</button>
+        <small class="text-center mt-3">If you have pressed the button, please wait until the data has been run, don't close it, my friend!</small>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- End Selected all -->
+
+{%- if list_imgs_arr_size > 0 -%}
+<!-- Modal Size Chart image -->
+<div class="modal fade" id="sizeimgModal" tabindex="-1" role="dialog" aria-labelledby="sizeimgModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Preview List Size Guide Image</h5>
+        <button type="button" class="btn btn-secondary btn-css-white" data-dismiss="modal">Close</button>
+{% comment %}        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>{% endcomment %}
+      </div>
+      <div class="modal-body">
+        <div class="row justify-content-center align-items-center">
+          {%- for img in list_imgs_arr %}{% assign image = images[img] -%}
+          <div class="col-auto text-center">
+            <img loading="lazy" src="{{image | img_url:'200x'}}" alt="{{image.alt |default:'img The4'}}">
+            <div>Image #{{forloop.index}}</div>
+          </div>
+          {%- endfor -%}
+        </div>  
+      </div>
+{% comment %}      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>{% endcomment %}
+    </div>
+  </div>
+</div>
+<!-- End Modal Size Chart image -->
+{%- endif -%}
+
+<div class="content" style="margin-bottom: 70px;">
+
+  {%- if searchCount == 0 and searchTerms != '*'-%}
+    <h3 class="title text-center my-5">
+      <span class="d-block my-2">{{ 'general.search.no_prs_results' | t: terms: searchTerms }}</span>
+      <a href="{{routes.search_url}}?type=product&options%5Bunavailable_products%5D=last&options%5Bprefix%5D=none&q=*&view=meta_ntt4" class="btn btn-outline-primary" style="padding: 0 10px;">Close Search</a>
+    </h3>
+  {%- else -%}
+    {%- paginate search.results by 20 -%}
+      {%- if searchTerms != '*' -%}
+      <h3 class="title text-center mb-5" style="border-bottom: 1px solid #efefef;padding-bottom: 10px;">
+        <div class="d-flex align-items-center justify-content-between">
+          <span class="d-block">{{ 'general.search.results_with_count' | t: terms:searchTerms,count:searchCount }}</span>
+          <a href="{{routes.search_url}}?type=product&options%5Bunavailable_products%5D=last&options%5Bprefix%5D=none&q=*&view=meta_ntt4" class="btn btn-outline-primary" style="padding: 0 10px;">Close Search</a>
+        </div>
+      </h3>
+      {%- endif -%}
+      <div class="nt_svg_loader d-none"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid"><g transform="translate(25 50)"><circle cx="0" cy="0" r="7" fill="#545a6a" transform="scale(0.884498 0.884498)"><animateTransform attributeName="transform" type="scale" begin="-0.3333333333333333s" calcMode="spline" keySplines="0.3 0 0.7 1;0.3 0 0.7 1" values="0;1;0" keyTimes="0;0.5;1" dur="1s" repeatCount="indefinite"/></circle></g><g transform="translate(50 50)"><circle cx="0" cy="0" r="7" fill="#d4d4db" transform="scale(0.44944 0.44944)"><animateTransform attributeName="transform" type="scale" begin="-0.16666666666666666s" calcMode="spline" keySplines="0.3 0 0.7 1;0.3 0 0.7 1" values="0;1;0" keyTimes="0;0.5;1" dur="1s" repeatCount="indefinite"/></circle></g><g transform="translate(75 50)"><circle cx="0" cy="0" r="7" fill="#545a6a" transform="scale(0.0532369 0.0532369)"><animateTransform attributeName="transform" type="scale" begin="0s" calcMode="spline" keySplines="0.3 0 0.7 1;0.3 0 0.7 1" values="0;1;0" keyTimes="0;0.5;1" dur="1s" repeatCount="indefinite"/></circle></g></svg></div>
+      <div class="row">
+        {%- for product in search.results -%}
+        <div class="product-item col-12 col-md-6 col-lg-4 col-xl-3" id="prd_{{product.id}}">{%- include 'prd_add_meta' -%}</div>
+        {%- endfor -%}
+      </div>
+      {%- if paginate.pages > 1 -%}
+      <div class="pagination pagination_search">
+        <nav class="w-100" aria-label="Page navigation example">
+          <ul class="pagination justify-content-center">
+            <li class="page-item{% unless paginate.previous %} disabled{%endunless%}">
+              <a class="page-link" href="{{ paginate.previous.url}}" tabindex="-1">Previous</a>
+            </li>
+            {%- for part in paginate.parts -%}
+            {%- if part.is_link -%}
+            <li class="page-item"><a class="page-link" href="{{ part.url}}">{{ part.title }}</a></li>		    
+            {%- else -%}
+            {%- if part.title == paginate.current_page -%}
+            <li class="page-item active"><span class="page-link current">{{ part.title }}</span></li>
+            {%- else -%}
+            <li class="page-item"><span class="page-link dots">{{ part.title }}</span></li>
+            {%- endif -%}
+            {%- endif -%}
+            {%- endfor -%}
+            <li class="page-item{% unless paginate.next %} disabled{%endunless%}">
+              <a class="page-link" href="{{ paginate.next.url}}">Next</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+      {%- endif -%}
+    {%- endpaginate -%}
+  {%- endif -%}
+</div>

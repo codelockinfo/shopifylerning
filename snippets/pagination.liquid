@@ -1,0 +1,21 @@
+<nav class="nt-pagination w__100 tc {{class}}">
+  <ul class="pagination-page page-numbers">
+    {%- if paginate.previous -%}
+    <li><a class="prev page-numbers{{cl_a}}" href="{{ paginate.previous.url }}">{{ 'collections.general.previous' | t }}</a></li>
+    {%- endif -%}
+    {%- for part in paginate.parts -%}
+      {%- if part.is_link -%}
+      <li><a class="page-numbers{{cl_a}}" href="{{ part.url }}">{{ part.title }}</a></li>
+      {%- else -%}
+        {%- if part.title == paginate.current_page -%}
+        <li><span class="page-numbers current">{{ part.title }}</span></li>
+        {%- else -%}
+        <li><span class="page-numbers lh__1">{{ part.title }}</span></li>
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+    {%- if paginate.next -%}
+    <li><a href="{{ paginate.next.url }}" class="next page-numbers{{cl_a}}">{{ 'collections.general.next' | t }}</a></li>
+    {%- endif -%}
+  </ul>
+</nav>

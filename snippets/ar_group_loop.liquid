@@ -1,0 +1,10 @@
+{%- assign image = article.image -%}
+<div class="row mb__10 pb__10">
+	<div class="col-auto widget_img_ar">
+		{%- if image != blank -%}{%- assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}<a class="db pr oh" href="{{article.url}}"><img src="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20{{image.width}}%20{{image.height}}%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3C%2Fsvg%3E" data-src="{{ img_url }}" data-widths="[80, 160, 320, 640]" data-sizes="auto" class="w__100 lazyload lz_op_ef" alt="{{image.alt | escape }}"></a>{%- endif -%}
+	</div>
+	<div class="col widget_if_ar">
+	   <a class="article-title db" href="{{article.url}}">{{ article.title }}</a>
+	   {{ article.published_at | time_tag: format: date }}
+	</div>
+</div>

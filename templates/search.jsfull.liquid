@@ -1,0 +1,47 @@
+{%- liquid
+	layout none
+	assign limit = 16
+	assign results_count = search.results_count
+	assign only_search_prs = settings.only_search_prs
+	assign arr_terms = search.terms |split:'product_type:'
+	assign search_terms = arr_terms[0] | strip 
+	assign product_type = arr_terms[1] | strip
+	assign on_sale_txt = 'products.product.on_sale' | t
+	assign save_js = 'products.product.save_js' | t: saved_amount:'saved_amount' -%} 
+
+{%- if results_count > 0 %}{% if results_count > 1 %}.h_results{% else %}.h_result{% endif %}||
+{%- paginate search.results by 16 -%}
+	{%- for product in search.results -%}
+		{%- assign on_sale = false -%}{%- assign image = product.images[0] -%}{%- if product.compare_at_price_min > product.price_min -%}{%- assign on_sale = true -%}{%- endif -%}
+		<div class="col-auto tc">
+			<div class="row mb__10 pb__10">
+				<div class="col-12">
+				    {%- if image != blank %}{% assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+				    <div class="img_fix_search"><a class="db pr oh" href="{{product.url}}"><img src="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20{{image.width}}%20{{image.height}}%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3C%2Fsvg%3E" data-src="{{ img_url }}" data-widths="[85, 170, 340, 680, 1360]" data-sizes="auto" class="w__100 lazyload lz_op_ef" class="w__100 lz_op_ef lazyload" alt="{{image.alt | escape }}"></a></div>
+				    {%- endif -%}
+				</div>
+				<div class="col-12 mt__10">
+					 <a class="product-title db" href="{{product.url | within: c}}">{{ product.title | highlight: search_terms }}</a>
+				   {%- if product.price_varies -%}
+					{{ product.price_min | money }}–{{ product.price_max | money }}
+					{%- elsif on_sale -%}<del>{{ product.compare_at_price  | money }}</del> <ins>{{ product.price | money }}</ins>{%- if settings.label_sale_style == '1' -%}<span class="nt_label onsale">{{ on_sale_txt }}</span>{%- else-%}{%- assign save = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | ceil -%}<span class="onsale nt_label">{{ save_js | replace: 'saved_amount':save }}</span>{% endif -%}
+					{%- else -%}
+					{{ product.price | money }}
+					{%- endif -%}
+				</div>
+			</div>
+		</div>
+	{%- endfor -%}
+	{%- if paginate.pages > 1 -%}
+	    <a href="{{ paginate.next.url | replace: '&page=2', '' | replace: '&view=jsfull', '' | replace: '&view=js', '' }}" class="btn fwsb detail_link col-12">{{ 'general.search.view_all' | t }}({{results_count}}) <i class="las la-arrow-right fs__18"></i></a>
+	{%- endif -%}
+     {%- if only_search_prs == false and product_type == '*' or product_type == blank -%}
+     <div class="col-12 results_article_blog lazyload mt__25" data-include='{{ routes.search_url }}?view=link&q={{search_terms| url_encode}}&type=article,page'></div>
+     {%- endif -%}
+{%- endpaginate -%}
+{%- else -%}
+.h_result||{{ 'general.search.no_prs_results' | t }}
+ {%- if only_search_prs == false and product_type == '*' or product_type == blank -%}
+ <div class="col-12 results_article_blog lazyload mt__25" data-include='{{ routes.search_url }}?view=link&q={{search_terms| url_encode}}&type=article,page'></div>
+ {%- endif -%}
+{%- endif -%}

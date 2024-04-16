@@ -1,0 +1,5 @@
+{%- case arrlt.size -%}
+  {%- when 1 -%}{%- assign icon = 't4' -%}{%- assign label = 't4' -%}
+  {%- when 2 -%}{%- if arrlt[1] contains 'label_' -%}{%- assign icon = 't4' -%}{%- assign label = arrlt[1] | remove:'label_' | remove:']' | strip -%}{%- else -%}{%- assign icon = arrlt[1] | remove:'icon_' | remove:']' | strip -%}{%- assign label = 't4' -%}{%- endif -%}
+  {%- else -%}{%- assign label = arrlt[1] | remove:'label_' | remove:']' | strip -%}{%- assign icon = arrlt[2] | remove:'icon_' | remove:']' | strip -%}
+{%- endcase -%}

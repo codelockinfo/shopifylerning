@@ -1,0 +1,228 @@
+{%- liquid
+  assign sid = section.id
+  assign col = section.settings.col_pr
+  assign col_tb = section.settings.col_pr_tb
+  assign col_mb = section.settings.col_mb
+  assign open_link = section.settings.open_link -%}
+
+<div class="nt_se_{{sid}} {{section.settings.layout}}">
+  <div class="row al_center fl_center tc">
+    {%- if section.blocks.size > 0 -%}
+      {%- for block in section.blocks -%}
+      <div class="col-{{col_mb}} col-md-{{col_tb}} col-lg-{{col}} mt__15 bl_{{block.id}}">
+      	{%- if block.settings.url != blank -%}<a href="{{block.settings.url}}" rel="nofollow" class="db wrap_txt_ship" target="{{open_link}}">{{block.settings.title}}</a>
+      	{%- else -%}<div class="wrap_txt_ship">{{block.settings.title}}</div>
+      	{%- endif -%}
+      </div>
+      {%- endfor -%}
+    {%- endif -%}
+  </div>
+</div>
+
+{%- render 'section_css' -%}
+{%- if section.blocks.size > 0 -%}
+{%- style -%}
+  {%- for block in section.blocks -%}
+  .bl_{{block.id}} .wrap_txt_ship{background-color:{{block.settings.bg}};color:{{block.settings.cl}} }
+  {%- endfor -%}
+{%- endstyle -%}
+{%- endif -%}
+
+{%- schema -%}
+  {
+    "name": "Shipping Text Simple",
+    "class": "nt_section type_shippingtxt",
+    "max_blocks": 30,
+    "settings": [
+      {
+        "type": "header",
+        "content": "== General Settings"
+      },
+      {
+        "type": "select",
+        "id": "open_link",
+        "options": [
+          {
+            "value": "_self",
+            "label": "Current window (_self)"
+          },
+         {
+            "value": "_blank",
+            "label": "New window (_blank)"
+          }
+        ],
+        "label": "Open link in",
+        "default": "_blank"
+      },
+      {
+        "type": "select",
+        "id": "col_pr",
+        "label": "Shipping columns",
+        "default": "4",
+        "options": [
+          {
+            "value": "6",
+            "label": "2"
+          },
+          {
+            "value": "4",
+            "label": "3"
+          },
+          {
+            "value": "3",
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_pr_tb",
+        "label": "Shipping columns Tablet",
+        "default": "4",
+        "options": [
+          {
+            "value": "6",
+            "label": "2"
+          },
+          {
+            "value": "4",
+            "label": "3"
+          },
+          {
+            "value": "3",
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_mb",
+        "label": "Shipping columns Mobile",
+        "default": "12",
+        "options": [
+          {
+            "value": "12",
+            "label": "1"
+          },
+          {
+            "value": "6",
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "== Design Options"
+      },
+      {
+        "type": "select",
+        "id": "layout",
+        "options": [
+         {
+            "value": "container",
+            "label": "Container"
+         },
+         {
+            "value": "nt_full",
+            "label": "Full Width"
+          }
+        ],
+        "label": "Layout"
+      },
+      {
+        "type": "color",
+        "id": "cl_bg",
+        "label": "Background color",
+        "default": "#fff"
+      },
+      {
+        "type": "text",
+        "id": "mg",
+        "label": "Margin",
+        "info":"Margin top, margin right, margin bottom, margin left. If you not use to blank",
+        "default": "50px,,50px,",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd",
+        "label": "Padding",
+        "info":"Padding top, padding right, padding bottom, padding left. If you not use to blank",
+        "placeholder": "50px,,50px,"
+      },
+     {
+        "type": "header",
+        "content": "== Design Mobile Options"
+      },
+      {
+        "type": "text",
+        "id": "mg_mb",
+        "label": "Margin",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd_mb",
+        "label": "Padding",
+        "placeholder": "50px,,50px,"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "shipping",
+        "name": "Shipping",
+        "settings": [
+           {
+             "type": "html",
+             "id": "title",
+             "label": "Text",
+             "default": "Use this text to describe."
+           },
+           {
+             "type": "url",
+             "id": "url",
+             "label": "Link ( optional)"
+           },
+           {
+             "type": "color",
+             "id": "bg",
+             "label": "Background color",
+             "default": "#f2f2f4"
+           },
+           {
+             "type": "color",
+             "id": "cl",
+             "label": "Color",
+             "default": "#222"
+           }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "6. Shipping Text Simple",
+        "category": "V. Text",
+        "blocks": [
+          {
+            "type": "shipping",
+            "settings": {
+              "title": "<strong>FREE SHIPPING <\/strong> ALL ORDER OVER $100"
+            }
+          },
+          {
+            "type": "shipping",
+            "settings": {
+              "title": "SUMMER <strong>SALE OFF<\/strong> TO <strong>50%<\/strong>"
+            }
+          },
+          {
+            "type": "shipping",
+            "settings": {
+              "title": "WE SUPPORT <strong>24 HOURS<\/strong> A DAY"
+            }
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

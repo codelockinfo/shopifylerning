@@ -1,0 +1,91 @@
+{%- liquid
+assign hidden_cat = settings.use_hidden_blg | default:false
+assign class_main = '12'
+assign no_sidebar = true
+assign shop_sidebar = settings.blog_sidebar
+if hidden_cat == false 
+  case shop_sidebar
+    when 'right'
+      assign no_sidebar = false
+      case settings.blog_size_sidebar
+        when '1'
+          assign class_main = '10 order-1'
+          assign class_sidebar = '2 order-12'
+        when '2'
+          assign class_main = '9 order-1'
+          assign class_sidebar = '3 order-12'
+         when '3'
+          assign class_main = '8 order-1'
+           assign class_sidebar = '4 order-12'
+      endcase
+    when 'left'
+      assign no_sidebar = false
+      case settings.blog_size_sidebar
+        when '1'
+          assign class_main = '10 order-lg-12 order-1'
+          assign class_sidebar = '2 order-lg-1 order-12'
+        when '2'
+          assign class_main = '9 order-lg-12 order-1'
+          assign class_sidebar = '3 order-lg-1 order-12'
+        when '3'
+          assign class_main = '8 order-lg-12 order-1'
+          assign class_sidebar = '4 order-lg-1 order-12'
+       endcase
+   endcase
+elsif shop_sidebar == 'left' or shop_sidebar == 'right'
+   assign no_sidebar = false 
+   assign class_sidebar = '12'
+endif -%}
+
+{%- if blog.template_suffix != 'portfolio' -%}
+  {%- section 'article-heading' -%}
+  <div class="container mt__60 mb__60">
+    <div class="row nt_single_blog">
+      {%- unless no_sidebar %}<div class="col-lg-{{class_sidebar}} col-xs-12 sidebar">{% section 'article-sidebar' %}</div>{% endunless -%}
+      <div class="col-md-{{class_main}} col-xs-12">{% section 'article-template' %}</div>
+    </div>
+  </div>
+  <script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "articleBody": {{ article.content | strip_html | json }},
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": {{ shop.url | append: page.url | json }}
+    },
+    "headline": {{ article.title | json }},
+    {%- if article.excerpt != blank -%}
+      "description": {{ article.excerpt | strip_html | json }},
+    {%- endif -%}
+    {%- if article.image -%}
+      {%- assign image_size = article.image.width | append: 'x' -%}
+      "image": [
+        {{ article | img_url: image_size | prepend: "https:" | json }}
+      ],
+    {%- endif -%}
+    "datePublished": {{ article.published_at | date: '%Y-%m-%dT%H:%M:%SZ' | json }},
+    "dateCreated": {{ article.created_at | date: '%Y-%m-%dT%H:%M:%SZ' | json }},
+    "dateModified": {{ article.updated_at | date: '%Y-%m-%dT%H:%M:%SZ' | json }},
+    "author": {
+      "@type": "Person",
+      "name": {{ article.author | json }}
+    },
+    "publisher": {
+      "@type": "Organization",
+      {%- if settings.logo -%}{%- assign image = settings.logo -%}{%- assign image_size = image.width | append:'x' -%}
+        "logo": {
+          "@type": "ImageObject",
+          "height": {{ image.height | json }},
+          "url": {{ image | img_url: image_size | prepend: "https:" | json }},
+          "width": {{ image.width | json }}
+        },
+      {%- endif -%}
+      "name": {{ shop.name | json }}
+    }
+  }
+  </script>
+{%- else -%}
+  {%- section 'aptf-heading' -%}
+  {%- section 'aptf-template' -%}
+{%- endif -%}

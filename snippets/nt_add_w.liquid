@@ -1,0 +1,23 @@
+{%- if settings.wishlist_type == "1" -%}
+<div class="nt_add_w ts__03 {{class}}">
+	<a href="{{url_last | default:product.url }}" data-no-instant data-id="{{product.id}}" class="wishlistadd cb chp {{tooltip}}" rel="nofollow"><span class="tt_txt">{{ 'general.nt_tooltip.add_to_wishlist' | t }}</span><i class="facl facl-heart-o"></i></a>
+</div>
+{%- elsif settings.wishlist_type == "2" and shop.customer_accounts_enabled -%}
+<div class="nt_add_w ts__03 {{class}}">
+	{%- if customer -%}
+	    <a href="{{url_last | default:product.url }}" data-no-instant data-id="{{product.id}}" class="wishlistadd cb chp {{tooltip}}" rel="nofollow"><span class="tt_txt">{{ 'general.nt_tooltip.add_to_wishlist' | t }}</span><i class="facl facl-heart-o"></i></a>
+	{%- else -%}
+	    <a href="{{routes.account_login_url}}" class="nt_w_login cb chp {{tooltip}}" rel="nofollow"><span class="tt_txt">{{ 'general.nt_tooltip.login_to_wishlist' | t }}</span><i class="facl facl-heart-o"></i></a>
+	{%- endif -%}
+</div>
+{%- elsif settings.wishlist_type == "3" and shop.customer_accounts_enabled -%}
+   {%- capture the_snippet_fave_icon %}{% render 'ssw-widget-faveicon' with product.id %}{% endcapture -%}
+   {%- unless the_snippet_fave_icon contains 'Liquid error' -%}
+    <div class="nt_add_w ts__03 {{class}}">{{ the_snippet_fave_icon }}</div>
+   {%- endunless -%}
+{%- endif -%}
+{%- if settings.enable_compe -%}
+<div class="nt_add_cp ts__03 {{class}}">
+	<a href="{{url_last | default:product.url }}" data-no-instant data-id="{{product.id}}" class="compare_add cb chp {{tooltip}}" rel="nofollow"><span class="tt_txt">{{ 'general.nt_tooltip.compare' | t }}</span><i class="las la-sync"></i></a>
+</div>
+{%- endif -%}

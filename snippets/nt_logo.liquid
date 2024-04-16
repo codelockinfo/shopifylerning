@@ -1,0 +1,43 @@
+{%- liquid
+    assign svg_df = settings.logo_svg
+    assign svg = svg_df
+    assign logo = settings.logo
+    assign s_name = shop.name | escape
+    assign logo_retina = settings.logo_retina | default:logo
+    assign lh = section.settings.height | default:62 | minus:5
+    assign lhmb = section.settings.h_navmb | default:62 | minus:5 
+    assign lg_w = settings.logo_width  
+    assign lg_w_1 = lg_w | plus:40 | append:'x'
+    assign logom = settings.logo_mb | default:logo
+    assign logom_retina = settings.logo_mb_retina | default:logom 
+    if template.name == 'index' and settings.h_transparent and settings.header_design != '7'
+       assign svg = settings.logo_tr_svg | default:svg
+     assign logo = settings.logo_tr | default:logo
+     assign logo_retina = settings.logo_tr_retina | default:logo
+     assign lg_w = settings.logo_tr_width 
+     assign lg_w_1 = lg_w | plus:40 | append:'x'
+       assign logom = logo
+       assign logom_retina = logo_retina | default:logom 
+    endif -%} 
+
+<{{nt_logo}} class="{{class}} branding ts__05 lh__1"><a class="{{class2 |default:'dib' }}" href="{{ routes.root_url }}" {{ block.shopify_attributes }}>
+
+  {%- if svg != blank -%}
+     <img class="w__100 logo_normal dn db_lg" src="{{ svg | file_url }}" alt="{{ s_name }}" style="width: {{ settings.logo_width }}px">
+     <img class="w__100 logo_sticky dn" src="{{ svg_df|default:svg | file_url }}" alt="{{ s_name }}" style="width: {{ settings.logos_width }}px">
+     <img class="w__100 logo_mobile dn_lg" src="{{ svg | file_url }}" alt="{{ s_name }}" style="width: {{ settings.logo_mb_width }}px">
+  {%- elsif logo != blannk -%}
+     
+    <img class="w__100 logo_normal dn db_lg" src="{{ logo  | img_url: lg_w_1 }}" srcset="{{ logo | img_url:lg_w_1 }} 1x,{{ logo_retina | img_url:lg_w_1, scale: 2 }} 2x" alt="{{ logo.alt | default: s_name | escape }}" style="width: {{ lg_w }}px">
+
+  {%- assign lg_w = settings.logos_width -%}{%- assign lg_w_1 = lg_w | plus:40 | append:'x'-%}
+    {%- assign logos = settings.logos | default:logo -%}{%- assign logos_retina = settings.logos_retina | default:logos -%}
+    <img class="w__100 logo_sticky dn" src="{{ logos  | img_url: lg_w_1 }}" srcset="{{ logos | img_url:lg_w_1 }} 1x,{{ logos_retina | img_url:lg_w_1, scale: 2 }} 2x" alt="{{ logos.alt | default: s_name | escape }}" style="width: {{ lg_w }}px">
+
+    {%- assign lg_w = settings.logo_mb_width -%}{%- assign lg_w_1 = lg_w | plus:40 | append:'x'-%}
+    <img class="w__100 logo_mobile dn_lg" src="{{ logom  | img_url: lg_w_1 }}" srcset="{{ logom | img_url:lg_w_1 }} 1x,{{ logom_retina | img_url:lg_w_1, scale: 2 }} 2x" alt="{{ logom.alt | default: s_name | escape }}" style="width: {{ lg_w }}px;">
+
+{%- else -%}
+   {{- shop.name -}}
+{%- endif -%}
+</a></{{nt_logo}}> 

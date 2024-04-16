@@ -1,0 +1,1875 @@
+{%- liquid
+  assign col_class= '12'
+  assign ck_hide_all = true
+  assign has_blocks_filter = false
+  assign section_blocks = section.blocks -%}
+
+<div class="h3 mg__0 tu bgb cw visible-sm fs__16 pr">{{ 'collections.general.sidebar' | t }}<i class="close_pp pegk pe-7s-close fs__40 ml__5"></i></div>
+<div class="cat_shop_wrap">
+<div class="cat_fixcl-scroll">
+<div class="cat_fixcl-scroll-content css_ntbar">
+<div class="row no-gutters wrap_filter">
+{%- if section_blocks.size > 0 -%}
+  {%- liquid
+    assign Arr_blocks_filter = 'title;available;price;vendor;type;color;tags;tag;tag2;variants' | split:';'
+    for type in Arr_blocks_filter
+      assign size_blocks_filter = section_blocks | where:'type',type | size
+      if size_blocks_filter > 0
+        assign has_blocks_filter = true
+        break
+      endif 
+    endfor
+
+    if has_blocks_filter
+       assign continue_filter = false
+       assign use_pagination = cart.attributes.paginate_ntt4
+       assign use_bar_lm = cart.attributes.use_bar_lmntt4
+       assign sort_by = collection.sort_by | default: collection.default_sort_by
+       assign index = 0
+       assign all_count_pr = collection.all_products_count
+       if all_count_pr < 1000 
+          assign limit = all_count_pr
+       else
+          assign limit = 1000
+       endif
+       assign sale_count_pr = 0
+       assign limitstt = cart.attributes.limit_ntt4 | plus:0
+       
+       if settings.logic_filter == '1'
+          assign logic_and = true                                      
+       else 
+          assign logic_and = false                                     
+       endif                                  
+       
+       assign Link_click_panagation = false  
+       if canonical_url contains 'for_offest'
+       assign Link_click_panagation = true  
+       endif
+
+       assign nt_canonical_url = canonical_url | replace:'for_offest','for_no_offest' | replace:'?q=+nt+','?q=' | replace:'?q=%2f%3fq%3d','?q=' | replace:'+nt++nt+','+nt+'
+       assign has_fillter_stock = false
+       assign has_fillter_title = false
+       assign has_fillter_price = false
+       assign get_fillter_offset = 0
+       assign has_fillter_paginate = false
+       assign vl_filters = nt_canonical_url |split:'?q=' | last | split:'?&sort_by' | first | split:'&sort_by' | first
+       assign arr_vl_filters = vl_filters | split: '+nt+'
+       assign auto_hide_ofsock = cart.attributes.auto_hide_ofsock | default: settings.auto_hide_ofsock, allow_false: true
+       
+       if auto_hide_ofsock == true or auto_hide_ofsock == 'true'
+          assign has_fillter_stock = true
+          assign doing_fillter = true    
+       endif
+
+       if nt_canonical_url contains 'filternt_title%3d'
+        assign has_fillter_title = true
+        assign get_fillter_title = arr_vl_filters | where:'filternt_title%3d' | first | remove:'filternt_title%3d'
+       endif
+       
+       if nt_canonical_url contains 'filternt_price%3d'
+        assign has_fillter_price = true
+        assign get_fillter_price = arr_vl_filters | where:'filternt_price%3d' | first | remove:'filternt_price%3d' | split:'+ntprice+'
+        assign min_fillter_price = get_fillter_price | first |plus:0
+        assign max_fillter_price = get_fillter_price | last |plus:0
+       endif
+
+       if nt_canonical_url contains 'for_offest%3d'
+        assign get_fillter_offset = arr_vl_filters | where:'for_offest%3d' | first | remove:'for_offest%3d' | plus:0                                  
+       endif
+
+       if nt_canonical_url contains 'for_no_offest%3d'
+        assign get_fillter_offset = arr_vl_filters | where:'for_no_offest%3d' | first | remove:'for_no_offest%3d' | plus:0                                      
+       endif
+
+       assign split_txt = '/?q='
+                                             
+       if nt_canonical_url contains '?q=' or nt_canonical_url contains '%3fq%3d' and nt_canonical_url contains 'filter'
+           assign doing_fillter = true
+           assign split_txt = '+nt+'                                      
+       endif
+       if collection.current_type or collection.current_vendor 
+           assign doing_fillter = false
+           assign split_txt = '+nt+'                                          
+       endif
+                                              
+      assign arr_vl_filters = vl_filters | split: '+nt+' | where:'filter_'
+      
+      assign txt_current_page = '?page=' |append:current_page
+      assign nt_canonical_url = nt_canonical_url |remove:txt_current_page
+      assign current_page = 1
+      assign hide_unavailable_filter = true  
+    endif -%}
+
+{%- for i in (1..1) -%}
+  {%- if all_count_pr == 0 or collection.current_type or collection.current_vendor or has_blocks_filter == false %}{% assign continue_filter = true %}{% continue %}{% endif -%}
+
+  {%- paginate collection.products by limit -%}
+      
+     {%- if doing_fillter -%}
+         {%- assign str_value_prs = '' -%}                           
+         {%- assign all_count_pr = 0 -%}                         
+         {%- assign avai_count_pr = 0 -%}
+
+          {%- assign collection_prs = collection.products -%}
+          {%- assign collection_prs_available = collection_prs | where: "available",true -%}
+          {%- if collection_prs_available.size != collection_prs.size %}{% assign hide_unavailable_filter = false %}{% endif -%}
+          {%- if has_fillter_stock %}{% assign collection_prs = collection_prs_available %}{% endif -%}
+
+          {%- assign min_price = collection_prs | map:'price_min' | uniq | sort | last -%}
+          {%- assign max_price = 0 -%}                      
+          {%- assign arr_vendors0 = '' -%}
+          {%- assign arr_types0 = '' -%}
+          {%- assign arr_tags0 = '' | split: "," -%}  
+          {%- assign arr_offsets = '0;;;' -%}
+                                                                  
+          {%- capture products_list_vars -%}     
+            {%- for product in collection_prs -%}{%- assign offset = forloop.index0 -%}
+                                            
+               {%- assign pr_title_dow = product.title | url_encode | downcase -%}
+
+               {%- unless has_fillter_title == false or pr_title_dow contains get_fillter_title -%}
+                  {% continue %}
+               {%- endunless -%}    
+                                              
+               {%- capture cap_cat_filters -%}{%- render 'cat_filters',arr_vl_filters:arr_vl_filters,product:product,logic_and:logic_and -%}{% endcapture %}{% assign cap_cat_filters = cap_cat_filters |strip -%}
+               {%- assign price_min = product.price_min -%}
+               {%- if cap_cat_filters contains 'true' %}
+                 {%- if min_price > price_min %}{% assign min_price = price_min %}{% endif -%}
+                 {%- if max_price < price_min %}{% assign max_price = price_min %}{% endif -%}
+               {%- endif -%}
+               {%- comment -%}
+               {%- unless has_fillter_price == false or price_min >= min_fillter_price and price_min <= max_fillter_price -%}
+                  {%- continue -%}
+               {%- endunless -%}
+               {%- endcomment -%}
+               {%- if has_fillter_price and price_min < min_fillter_price or price_min > max_fillter_price %}{% continue %}{% endif -%}
+               {%- if logic_and %}{%- unless cap_cat_filters contains 'true' %}{% continue %}{% endunless %}{% endif -%}
+                                              
+               {%- if product.vendor != blank -%}
+                 {%- assign arr_vendors0 = arr_vendors0 |append:product.vendor |append:';;;' -%}
+               {%- endif -%}
+
+               {%- if product.type != blank or product.type != '' -%}
+                 {%- assign arr_types0 = arr_types0 |append:product.type |append:';;;' -%}
+               {%- endif -%}
+
+               {%- if product.tags.size > 0 -%}
+                 {%- assign arr_tags0 = arr_tags0 | concat: product.tags -%}
+               {%- endif -%}   
+
+               {%- unless has_only_default_variant -%}
+                   {%- for product_option in product.options_with_values %}%3d{{ product_option.name | downcase}}%3d{{product_option | map:'values' |join:';;;'}}[|]{%- endfor -%}
+               {%- endunless -%}
+
+               {%- unless logic_and %}{% unless cap_cat_filters contains 'true' %}{% continue %}{% endunless %}{% endunless -%}
+               {%- if product.available %}{% assign avai_count_pr = avai_count_pr |plus:1 %}{% endif -%}
+               {%- if price_min < product.compare_at_price_min %}{% assign sale_count_pr = sale_count_pr |plus:1 %}{% endif -%}
+
+               {%- assign index = index|plus:1 -%} 
+               {%- assign all_count_pr = all_count_pr|plus:1 -%} 
+               {%- if index > limitstt -%}{%- assign index = 1 -%} 
+                   {%- assign arr_offsets = arr_offsets | append:offset|append:';;;' -%}                                  
+               {%- endif -%}                               
+                                            
+            {%- endfor -%}                    
+          {%- endcapture -%}
+
+          {%- assign products_list_vars = products_list_vars | split:'[|]' -%}  
+
+          {%- assign arr_vendors0 = arr_vendors0 | split:';;;' | sort_natural -%}
+          {%- assign arr_types0 = arr_types0 | split:';;;' | sort_natural -%} 
+          {%- assign arr_tags0 = arr_tags0 | join:';;;' | downcase | split:';;;' | sort_natural -%}                                    
+          {%- assign arr_vendors = arr_vendors0 | uniq | compact -%}
+          {%- assign arr_types = arr_types0 | uniq | compact -%} 
+          {%- assign arr_tags = arr_tags0 | uniq -%}     
+                                            
+     {%- else -%} 
+
+         {%- assign collection_prs = collection.products -%}
+         {%- assign collection_prs_available = collection_prs | where: "available",true -%}
+         {%- if collection_prs_available.size != collection_prs.size %}{% assign hide_unavailable_filter = false %}{% endif -%}
+         {%- if has_fillter_stock %}{% assign collection_prs = collection_prs_available %}{% endif -%}
+         
+         {%- comment -%}                               
+         {%- assign arr_vendors = collection_prs | map:'vendor' | uniq | sort_natural -%}
+         {%- assign arr_types = collection_prs | map:'type' | uniq | compact | sort_natural -%} 
+         {%- assign arr_tags = collection_prs | map:'tags' | uniq | sort_natural  -%}
+         {%- endcomment -%}
+         {%- assign arr_price = collection_prs | map:'price_min' | uniq | sort -%}
+         {%- assign min_price = arr_price | first -%}
+         {%- assign max_price = arr_price | last -%}  
+                                            
+         {%- assign arr_vendors0 = '' -%}
+         {%- assign arr_types0 = '' -%}
+         {%- assign arr_tags0 = '' | split: "," -%} 
+                                                                  
+          {%- capture products_list_vars -%}     
+            {%- for product in collection_prs -%}
+
+               {%- if product.vendor != blank %}{% assign arr_vendors0 = arr_vendors0 |append:product.vendor |append:';;;' %}{% endif -%}
+
+               {%- if product.type != blank or product.type != '' %}{% assign arr_types0 = arr_types0 |append:product.type |append:';;;' %}{% endif -%}
+
+               {%- if product.tags.size > 0 %}{% assign arr_tags0 = arr_tags0 | concat: product.tags %}{% endif -%}
+
+               {%- if price_min < product.compare_at_price_min %}{% assign sale_count_pr = sale_count_pr |plus:1 %}{% endif -%}
+
+               {%- unless has_only_default_variant -%}
+                   {%- for product_option in product.options_with_values %}%3d{{ product_option.name | downcase}}%3d{{product_option | map:'values' |join:';;;'}}[|]{%- endfor -%}
+               {%- endunless -%}                               
+                                            
+            {%- endfor -%}                    
+          {%- endcapture -%}
+          {%- assign arr_vendors0 = arr_vendors0 | split:';;;' | sort_natural -%}
+          {%- assign arr_types0 = arr_types0 | split:';;;' | sort_natural -%} 
+          {%- assign arr_tags0 = arr_tags0 | join:';;;' | downcase | split:';;;' | sort_natural -%}                                 
+          {%- assign arr_vendors = arr_vendors0 | uniq | compact -%}
+          {%- assign arr_types = arr_types0 | uniq | compact -%} 
+          {%- assign arr_tags = arr_tags0 | uniq -%}    
+         {%- comment -%}
+         {%- assign arr_prvariants = collection_prs | where:'has_only_default_variant',false -%}
+         {%- assign arr_options = arr_prvariants | map:'options' |join:'+nt+'| downcase |split:'+nt+' | uniq -%}
+                                            
+          {%- capture products_list_vars -%}                       
+            {%- for product in arr_prvariants -%}
+               {%- for product_option in product.options_with_values %}%3d{{ product_option.name | downcase}}%3d{{product_option | map:'values' |join:';;;'}}[|]{% endfor -%}                     
+            {%- endfor -%}                    
+          {%- endcapture -%}
+          {%- endcomment -%}
+          {%- assign products_list_vars = products_list_vars | split:'[|]' -%}            
+                                                                             
+     {%- endif -%}                                       
+
+  {%- endpaginate -%}
+  {%- assign arr_offsets = arr_offsets | remove:' ' |split:';;;' -%}
+{%- endfor -%}
+
+  {%- if settings.shop_filters and settings.sort_enable -%}{%- assign ck_hide_all = false -%}
+  <div class="col-12 col-md-{{col_class}} widget hidden_sortby_{{settings.use_hidden_cat}}">
+  <h5 class="widget-title">{{ 'collections.sorting.title' | t }}</h5>
+  <div class="loke_scroll">
+     <ul class="nt_filter_block nt_filter_sortby">
+     {%- if type_filters == '2' -%}
+ 
+        {%- assign key_block = 'for_no_offest%3d' | append:get_fillter_offset -%}
+        {%- assign key_block2 = '+nt+for_no_offest%3d' | append:get_fillter_offset -%}
+        {%- assign sortby_url = nt_canonical_url | remove:key_block2 | remove:key_block | remove:txt_current_page -%}
+        
+        {%- if nt_canonical_url contains sort_by -%}
+          {%- for option in collection.sort_options -%}
+            <li{% if sort_by == option.value %} class="active"{% endif %}><a href="{{ sortby_url | replace:sort_by,option.value | replace:'+nt+&sort_by','&sort_by'}}">{{ option.name }}</a></li>
+          {%- endfor -%}
+        {%- else -%}
+          {%- for option in collection.sort_options -%}
+            <li{% if sort_by == option.value %} class="active"{% endif %}><a href="{{ sortby_url | sort_by: option.value | replace:'+nt+&sort_by','&sort_by'}}">{{ option.name }}</a></li>
+          {%- endfor -%}
+        {%- endif -%}
+     {%- else -%}
+
+        {%- assign sr_url = canonical_url -%}
+        {%- if sr_url contains sort_by -%}
+           {%- for option in collection.sort_options -%}<li {%- if sort_by == option.value %} class="active"{% endif %}><a href="{{ sr_url | replace:sort_by,option.value | replace:'+nt+&sort_by','&sort_by'}}">{{  option.name }}</a></li>{%- endfor -%}
+        {%- else -%}
+           {%- for option in collection.sort_options -%}<li {%- if sort_by == option.value %} class="active"{% endif %}><a href="{{ sr_url | sort_by:option.value }}">{{  option.name }}</a></li>{%- endfor -%}
+        {%- endif -%}
+
+     {%- endif -%}
+     </ul>
+  </div>
+  </div>
+  {%- endif -%}
+  {%- for block in section_blocks %}{% assign bk_stts = block.settings -%}
+     {%- case block.type -%}
+        {%- when 'category' -%}
+            <div class="col-12 col-md-{{col_class}} widget widget_product_categories cat_count_{{bk_stts.count}}">
+               <h5 class="widget-title">{{ bk_stts.title }}</h5>
+               <ul class="product-categories">
+                  {%- case bk_stts.cat_source -%}
+                     {%- when '1' -%}
+                        {%- if collections.size > 0 -%}{%- assign ck_hide_all = false -%}
+                           {%- for category in collections -%}
+                              {%- if category.products.size > 0 -%}
+                                 <li class="cat-item{%- if collection.handle == category.handle %} current-cat{%- endif -%}"><a href="{{ category.url }}">{{category.title}}</a> <span class="cat_count">({{ category.all_products_count }})</span></li>
+                              {%- endif -%}
+                           {%- endfor -%}
+                        {%- endif -%}
+                     {%- else -%}
+                        {%- assign top_link_list = bk_stts.cat_link_list -%}
+                        {%- for link in linklists[top_link_list].links -%}
+                            {%- if link.type == 'collection_link' or link.type == 'catalog_link' -%}{%- assign ck_hide_all = false -%}
+                              {%- if link.links != blank -%}
+                                   <li class="pr menu_nested cat-item{%- if link.active or link.child_active %} current-cat{%- endif -%}">
+                                      <a class="db has_cats_toggle pr__25" href="{{ link.url }}">{{link.title}} <span class="cat_count">({{ link.object.all_products_count | default:shop.products_count }})</span></a>
+                                      <ul class="sub-menu children dn">
+                                         {%- for child_link in link.links -%}
+                                             {%- if child_link.type == 'collection_link' or child_link.type == 'catalog_link' -%}
+                                             
+                                               {%- if child_link.links != blank -%}
+                                               <li class="pr menu_nested2 cat-item{%- if child_link.active or child_link.child_active %} current-cat{%- endif -%}">
+                                                  <a class="db has_cats_toggle_ pr__25" href="{{ child_link.url }}">{{child_link.title}} <span class="cat_count">({{ child_link.object.all_products_count | default:shop.products_count }})</span></a>
+                                                  <ul class="sub-menu children dn">
+                                                    {%- for third_link in child_link.links -%}
+                                                     {%- if third_link.type == 'collection_link' or third_link.type == 'catalog_link' -%}
+                                                     <li class="cat-item{%- if third_link.active %} current-cat{%- endif -%}">
+                                                        <a href="{{ third_link.url }}">{{third_link.title}} <span class="cat_count">({{ third_link.object.all_products_count | default:shop.products_count }})</span></a>
+                                                     </li>
+                                                     {%- endif -%}
+                                                    {%- endfor -%}
+                                                  </ul>
+                                                  <div class="btn_cats_toggle"><i class="facl facl-angle-down"></i></div>
+                                               </li>
+                                               {%- else -%}
+                                               <li class="cat-item{%- if child_link.active %} current-cat{%- endif -%}">
+                                                  <a href="{{ child_link.url }}">{{child_link.title}} <span class="cat_count">({{ child_link.object.all_products_count | default:shop.products_count }})</span></a>
+                                               </li>
+                                               {%- endif -%}
+
+                                             {%- endif -%}
+                                          {%- endfor -%}
+                                      </ul>
+                                      <div class="btn_cats_toggle"><i class="facl facl-angle-down"></i></div>
+                                    </li>
+                              {%- else -%}
+                                <li class="cat-item{%- if link.active %} current-cat{%- endif -%}"><a href="{{ link.url }}">{{link.title}} <span class="cat_count">({{ link.object.all_products_count |default:shop.products_count}})</a></span></li>
+                              {%- endif -%}
+                            {%- endif -%}
+                        {%- endfor -%}
+                  {%- endcase -%}
+               </ul>
+            </div>
+        {%- when 'collection' -%}
+            {%- liquid
+             assign on_sale_txt = 'products.product.on_sale' | t
+             assign save_js = 'products.product.save_js' | t: saved_amount:'saved_amount' -%}
+            <div class="col-12 col-md-{{col_class}} widget widget_product_list">
+               <h5 class="widget-title">{{ bk_stts.title }}</h5>
+               {%- if bk_stts.collection == blank -%}
+                  <p class="mg__0 mb__30">{{ 'homepage.onboarding.no_content' | t }}</p>
+               {%- else -%}{%- assign ck_hide_all = false -%}
+               <div class="product_list_widget">
+                  {%- for product in collections[bk_stts.collection].products limit: bk_stts.limit -%}
+                     {%- render 'pr_group_loop',product:product,c:collections[bk_stts.collection],on_sale_txt:on_sale_txt,save_js:save_js -%}
+                  {%- endfor -%}
+               </div>
+               {%- endif -%}
+            </div>
+        {%- when 'post' -%}{%- assign date = bk_stts.date -%}
+            <div class="col-12 col-md-{{col_class}} widget widget_post_list">
+               <h5 class="widget-title">{{ bk_stts.title }}</h5>
+               {%- if bk_stts.blog == blank -%}
+                  <p class="mg__0 mb__30">{{ 'homepage.onboarding.no_content' | t }}</p>
+               {%- else -%}{%- assign ck_hide_all = false -%}
+               <div class="post_list_widget">
+                  {%- for article in blogs[bk_stts.blog].articles limit: bk_stts.limit -%}
+                     {%- render 'ar_group_loop',article:article,date:date -%}
+                  {%- endfor -%}
+               </div>
+               {%- endif -%}
+            </div>
+        {%- when 'instagram' -%}{%- assign ck_hide_all = false -%}{%- assign col = bk_stts.col_pr -%}{%- assign col_tb = bk_stts.col_pr_tb -%}{%- assign col_mb = bk_stts.col_pr_mb -%}
+            <div class="col-12 col-md-{{col_class}} widget widget_instagram">
+               <h5 class="widget-title">{{ bk_stts.title }}</h5>
+               <div class="nt_instagram_wrap row equal_nt ins_spaces_{{bk_stts.space}} ins_rounded_{{bk_stts.rounded_ins}} nt_cover ratio1_1 position_8 js_nt_ist" data-id='{{col}}{{col_tb}}{{col_mb}}{{bk_stts.limit}}{{bk_stts.open_link}}' data-cl='{{col}}' data-cltb='{{col_tb}}' data-clmb='{{col_mb}}' data-acc='{{bk_stts.acc2 | default:settings.global_acc}}' data-limit='{{bk_stts.limit }}' data-target='{{bk_stts.open_link}}'><div class="lds_bginfinity pr"></div></div>
+            </div>
+        {%- when 'instagram2' -%}{%- assign ck_hide_all = false -%}{%- assign col = bk_stts.col_pr -%}{%- assign col_tb = bk_stts.col_pr_tb -%}{%- assign col_mb = bk_stts.col_pr_mb -%}
+            <div class="col-12 col-md-{{col_class}} widget widget_instagram">
+               <h5 class="widget-title">{{ bk_stts.title }}</h5>
+               <div class="nt_instagram_wrap row equal_nt ins_spaces_{{bk_stts.space}} ins_rounded_{{bk_stts.rounded_ins}} nt_cover ratio1_1 position_8 js_nt_ist" data-id='{{col}}{{col_tb}}{{col_mb}}{{bk_stts.limit}}{{bk_stts.open_link}}' data-cl='{{col}}' data-cltb='{{col_tb}}' data-clmb='{{col_mb}}' data-acc='ins_19041994' data-limit='{{bk_stts.limit }}' data-target='{{bk_stts.open_link}}'><div class="lds_bginfinity pr"></div></div>
+            </div>
+        {%- when 'shipping' -%}{%- assign ck_hide_all = false -%}
+            <div class="col-12 col-md-{{col_class}} widget widget_shipping">
+               <h5 class="widget-title">{{ bk_stts.title }}</h5>
+               {%- for i in (1..6) -%}
+                  {%- assign shipping = 'shipping_' | append:i -%}
+                  {%- assign shipping_id = bk_stts[shipping] -%}
+                  {%- if shipping_id != blank -%}
+                     {%- assign shipping = shipping_id | replace: ' ,', ',' | replace: ', ', ',' | split: ',' -%}
+                        <div class="row no-gutters nt_shipping tl clearfix mt__30">
+                           {%- if shipping[0] != blank -%}<div class="icon medium cd col-auto"><i class="{%- if shipping[0] contains 'pe-' -%}pegk {{shipping[0]}}{%- else -%}las la-{{shipping[0]}}{%- endif -%}"></i></div>{%- endif -%}
+                           <div class="content col">
+                              <h3 class="title cd tu fs__14 mg__0 mb__5">{{shipping[1]}}</h3>
+                              <p class="mg__0">{{shipping[2]}}</p>
+                           </div>
+                        </div>
+                  {%- endif -%}
+               {%- endfor -%}
+            </div> 
+        {%- when 'html' -%}{%- assign ck_hide_all = false -%}
+            <div class="col-12 col-md-{{col_class}} widget widget_html">
+               <h5 class="widget-title">{{ bk_stts.title }}</h5>
+               {%- if bk_stts.page != blank -%}{{pages[bk_stts.page].content}}{%- endif -%}
+            </div>
+        {%- when 'text' -%}{%- assign ck_hide_all = false -%}
+            <div class="col-12 col-md-{{col_class}} widget widget_text">
+               <h5 class="widget-title">{{ bk_stts.title }}</h5>
+               {%- if bk_stts.text != blank -%}{{bk_stts.text}}{%- endif -%}
+            </div>
+
+        {%- when 'title' %}{% if bk_stts.hidden_block or continue_filter %}{% continue %}{% endif %}{% assign ck_style = true -%}
+          
+          <div id="blockid_{{block.id}}" class="col-12 col-md-{{col_class}} widget blockid_title">
+            <h5 class="widget-title">{{bk_stts.title}}</h5>
+            <div class="loke_scroll mt__10">
+              <input type="text" class="nt_cat_title" value="{{get_fillter_title}}" placeholder="{{ 'collections.filter_variant.placeholder_title' | t }}" data-url="{% if has_fillter_title %}{% assign title_replace = 'filternt_title%3d' | append:get_fillter_title  %}{{nt_canonical_url |replace:title_replace,'filternt_title%3djs_q_title'| sort_by:sort_by}}{% else %}{{nt_canonical_url | append:split_txt |append:'filternt_title%3djs_q_title' | sort_by:sort_by}}{% endif %}">
+              <button type="button" class="button filter_title_btn dn">{{ 'collections.filter_variant.button_title' | t }}</button>
+            </div>
+          </div>
+
+        {%- when 'available' %}{% if bk_stts.hidden_block or continue_filter or hide_unavailable_filter %}{% continue %}{% endif %}{% assign ck_style = true -%}
+          
+          <div id="blockid_{{block.id}}" class="col-12 col-md-{{col_class}} widget blockid_available count_vr_{{bk_stts.count}}">
+            <h5 class="widget-title">{{bk_stts.title}}</h5>
+            <div class="loke_scroll">
+              <div class="pr">
+                 <input type="checkbox"{% if has_fillter_stock %} checked="checked"{% endif %} id="nt_cat_available2" class="nt_cat_available css_agree_ck">
+                 <label for="nt_cat_available2" class="cd">{{ 'collections.filter_variant.hide_outofstock' | t }}<span class="count_vr_filter">({% if avai_count_pr < collection_prs_available.size %}{{avai_count_pr}}{% else %}{{collection_prs_available.size}}{% endif %})</span></label><svg class="dn scl_selected"><use xlink:href="#scl_selected"></use></svg>
+              </div>
+            </div>
+          </div>
+
+        {%- when 'price' %}{% if bk_stts.hidden_block or min_price > max_price or min_price == max_price or all_count_pr == 0 or continue_filter %}{% continue %}{% endif %}{% assign ck_style = true -%}
+        {%- assign min_value_price = min_fillter_price | default:min_price -%}
+        {%- assign max_value_price = max_fillter_price | default:max_price -%}
+        {%- if min_value_price < min_price -%}{%- assign min_value_price = min_price -%}{%- endif -%}
+        {%- if max_value_price > max_price -%}{%- assign max_value_price = max_price -%}{%- endif -%}
+          
+          <div id="blockid_{{block.id}}" class="col-12 col-md-{{col_class}} widget blockid_price">
+            <h5 class="widget-title">{{bk_stts.title}}</h5>
+            <div class="price_slider_wrapper mt__5">
+              <div class="price_slider"></div>
+              <div class="price_slider_amount" data-step="1">
+                <input type="hidden" class="url_price" name="url_price" value="{% if has_fillter_price %}{% assign price_replace = 'filternt_price%3d' | append:min_fillter_price | append:'+ntprice+' | append:max_fillter_price %}{{nt_canonical_url |replace:price_replace,'filternt_price%3dmin_price+ntprice+max_price'| sort_by:sort_by}}{% else %}{{nt_canonical_url | append:split_txt |append:'filternt_price%3dmin_price+ntprice+max_price' | sort_by:sort_by}}{% endif %}">
+                <input type="hidden" class="min_price" name="min_price" value="{{min_value_price}}" data-min="{{min_price}}" placeholder="Min price">
+                <input type="hidden" class="max_price" name="max_price" value="{{max_value_price}}" data-max="{{max_price}}" placeholder="Max price">
+                <div class="price_steps_slider"></div>
+                <button type="button" class="button price_slider_btn dn">{{ 'collections.filter_variant.button_price' | t }}</button>
+                <div class="price_label">
+                  {{ 'collections.filter_variant.title_price' | t }}: <span class="from">{{min_value_price | money }}</span> — <span class="to">{{max_value_price | money }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        {%- when 'vendor' %}{% if bk_stts.hidden_block or arr_vendors.size == 0 %}{% continue %}{% endif %}{% assign ck_style = true -%}
+
+            {%- assign arr_vendors2 = arr_vendors0 | join:';;;' |append:';;;' |prepend:';;;' | split: "" | reverse | join:"" -%}
+            {%- assign arr_vendors2 = arr_vendors2 | split: "" | reverse | join:"" | replace:';;;',';;|'| split: "|" -%}
+            {%- comment %}{%- assign arr_vendors2 = arr_vendors2 | join: "|;;" | split: "|" -%}{% endcomment -%}
+            {%- comment %}add tag nathant4fixtag to fix count error when tag is last item array{% endcomment -%}
+            {%- assign arr_vendors2 = arr_vendors2 | join: "|;;" | append:'nathant4fixtag' -%}
+            
+            <div id="blockid_{{block.id}}"  class="col-12 col-md-{{col_class}} widget blockid_vendor count_vr_{{bk_stts.count}}">
+              <h5 class="widget-title">{{bk_stts.title}}</h5>
+              <div class="loke_scroll">
+                 <ul class="nt_filter_block nt_filter_style{{bk_stts.style}} css_ntbar">
+      
+                    {%- if doing_fillter -%}
+                  
+                       {%- for block in arr_vendors -%}
+                         {%- assign encode_block = block | url_encode | downcase -%}
+                         {%- assign adt4_block = block | append:';;' | prepend:';;' -%}
+                         {%- assign key_block = 'filter_vendor%3d' | append:encode_block -%}
+                         {%- assign key_block2 = '+nt+filter_vendor%3d' | append:encode_block -%}
+                         {%- assign adt4_block_size = arr_vendors2 | split:adt4_block | size -%}
+                         
+                         {%- if nt_canonical_url contains key_block -%}
+                             <li class="active"><a href="{{nt_canonical_url | remove:key_block2 | remove:key_block | sort_by:sort_by}}">{{block}}<span class="count_vr_filter">({{adt4_block_size | minus:1}})</span></a></li>
+                         {%- else -%}
+                             <li><a href="{{nt_canonical_url | append:split_txt |append:'filter_vendor%3d' | append:encode_block | sort_by:sort_by}}">{{block}}<span class="count_vr_filter">({{adt4_block_size | minus:1}})</span></a></li>
+                         {%- endif -%}
+                       {%- endfor -%}
+                       
+                    {%- else -%}
+                  
+                       {%- for block in arr_vendors %}{% assign encode_block = block | url_encode | downcase %}{% assign adt4_block = block | append:';;' | prepend:';;' %}{% assign adt4_block_size = arr_vendors2 | split:adt4_block | size -%}
+                       <li><a href="{{nt_canonical_url | append:split_txt |append:'filter_vendor%3d' | append:encode_block | sort_by:sort_by}}">{{block}}<span class="count_vr_filter">({{adt4_block_size | minus:1}})</span></a></li>
+                       {%- endfor -%} 
+                  
+                    {%- endif -%}
+
+                 </ul>
+              </div>
+            </div>
+            
+          {%- when 'type' %}{% if bk_stts.hidden_block or arr_types.size == 0 %}{% continue %}{% endif %}{% assign ck_style = true -%}
+          {%- if arr_types.size == 1 and arr_types.first.size == 0 %}{% continue %}{% endif -%}
+
+            {%- assign arr_types2 = arr_types0 | join:';;;' |append:';;;' |prepend:';;;' | split: "" | reverse | join:"" -%}
+            {%- assign arr_types2 = arr_types2 | split: "" | reverse | join:"" | replace:';;;',';;|'| split: "|" -%}
+            {%- comment %}{%- assign arr_types2 = arr_types2 | join: "|;;" | split: "|" -%}{% endcomment -%}
+            {%- assign arr_types2 = arr_types2 | join: "|;;" | append:'nathant4fixtag' -%}
+
+            <div id="blockid_{{block.id}}"  class="col-12 col-md-{{col_class}} widget blockid_type count_vr_{{bk_stts.count}}">
+              <h5 class="widget-title">{{bk_stts.title}}</h5>
+              <div class="loke_scroll">
+                 <ul class="nt_filter_block nt_filter_style{{bk_stts.style}} css_ntbar">
+      
+                    {%- if doing_fillter -%}
+                  
+                       {%- for block in arr_types %}{% if block.size == 0 %}{% continue %}{% endif -%}
+                         {%- assign encode_block = block | url_encode | downcase -%}
+                         {%- assign adt4_block = block | append:';;' | prepend:';;' -%}
+                         {%- assign key_block = 'filter_type%3d' | append:encode_block -%}
+                         {%- assign key_block2 = '+nt+filter_type%3d' | append:encode_block -%}
+                         {%- assign adt4_block_size = arr_types2 | split:adt4_block | size -%}
+                         
+                         {%- if nt_canonical_url contains key_block -%}
+                             <li class="active"><a href="{{nt_canonical_url | remove:key_block2 | remove:key_block | sort_by:sort_by}}">{{block}}<span class="count_vr_filter">({{adt4_block_size | minus:1}})</span></a></li>
+                         {%- else -%}
+                             <li><a href="{{nt_canonical_url | append:split_txt |append:'filter_type%3d' | append:encode_block | sort_by:sort_by}}">{{block}}<span class="count_vr_filter">({{adt4_block_size | minus:1}})</span></a></li>
+                         {%- endif -%}
+                       {%- endfor -%}
+                       
+                    {%- else -%}
+                  
+                       {%- for block in arr_types %}{% if block.size == 0 %}{% continue %}{% endif %}{% assign encode_block = block | url_encode | downcase %}{% assign adt4_block = block | append:';;' | prepend:';;' %}{% assign adt4_block_size = arr_types2 | split:adt4_block | size -%}
+                       <li><a href="{{nt_canonical_url | append:split_txt |append:'filter_type%3d' | append:encode_block | sort_by:sort_by}}">{{block}}<span class="count_vr_filter">({{adt4_block_size | minus:1}})</span></a></li>
+                       {%- endfor -%} 
+                  
+                    {%- endif -%}
+
+                 </ul>
+              </div>
+            </div>
+            
+          {%- when 'color' -%}
+           {%- assign key = bk_stts.key | downcase -%}
+           {%- assign key2 = key | append:'%3d' | prepend:'%3d' -%}
+           {%- assign key_tag = 'filter_' | append:key | url_encode | append:'%3d' | downcase -%}
+           {%- comment -%}
+           {%- assign arr_block = products_list_vars | where:key | join:';;;' |remove:key | split:';;;' | uniq | sort_natural -%} {{arr_block | where:block | size}}
+           {%- endcomment -%}
+           {%- assign arr_block = products_list_vars | where:key2 | join:';;;' | downcase |remove:key2 | split:';;;' | sort_natural -%}
+           {%- assign arr_block_uniq = arr_block | uniq -%}
+           {%- if bk_stts.hidden_block or arr_block.size == 0 %}{% continue %}{% endif %}{% assign ck_style = true -%}
+
+            {%- assign arr_block2 = arr_block | join:';;;' |append:';;;' |prepend:';;;' | split: "" | reverse | join:"" -%}
+            {%- assign arr_block2 = arr_block2 | split: "" | reverse | join:"" | replace:';;;',';;|'| split: "|" -%}
+            {%- assign arr_block2 = arr_block2 | join: "|;;" | split: "|" -%}
+            {%- comment %}{%- assign arr_block2 = arr_block2 | join: "|;;" | split: "|" -%}{% endcomment -%}
+            {%- comment %}add tag nathant4fixtag to fix count error when tag is last item array{% endcomment -%}
+            {%- assign arr_block2 = arr_block2 | join: "|;;" | append:'nathant4fixtag' -%}
+
+          <div id="blockid_{{block.id}}"  class="col-12 col-md-{{col_class}} widget blockid_color count_vr_{{bk_stts.count}}">
+              <h5 class="widget-title">{{bk_stts.title}}</h5>
+              <div class="loke_scroll">
+                 <ul class="nt_filter_block nt_filter_color css_ntbar">
+      
+                    {%- if doing_fillter -%}
+                  
+                       {%- for block in arr_block_uniq -%}
+                         {%- assign encode_block = block | url_encode | downcase -%}
+                         {%- assign adt4_block = block | append:';;' | prepend:';;' -%}
+                         {%- assign key_block = key_tag | append:encode_block -%}
+                         {%- assign key_block2 = '+nt+' |append:key_tag | append:encode_block -%}
+                         {%- assign adt4_block_size = arr_block2 | split:adt4_block | size -%}
+                         
+                         {%- if nt_canonical_url contains key_block -%}
+                             <li class="active"><a href="{{nt_canonical_url | remove:key_block2 | remove:key_block | sort_by:sort_by}}"><div class="filter-swatch"><span class="bg_color_{{block | handle}} lazyload"></span></div> {{block}}<span class="count_vr_filter">({{adt4_block_size | minus:1}})</span></a></li>
+                         {%- else -%}
+                             <li><a href="{{nt_canonical_url | append:split_txt |append:key_tag | append:encode_block | sort_by:sort_by}}"><div class="filter-swatch"><span class="bg_color_{{block | handle}} lazyload"></span></div> {{block}}<span class="count_vr_filter">({{adt4_block_size | minus:1}})</span></a></li>
+                         {%- endif -%}
+
+                       {%- endfor -%}
+                       
+                    {%- else -%}
+                  
+                       {%- for block in arr_block_uniq %}{% assign encode_block = block | url_encode | downcase %}{% assign adt4_block = block | append:';;' | prepend:';;' %}{% assign adt4_block_size = arr_block2 | split:adt4_block | size -%}
+                       <li><a href="{{nt_canonical_url | append:split_txt |append:key_tag | append:encode_block | sort_by:sort_by}}"><div class="filter-swatch"><span class="bg_color_{{block | handle}} lazyload"></span></div> {{block}}<span class="count_vr_filter">({{adt4_block_size | minus:1}})</span></a></li>
+                       {%- endfor -%} 
+                  
+                    {%- endif -%}
+
+                 </ul>
+              </div>
+            </div>
+
+          {%- when 'tags' %}{% if bk_stts.hidden_block or arr_tags.size == 0 %}{% continue %}{% endif %}{% assign ck_style = true -%}
+          
+          {%- assign bk_count = bk_stts.count -%}
+          {%- if arr_tags2 == blank -%}
+            {%- assign arr_tags2 = arr_tags0 | join:';;;' |append:';;;' |prepend:';;;' | split: "" | reverse | join:"" -%}
+            {%- assign arr_tags2 = arr_tags2 | split: "" | reverse | join:"" | replace:';;;',';;|'| split: "|" -%}
+            {%- comment %}{%- assign arr_tags2 = arr_tags2 | join: "|;;" | split: "|" -%}{% endcomment -%}
+            {%- assign arr_tags2 = arr_tags2 | join: "|;;" | append:'nathant4fixtag' -%}
+          {%- endif -%}
+
+          <div id="blockid_{{block.id}}"  class="col-12 col-md-{{col_class}} widget blockid_tags count_vr_{{bk_count}}">
+              <h5 class="widget-title">{{bk_stts.title}}</h5>
+              <div class="loke_scroll">
+                 <ul class="nt_filter_block nt_filter_style{{bk_stts.style}} css_ntbar">
+      
+                    {%- if doing_fillter -%}
+                  
+                       {%- for block in arr_tags -%}
+                         {%- assign encode_block = block | url_encode | downcase -%}
+                         {%- assign adt4_block = block | append:';;' | prepend:';;' -%}
+                         {%- assign key_block = 'filter_tag%3d' | append:encode_block -%}
+                         {%- assign key_block2 = '+nt+filter_tag%3d' | append:encode_block -%}
+                         {%- if bk_count %}{% assign adt4_block_size = arr_tags2 | split:adt4_block | size %}{% else %}{% assign adt4_block_size = 1 %}{% endif -%}
+
+                         {%- if nt_canonical_url contains key_block -%}
+                             <li class="active"><a href="{{nt_canonical_url | remove:key_block2 | remove:key_block | sort_by:sort_by}}">{{block}}<span class="count_vr_filter">({{adt4_block_size | minus:1}})</span></a></li>
+                         {%- else -%}
+                             <li><a href="{{nt_canonical_url | append:split_txt |append:'filter_tag%3d' | append:encode_block | sort_by:sort_by}}">{{block}}<span class="count_vr_filter">({{adt4_block_size | minus:1}})</span></a></li>
+                         {%- endif -%}
+
+                       {%- endfor -%}
+                       
+                    {%- else -%}
+                  
+                       {%- for block in arr_tags %}{% assign encode_block = block | url_encode | downcase %}{% assign adt4_block = block | append:';;' | prepend:';;' %}{%- if bk_count %}{% assign adt4_block_size = arr_tags2 | split:adt4_block | size %}{% else %}{% assign adt4_block_size = 1 %}{% endif -%}
+                       <li><a href="{{nt_canonical_url | append:split_txt |append:'filter_tag%3d' | append:encode_block | sort_by:sort_by}}">{{block}}<span class="count_vr_filter">({{adt4_block_size | minus:1}})</span></a></li>
+                       {%- endfor -%} 
+                  
+                    {%- endif -%}
+
+                 </ul>
+              </div>
+            </div>
+
+          {%- when 'tag' %}{% assign stt_key = bk_stts.key -%}{% if bk_stts.hidden_block or arr_tags.size == 0 or stt_key == blank %}{% continue %}{% endif -%}
+          {%- assign bk_count = bk_stts.count -%}
+          {%- assign key = stt_key | append:'_' | downcase -%}
+          {%- assign key_2 = stt_key | append:'-' | downcase -%}
+          {%- assign key_3 = stt_key | append:' ' | downcase -%}
+          {%- assign group_tags = arr_tags | where:key -%}
+          {%- assign group_tags_2 = arr_tags | where:key_2 -%}
+          {%- assign group_tags_3 = arr_tags | where:key_3 -%}
+          {%- assign tag_block = group_tags | concat: group_tags_2 | concat: group_tags_3 | uniq -%}
+
+          {%- if tag_block.size == 0 %}{% continue %}{% endif %}{% assign ck_style = true -%}
+
+          {%- if arr_tags2 == blank -%}
+            {%- assign arr_tags2 = arr_tags0 | join:';;;' |append:';;;' |prepend:';;;' | split: "" | reverse | join:"" -%}
+            {%- assign arr_tags2 = arr_tags2 | split: "" | reverse | join:"" | replace:';;;',';;|'| split: "|" -%}
+            {%- comment %}{%- assign arr_tags2 = arr_tags2 | join: "|;;" | split: "|" -%}{% endcomment -%}
+            {%- assign arr_tags2 = arr_tags2 | join: "|;;" | append:'nathant4fixtag' -%}
+          {%- endif -%}
+
+          <div id="blockid_{{block.id}}"  class="col-12 col-md-{{col_class}} widget blockid_tag count_vr_{{bk_count}}">
+              <h5 class="widget-title">{{bk_stts.title}}</h5>
+              <div class="loke_scroll">
+                 <ul class="nt_filter_block nt_filter_style{{bk_stts.style}} css_ntbar">
+      
+                    {%- if doing_fillter -%}
+                  
+                       {%- for block in tag_block -%}
+                         {%- assign encode_block = block | url_encode | downcase -%}
+                         {%- assign adt4_block = block | append:';;' | prepend:';;' -%}
+                         {%- assign key_block = 'filter_tag%3d' | append:encode_block -%}
+                         {%- assign key_block2 = '+nt+filter_tag%3d' | append:encode_block -%}
+                         {%- if bk_count %}{% assign adt4_block_size = arr_tags2 | split:adt4_block | size %}{% else %}{% assign adt4_block_size = 1 %}{% endif -%}
+                         
+                         {%- if nt_canonical_url contains key_block -%}
+                             <li class="active"><a href="{{nt_canonical_url | remove:key_block2 | remove:key_block | sort_by:sort_by}}">{{block | remove:key_3 | remove:key_2 | remove:key | strip}}<span class="count_vr_filter">({{adt4_block_size | minus:1}})</span></a></li>
+                         {%- else -%}
+                             <li><a href="{{nt_canonical_url | append:split_txt |append:'filter_tag%3d' | append:encode_block | sort_by:sort_by}}">{{block | remove:key_3 | remove:key_2 | remove:key | strip}}<span class="count_vr_filter">({{adt4_block_size | minus:1}})</span></a></li>
+                         {%- endif -%}
+
+                       {%- endfor -%}
+                       
+                    {%- else -%}
+                  
+                       {%- for block in tag_block %}{% assign encode_block = block | url_encode | downcase %}{% assign adt4_block = block | append:';;' | prepend:';;' %}{%- if bk_count %}{% assign adt4_block_size = arr_tags2 | split:adt4_block | size %}{% else %}{% assign adt4_block_size = 1 %}{% endif -%}
+                       <li><a href="{{nt_canonical_url | append:split_txt |append:'filter_tag%3d' | append:encode_block | sort_by:sort_by}}">{{block | remove:key_3 | remove:key_2 | remove:key | strip}}<span class="count_vr_filter">({{adt4_block_size | minus:1}})</span></a></li>
+                       {%- endfor -%} 
+                  
+                    {%- endif -%}
+
+                 </ul>
+              </div>
+            </div>
+
+          {%- when 'tag2' %}{% if bk_stts.hidden_block or arr_tags.size == 0 and bk_stts.arra_enter == blank %}{% continue %}{% endif -%}
+           {%- assign tag_push = '' -%}
+           {%- assign bk_count = bk_stts.count -%}
+           {%- assign tag_stt_arr = bk_stts.arra_enter | replace: ' ,', ',' | replace: ', ', ',' | downcase | split: ',' | uniq -%} 
+           {%- for tag in tag_stt_arr -%}
+                {%- if arr_tags contains tag -%}
+                  {%- assign tag_push = tag_push |append:tag |append:',' -%}
+                {%- endif -%}
+           {%- endfor -%}
+           {%- assign tag_block = tag_push | split: ',' -%} 
+
+          {%- if tag_block.size == 0 %}{% continue %}{% endif %}{% assign ck_style = true -%}
+
+          {%- if arr_tags2 == blank -%}
+            {%- assign arr_tags2 = arr_tags0 | join:';;;' |append:';;;' |prepend:';;;' | split: "" | reverse | join:"" -%}
+            {%- assign arr_tags2 = arr_tags2 | split: "" | reverse | join:"" | replace:';;;',';;|'| split: "|" -%}
+            {%- comment %}{%- assign arr_tags2 = arr_tags2 | join: "|;;" | split: "|" -%}{% endcomment -%}
+            {%- assign arr_tags2 = arr_tags2 | join: "|;;" | append:'nathant4fixtag' -%}
+          {%- endif -%}
+          
+          <div id="blockid_{{block.id}}"  class="col-12 col-md-{{col_class}} widget blockid_tag2 count_vr_{{bk_count}}">
+              <h5 class="widget-title">{{bk_stts.title}}</h5>
+              <div class="loke_scroll">
+                 <ul class="nt_filter_block nt_filter_style{{bk_stts.style}} css_ntbar">
+      
+                    {%- if doing_fillter -%}
+                  
+                       {%- for block in tag_block -%}
+                         {%- assign encode_block = block | url_encode | downcase -%}
+                         {%- assign adt4_block = block | append:';;' | prepend:';;' -%}
+                         {%- assign key_block = 'filter_tag%3d' | append:encode_block -%}
+                         {%- assign key_block2 = '+nt+filter_tag%3d' | append:encode_block -%}
+                         {%- if bk_count %}{% assign adt4_block_size = arr_tags2 | split:adt4_block | size %}{% else %}{% assign adt4_block_size = 1 %}{% endif -%}
+                         
+                         {%- if nt_canonical_url contains key_block -%}
+                             <li class="active"><a href="{{nt_canonical_url | remove:key_block2 | remove:key_block | sort_by:sort_by}}">{{block}}<span class="count_vr_filter">({{adt4_block_size | minus:1}})</span></a></li>
+                         {%- else -%}
+                             <li><a href="{{nt_canonical_url | append:split_txt |append:'filter_tag%3d' | append:encode_block | sort_by:sort_by}}">{{block}}<span class="count_vr_filter">({{adt4_block_size | minus:1}})</span></a></li>
+                         {%- endif -%}
+
+                       {%- endfor -%}
+                       
+                    {%- else -%}
+                  
+                       {%- for block in tag_block %}{% assign encode_block = block | url_encode | downcase %}{% assign adt4_block = block | append:';;' | prepend:';;' %}{%- if bk_count %}{% assign adt4_block_size = arr_tags2 | split:adt4_block | size %}{% else %}{% assign adt4_block_size = 1 %}{% endif -%}
+                       <li><a href="{{nt_canonical_url | append:split_txt |append:'filter_tag%3d' | append:encode_block | sort_by:sort_by}}">{{block}}<span class="count_vr_filter">({{adt4_block_size | minus:1}})</span></a></li>
+                       {%- endfor -%} 
+                  
+                    {%- endif -%}
+
+                 </ul>
+              </div>
+            </div>
+            
+          {%- else -%}
+           {%- assign key = bk_stts.key | downcase -%}
+           {%- assign key2 = key | append:'%3d' | prepend:'%3d' -%}
+           {%- assign key_tag = 'filter_' | append:key | url_encode | append:'%3d' | downcase -%}
+           {%- comment -%}
+           {%- assign arr_block = products_list_vars | where:key | join:';;;' |remove:key | split:';;;' | uniq | sort_natural -%} {{arr_block | where:block | size}}
+           {%- endcomment -%}
+           {%- assign arr_block = products_list_vars | where:key2 | join:';;;' | downcase |remove:key2 | split:';;;' | sort_natural -%}
+           {%- assign arr_block_uniq = arr_block | uniq -%}
+           {%- if bk_stts.hidden_block or arr_block.size == 0 %}{% continue %}{% endif %}{% assign ck_style = true -%}
+
+            {%- assign arr_block2 = arr_block | join:';;;' |append:';;;' |prepend:';;;' | split: "" | reverse | join:"" -%}
+            {%- assign arr_block2 = arr_block2 | split: "" | reverse | join:"" | replace:';;;',';;|'| split: "|" -%}
+            {%- comment %}{%- assign arr_block2 = arr_block2 | join: "|;;" | split: "|" -%}{% endcomment -%}
+            {%- assign arr_block2 = arr_block2 | join: "|;;" | append:'nathant4fixtag' -%}
+
+          <div id="blockid_{{block.id}}"  class="col-12 col-md-{{col_class}} widget blockid_variants count_vr_{{bk_stts.count}}">
+              <h5 class="widget-title">{{bk_stts.title}}</h5>
+              <div class="loke_scroll">
+                 <ul class="nt_filter_block nt_filter_style{{bk_stts.style}} css_ntbar">
+      
+                    {%- if doing_fillter -%}
+                  
+                       {%- for block in arr_block_uniq -%}
+                         {%- assign encode_block = block | url_encode | downcase -%}
+                         {%- assign adt4_block = block | append:';;' | prepend:';;' -%}
+                         {%- assign key_block = key_tag | append:encode_block -%}
+                         {%- assign key_block2 = '+nt+' |append:key_tag | append:encode_block -%}
+                         {%- assign adt4_block_size = arr_block2 | split:adt4_block | size -%}
+                         
+                         {%- if nt_canonical_url contains key_block -%}
+                             <li class="active"><a href="{{nt_canonical_url | remove:key_block2 | remove:key_block | sort_by:sort_by}}">{{block}}<span class="count_vr_filter">({{adt4_block_size | minus:1}})</span></a></li>
+                         {%- else -%}
+                             <li><a href="{{nt_canonical_url | append:split_txt |append:key_tag | append:encode_block | sort_by:sort_by}}">{{block}}<span class="count_vr_filter">({{adt4_block_size | minus:1}})</span></a></li>
+                         {%- endif -%}
+                       {%- endfor -%}
+                       
+                    {%- else -%}
+                  
+                       {%- for block in arr_block_uniq %}{% assign encode_block = block | url_encode | downcase %}{% assign adt4_block = block | append:';;' | prepend:';;' %}{% assign adt4_block_size = arr_block2 | split:adt4_block | size -%}
+                       <li><a href="{{nt_canonical_url | append:split_txt |append:key_tag | append:encode_block | sort_by:sort_by}}">{{block}}<span class="count_vr_filter">({{adt4_block_size | minus:1}})</span></a></li>
+                       {%- endfor -%} 
+                  
+                    {%- endif -%}
+
+                 </ul>
+              </div>
+            </div>
+            
+     {%- endcase -%}
+  {%- endfor -%}
+  {%- if current_tags.size > 1 -%}<div class="col-12 tc mt__20"><a class="button clear_filter_js" href="{{collection.url}}">{{ 'collections.general.clear_filter' | t}}</a></div>{%- endif -%}
+  {%- if ck_style %}<style>.cat_filter {opacity: 1;pointer-events: auto}.type_toolbar_sidebar{display: block}</style>{% endif -%}
+  <!--split--> 
+  {%- assign arr_offsets_size = arr_offsets.size -%}
+  {%- if arr_offsets_size > 1 -%}
+      
+      
+      {%- unless nt_canonical_url contains '/?q=' -%}
+        {%- assign nt_canonical_url = nt_canonical_url | append:split_txt | replace:'+nt++nt+','+nt+'-%}
+        {%- assign append_offset = 'for_offest%3d' -%}
+      {%- else -%}
+        {%- assign nt_canonical_url = nt_canonical_url | replace:'+nt++nt+','+nt+' -%}
+        {%- assign append_offset = '+nt+for_offest%3d' -%}
+      {%- endunless -%}
+
+      <div class="hide dn" data-js-getpagination>
+        {%- if use_pagination != 'default' -%}
+
+          {%- liquid
+            assign key = '+nt+for_no_offest%3d' |append:get_fillter_offset
+            assign key2 = 'for_no_offest%3d' |append:get_fillter_offset
+            if get_fillter_offset < 1
+              assign index_prev = 0
+              assign index_next = 1
+            else
+              assign str_offset = get_fillter_offset |append:''
+              for item in arr_offsets
+                if item == str_offset
+                  assign index_0 = forloop.index0
+                  break
+                endif
+              endfor
+              assign index_next = index_0 | plus:1
+              assign index_prev = index_0 | minus:1
+            endif
+            if get_fillter_offset > 0
+              assign limitstt = limitstt | times:index_next
+            endif
+            assign url_offset = nt_canonical_url | remove:key | remove:key2 | append:append_offset -%}
+
+          {%- assign paginate_next_url = url_offset | append:arr_offsets[index_next] | sort_by:sort_by -%}
+          {%- assign paginate_prev_url = url_offset | append:arr_offsets[index_prev] | sort_by:sort_by -%}
+            
+            <div data-offset="{{get_fillter_offset}}" class="hide hidden" data-js-arr_offsets>{{ arr_offsets | join:';;;'}}</div>
+            {%- if index_prev > -1 and get_fillter_offset > 0 -%}
+               <div class="js_prev_url hide hidden">
+                  <div data-js-paginate class="products-footer tc mt__40 mb__30 is_prev_cat_js">
+                   <a data-offset="{{arr_offsets[index_prev]}}" data-get='{{ paginate_prev_url }}' href="{{ collection.url }}" data-id="collection_page" class="pr nt_cat_lm button">Load Previous</a>
+                  </div>
+               </div>
+            {%- endif -%}
+            {%- if index_next > 0 and index_next < arr_offsets_size -%}
+               {%- if use_bar_lm == 'true' -%}
+                   <div style="display:none;" class="js_progress_bar" data-tt='{{all_count_pr}}'>
+                      <p class="mg__0 progress_txt fs__15">{{ 'collections.general.bar_with_count_html' | t:current_count:limitstt,total_count:all_count_pr}}</p>
+                     <div class="progress_bar pr oh"><div class="current_bar pa t__0 r__0 l__0 b__0" style="width: {{limitstt | times:100.0 | divided_by: all_count_pr}}%"></div></div>
+                   </div>
+               {%- endif -%}
+               <a style="display:none;" data-offset="{{arr_offsets[index_next]}}" data-get='{{ paginate_next_url }}' href="{{ collection.url }}" data-id="collection_page" class="pr nt_cat_lm button{% if use_pagination == 'infinite' %} load-on-scroll{% endif %}">{{ 'products.grid_items.load_more' | t }}</a>
+            {%- endif -%}
+
+        {%- else -%}
+          
+          {%- assign str_offset = get_fillter_offset | append:'' -%}
+          {%- assign key_block = 'for_no_offest%3d' | append:get_fillter_offset -%}
+
+          <nav style="display:none;" class="nt-pagination w__100 tc paginate_ajax">
+            <div class="hide hidden" data-js-arr_offsets>{{ arr_offsets | join:';;;' }}</div>
+            <div class="hide hidden" data-js-url-pagination>
+
+              {%- if Link_click_panagation and arr_offsets contains str_offset -%}
+                {%- assign key = 'for_offest%3d' |append:'js_number' -%}
+                {{ nt_canonical_url | replace:key_block,key | sort_by:sort_by }}
+
+              {%- elsif nt_canonical_url contains 'for_no_offest' -%}{% assign get_fillter_offset = '0' -%}
+                {%- assign key = 'for_offest%3d' |append:'js_number' -%}
+                {{ nt_canonical_url | replace:key_block,key | sort_by:sort_by }}
+
+              {%- else -%}{% assign get_fillter_offset = '0' -%}
+                {{nt_canonical_url | append:append_offset| append:'js_number' | sort_by:sort_by}}
+                
+              {%- endif -%}
+            </div>
+            <div class="hide hidden" data-js-arr_offsetscurent>{{ get_fillter_offset }}</div>
+            <ul class="pagination-page page-numbers">
+              <li><a class="prev page-numbers" href="#">{{ 'collections.general.previous' | t }}</a></li>
+              <li data-pagination-links></li>
+              <li><a class="next page-numbers" href="#">{{ 'collections.general.next' | t }}</a></li>
+
+            </ul>
+          </nav>
+        {%- endif -%}
+      </div>
+
+  {%- else -%}<div class="hide dn" data-js-getpagination>no_page</div>
+  {%- endif -%}<!--split-->
+  <div class="hide dn" data-js-getnumber{{doing_fillter}}>{{ 'collections.general.results_with_count_html' | t:count:all_count_pr}}</div>
+
+{%- else -%}
+<div class="tc">{%- render 'no_blocks'-%}</div>   
+{%- endif -%}
+</div>
+</div>
+</div>
+</div>
+<style>.btn_sidebar {opacity: 1} .type_toolbar_sidebar{display: block}{%- if ck_hide_all and ck_style == false -%}.cat_sidebar {opacity: 0;pointer-events: none;}.type_toolbar_sidebar.dn{display: none}{%- endif -%}</style>
+{%- schema -%}
+  {
+    "name": "Sidebar Shop 2",
+    "class": "nt_ajaxFilter section_sidebar_shop type_instagram",
+    "max_blocks": 56,
+    "blocks": [
+      {
+        "type": "category",
+        "name": "Categories",
+        "limit": 1,
+        "settings": [
+         { 
+          "type":"text",
+          "id":"title",
+          "label":"Categories",
+          "default":"Product Categories"
+          },
+          {
+           "type": "select",
+           "id": "cat_source",
+           "label": "Show all \/ Show a link list",
+           "options": [
+             {
+               "value": "1",
+               "label": "Show all"
+             },
+             {
+               "value": "2",
+               "label": "Show a link list"
+             }
+           ]
+         },
+          {
+           "type": "link_list",
+           "id": "cat_link_list",
+           "label": "Choose a link list"
+         },
+          {
+            "type": "checkbox",
+            "id": "count",
+            "label": "Show count?",
+            "default": true
+          }
+        ]
+      },
+      {
+        "type": "collection",
+        "name": "Featured Products",
+        "settings": [
+         {
+          "type":"text",
+          "id":"title",
+          "label":"Title",
+          "default":"Sale Products"
+          },
+          {
+           "type": "collection",
+           "id": "collection",
+           "label": "Collection to use"
+         },
+          {
+            "type": "range",
+            "id": "limit",
+            "min": 1,
+            "max": 20,
+            "step": 1,
+            "label": "Number of products to show",
+            "default": 3
+          }
+        ]
+      },
+      {
+        "type": "post",
+        "name": "Recent Post",
+        "settings": [
+         {
+          "type":"text",
+          "id":"title",
+          "label":"Title",
+          "default":"Recent Post"
+          },
+          {
+           "type": "blog",
+           "id": "blog",
+           "label": "Blog to use"
+         },
+        {
+          "type": "select",
+          "id": "date",
+          "options": [
+            {
+              "value": "abbreviated_date",
+              "label": "Apr 19, 1994"
+            },
+            {
+              "value": "basic",
+              "label": "4/19/1994"
+            },
+            {
+              "value": "date",
+              "label": "April 19, 1994"
+            }
+          ],
+          "label": "Date format",
+          "info":"different format options display for various languages.",
+          "default": "date"
+        },
+          {
+            "type": "range",
+            "id": "limit",
+            "min": 1,
+            "max": 20,
+            "step": 1,
+            "label": "Number of products to show",
+            "default": 3
+          }
+        ]
+      },
+      {
+        "type": "instagram",
+        "name": "Instagram feed",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Instagram"
+          },
+          {
+            "type": "text",
+            "id": "acc2",
+            "label": "User's photos via GraphQL (New Instagram API):",
+            "info":"If none is set, General Instagram Access Token is used. [How to get your Instagram Access Token via GraphQL API.](https://kalles-docs.the4.co/installation/how-to-get-instagram-access-token)"
+          },
+          {
+            "type": "range",
+            "id": "limit",
+            "min": 1,
+            "max": 25,
+            "step": 1,
+            "unit": "img",
+            "label": "Number of photos",
+            "default": 9
+          },
+          {
+            "type": "select",
+            "id": "open_link",
+            "options": [
+              {
+                "value": "_self",
+                "label": "Current window (_self)"
+              },
+             {
+                "value": "_blank",
+                "label": "New window (_blank)"
+              }
+            ],
+            "label": "Open link in",
+            "default": "_blank"
+          },
+          {
+           "type": "select",
+           "id": "space",
+           "options": [
+             {
+               "value": "6",
+               "label": "6"
+             },
+             {
+               "value": "3",
+               "label": "3"
+             },
+             {
+               "value": "2",
+               "label": "2"
+             },
+             {
+               "value": "0",
+               "label": "0"
+             }
+           ],
+           "label": "spaces between photos",
+           "default": "2"
+          },
+          {
+            "type": "select",
+            "id": "rounded_ins",
+            "label": "Rounded corners for images",
+            "default": "0",
+            "options": [
+              {
+                "value": "0",
+                "label": "Disable"
+              },
+              {
+                "value": "1",
+                "label": "Style 1"
+              },
+              {
+                "value": "2",
+                "label": "Style 2"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "col_pr",
+            "label": "Photos per row",
+            "info": "How many photos you want to show per row",
+            "default": "4",
+            "options": [
+              {
+                "value": "6",
+                "label": "2"
+              },
+              {
+                "value": "4",
+                "label": "3"
+              },
+              {
+                "value": "3",
+                "label": "4"
+              },
+              {
+                "value": "15",
+                "label": "5"
+              },
+              {
+                "value": "2",
+                "label": "6"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "col_pr_tb",
+            "label": "Photos per row Tablet",
+            "default": "4",
+            "options": [
+              {
+                "value": "6",
+                "label": "2"
+              },
+              {
+                "value": "4",
+                "label": "3"
+              },
+              {
+                "value": "3",
+                "label": "4"
+              },
+              {
+                "value": "15",
+                "label": "5"
+              },
+              {
+                "value": "2",
+                "label": "6"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "col_pr_mb",
+            "label": "Photos per row Mobile",
+            "default": "4",
+            "options": [
+              {
+                "value": "12",
+                "label": "1"
+              },
+              {
+                "value": "6",
+                "label": "2"
+              },
+              {
+                "value": "4",
+                "label": "3"
+              },
+              {
+                "value": "3",
+                "label": "4"
+              },
+              {
+                "value": "15",
+                "label": "5"
+              },
+              {
+                "value": "2",
+                "label": "6"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "instagram2",
+        "name": "Instagram feed via APP",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "paragraph",
+            "content": "Firstly, you need to install [Section Feed App](https://apps.shopify.com/section-feed-by-maestrooo) to use this section"
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Instagram"
+          },
+          {
+            "type": "range",
+            "id": "limit",
+            "min": 1,
+            "max": 25,
+            "step": 1,
+            "unit": "img",
+            "label": "Number of photos",
+            "default": 9
+          },
+          {
+            "type": "select",
+            "id": "open_link",
+            "options": [
+              {
+                "value": "_self",
+                "label": "Current window (_self)"
+              },
+             {
+                "value": "_blank",
+                "label": "New window (_blank)"
+              }
+            ],
+            "label": "Open link in",
+            "default": "_blank"
+          },
+          {
+           "type": "select",
+           "id": "space",
+           "options": [
+             {
+               "value": "6",
+               "label": "6"
+             },
+             {
+               "value": "3",
+               "label": "3"
+             },
+             {
+               "value": "2",
+               "label": "2"
+             },
+             {
+               "value": "0",
+               "label": "0"
+             }
+           ],
+           "label": "spaces between photos",
+           "default": "2"
+          },
+          {
+            "type": "select",
+            "id": "rounded_ins",
+            "label": "Rounded corners for images",
+            "default": "0",
+            "options": [
+              {
+                "value": "0",
+                "label": "Disable"
+              },
+              {
+                "value": "1",
+                "label": "Style 1"
+              },
+              {
+                "value": "2",
+                "label": "Style 2"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "col_pr",
+            "label": "Photos per row",
+            "info": "How many photos you want to show per row",
+            "default": "4",
+            "options": [
+              {
+                "value": "6",
+                "label": "2"
+              },
+              {
+                "value": "4",
+                "label": "3"
+              },
+              {
+                "value": "3",
+                "label": "4"
+              },
+              {
+                "value": "15",
+                "label": "5"
+              },
+              {
+                "value": "2",
+                "label": "6"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "col_pr_tb",
+            "label": "Photos per row Tablet",
+            "default": "4",
+            "options": [
+              {
+                "value": "6",
+                "label": "2"
+              },
+              {
+                "value": "4",
+                "label": "3"
+              },
+              {
+                "value": "3",
+                "label": "4"
+              },
+              {
+                "value": "15",
+                "label": "5"
+              },
+              {
+                "value": "2",
+                "label": "6"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "col_pr_mb",
+            "label": "Photos per row Mobile",
+            "default": "4",
+            "options": [
+              {
+                "value": "12",
+                "label": "1"
+              },
+              {
+                "value": "6",
+                "label": "2"
+              },
+              {
+                "value": "4",
+                "label": "3"
+              },
+              {
+                "value": "3",
+                "label": "4"
+              },
+              {
+                "value": "15",
+                "label": "5"
+              },
+              {
+                "value": "2",
+                "label": "6"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "shipping",
+        "name": "SHIPPING DELIVERY",
+        "limit": 1,
+        "settings": [
+         {
+          "type":"text",
+          "id":"title",
+          "label":"Title",
+          "default":"Shipping & Delivery"
+         },
+        {
+          "type": "paragraph",
+          "content": "Example: pe-7s-car,Save up to 20%,limited time [Get icons Pe icon](http://themes-pixeden.com/font-demos/7-stroke/index.html)"
+        },
+        {
+          "type": "paragraph",
+          "content": "Example: phone,Save up to 20%,limited time [Get icons Line awesome](https://icons8.com/line-awesome)"
+        },
+         {
+           "type": "textarea",
+           "id": "shipping_1",
+           "label":"Shipping Block 1",
+           "default":"truck,FREE SHIPPING,Free shipping for all US order"
+         },
+         {
+           "type": "textarea",
+           "id": "shipping_2",
+           "label":"Shipping Block 2",
+           "default":"headset,SUPPORT 24/7,We support 24 hours a day"
+         },
+         {
+           "type": "textarea",
+           "id": "shipping_3",
+           "label":"Shipping Block 3",
+           "default":"exchange-alt,30 DAYS RETURN,You have 30 days to return"
+         },
+         {
+           "type": "textarea",
+           "id": "shipping_4",
+           "label":"Shipping Block 4"
+         },
+         {
+           "type": "textarea",
+           "id": "shipping_5",
+           "label":"Shipping Block 5"
+         },
+         {
+           "type": "textarea",
+           "id": "shipping_6",
+           "label":"Shipping Block 6"
+         }
+        ]
+      },
+      {
+        "type": "html",
+        "name": "Custom HTML",
+        "settings": [
+         {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Custom HTML"
+          },
+          {
+            "type": "page",
+            "id": "page",
+            "label": "Content page"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "name": "Text",
+        "settings": [
+            {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Talk about your brand"
+            },
+            {
+            "type": "richtext",
+            "id": "text",
+            "label": "Text",
+            "default": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>"
+            }
+         ]
+      },
+      {
+        "type": "title",
+        "name": "By Title",
+        "limit": 1,
+        "settings": [
+          {
+          "type": "checkbox",
+          "id": "hidden_block",
+          "label": "Hidden block?",
+          "info": "if checked block will be set to hidden.",
+          "default": false
+         },
+          { 
+          "type":"text",
+          "id":"title",
+          "label":"Filter title",
+          "default":"By Title"
+          }
+        ]
+      },
+      {
+        "type": "available",
+        "name": "Product status",
+        "limit": 1,
+        "settings": [
+          {
+          "type": "checkbox",
+          "id": "hidden_block",
+          "label": "Hidden block?",
+          "info": "if checked block will be set to hidden.",
+          "default": false
+         },
+         {
+          "type": "checkbox",
+          "id": "count",
+          "label": "Show count?",
+          "default": true
+          },
+          { 
+          "type":"text",
+          "id":"title",
+          "label":"Filter title",
+          "default":"Product status"
+          }
+        ]
+      },
+      {
+        "type": "price",
+        "name": "By Price",
+        "limit": 1,
+        "settings": [
+          {
+          "type": "checkbox",
+          "id": "hidden_block",
+          "label": "Hidden block?",
+          "info": "if checked block will be set to hidden.",
+          "default": false
+         },
+          { 
+          "type":"text",
+          "id":"title",
+          "label":"Filter title",
+          "default":"By Price"
+          }
+        ]
+      },
+      {
+        "type": "vendor",
+        "name": "By Vendor",
+        "limit": 1,
+        "settings": [
+          {
+          "type": "checkbox",
+          "id": "hidden_block",
+          "label": "Hidden block?",
+          "info": "if checked block will be set to hidden.",
+          "default": false
+        },
+         {
+          "type": "checkbox",
+          "id": "count",
+          "label": "Show count?",
+          "default": true
+          },
+          { 
+          "type":"text",
+          "id":"title",
+          "label":"Filter title",
+          "default":"By Vendor"
+          },
+          {
+           "type": "select",
+           "id": "style",
+           "default":"ck",
+           "label": "Design block filter:",
+           "options": [
+             {
+               "value": "df",
+               "label": "Deafult"
+             },
+             {
+               "value": "ck",
+               "label": "Checkbox"
+             },
+             {
+               "value": "tag",
+               "label": "Tag"
+             }
+           ]
+         }
+        ]
+      },
+      {
+        "type": "type",
+        "name": "By Type",
+        "limit": 1,
+        "settings": [
+          {
+          "type": "checkbox",
+          "id": "hidden_block",
+          "label": "Hidden block?",
+          "info": "if checked block will be set to hidden.",
+          "default": false
+        },
+         {
+          "type": "checkbox",
+          "id": "count",
+          "label": "Show count?",
+          "default": true
+          },
+          { 
+          "type":"text",
+          "id":"title",
+          "label":"Filter title",
+          "default":"By Type"
+          },
+          {
+           "type": "select",
+           "id": "style",
+           "default":"ck",
+           "label": "Design block filter:",
+           "options": [
+             {
+               "value": "df",
+               "label": "Deafult"
+             },
+             {
+               "value": "ck",
+               "label": "Checkbox"
+             },
+             {
+               "value": "tag",
+               "label": "Tag"
+             }
+           ]
+         }
+        ]
+      },
+      {
+        "type": "tags",
+        "name": "By All Tags",
+        "limit": 1,
+        "settings": [
+          {
+          "type": "checkbox",
+          "id": "hidden_block",
+          "label": "Hidden block?",
+          "info": "if checked block will be set to hidden.",
+          "default": false
+        },
+         {
+          "type": "checkbox",
+          "id": "count",
+          "label": "Show count?",
+          "default": true
+          },
+          { 
+          "type":"text",
+          "id":"title",
+          "label":"Filter title",
+          "default":"By Tags"
+          },
+          {
+           "type": "select",
+           "id": "style",
+           "default":"ck",
+           "label": "Design block filter:",
+           "options": [
+             {
+               "value": "df",
+               "label": "Deafult"
+             },
+             {
+               "value": "ck",
+               "label": "Checkbox"
+             },
+             {
+               "value": "tag",
+               "label": "Tag"
+             }
+           ]
+         }
+        ]
+      },
+      {
+        "type": "tag",
+        "name": "By Group Tag",
+        "settings": [
+          {
+          "type": "checkbox",
+          "id": "hidden_block",
+          "label": "Hidden block?",
+          "info": "if checked block will be set to hidden.",
+          "default": false
+          },
+         {
+          "type": "checkbox",
+          "id": "count",
+          "label": "Show count?",
+          "default": true
+          },
+          {
+            "type": "paragraph",
+            "content": "Tags must start with group- and look like group-TAG-NAME where TAG-NAME can be anything you choose, group is a key word."
+          },
+          { 
+          "type":"text",
+          "id":"title",
+          "label":"Filter title",
+          "default":"By Tag"
+          },
+         { 
+          "type":"text",
+          "id":"key",
+          "label":"Filter key word",
+          "placeholder": "key"
+          },
+          {
+           "type": "select",
+           "id": "style",
+           "default":"ck",
+           "label": "Design block filter:",
+           "options": [
+             {
+               "value": "df",
+               "label": "Deafult"
+             },
+             {
+               "value": "ck",
+               "label": "Checkbox"
+             },
+             {
+               "value": "tag",
+               "label": "Tag"
+             }
+           ]
+         }
+        ]
+      },
+      {
+        "type": "tag2",
+        "name": "By Tags List",
+        "settings": [
+          {
+          "type": "checkbox",
+          "id": "hidden_block",
+          "label": "Hidden block?",
+          "info": "if checked block will be set to hidden.",
+          "default": false
+          },
+         {
+          "type": "checkbox",
+          "id": "count",
+          "label": "Show count?",
+          "default": true
+          },
+          { 
+          "type":"text",
+          "id":"title",
+          "label":"Filter title",
+          "default":"By Tags List"
+          },
+          {
+           "type": "textarea",
+           "id": "arra_enter",
+           "label": "Shop by tags list",
+           "info": "Separate by a comma, i.e \"Tag1, Tag2, Tag3\"."
+         },
+          {
+           "type": "select",
+           "id": "style",
+           "default":"ck",
+           "label": "Design block filter:",
+           "options": [
+             {
+               "value": "df",
+               "label": "Deafult"
+             },
+             {
+               "value": "ck",
+               "label": "Checkbox"
+             },
+             {
+               "value": "tag",
+               "label": "Tag"
+             }
+           ]
+         }
+        ]
+      },
+      {
+        "type": "color",
+        "name": "By Color",
+        "limit": 4,
+        "settings": [
+          {
+          "type": "checkbox",
+          "id": "hidden_block",
+          "label": "Hidden block?",
+          "info": "if checked block will be set to hidden.",
+          "default": false
+        },
+         {
+          "type": "checkbox",
+          "id": "count",
+          "label": "Show count?",
+          "default": true
+          },
+          { 
+          "type":"text",
+          "id":"title",
+          "label":"Filter title",
+          "default":"By Color"
+          },
+         { 
+          "type":"text",
+          "id":"key",
+          "label":"Filter variant name color",
+          "placeholder": "Color",
+          "default":"Color"
+          }
+        ]
+      },
+      {
+        "type": "variants",
+        "name": "By Variant",
+        "settings": [
+          {
+          "type": "checkbox",
+          "id": "hidden_block",
+          "label": "Hidden block?",
+          "info": "if checked block will be set to hidden.",
+          "default": false
+         },
+         {
+          "type": "checkbox",
+          "id": "count",
+          "label": "Show count?",
+          "default": true
+          },
+          { 
+          "type":"text",
+          "id":"title",
+          "label":"Filter title",
+          "default":"By Size"
+          },
+         { 
+          "type":"text",
+          "id":"key",
+          "label":"Filter variant name",
+          "placeholder": "variant name",
+          "default":"Size"
+          },
+          {
+           "type": "select",
+           "id": "style",
+           "default":"ck",
+           "label": "Design block filter:",
+           "options": [
+             {
+               "value": "df",
+               "label": "Deafult"
+             },
+             {
+               "value": "ck",
+               "label": "Checkbox"
+             },
+             {
+               "value": "tag",
+               "label": "Tag"
+             }
+           ]
+         }
+        ]
+      }
+    ],
+    "default": {
+      "blocks": [
+        {
+          "type": "title"
+        },
+        {
+          "type": "price"
+        },
+        {
+          "type": "variants"
+        },
+        {
+          "type": "color"
+        },
+        {
+          "type": "vendor" 
+        },
+        {
+          "type": "available"
+        }
+      ]
+    }
+  }
+{% endschema %}

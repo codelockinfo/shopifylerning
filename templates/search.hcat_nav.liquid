@@ -1,0 +1,7 @@
+{%- liquid
+  layout none
+  capture html
+	section 'hcat_nav'
+  endcapture
+  assign arr = html | split:'[nt_cl]' 
+  echo arr[1] -%}

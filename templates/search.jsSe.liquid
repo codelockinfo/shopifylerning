@@ -1,0 +1,24 @@
+{%- liquid
+	layout none
+	assign limit = 6
+	assign results_count = search.results_count
+	assign only_search_prs = settings.only_search_prs
+	assign arr_terms = search.terms |split:'product_type:'
+    assign search_terms = arr_terms[0] | strip 
+    assign product_type = arr_terms[1] | strip
+   assign on_sale_txt = 'products.product.on_sale' | t
+   assign save_js = 'products.product.save_js' | t: saved_amount:'saved_amount'
+   assign limit_modulo = results_count | modulo:2 -%}
+ 
+{%- if results_count > 0 %}{% if results_count > 1 %}.h_results{% else %}.h_result{% endif %}||
+{%- paginate search.results by limit -%}
+    <div class="row no-gutters product_list_widget{% if limit_modulo != 0 and results_count < 6 %} sug_last_col{% endif %}">
+       {%- for item in search.results %}
+       <div class="col-12 col-md-6 col_last_{{forloop.last}}">{%- render 'pr_group_loop',product:item,on_sale_txt:on_sale_txt,save_js:save_js -%}</div>
+       {%- endfor -%}
+       {%- if paginate.pages > 1 -%}<div class="col-12 tc tu col_a_link"><a href="{{ paginate.next.url | replace: '&page=2', '' | replace: '&view=jsSe', '' | replace: '&view=jsse', '' }}" class="btn fwsb detail_link db">{{ 'general.search.view_all' | t }}({{results_count}}) <i class="las la-arrow-right fs__18"></i></a></div>{%- endif -%}
+    </div>
+{%- endpaginate -%}
+{%- else -%}
+.h_result||<span class="db pt__20 pl__20 pb__20 pr__20">{{ 'general.search.no_prs_results' | t }}</span>
+{%- endif -%}

@@ -1,0 +1,375 @@
+{%- liquid 
+  assign section_blocks = section.blocks
+  assign se_stts = section.settings
+  assign ccount = cart.item_count
+  assign c_tt_price = cart.total_price 
+  assign ship_pr = all_products[settings.free_ship_pr]
+  assign money_ship = ship_pr.price | money
+  assign gift_pr = all_products[settings.gift_wrap_pr]
+  assign money_gift = gift_pr.price | money
+  assign btn_blocks = section_blocks | where: "type", 'btn'
+  assign cart_change_url = routes.cart_change_url
+  assign img_size = '120x'
+  assign ajax_enable = se_stts.ajax_enable
+  assign compare_tt_price = 0
+  assign ck_lumise = 'ck_lumise'
+  assign ck_col = false
+  assign arr_gift_id = cart.items | where: 'product_id',gift_pr.id
+  if cart.note != blank
+    assign noteclass = 'dn,' | split:','
+  else
+    assign noteclass = ',dn' | split:','
+  endif
+  assign unadmin_sp = true
+  if request.design_mode
+    assign unadmin_sp = false
+  endif
+  assign ck_agree = false 
+  assign arrblock = section_blocks | where: "type", 'agree'
+  if arrblock.size > 0
+    assign arr_agree = '<div data-agree-ckt4>|</div>' | split:'|'
+    assign cl_agree = ' pe_none'
+    assign ck_agree = true
+  endif -%}
+  
+<div class="empty_cart_page tc{% if ccount > 0 %} dn{% endif %}">
+	<i class="las la-shopping-bag pr mb__30 fs__90"></i>
+	<h4 class="cart_page_heading mg__0 mb__20 tu fs__30">{{ 'cart.cart_page.empty' | t }}</h4>
+	<div class="cart_page_txt">{{ 'cart.cart_page.empty_html' | t }}</div>
+	{%- if btn_blocks.size > 0 -%}
+	   <div class="mt__30"></div>
+	   {%- for block in btn_blocks -%}<p class="mb__15"><a class="button button_{{block.settings.style}} js_add_ld" href="{{block.settings.url | default:routes.all_products_collection_url}}">{{ block.settings.title }}</a></p>{%- endfor -%}
+	 {%- endif -%}
+      {%- if se_stts.calc_ship and ship_pr != blank -%}
+      <div class="cart_threshold">
+         <div class="cart_thres_1">{{ 'cart.shipping_threshold.text_1_html' | t: money:money_ship }}</div>
+      </div>
+      {%- endif -%}
+</div>
+<div class="cookie-message dn tc">{{ 'cart.general.cookies_required' | t }}</div>
+{%- if settings.use_cart_cd -%}
+<div class="tc"><div class="cart_countdown js_cart_cd{% if ccount == 0 %} dn{% endif %}">{{ 'cart.general.countdown_text' | t }} <span class="cart_time cr fwm" data-cart-countdown data-after-cartcd-1 data-mn='{{settings.cart_time}}' data-unit='{{settings.cart_unit}}'></span></div></div>
+<style>.cart_countdown{display: inline-block;margin-bottom: 30px;background-color: #fcb800;font-size: 15px;font-weight: 500;border-radius: 4px;}.cart_countdown.dn{display: none !important;}</style>
+{%- endif -%}
+<form action="{{ routes.cart_url }}" method="post" novalidate class="frm_cart_ajax_{{se_stts.ajax_enable}} frm_cart_page nt_js_cart pr oh {% if ccount == 0 %} dn{% endif %}">
+  <input type="hidden" data-cart-attr-rm name="attributes[cat_mb_items_per_row]" value=""><input type="hidden" data-cart-attr-rm name="attributes[cat_tb_items_per_row]" value=""><input type="hidden" data-cart-attr-rm name="attributes[cat_dk_items_per_row]" value="">
+  <input type="hidden" data-cart-attr-rm name="attributes[auto_hide_ofsock]" value=""><input type="hidden" data-cart-attr-rm name="attributes[paginate_ntt4]" value=""><input type="hidden" data-cart-attr-rm name="attributes[limit_ntt4]" value=""><input type="hidden" data-cart-attr-rm name="attributes[use_bar_lmntt4]" value="">
+  <div class="cart_header">
+		<div class="row al_center">
+			<div class="col-5">{{ 'cart.label.product' | t }}</div>
+			<div class="col-3 tc">{{ 'cart.label.price' | t }}</div>
+			<div class="col-2 tc">{{ 'cart.label.quantity' | t }}</div>
+			<div class="col-2 tc tr_md">{{ 'cart.label.total' | t }}</div>
+		</div>
+	</div>
+	<div class="cart_items js_cat_items">{% render 'cart_items_page' %}</div>
+	<div class="cart__footer mt__60 mb__80">
+     <div class="row">
+       {%- if se_stts.show_note or se_stts.show_discount or se_stts.show_gift_wrap and gift_pr != blank -%}{%- assign ck_col = true -%}
+         <div class="col-12 col-md-6 cart_actions tl_md tc order-md-2 order-2 mb__50">
+           {%- if se_stts.show_gift_wrap and gift_pr != blank -%}
+					<div class="gift_wrap row al_center tc tl_md mb__25 js_gift_wrap{% if arr_gift_id.size > 0 %} dn{% endif %}">
+					   <div class="gift_wrap_info col-lg-7 col-12">
+					      <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="cd dib pr"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
+					      <span class="gift-wrap__text mt__10 mb__10 dib">{{ 'cart.general.gift_wrap_html' | t: money:money_gift }}</span>
+					   </div>
+					   <div class="gift_wrap_action col-lg col-12 tr_lg tl_md">
+					   	<a href="{{gift_pr.url}}" data-id="{{gift_pr.variants.first.id}}" class="button truncate js_addtc">{{ 'cart.general.add_gift_wrap' | t }}</a>
+					   </div>
+					</div>
+           {%- endif -%}
+           {%- if se_stts.show_note -%}
+	           <label for="CartSpecialInstructions" class="cart-note__label dib cd mb__10"><span class="txt_add_note {{noteclass[0]}}">{{ 'cart.general.note' | t }}</span><span class="txt_edit_note {{noteclass[1]}}">{{ 'cart.general.edit_note' | t }}</span></label>
+	           <textarea name="note" id="CartSpecialInstructions" class="cart-note__input" placeholder="{{ 'cart.general.placeholder_note' | t }}">{{ cart.note }}</textarea>
+           {%- endif -%}
+           {%- if se_stts.show_discount -%}
+	           <label for="couponcode" class="cart-couponcode__label db cd mt__20 mb__10">{{ 'cart.general.coupon' | t }}</label>
+             <p>{{ 'cart.general.info_coupon' | t }}</p>
+	           <input type="text" name="discount" id="couponcode" value placeholder="{{ 'cart.general.placeholder_coupon' | t }}">
+           {%- endif -%}
+         </div>
+       {%- endif -%}
+       <div class="col-12 tr_md tc order-md-4 order-4{% if ck_col %} col-md-6{% endif %}">
+            {%- if se_stts.calc_ship and ship_pr != blank -%}
+          <div class="fs__14 cd cart_thres_js">
+            {%- if c_tt_price < ship_pr.price -%}{%- assign add_money = ship_pr.price|minus:c_tt_price | money -%}
+             <div class="cart_thres_2">{{ 'cart.shipping_threshold.text_2_html' | t: money:add_money }}</div>
+             <div class="cart_thres_3 dn">{{ 'cart.shipping_threshold.text_3' | t | replace:'[','<span class="cr fwsb">' | replace:']','</span>' }}</div>
+               {%- if settings.show_shipbar -%}
+               {%- assign get_ship = ship_pr.price | minus: c_tt_price | times: 100.0 | divided_by: ship_pr.price -%}
+               {%- assign num_percent = 100 | minus: get_ship -%}
+               <div class="cart_bar_w bgt4_svg{{settings.des_shipbar}} pr"><span class="pr db h__100 {% if num_percent < 10%}less_10{% else %}more_10{% endif %}" style="width: {{num_percent}}%"></span></div>{% endif -%}
+             {%- else -%}
+             <div class="cart_thres_2 dn">{{ 'cart.shipping_threshold.text_2_html' | t: money:'[money]' }}</div>
+             <div class="cart_thres_3">{{ 'cart.shipping_threshold.text_3' | t | replace:'[','<span class="cr fwsb">' | replace:']','</span>' }}</div>
+               {%- if settings.show_shipbar %}<div class="cart_bar_w bgt4_svg{{settings.des_shipbar}} dn pr" style="display: none;"><span class="pr db h__100"></span></div>{% endif -%}
+             {%- endif -%}
+          </div>
+            {%- endif -%}
+            {%- if section_blocks.size > 0 -%}
+               {%- for block in section_blocks -%}
+               {%- case block.type -%}
+                  {%- when 'price' -%}
+                     <div class="total row in_flex fl_between al_center cd fs__18 tu">
+                        <div class="col-auto"><strong>{{ 'cart.general.subtotal' | t }}</strong></div>
+                        <div class="col-auto tr js_cat_ttprice fs__20 fwm">
+                           {%- if cart.total_discount > 0 -%}
+                           <div class="cart_ori_price">{{ cart.original_total_price | money }}</div>
+                           <div class="cart_dis_price">-{{ cart.total_discount | money }}</div>
+                           {%- elsif compare_tt_price > cart.total_price and none-%}
+                           <div class="cart_ori_price">{{ compare_tt_price | money }}</div>
+                           <div class="cart_dis_price">-{{ compare_tt_price|minus:cart.total_price | money }}</div>
+                           {%- endif -%}
+                           <div class="cart_tot_price">{{ cart.total_price | money }}</div>
+                        </div>
+                     </div>
+                     <div class="clearfix"></div>
+                  {%- when 'tax' -%}
+                     {%- capture taxes_shipping_checkout -%}{%- assign page_url = pages[settings.link_ship].url -%}
+                        {%- if se_stts.show_discount -%}
+                            {%- if cart.taxes_included and page_url != blank -%}
+                              {{ 'cart.general.taxes_included_discounts_and_shipping_policy_html' | t: link: page_url }}
+                            {%- elsif cart.taxes_included -%}
+                              {{ 'cart.general.taxes_included_discounts_but_shipping_at_checkout' | t }}
+                            {%- elsif page_url != blank -%}
+                              {{ 'cart.general.taxes_discounts_and_shipping_policy_at_checkout_html' | t: link: page_url }}
+                            {%- else -%}
+                              {{ 'cart.general.taxes_discounts_and_shipping_at_checkout' | t }}
+                            {%- endif -%}
+                        {%- else -%}
+                            {%- if cart.taxes_included and page_url != blank -%}
+                              {{ 'cart.general.taxes_included_and_shipping_policy_html' | t: link: page_url }}
+                            {%- elsif cart.taxes_included -%}
+                              {{ 'cart.general.taxes_included_but_shipping_at_checkout' | t }}
+                            {%- elsif page_url != blank -%}
+                              {{ 'cart.general.taxes_and_shipping_policy_at_checkout_html' | t: link: page_url }}
+                            {%- else -%}
+                              {{ 'cart.general.taxes_and_shipping_at_checkout' | t }}
+                            {%- endif -%}
+                        {%- endif -%}
+                     {%- endcapture -%}
+                     <p class="db txt_tax_ship mb__5">{{ taxes_shipping_checkout }}</p>
+                  {%- when 'agree' -%}
+                     {%- capture terms_and_conditions -%}{%- assign page_url = pages[settings.link_conditions].url -%}
+                      {%- if page_url != blank -%}
+                        {{ 'cart.general.terms_and_conditions_html' | t: link: page_url }}
+                      {%- else -%}
+                        {{ 'cart.general.terms_and_conditions' | t }}
+                      {%- endif -%}
+                     {%- endcapture -%} 
+                     <p class="pr dib mb__5"><input type="checkbox" id="cart_agree" class="js_agree_ck mr__5" name="{{ck_lumise}}"><label for="cart_agree">{{terms_and_conditions}}</label><svg class="dn scl_selected"><use xlink:href="#scl_selected"/></svg></p>
+                     <div class="clearfix"></div>
+                  {%- when 'btnck' -%}
+                     {%- if settings.currency_type == '2' and settings.notify_currency and settings.mess_currency != blank %}{% assign cart_iso_code = cart.currency.iso_code %}{% assign text1 = '{{ currency }}' -%}
+                     <p class="db mb__5" data-currency-jsnotify>{{ settings.mess_currency | replace:text1,cart_iso_code | replace:'[currency]',cart_iso_code | replace:'[original_currency]',cart_iso_code | replace:'[current_currency]','<span class="selected-currency"></span>' }}</p>
+                     {%- endif -%}
+                     <button type="submit" name="update" class="button btn_update mt__10 mb__10 js_add_ld w__100">{{ 'cart.general.update' | t }}</button>
+                     <button type="submit" data-confirm="{{ck_lumise}}" name="checkout" class="btn_checkout button button_primary tu mt__10 mb__10 js_add_ld w__100">{{ 'cart.general.checkout' | t }}</button>
+                     <div class="clearfix"></div>
+                  {%- when 'btn2' -%}
+                    <p class="mg__0 mt__20"><a class="button button_{{block.settings.style}} js_add_ld btn_btn2t4 tc dib" href="{{block.settings.url | default:routes.all_products_collection_url}}">{{ block.settings.title }}</a></p>
+                  {%- when 'btnmr' -%}
+                     {%- if additional_checkout_buttons and unadmin_sp and settings.enable_sub_reCharge == false  -%}{{arr_agree[0]}}<div data-add-ckt4 class="additional_checkout_buttons additional-checkout-buttons--vertical mt__10 mb__10{{cl_agree}}">{{ content_for_additional_checkout_buttons }}</div>{{arr_agree[1]}}{%- endif -%}
+                  {%- when 'img' -%}{% if block.settings.image == blank %}{% continue -%}{% endif -%}{%- assign image = block.settings.image -%}
+                     {%- assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+                     <div class="cat_img_trust mt__10"><img style="width: {{block.settings.wimg}}%" class="lz_op_ef lazyload" src="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20{{image.width}}%20{{image.height}}%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3C%2Fsvg%3E" data-src="{{ img_url }}" data-widths="[90, 120, 150, 180, 360, 480, 600, 750, 940, 1080, 1296]" data-sizes="auto" alt="{{ image.alt | escape }}"></div>
+                  {%- when 'html' -%}{{block.settings.html}}
+                  {%- else -%}{% continue -%}
+               {%- endcase -%}
+               {%- endfor -%}
+            {%- endif -%}
+      </div>
+     </div>
+   </div>
+</form>
+{%- if se_stts.show_rates -%}
+   <div class="shipping_calculator shipping_calc_page loading row al_center fl_center{% if ccount == 0 %} dn{% endif %}">
+   	 <h3 class="mg__0 tc mt__20 mb__20 col-auto truncate">{{ 'cart.general.estimate_ship' | t }}</h3>
+       <p class="field col-lg-3 col-md-4 col-12">
+         <label for="address_country_ship">{{ 'customer.addresses.country' | t }}</label>
+         <select id="address_country_ship" data-include="{{ routes.cart_url }}/?view=ship" data-default="{% if shop.customer_accounts_enabled and customer %}{{ customer.default_address.country }}{% elsif settings.ship_calc_df_country != '' %}{{ settings.ship_calc_df_country }}{% endif %}"></select>
+       </p>
+       <p class="field col-lg-3 col-md-4 col-12" id="address_province_container_ship" style="display:none">
+         <label for="address_province_ship" id="address_province_label">{{ 'customer.addresses.province' | t }}</label>
+         <select id="address_province_ship" data-default="{% if shop.customer_accounts_enabled and customer and customer.default_address.province != '' %}{{ customer.default_address.province }}{% endif %}"></select>
+       </p>  
+       <p class="field col-lg-3 col-md-4 col-12">
+         <label for="address_zip_ship">{{ 'customer.addresses.zip' | t }}</label>
+         <input type="text" id="address_zip_ship"{% if shop.customer_accounts_enabled and customer %} value="{{ customer.default_address.zip }}"{% endif %} />
+       </p>
+       <p class="field col-lg-3 col-md-6 col-12 mg__0">
+         <input type="button" class="get_rates button" value="{{ 'cart.general.calculate_ship' | t }}" />
+       </p>
+       <div class="nt_svg_loader pa dn"></div>
+       <div id="response_calcship" class="col-12 tc mt__30"></div>
+   </div>
+{%- endif -%}
+
+{%- schema -%}
+  {
+    "name": "Cart page",
+    "class": "cart_page_section container mt__60",
+    "settings": [
+      {      
+        "type": "paragraph", 
+        "content": "Those settings are only applicable when the cart contains at least one product."
+      },
+      {
+        "type": "checkbox",
+        "id": "ajax_enable",
+        "label": "Enable automatic cart updates?",
+        "info": "Updates the cart as soon as customer changes are made",
+        "default": true
+      },      
+      {
+        "type": "checkbox",
+        "id": "calc_ship",
+        "label": "Enable Calc Shipping?",
+        "info":"Enable free shipping minimum amount?",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_note",
+        "label": "Enable order notes?",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_rates",
+        "label": "Enable shipping rates calculator?",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_discount",
+        "label": "Enable input box discounts codes?",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_gift_wrap",
+        "label": "Enable Gift wrap?",
+        "default": true
+      }
+    ],
+    "blocks": [
+      {
+        "type": "price",
+        "name": "Total Price",
+        "limit": 1
+      },
+      {
+        "type": "tax",
+        "name": "Taxes and shipping info",
+        "limit": 1
+      },
+      {
+        "type": "agree",
+        "name": "Terms,conditions checkbox",
+        "limit": 1
+      },
+      {
+        "type": "btnck",
+        "name": "Button Checkout",
+        "limit": 1
+      },
+      {
+        "type": "btnmr",
+        "name": "More checkout buttons",
+        "limit": 1
+      },
+      {
+        "type": "img",
+        "name": "Image trust",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          },
+          {
+            "type": "range",
+            "id": "wimg",
+            "min": 40,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "label": "Width image",
+            "default": 50
+          }
+        ]
+      },
+      {
+        "type": "btn2",
+        "name": "Button",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Button Title",
+            "default": "Continue Shopping"
+          },
+          {
+            "type": "url","id": "url","label": "Button link"
+          },
+          {
+            "type": "select",
+            "id": "style",
+            "options": [
+              {"value": "primary tu","label": "Button Primary"},
+              {"value": "secondary","label": "Button Secondary"}
+            ],
+            "label": "Button Style: "
+          }
+        ]
+      },
+      {
+        "type": "btn",
+        "name": "Button emty",
+        "settings": [
+          {
+            "type": "paragraph",
+            "content": "Tip: Only show when cart empty."
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Button Title",
+            "default": "Return To Shop"
+          },
+          {
+            "type": "url","id": "url","label": "Button link"
+          },
+          {
+            "type": "select",
+            "id": "style",
+            "options": [
+              {"value": "primary tu","label": "Button Primary"},
+              {"value": "secondary","label": "Button Secondary"}
+            ],
+            "label": "Button Style: "
+          }
+        ]
+      },
+      {
+        "type": "html",
+        "name": "Custom HTML",
+        "settings": [
+          {
+            "type": "html",
+            "id": "html",
+            "label": "HTML",
+            "default": "<div>Custom html here</div>"
+          }
+        ]
+      }
+   ],
+    "default": {
+      "blocks": [
+        {"type": "price"},{"type": "tax"},{"type": "agree"},{"type": "btnck"},{"type": "btnmr"},{"type": "img"},{"type": "btn"}
+      ]
+    }
+  }
+{% endschema %}

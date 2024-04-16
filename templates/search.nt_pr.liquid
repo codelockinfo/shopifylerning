@@ -1,0 +1,58 @@
+{%- layout none -%}{%- assign product = search.results.first -%}{%- assign pr_id = product.id -%}
+{%- comment -%}/search?view=nt_pr&ttype=product&q=id:prid%20OR%20the4nt1 , the4img1 - the4img2 - the4btn1 - the4btn2 - the4btn3{%- endcomment -%}
+{%- assign key = search.terms | remove:"ntt4ck" | split:" OR "-%}
+{%- if search.terms contains 'nthandle_' -%}{%- assign handle = key.last | remove:"nthandle_" -%}{%- assign collection = collections[handle] | default:product.collections.last -%}{%- endif -%}
+{%- assign pr_url = product.url | within: collection -%}
+{%- case key[1] -%}
+	{%- when 'the4colorp' -%}{%- assign key_nt = key[2] -%}{%- include 'gecko_check_variant' -%}{%- comment -%} /search?view=nt_pr&type=product&q=id:{{product.id}}%20OR%20the4colorp%20OR%20{{call_cl}} {%- endcomment -%}
+	{%- when 'the4jsonrp' -%}{%- assign key_nt = key[2] -%}{%- include 'product_js' -%}{%- comment -%} /search?view=nt_pr&type=product&q=id:{{product.id}}%20OR%20the4jsonrp%20OR%20{{call_cl}} {%- endcomment -%}
+	{%- when 'the4img1' -%}
+		{%- assign stt_new_label = settings.use_new_label -%}{%- if stt_new_label -%}{%- assign nowTimestamp = 'now' | date: '%s' -%}{%- assign new_day_int = settings.new_day | default: 10 -%}{%- endif -%}
+		{%- assign stt_sale_label = settings.use_sale_label -%}
+		{%- assign stt_hot_label = settings.use_hot_label -%}
+		{%- assign stt_soldout_label = settings.use_sold_out_label -%}
+		{%- assign images_size = product.images.size -%}
+	    {%- case key[2] -%}
+		   {%- when "true" -%}
+		      {%- if settings.show_pr_img == "3" -%}{%- assign include_img = 'pr_img_3_equal' -%}{%- elsif settings.show_pr_img == "2" -%}{%- assign include_img = 'pr_img_2_equal' -%}{%- else -%}{%- assign include_img = 'pr_img_equal' -%}{%- endif -%}
+		   {%- else -%}
+		      {%- if settings.show_pr_img == "3" -%}{%- assign include_img = 'pr_img_3' -%}{%- elsif settings.show_pr_img == "2" -%}{%- assign include_img = 'pr_img_2' -%}{%- else -%}{%- assign include_img = 'pr_img' -%}{%- endif -%}
+		{%- endcase -%}
+	    {%- include include_img -%}
+	{%- when 'the4btn1' -%}{%- assign tooltip = "tooltip_right" -%}
+	    	{%- include 'nt_add_w' -%}<div class="hover_button op__0 tc pa flex column ts__03">{%- assign tooltip = "tooltip_top" -%}{%- include 'nt_add_qvcp' -%}{%- include 'nt_add_btn' -%}</div>
+	{%- when 'the4color' -%}
+	   {%- assign pr_option = key[3] | plus:0 -%}{%- assign colour_count = key[4] | plus:0 -%}{%- assign tooltip = "tooltip_top" -%}
+	   {%- if key[5] == "right" -%}{%- assign tooltip = 'tooltip_top_right' -%}{%- endif -%}
+      {%- case key[2] -%}
+	      {%- when "true" -%}
+	         {%- if settings.pr_swatch_setting == '2' -%}{%- assign include_swatch = 'swatches_on_grid_img_eq' -%}{%- else -%}{%- assign include_swatch = 'swatches_on_grid_eq' -%}{%- endif -%}
+	      {%- else -%}
+	         {%- if settings.pr_swatch_setting == '2' %}{%- assign include_swatch = 'swatches_on_grid_img' -%}{%- else -%}{%- assign include_swatch = 'swatches_on_grid' -%}{%- endif -%}
+	   {%- endcase -%}
+	   {%- if settings.show_pr_img == "3" and settings.pr_swatch_setting == '2' -%}{%- assign include_swatch = 'swatches_on_grid_img_2' -%}{%- elsif settings.show_pr_img == "3" -%}{%- assign include_swatch = 'swatches_on_grid_2' -%}{%- endif -%}
+      {%- include include_swatch -%}
+	{%- when 'nt_css' -%}{%- include 'nt_css' -%}
+	{%- when 'the4size' -%}{%- assign size_index = key[2] | plus:0 -%}
+		{%- for option in product.options_with_values offset:size_index -%}{%- for value in option.values -%}<span class="size_item">{{value}}</span>{%- endfor -%}{%- break -%}{%- endfor -%}
+	{%- when 'the4btn2' -%}
+	    {%- assign tooltip = "tooltip_left" -%}
+	    <div class="inlineflex column">
+	    	{%- include 'nt_add_w' -%}{%- include 'nt_add_btn' -%}{%- include 'nt_add_qvcp' -%}
+	    </div>
+	{%- when 'the4btn3' -%}
+	    {%- assign tooltip = "tooltip_left" -%}
+	    <div class="inlineflex column">
+	    	{%- include 'nt_add_btn' -%}{%- include 'nt_add_w' -%}{%- include 'nt_add_qvcp' -%}
+	    </div>
+	{%- when 'the4btn4' -%}
+	    {%- assign tooltip = "tooltip_top" -%}
+	    <div class="inlineflex">
+	    	{%- include 'nt_add_btn' -%}{%- include 'nt_add_w' -%}{%- include 'nt_add_qvcp' -%}
+	    </div>
+	{%- when 'the4btn5' -%}
+	    {%- assign tooltip = "tooltip_top_right" -%}
+	    <div class="inlineflex">
+	    	{%- include 'nt_add_btn' -%}{%- include 'nt_add_w' -%}{%- include 'nt_add_qvcp' -%}
+	    </div>
+{%- endcase -%}

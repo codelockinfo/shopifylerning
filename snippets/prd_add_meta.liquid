@@ -1,0 +1,135 @@
+{%- assign product_url = '/products/' | append:product.handle | append:'/?preview_theme_id=' | append:theme.id -%}
+{%- assign index = 1 -%}
+
+<div class="product-inner">
+  <div class="info d-flex align-items-start">
+    <div class="img">
+      <img class="rounded" width='75' height='100' loading="lazy" src="{{product.featured_image|img_url: '150x200', crop: 'center'}}" alt="{{product.featured_image.alt | default: product.title}}">
+    </div>
+    <div class="name">
+      <a class="custom-control custom-checkbox custom-checkbox-js" target="_blank" href="{{product_url}}" title="{{product.title}}" data-pid="{{product.id}}">
+        <span class="custom-control-label"></span>
+      </a>
+      <a href="{{product_url}}" title="{{product.title}}" target="_blank" style="display: block;width: 100%;margin-top: 20px;text-decoration: none !important"><h2 class="product-name">{{product.title}}</h2><span class="btn_css_preview">View Product</span></a>
+    </div>
+  </div>
+  <form class="meta-feilds" action="#" method="POST">
+    <div class="form-group my-3 mb-2">
+      <label for="short_description-{{product.id}}">{{index}}. Short description</label>
+      <textarea placeholder="Enter a Short description" class="form-control" id="short_description-{{product.id}}" name="meta.description_excerpt" rows="3" data-method="{%if product.metafields.meta.description_excerpt%}PUT{%else%}POST{%endif%}">
+        {{-product.metafields.meta.description_excerpt-}}
+      </textarea>
+    </div>
+    {%- comment -%}
+    <div class="form-group my-3 mb-2">
+      <label for="additional_information-{{product.id}}">Additional information</label>
+      <textarea class="form-control" id="additional_information-{{product.id}}" name="meta.additional_information" rows="3" data-method="{%if product.metafields.meta.additional_information%}PUT{%else%}POST{%endif%}">
+        {{-product.metafields.meta.additional_information-}}
+      </textarea>
+    </div>
+    {%- endcomment -%}
+    {%- if list_pages_arr_size > 0 %}{% assign index = index | plus:1 -%}
+    <div class="form-group my-3 mb-2">
+      <label for="size_guide-{{product.id}}">{{index}}. Size guide page</label>
+      {%- assign page_size_chart = product.metafields.meta.page_size_chart -%}
+      <select class="form-control js_select_data" id="size_guide-{{product.id}}" name="meta.page_size_chart" data-method="{%if page_size_chart != blank%}PUT{%else%}POST{%endif%}">
+        {%- if page_size_chart != blank -%}
+        {%- assign page_size_chart_2 = page_size_chart |append:'" selected="selected'-%}
+        <option value="">No choose page</option>{{html_list_pages | replace:page_size_chart,page_size_chart_2}}
+        {%- else -%}
+        <option value="" selected="selected">No choose page</option>{{html_list_pages}}
+        {%- endif -%}
+      </select>
+    </div>
+    {%- endif -%}
+    {%- if list_imgs_arr_size > 0 %}{% assign index = index | plus:1 -%}
+    <div class="form-group my-3 mb-2">
+      <label for="size_guide-{{product.id}}">{{index}}. Size guide image</label>
+      {%- assign img_size_chart = product.metafields.meta.img_size_chart -%}
+      <select class="form-control js_select_data" id="size_guide-{{product.id}}" name="meta.img_size_chart" data-method="{%if img_size_chart != blank%}PUT{%else%}POST{%endif%}">
+        {%- if img_size_chart != blank -%}
+        {%- assign img_size_chart_2 = img_size_chart |append:'" selected="selected'-%}
+        <option value="">No choose Image</option>{{html_list_imgs | replace:img_size_chart,img_size_chart_2}}
+        {%- else -%}
+        <option selected="selected" value="">No choose Image</option>{{html_list_imgs}}
+        {%- endif -%}
+      </select>
+      <button type="button" class="btn btn_css_2 my-3" data-toggle="modal" data-target="#sizeimgModal">Preview List Image</button>
+    </div>
+    {%- endif -%}
+    <div class="form-group my-3 mb-2">{% assign index = index | plus:1 -%}
+      <label for="countdown-{{product.id}}">{{index}}. Countdown</label>           
+      <input type="text" class="form-control date-picker" id="countdown-{{product.id}}" placeholder="Countdown" name="meta.countdown" value="{{product.metafields.meta.countdown}}" data-method="{%if product.metafields.meta.countdown%}PUT{%else%}POST{%endif%}">
+    </div>
+    <div class="form-group my-3 mb-2">{% assign index = index | plus:1 -%}
+      <label for="on_link-{{product.id}}">{{index}}. External / Affiliate</label>
+      {%- assign external = product.metafields.external.on_link -%}
+      <input placeholder="Button Title" type="text" class="js_data_namespace form-control inputnew" value="{{- external | split:'|||' | first -}}">           
+      <i class="mb-4 d-block"><small>Ex: Buy on Amazon</small></i>
+      <textarea placeholder="Button Link" class="js_data_namespace js_data_textarea form-control inputnew" id="on_link-{{product.id}}" rows="3">
+        {{- external | split:'|||' | last -}}
+      </textarea>
+      <input type="hidden" name="external.on_link" class="js_data_groupTxt" value="{{external}}" data-method="{%if external != blank %}PUT{%else%}POST{%endif%}">
+      <i><small>Ex: https://www.amazon.com/</small></i>
+    </div>
+    <div class="form-group my-3 mb-2">{% assign index = index | plus:1 -%}
+      <label for="delivery-start-{{product.id}}">{{index}}. Delivery Start Date</label>
+       <i><small>Min: 0, Max: 100 </small></i>     
+      <input type="number" min="0" max="100" class="js_input_number form-control" id="delivery-start-{{product.id}}" placeholder="Delivery Start" name="meta.estimateStartDate" value="{{product.metafields.meta.estimateStartDate}}" data-method="{%if product.metafields.meta.estimateStartDate%}PUT{%else%}POST{%endif%}">
+    </div>
+    <div class="form-group my-3 mb-2">{% assign index = index | plus:1 -%}
+      <label for="delivery-end-{{product.id}}">{{index}}. Delivery End Date</label>  
+       <i><small>Min: 0, Max: 100 </small></i>           
+      <input type="number" min="0" max="100" class="js_input_number form-control" id="delivery-end-{{product.id}}" placeholder="Delivery End" name="meta.estimateEndDate" value="{{product.metafields.meta.estimateEndDate}}" data-method="{%if product.metafields.meta.estimateEndDate%}PUT{%else%}POST{%endif%}">
+    </div>
+    
+    <div class="more" style="display: none;">
+      <h6>Custom Tabs:</h6>
+      {%- assign total = 5 -%}
+      {%- for i in (1..total)  %}{% assign cus_tab = 'cus_tab_' |append:i -%}
+        <div class="form-group my-3 mb-2">
+          <label>Custom Tab {{i}}</label>
+          {%- assign external = product.metafields.additions[cus_tab] -%}
+          {%- if external != blank -%}
+              <input placeholder="Custom tab name" type="text" class="js_data_namespace form-control mb-2 inputnew" value="{{- external | split:'|||' | first | escape -}}">           
+              <textarea placeholder="Custom tab content" class="js_data_namespace js_data_textarea form-control inputnew" rows="3">
+                {{- external | split:'|||' | last -}}
+              </textarea>
+              <input type="hidden" name="additions.cus_tab_{{i}}" class="js_data_groupTxt" value="{{external | escape}}" data-method="{%if external != blank %}PUT{%else%}POST{%endif%}">
+          {%- else -%}
+              <input placeholder="Custom tab name" type="text" class="js_data_namespace form-control mb-2 inputnew" value="">           
+              <textarea placeholder="Custom tab content" class="js_data_namespace js_data_textarea form-control inputnew" rows="3"></textarea>
+              <input type="hidden" name="additions.cus_tab_{{i}}" class="js_data_groupTxt" value="" data-method="POST">
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+      {%- comment -%}
+      <h6 class="mt-5">Custom your metafields:</h6>
+      {%- for i in (1..4) %}{% assign cus_tab = 'cus_meta_' |append:i -%}
+        <div class="form-group my-3 mb-2">
+          <label>Your metafield {{i}}</label>
+          {%- assign external = product.metafields.metast4[cus_tab] -%}
+          {%- if external != blank -%}
+              <input placeholder="Name" type="text" class="js_data_namespace form-control mb-2 inputnew" value="{{- external | split:'|||' | first -}}">           
+              <textarea placeholder="Content" class="js_data_namespace js_data_textarea form-control inputnew" rows="3">
+                {{- external | split:'|||' | last -}}
+              </textarea>
+              <input type="hidden" name="metast4.cus_meta_{{i}}" class="js_data_groupTxt" value="{{external}}" data-method="{%if external != blank %}PUT{%else%}POST{%endif%}">
+          {%- else -%}
+              <input placeholder="Name" type="text" class="js_data_namespace form-control mb-2 inputnew" value="">           
+              <textarea placeholder="Content" class="js_data_namespace js_data_textarea form-control inputnew" rows="3"></textarea>
+              <input type="hidden" name="metast4.cus_meta_{{i}}" class="js_data_groupTxt" value="" data-method="POST">
+          {%- endif -%}
+          {%- assign cus_tab_output = 'product.metafields.metast4.cus_meta_' |append:i | append:'}}' | prepend:'{{' -%}
+          <small>Use to output: {{cus_tab_output}}</small>
+        </div>
+      {%- endfor -%}
+      {%- endcomment -%}
+    </div>
+    
+  </form>
+  <div class="w-100 mt-3 t4-btns">
+    <a class="btn btn-showall" href="#" title=""><span class="show_all">Show all</span><span class="hide_more" style="display: none">Hide</span></a>
+    <a class="btn btn-primary mt-4 btn-add--this t4-btn loading_white" href="#" data-id="{{product.id}}">Update metafields</a>
+  </div>
+</div>

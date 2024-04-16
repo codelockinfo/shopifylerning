@@ -1,0 +1,30 @@
+{%- liquid 
+  layout none
+  assign pr_id = product.id
+  assign pr_url = product.url | within: collection
+  assign hide_btns = settings.hide_btns
+  assign images_0 = product.images[0] | default:settings.placeholder_img -%}
+
+{%- unless hide_btns %}<div class="pr oh">{% endunless -%}
+  {%- capture url_last -%}{{product.url | split:'/products/' | first}}{% if collection %}/collections/{{collection.handle}}{% endif %}/products/{{product.handle}}{%- endcapture -%}
+  {%- if images_0 != blank -%}{%- if settings.show_pr_img == '2' -%}{%- render 'pr_img_2_equal',product:product,url_last:url_last -%}{%- else -%}{%- render 'pr_img_equal',product:product,url_last:url_last -%}{%- endif -%}{%- endif -%}
+{%- unless hide_btns %}</div>{% endunless -%}
+<div class="hover_button op__0 tc pa flex column ts__03">
+  {%- assign tooltip = "ttip_nt tooltip_left" -%}
+  {%- render 'nt_add_w',product:product,tooltip:tooltip,url_last:url_last -%}
+  {%- render 'nt_add_qvcp',product:product,tooltip:tooltip,pr_id:pr_id,url_last:url_last -%}
+</div>
+{%- if product.has_only_default_variant == false and settings.show_pr_size  -%}
+  {%- assign ck_s = false -%}
+  {%- assign size_ck = settings.size_ck | append:',size,sizes,Größe' -%}{%- assign get_size = size_ck | downcase | replace: ' ,', ',' | replace: ', ', ',' | split: ',' | uniq -%}
+  {%- for option in product.options_with_values -%}{%- assign name = option.name | downcase -%}{%- if get_size contains name -%}{%- assign ck_s = true -%}{%- assign pr_option = 'option'| append:forloop.index -%}{%- break -%}{%- endif -%}{%- endfor -%}
+  {%- if ck_s -%}
+    {%- if settings.show_size_type == '1' -%}
+		    {%- assign size_variants = product.variants | map:pr_option | uniq -%}
+    {%- else -%}
+		    {%- assign size_variants = product.variants | where: "available" | map:pr_option | uniq -%}
+    {%- endif -%}
+    <div class="product-attr pa ts__03 cw op__0 tc"><p class="truncate mg__0 w__100">{{size_variants | join: ", "}}</p></div>
+  {%- endif -%}
+{%- endif -%}
+{%- unless hide_btns %}{%- render 'nt_add_btn',product:product,tooltip:tooltip,url_last:url_last -%}{% endunless -%}

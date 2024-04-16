@@ -1,0 +1,845 @@
+{%- liquid
+assign se_settings = section.settings
+assign use_pagination = se_settings.use_pagination
+assign use_bar_lm = se_settings.use_bar_lm
+assign limit = se_settings.limit
+assign shop_des = settings.shop_des
+assign hidden_cat = settings.use_hidden_cat
+assign show_list_switch = settings.show_list_switch
+assign nt_ck = false
+assign no_sidebar = true
+assign shop_sidebar = settings.shop_sidebar
+unless show_list_switch
+ assign on_list_view = false
+else
+ assign on_list_view = settings.default_list_view
+endunless
+if hidden_cat == false
+  case shop_sidebar
+    when 'right'
+      assign no_sidebar = false
+    when 'left'
+      assign no_sidebar = false 
+  endcase
+elsif shop_sidebar == 'left' or shop_sidebar == 'right'
+  assign no_sidebar = false 
+endif
+if shop_des == 'packery'
+  assign col = se_settings.col_pr 
+  assign col_tb = se_settings.col_pr_tb
+  assign cl_mb = se_settings.col_pr_mb 
+else
+  assign cat_dk_items_per_row = cart.attributes.cat_dk_items_per_row
+  assign cat_tb_items_per_row = cart.attributes.cat_tb_items_per_row
+  assign cat_mb_items_per_row = cart.attributes.cat_mb_items_per_row
+  assign col = cat_dk_items_per_row | default:se_settings.col_pr
+  assign col_tb = cat_tb_items_per_row | default:se_settings.col_pr_tb 
+  assign cl_mb = cat_mb_items_per_row | default:se_settings.col_pr_mb
+  if cat_dk_items_per_row == 'listt4' or cat_tb_items_per_row == 'listt4' or cat_mb_items_per_row == 'listt4'
+     assign on_list_view = show_list_switch
+  elsif cat_dk_items_per_row != blank or cat_tb_items_per_row != blank or cat_mb_items_per_row != blank
+     assign on_list_view = false
+  endif
+  if on_list_view
+    assign col = 'listt4'
+    assign col_tb = 'listt4'
+    assign cl_mb = 'listt4'
+  endif
+endif
+
+assign col_mb = ' pr_animated done' | prepend:cl_mb 
+if collection.current_type or collection.current_vendor
+  assign nt_ck = true 
+endif 
+assign ck_packery = false
+assign inc_pr = se_settings.pr_des
+if shop_des == 'packery' and hidden_cat or no_sidebar 
+  assign ck_packery = true 
+  assign inc_pr = '1'
+elsif shop_des == 'packery' 
+  assign shop_des = 'default'
+endif
+assign sett_equal = se_settings.use_eq_height
+assign show_vendor = se_settings.show_vendor
+if hidden_cat == false and no_sidebar == false and col == '15' or col == '2'  
+  assign col = '3' 
+endif
+assign use_cdt = se_settings.use_cdt
+assign txt_cd = 'products.grid_items.offer_end_in' | t 
+
+if settings.type_filters == '2'
+   assign sort_by = collection.sort_by | default: collection.default_sort_by
+   assign index = 0
+   assign limitstt = limit
+   if settings.logic_filter == '1'
+      assign logic_and = true                                      
+   else 
+      assign logic_and = false                                     
+   endif                                  
+                                          
+   assign nt_canonical_url = canonical_url
+   assign has_fillter_stock = false
+   assign has_fillter_title = false
+   assign has_fillter_price = false
+   assign has_fillter_offset = false
+   assign get_fillter_offset = 0
+   assign has_fillter_paginate = false
+   assign vl_filters = nt_canonical_url |split:'?q=' | last | split:'?&sort_by' | first | split:'&sort_by' | first
+   assign arr_vl_filters = vl_filters | split: '+nt+'
+   assign arr_filternt = arr_vl_filters | where:'filternt_'
+   assign arr_filter = arr_vl_filters | where:'filter_'
+   assign auto_hide_ofsock = cart.attributes.auto_hide_ofsock | default: settings.auto_hide_ofsock, allow_false: true
+
+   if auto_hide_ofsock == true or auto_hide_ofsock == 'true'
+      assign has_fillter_stock = true
+      assign doing_fillter = true   
+   endif
+
+   if no_sidebar and settings.shop_filters == false
+      assign doing_fillter = false   
+   endif
+
+   if nt_canonical_url contains 'filternt_title%3d'
+    assign has_fillter_title = true
+    assign get_fillter_title = arr_filternt | where:'filternt_title%3d' | first | remove:'filternt_title%3d'
+   endif
+
+   if nt_canonical_url contains 'filternt_price%3d'
+    assign has_fillter_price = true
+    assign get_fillter_price = arr_filternt | where:'filternt_price%3d' | first | remove:'filternt_price%3d' | split:'+ntprice+'
+    assign min_fillter_price = get_fillter_price | first |plus:0
+    assign max_fillter_price = get_fillter_price | last |plus:0
+   endif
+
+   if nt_canonical_url contains 'for_offest%3d'
+    assign get_fillter_offset = arr_vl_filters | where:'for_offest%3d' | first | remove:'for_offest%3d' | plus:0
+    assign has_fillter_offset = true
+   endif
+                                          
+   if nt_canonical_url contains '?q=' or nt_canonical_url contains '%3fq%3d' and nt_canonical_url contains 'filter'
+       assign doing_fillter = true                                    
+   endif
+   if collection.current_type or collection.current_vendor
+       assign doing_fillter = false                                    
+   endif
+   if doing_fillter
+     assign current_page = 1
+   endif
+else
+ assign doing_fillter = false 
+endif
+if arr_vl_filters.size == 1 and has_fillter_offset and has_fillter_stock == false
+ assign doing_fillter = false
+endif -%}
+
+{%- capture url_cat -%}/collections/{{collection.handle}}{%- endcapture -%}
+
+{%- if doing_fillter -%}
+     {%-if collection.all_products_count < 1000 -%} 
+        {%-assign limit = collection.all_products_count -%}
+     {%-else -%}
+        {%-assign limit = 1000 -%}
+     {%-endif -%}
+    {%- paginate collection.products by limit -%}
+
+       {%- if get_fillter_offset >= 0 and use_pagination != 'default' and content_for_header contains '\u0026section_id=' -%}
+
+
+          {%- assign inc_price = settings.price_format -%}
+          {%- assign use_rating = settings.use_pr_rating -%}
+          {%- assign inc_rating = settings.app_review -%}
+          {%- assign show_color = settings.show_pr_color -%}
+          {%- assign show_cl_type = settings.show_color_type -%}
+          {%- assign show_size = settings.show_pr_size -%}
+
+          {%- if has_fillter_stock -%}
+           {%- assign collection_prs = collection.products | where: "available",true -%}
+          {%- else -%}
+           {%- assign collection_prs = collection.products -%}
+          {%- endif -%}
+
+          <!--split-->
+          {%- if shop_des == 'packery' -%}
+                     {%- for product in collection_prs offset:get_fillter_offset -%}
+                     {%- assign pr_title_dow = product.title | url_encode | downcase -%}
+                     {%- unless has_fillter_title == false or pr_title_dow contains get_fillter_title %}{% continue %}{% endunless -%}
+                     {%- unless has_fillter_price == false or product.price_min >= min_fillter_price and product.price_min <= max_fillter_price %}{% continue %}{% endunless -%}
+                     {%- capture cap_cat_filters %}{% render 'cat_filters',arr_vl_filters:arr_filter,product:product,logic_and:logic_and -%}{% endcapture %}{% assign cap_cat_filters = cap_cat_filters |strip -%}
+                     {%- unless cap_cat_filters contains 'true' %}{% continue %}{% endunless -%}
+                     {%- assign index= index|plus:1 -%}
+                    
+                     {%- capture col %}{% cycle '3','6','3','3','3','3','3','3','3','6','3','3','3' %}{% endcapture -%}
+                     {%- render 'pr_loop_grid_1',product:product,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}
+                     {%- if index == limitstt %}{% break %}{% endif -%}
+
+                     {%- endfor -%}<!--split-->
+          {%- else -%}
+              {%- if show_list_switch -%}
+                     {%- for product in collection_prs offset:get_fillter_offset -%}
+                     {%- assign pr_title_dow = product.title | url_encode | downcase -%}
+                     {%- unless has_fillter_title == false or pr_title_dow contains get_fillter_title %}{% continue %}{% endunless -%}
+                     {%- unless has_fillter_price == false or product.price_min >= min_fillter_price and product.price_min <= max_fillter_price %}{% continue %}{% endunless -%}
+                     {%- capture cap_cat_filters %}{% render 'cat_filters',arr_vl_filters:arr_filter,product:product,logic_and:logic_and -%}{% endcapture %}{% assign cap_cat_filters = cap_cat_filters |strip -%}
+                     {%- unless cap_cat_filters contains 'true' %}{% continue %}{% endunless -%}
+                     {%- assign index= index|plus:1 -%}
+                     {%- if inc_pr == '2' %}{% assign inc_pr= '2 tc' %}{% endif -%}
+
+                     {%- render 'pr_loop_list',product:product,inc_pr:inc_pr,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}
+                     {%- if index == limitstt %}{% break %}{% endif -%}
+
+                     {%- endfor -%}<!--split-->
+              {%- elsif inc_pr == '1' or inc_pr == '1 tc' -%}
+                     {%- for product in collection_prs offset:get_fillter_offset -%}
+                     {%- assign pr_title_dow = product.title | url_encode | downcase -%}
+                     {%- unless has_fillter_title == false or pr_title_dow contains get_fillter_title %}{% continue %}{% endunless -%}
+                     {%- unless has_fillter_price == false or product.price_min >= min_fillter_price and product.price_min <= max_fillter_price %}{% continue %}{% endunless -%}
+                     {%- capture cap_cat_filters %}{% render 'cat_filters',arr_vl_filters:arr_filter,product:product,logic_and:logic_and -%}{% endcapture %}{% assign cap_cat_filters = cap_cat_filters |strip -%}
+                     {%- unless cap_cat_filters contains 'true' %}{% continue %}{% endunless -%}
+                     {%- assign index= index|plus:1 -%}
+
+                     {%- render 'pr_loop_grid_1',product:product,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}
+                     {%- if index == limitstt %}{% break %}{% endif -%}
+
+                     {%- endfor -%}<!--split-->
+              {%- else -%}
+                     {%- for product in collection_prs offset:get_fillter_offset -%}
+                     {%- assign pr_title_dow = product.title | url_encode | downcase -%}
+                     {%- unless has_fillter_title == false or pr_title_dow contains get_fillter_title %}{% continue %}{% endunless -%}
+                     {%- unless has_fillter_price == false or product.price_min >= min_fillter_price and product.price_min <= max_fillter_price %}{% continue %}{% endunless -%}
+                     {%- capture cap_cat_filters %}{% render 'cat_filters',arr_vl_filters:arr_filter,product:product,logic_and:logic_and -%}{% endcapture %}{% assign cap_cat_filters = cap_cat_filters |strip -%}
+                     {%- unless cap_cat_filters contains 'true' %}{% continue %}{% endunless -%}
+                     {%- assign index= index|plus:1 -%}
+
+                     {%- render 'pr_loop_grid_2',product:product,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}
+                     {%- if index == limitstt %}{% break %}{% endif -%}
+
+                     {%- endfor -%}<!--split-->
+              {%- endif -%}
+          {%- endif -%}
+          1994<!--split-->no_prs<!--split-->no_prs<!--split-->
+
+          {%- comment %}End check get_fillter_offset > 0 and use_pagination != 'default'{% endcomment -%}
+       {%- else -%}
+
+          {%- assign inc_price = settings.price_format -%}
+          {%- assign use_rating = settings.use_pr_rating -%}
+          {%- assign inc_rating = settings.app_review -%}
+          {%- assign show_color = settings.show_pr_color -%}
+          {%- assign show_cl_type = settings.show_color_type -%}
+          {%- assign show_size = settings.show_pr_size -%}
+          {%- assign results_count = collection.all_products_count -%}
+          {%- assign arr_clearfilter = arr_filternt | concat: arr_filter | sort -%}
+          {%- assign show_hide_ofsock = settings.show_hide_ofsock -%}
+          {%- assign arr_clearfilterSize = arr_clearfilter.size -%}
+
+          {%- if arr_clearfilterSize > 0 or has_fillter_stock and settings.show_hide_ofsock -%}
+          <div class="result_clear mt__30 mb__20">
+             <div class="sp_result_html dib cb clear_filter">{{ 'collections.general.results_with_count_html' | t:count:19 | replace:19,'...'}}</div>
+             {%- if has_fillter_stock and settings.show_hide_ofsock %}<a class="clear_filter clear_filter_stockt4 dib bf_icons" href="{{nt_canonical_url}}">{{ 'collections.filter_variant.hide_outofstock' | t }}</a>{% endif -%}
+            
+             {%- if arr_clearfilterSize == 1 -%}
+               {%- assign vl_filter = arr_clearfilter[0] -%}
+               {%- assign key_block = '+nt+' | append:vl_filter -%}
+               <a class="clear_filter dib bf_icons" href="{{collection.url | sort_by:sort_by}}">
+                 {%- if vl_filter contains 'filternt_price' %}{% assign price_clear_arr = vl_filter | split:'%3d' | last |split:'+ntprice+' -%}
+                  Min <span data-js-minprice>{{price_clear_arr | first | plus:0 | money}}</span> - Max <span data-js-maxprice>{{price_clear_arr | last | plus:0 | money}}</span>
+                 {%- elsif vl_filter contains 'filternt_title' -%}{{ 'collections.filter_variant.product_title_contains' | t }} "{{vl_filter | split:'%3d' | last |replace:'%2c',',' |replace:'+',' ' }}" 
+                 {%- else -%}{{vl_filter | split:'%3d' | last |url_decode | capitalize}}{% endif -%}
+               </a>
+             {%- endif -%}
+
+             {%- if arr_clearfilterSize > 1 -%}
+                 <a class="clear_filter dib" href="{{collection.url | sort_by:sort_by}}">{{ 'collections.general.clear_filter' | t}}</a>
+                 {%- if get_fillter_offset > 0 -%}
+                    {%- assign remove_offest = '+nt+for_offest%3d' | append:get_fillter_offset -%}
+                    {%- assign nt_canonical_url = nt_canonical_url | remove:remove_offest -%}
+                 {%- endif -%}
+                 {%- for vl_filter in arr_clearfilter -%}
+                     {%- assign key_block = '+nt+' | append:vl_filter -%}
+                     <a class="clear_filter dib bf_icons" href="{{nt_canonical_url | remove:key_block | remove:vl_filter | sort_by:sort_by | replace:'?q=&sort_by','?sort_by'}}">
+                       {%- if vl_filter contains 'filternt_price' %}{% assign price_clear_arr = vl_filter | split:'%3d' | last |split:'+ntprice+' -%}
+                        Min <span data-js-minprice>{{price_clear_arr | first | plus:0 | money}}</span> - Max <span data-js-maxprice>{{price_clear_arr | last | plus:0 | money}}</span>
+                       {%- elsif vl_filter contains 'filternt_title' -%}{{ 'collections.filter_variant.product_title_contains' | t }} "{{vl_filter | split:'%3d' | last |replace:'%2c',',' |replace:'+',' ' }}" 
+                       {%- else -%}{{vl_filter | split:'%3d' | last |url_decode | capitalize}}{% endif -%}
+                     </a>
+                 {%- endfor -%}   
+             {%- endif -%}
+
+          </div>
+          {%- endif -%}
+          <div class="nt_svg_loader dn"></div>
+
+          {%- if has_fillter_stock -%}
+           {%- assign collection_prs = collection.products | where: "available",true -%}
+          {%- else -%}
+           {%- assign collection_prs = collection.products -%}
+          {%- endif -%}
+
+          {%- if shop_des == 'minimasonry' -%}
+            <div data-change-url data-offset='{{get_fillter_offset}}' data-filterntt4='{"paginate_ntt4":"{{use_pagination}}","limit_ntt4":"{{limitstt|default:limit}}","use_bar_lmntt4":"{{use_bar_lm}}"}' data-attrsntt4='{"paginate_ntt4":"{{cart.attributes.paginate_ntt4}}","limit_ntt4":"{{cart.attributes.limit_ntt4}}","use_bar_lmntt4":"{{cart.attributes.use_bar_lmntt4}}"}' class="on_list_view_{{on_list_view}} products nt_products_holder row fl_center row_pr_{{inc_pr}} cdt_des_{{se_settings.cdt_des}} round_cd_{{se_settings.round_cd}} {{se_settings.image_size}} {{se_settings.image_ratio}} position_{{se_settings.image_position}} space_{{se_settings.space}}{% if sett_equal %} equal_nt{% endif %} js_isotope nt_isotope" data-isotope='{ "itemSelector": ".pr_grid_item", "layoutMode": "masonry","columnWidth":".grid-sizer","rtl": {{settings.use_rtl}} }'>
+             <div class="col-lg-{{col}} col-md-{{col_tb}} col-{{col_mb}} grid-sizer"></div>
+
+              {%- if show_list_switch -%}
+               {%- for product in collection_prs offset:get_fillter_offset -%}
+                 {%- assign pr_title_dow = product.title | url_encode | downcase -%}
+                 {%- unless has_fillter_title == false or pr_title_dow contains get_fillter_title %}{% continue %}{% endunless -%}
+                 {%- unless has_fillter_price == false or product.price_min >= min_fillter_price and product.price_min <= max_fillter_price %}{% continue %}{% endunless -%}
+                 {%- capture cap_cat_filters %}{% render 'cat_filters',arr_vl_filters:arr_filter,product:product,logic_and:logic_and -%}{% endcapture %}{% assign cap_cat_filters = cap_cat_filters |strip -%}
+                 {%- unless cap_cat_filters contains 'true' %}{% continue %}{% endunless -%}
+                 {%- assign index= index|plus:1 -%}
+                 {%- if inc_pr == '2' %}{% assign inc_pr= '2 tc' %}{% endif -%}
+
+                 {%- render 'pr_loop_list',product:product,inc_pr:inc_pr,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}
+                 {%- if index == limitstt %}{% break %}{% endif -%}
+
+                 {%- endfor -%}<!--split-->
+             {%- elsif inc_pr == '1' or inc_pr == '1 tc' -%}
+               {%- for product in collection_prs offset:get_fillter_offset -%}
+                 {%- assign pr_title_dow = product.title | url_encode | downcase -%}
+                 {%- unless has_fillter_title == false or pr_title_dow contains get_fillter_title %}{% continue %}{% endunless -%}
+                 {%- unless has_fillter_price == false or product.price_min >= min_fillter_price and product.price_min <= max_fillter_price %}{% continue %}{% endunless -%}
+                 {%- capture cap_cat_filters %}{% render 'cat_filters',arr_vl_filters:arr_filter,product:product,logic_and:logic_and -%}{% endcapture %}{% assign cap_cat_filters = cap_cat_filters |strip -%}
+                 {%- unless cap_cat_filters contains 'true' %}{% continue %}{% endunless -%}
+                 {%- assign index= index|plus:1 -%}
+
+                 {%- render 'pr_loop_grid_1',product:product,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}
+                 {%- if index == limitstt %}{% break %}{% endif -%}
+
+                 {%- endfor -%}<!--split-->
+             {%- else -%}
+               {%- for product in collection_prs offset:get_fillter_offset -%}
+                 {%- assign pr_title_dow = product.title | url_encode | downcase -%}
+                 {%- unless has_fillter_title == false or pr_title_dow contains get_fillter_title %}{% continue %}{% endunless -%}
+                 {%- unless has_fillter_price == false or product.price_min >= min_fillter_price and product.price_min <= max_fillter_price %}{% continue %}{% endunless -%}
+                 {%- capture cap_cat_filters %}{% render 'cat_filters',arr_vl_filters:arr_filter,product:product,logic_and:logic_and -%}{% endcapture %}{% assign cap_cat_filters = cap_cat_filters |strip -%}
+                 {%- unless cap_cat_filters contains 'true' %}{% continue %}{% endunless -%}
+                 {%- assign index= index|plus:1 -%}
+
+                 {%- render 'pr_loop_grid_2',product:product,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}
+                 {%- if index == limitstt %}{% break %}{% endif -%}
+
+                 {%- endfor -%}<!--split-->
+             {%- endif -%}
+          </div>
+          {%- elsif shop_des == 'packery' -%}
+            <div data-change-url data-offset='{{get_fillter_offset}}' data-filterntt4='{"paginate_ntt4":"{{use_pagination}}","limit_ntt4":"{{limitstt}}","use_bar_lmntt4":"{{use_bar_lm}}"}' data-attrsntt4='{"paginate_ntt4":"{{cart.attributes.paginate_ntt4}}","limit_ntt4":"{{cart.attributes.limit_ntt4}}","use_bar_lmntt4":"{{cart.attributes.use_bar_lmntt4}}"}' class="on_list_view_{{on_list_view}} products nt_products_holder row fl_center row_pr_{{inc_pr}} cdt_des_{{se_settings.cdt_des}} round_cd_{{se_settings.round_cd}} {{se_settings.image_size}} {{se_settings.image_ratio}} position_{{se_settings.image_position}} space_{{se_settings.space}}{% if sett_equal %} equal_nt{% endif %} js_packery nt_packery"{% assign rtl = settings.use_rtl %}{% if rtl %}{% assign ltr = false %}{% else %}{% assign ltr = true %}{% endif %} data-packery='{ "itemSelector": ".pr_grid_item","columnWidth": ".pr_grid_item","gutter": 0,"percentPosition": true,"originLeft": {{ltr}} }'>
+            {%- for product in collection_prs offset:get_fillter_offset -%}
+
+                 {%- assign pr_title_dow = product.title | url_encode | downcase -%}
+                 {%- unless has_fillter_title == false or pr_title_dow contains get_fillter_title %}{% continue %}{% endunless -%}
+                 {%- unless has_fillter_price == false or product.price_min >= min_fillter_price and product.price_min <= max_fillter_price %}{% continue %}{% endunless -%}
+                 {%- capture cap_cat_filters %}{% render 'cat_filters',arr_vl_filters:arr_filter,product:product,logic_and:logic_and -%}{% endcapture %}{% assign cap_cat_filters = cap_cat_filters |strip -%}
+                 {%- unless cap_cat_filters contains 'true' %}{% continue %}{% endunless -%}
+                 {%- assign index= index|plus:1 -%}
+
+                 {% capture col %}{% cycle '3','6','3','3','3','3','3','3','3','6','3','3','3' %}{% endcapture %}{%- render 'pr_loop_grid_1',product:product, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}
+                 {%- if index == limitstt %}{% break %}{% endif -%}
+
+            {%- endfor -%}<!--split-->
+            </div>
+          {%- else -%}
+            <div data-change-url data-offset='{{get_fillter_offset}}' data-filterntt4='{"paginate_ntt4":"{{use_pagination}}","limit_ntt4":"{{limitstt}}","use_bar_lmntt4":"{{use_bar_lm}}"}' data-attrsntt4='{"paginate_ntt4":"{{cart.attributes.paginate_ntt4}}","limit_ntt4":"{{cart.attributes.limit_ntt4}}","use_bar_lmntt4":"{{cart.attributes.use_bar_lmntt4}}"}' class="on_list_view_{{on_list_view}} products nt_products_holder row fl_center row_pr_{{inc_pr}} cdt_des_{{se_settings.cdt_des}} round_cd_{{se_settings.round_cd}} {{se_settings.image_size}} {{se_settings.image_ratio}} position_{{se_settings.image_position}} space_{{se_settings.space}}{% if sett_equal %} equal_nt{% endif %} nt_default">
+              {%- if show_list_switch -%}
+               {%- for product in collection_prs offset:get_fillter_offset -%}
+
+                 {%- assign pr_title_dow = product.title | url_encode | downcase -%}
+                 {%- unless has_fillter_title == false or pr_title_dow contains get_fillter_title %}{% continue %}{% endunless -%}
+                 {%- unless has_fillter_price == false or product.price_min >= min_fillter_price and product.price_min <= max_fillter_price %}{% continue %}{% endunless -%}
+                 {%- capture cap_cat_filters %}{% render 'cat_filters',arr_vl_filters:arr_filter,product:product,logic_and:logic_and -%}{% endcapture %}{% assign cap_cat_filters = cap_cat_filters |strip -%}
+                 {%- unless cap_cat_filters contains 'true' %}{% continue %}{% endunless -%}
+                 {%- assign index= index|plus:1 -%}
+                 {%- if inc_pr == '2' %}{% assign inc_pr= '2 tc' %}{% endif -%}
+                 
+                 {%- render 'pr_loop_list',product:product,inc_pr:inc_pr,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}                 
+                 {%- if index == limitstt %}{% break %}{% endif -%}
+
+               {%- endfor -%}<!--split-->
+             {%- elsif inc_pr == '1' or inc_pr == '1 tc' -%}
+               {%- for product in collection_prs offset:get_fillter_offset -%}
+
+                 {%- assign pr_title_dow = product.title | url_encode | downcase -%}
+                 {%- unless has_fillter_title == false or pr_title_dow contains get_fillter_title %}{% continue %}{% endunless -%}
+                 {%- unless has_fillter_price == false or product.price_min >= min_fillter_price and product.price_min <= max_fillter_price %}{% continue %}{% endunless -%}
+                 {%- capture cap_cat_filters %}{% render 'cat_filters',arr_vl_filters:arr_filter,product:product,logic_and:logic_and -%}{% endcapture %}{% assign cap_cat_filters = cap_cat_filters |strip -%}
+                 {%- unless cap_cat_filters contains 'true' %}{% continue %}{% endunless -%}
+                 {%- assign index= index|plus:1 -%}
+                 
+                 {%- render 'pr_loop_grid_1',product:product,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}                 
+                 {%- if index == limitstt %}{% break %}{% endif -%}
+
+               {%- endfor -%}<!--split-->
+             {%- else -%}
+               {%- for product in collection_prs offset:get_fillter_offset -%}
+
+                 {%- assign pr_title_dow = product.title | url_encode | downcase -%}
+                 {%- unless has_fillter_title == false or pr_title_dow contains get_fillter_title %}{% continue %}{% endunless -%}
+                 {%- unless has_fillter_price == false or product.price_min >= min_fillter_price and product.price_min <= max_fillter_price %}{% continue %}{% endunless -%}
+                 {%- capture cap_cat_filters %}{% render 'cat_filters',arr_vl_filters:arr_filter,product:product,logic_and:logic_and -%}{% endcapture %}{% assign cap_cat_filters = cap_cat_filters |strip -%}
+                 {%- unless cap_cat_filters contains 'true' %}{% continue %}{% endunless -%}
+                 {%- assign index= index|plus:1 -%}
+                 {%- render 'pr_loop_grid_2',product:product,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}                 
+                 {%- if index == limitstt %}{% break %}{% endif -%}
+
+                {%- endfor -%}<!--split-->
+             {%- endif -%}
+            </div>
+          {%- endif -%}
+
+          {%- if index == 0 %}<div class="shopify-info cat_emty_noprs"><i class="facl facl-attention"></i>{{ 'collections.general.no_matches' | t }}</div>{% endif -%}
+          {%- unless index < limitstt and get_fillter_offset == 0 %}<div data-js-paginate class="products-footer tc mt__40 mb__60 use_pagination_{{use_pagination}}"><div class="nt_svg_loader"></div></div>{% endunless -%}
+
+       {%- endif -%}
+
+    {%- endpaginate -%}
+{%- else -%}
+  {%- paginate collection.products by limit -%}
+  {%- assign page_t4 = current_page -%}
+  {%- assign p_pages = paginate.pages -%}
+  {%- if p_pages > 1 and use_pagination != 'default' and content_for_header contains '\u0026section_id=' -%}
+
+      {%- render 'ajax_cat_load',page_t4:page_t4,on_list:true,arr_results:collection.products,use_cdt:use_cdt,txt_cd:txt_cd,paginate:paginate,col:col, col_tb:col_tb, col_mb:col_mb,shop_des:shop_des,inc_pr:inc_pr,sett_equal:sett_equal,show_vendor:show_vendor,url_cat:url_cat -%}
+  {%- else -%}
+
+      {%- assign inc_price = settings.price_format -%}
+      {%- assign use_rating = settings.use_pr_rating -%}
+      {%- assign inc_rating = settings.app_review -%}
+      {%- assign show_color = settings.show_pr_color -%}
+      {%- assign show_cl_type = settings.show_color_type -%}
+      {%- assign show_size = settings.show_pr_size -%}
+      {%- assign results_count = collection.products_count -%}
+
+      {%- if nt_ck or current_tags.size > 0 -%}
+      <div class="result_clear mt__30 mb__20">
+         <div class="sp_result_html dib cb clear_filter">{{ 'collections.general.results_with_count_html' | t:count:collection.products_count}}</div>
+         {%- if current_tags.size > 1 -%}<a class="clear_filter dib" href="{{collection.url}}">{{ 'collections.general.clear_filter' | t}}</a>{%- endif -%}
+         {%- if current_tags.size > 0 -%}{%- for tag in current_tags -%}{%- assign txt_tag = tag | replace: '-', ' ' | replace: '_', ' ' -%}{{ txt_tag | link_to_remove_tag: tag | replace: 'title=', 'class="clear_filter dib bf_icons" aria-label=' }}{%- endfor -%}{%- endif -%}
+      </div>
+      {%- endif -%}
+      {%- if p_pages > 1 and use_pagination != 'default' and paginate.previous.is_link -%}
+        <div class="products-footer tc mt__40 mb__30 is_prev_cat_js">
+          <a data-get='{{ paginate.previous.url }}' href="{{ paginate.previous.url }}" data-id="{{section.id}}" class="pr nt_cat_lm button">{{ 'products.grid_items.load_prev' | t }}</a>
+        </div>
+      {%- endif -%}
+      <div class="nt_svg_loader dn"></div>
+
+      {%- if shop_des == 'minimasonry' -%}
+        <div data-change-url data-filterntt4='{"paginate_ntt4":"{{use_pagination}}","limit_ntt4":"{{limitstt}}","use_bar_lmntt4":"{{use_bar_lm}}"}' data-attrsntt4='{"paginate_ntt4":"{{cart.attributes.paginate_ntt4}}","limit_ntt4":"{{cart.attributes.limit_ntt4}}","use_bar_lmntt4":"{{cart.attributes.use_bar_lmntt4}}"}' class="on_list_view_{{on_list_view}} products nt_products_holder row fl_center row_pr_{{inc_pr}} cdt_des_{{se_settings.cdt_des}} round_cd_{{se_settings.round_cd}} {{se_settings.image_size}} {{se_settings.image_ratio}} position_{{se_settings.image_position}} space_{{se_settings.space}}{% if sett_equal %} equal_nt{% endif %} js_isotope nt_isotope" data-isotope='{ "itemSelector": ".pr_grid_item", "layoutMode": "masonry","columnWidth":".grid-sizer","rtl": {{settings.use_rtl}} }'>
+         <div class="col-lg-{{col}} col-md-{{col_tb}} col-{{col_mb}} grid-sizer"></div>
+         {%- if show_list_switch %}{% if inc_pr == '2' %}{% assign inc_pr= '2 tc' %}{% endif -%}
+           {%- for product in collection.products -%}{%- render 'pr_loop_list',page_t4:page_t4,product:product,inc_pr:inc_pr,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}{%- endfor -%}
+         {%- elsif inc_pr == '1' or inc_pr == '1 tc' -%}
+           {%- for product in collection.products -%}{%- render 'pr_loop_grid_1',page_t4:page_t4,product:product,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}{%- endfor -%}<!--split-->
+         {%- else -%}
+           {%- for product in collection.products -%}{%- render 'pr_loop_grid_2',page_t4:page_t4,product:product,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}{%- endfor -%}<!--split-->
+         {%- endif -%}
+      </div>
+      {%- elsif shop_des == 'packery' -%}
+        <div data-change-url data-filterntt4='{"paginate_ntt4":"{{use_pagination}}","limit_ntt4":"{{limitstt}}","use_bar_lmntt4":"{{use_bar_lm}}"}' data-attrsntt4='{"paginate_ntt4":"{{cart.attributes.paginate_ntt4}}","limit_ntt4":"{{cart.attributes.limit_ntt4}}","use_bar_lmntt4":"{{cart.attributes.use_bar_lmntt4}}"}' class="on_list_view_{{on_list_view}} products nt_products_holder row fl_center row_pr_{{inc_pr}} cdt_des_{{se_settings.cdt_des}} round_cd_{{se_settings.round_cd}} {{se_settings.image_size}} {{se_settings.image_ratio}} position_{{se_settings.image_position}} space_{{se_settings.space}}{% if sett_equal %} equal_nt{% endif %} js_packery nt_packery"{% assign rtl = settings.use_rtl %}{% if rtl %}{% assign ltr = false %}{% else %}{% assign ltr = true %}{% endif %} data-packery='{ "itemSelector": ".pr_grid_item","columnWidth": ".pr_grid_item","gutter": 0,"percentPosition": true,"originLeft": {{ltr}} }'>
+        {%- for product in collection.products -%}{% capture col %}{% cycle '3','6','3','3','3','3','3','3','3','6','3','3','3' %}{% endcapture %}{%- render 'pr_loop_grid_1',product:product, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}{%- endfor -%}
+        </div>
+      {%- else -%}
+        <div data-change-url data-filterntt4='{"paginate_ntt4":"{{use_pagination}}","limit_ntt4":"{{limitstt}}","use_bar_lmntt4":"{{use_bar_lm}}"}' data-attrsntt4='{"paginate_ntt4":"{{cart.attributes.paginate_ntt4}}","limit_ntt4":"{{cart.attributes.limit_ntt4}}","use_bar_lmntt4":"{{cart.attributes.use_bar_lmntt4}}"}' class="on_list_view_{{on_list_view}} products nt_products_holder row fl_center row_pr_{{inc_pr}} cdt_des_{{se_settings.cdt_des}} round_cd_{{se_settings.round_cd}} {{se_settings.image_size}} {{se_settings.image_ratio}} position_{{se_settings.image_position}} space_{{se_settings.space}}{% if sett_equal %} equal_nt{% endif %} nt_default">
+         
+         {%- if show_list_switch %}{% if inc_pr == '2' %}{% assign inc_pr= '2 tc' %}{% endif -%}
+           {%- for product in collection.products -%}{%- render 'pr_loop_list',page_t4:page_t4,product:product,inc_pr:inc_pr,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}{%- endfor -%}
+         {%- elsif inc_pr == '1' or inc_pr == '1 tc' -%}
+           {%- for product in collection.products -%}{%- render 'pr_loop_grid_1',page_t4:page_t4,product:product,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}{%- endfor -%}
+         {%- else -%}
+           {%- for product in collection.products -%}{%- render 'pr_loop_grid_2',page_t4:page_t4,product:product,use_cdt:use_cdt,txt_cd:txt_cd, col:col, col_tb:col_tb, col_mb:col_mb,url_cat:url_cat,sett_equal:sett_equal,show_vendor:show_vendor,inc_price:inc_price,use_rating:use_rating,inc_rating:inc_rating,show_color:show_color,show_cl_type:show_cl_type,show_size:show_size -%}{%- endfor -%}
+         {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {%- if collection.products.size == 0 -%}<div class="shopify-info cat_emty_noprs"><i class="facl facl-attention"></i>{{ 'collections.general.no_matches' | t }}</div>{%- endif -%}
+      {%- if p_pages > 1 -%}
+      <div class="products-footer tc mt__40 mb__60">
+        {%- if paginate.next.is_link and use_pagination != 'default' -%}
+          {%- if use_bar_lm -%}
+          <div class="js_progress_bar" data-tt='{{results_count}}'>
+            {%- assign current_pr_size = collection.products.size | plus:paginate.current_offset -%}
+             <p class="mg__0 progress_txt fs__15">{{ 'collections.general.bar_with_count_html' | t:current_count:current_pr_size,total_count:results_count}}</p>
+            <div class="progress_bar pr oh"><div class="current_bar pa t__0 r__0 l__0 b__0" style="width: {{current_pr_size | times:100.0 | divided_by: results_count}}%"></div></div>
+          </div>
+          {%- endif -%}
+          <a data-get='{{ paginate.next.url }}' href="{{ paginate.next.url }}" data-id="{{section.id}}" class="pr nt_cat_lm button{% if use_pagination == 'infinite' %} load-on-scroll{% endif %}">{{ 'products.grid_items.load_more' | t }}</a>
+        {%- else -%}
+        {%- render 'pagination', paginate: paginate,class:'paginate_ajax',style:'style_2' -%}
+        {%- endif -%}
+      </div>
+      {%- else -%}
+       <div class="mt__40 mb__60"></div>
+      {%- endif -%}
+  {%- endif -%}
+  {%- endpaginate -%}
+{%- endif -%}
+<style>
+    {%- if on_list_view -%}
+      .dev_view_cat a.view_list{color: #222}
+      .dark_mode_true .dev_view_cat a.view_list{color: #fff}
+    {%- else -%}
+      .dev_view_cat.dev_desktop a.view_{{col}},.dev_view_cat.dev_tablet a.view_{{col_tb}},.dev_view_cat.dev_mobile a.view_{{cl_mb}}{color: #222}
+      .dark_mode_true .dev_view_cat.dev_desktop a.view_{{col}},.dark_mode_true .dev_view_cat.dev_tablet a.view_{{col_tb}},.dark_mode_true .dev_view_cat.dev_mobile a.view_{{cl_mb}}{color: #fff}
+    {%- endif -%}
+</style>
+
+{%- schema -%}
+  {
+    "name": "Collection Page",
+    "class": "tp_se_cdt",
+    "settings": [
+      {
+        "type": "header",
+        "content": "== General Settings"
+      },
+      {
+        "type": "range",
+        "id": "limit",
+        "min": 1,
+        "max": 50,
+        "step": 1,
+        "label": "Products per page",
+        "info": "Number of products per page",
+        "default": 12
+      },
+      {
+        "type": "range",
+        "id": "space",
+        "min": 20,"max": 50,"step": 10,
+        "unit": "px",
+        "label": "Space between products",
+        "default": 30
+      },
+      {
+        "type": "select",
+        "id": "use_pagination",
+        "label": "Pagination",
+        "default": "default",
+        "options": [
+          {
+            "value": "default",
+            "label": "Default"
+          },
+          {
+            "value": "more",
+            "label": "Load more button"
+          },
+          {
+            "value": "infinite",
+            "label": "Infinit scrolling"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "use_bar_lm",
+        "label": "Show progress bar?",
+        "info": "Only active when you use 'Load more' or 'Infinit scrolling'",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "== Cons 'Load more', 'Infinit scrolling'"
+      },
+      {
+        "type": "paragraph",
+        "content": "Page-loading speed is everything for good user experience. Multiple researches have shown that slow load times result in people leaving your site or delete your app which result in low conversion rates. And that’s bad news for those who use an infinite-scrolling. The more users scroll down a page, more content has to load on the same page. As a result, the page performance will increasingly slow down."
+      },
+      {
+        "type": "paragraph",
+        "content": "Another problem is limited resources of the user’s device. On many infinite scrolling sites, especially those with many images, devices with limited resources (such as mobile devices or tablets with dated hardware) can start slowing down because of the sheer number of assets it has loaded."
+      },
+      {
+        "type": "paragraph",
+        "content": "Therefore, we recommend that you only use 'Load more', 'Infinite scrolling' for when your collection is less than or equal to 400 products"
+      },
+      {
+        "type": "select",
+        "id": "col_pr",
+        "label": "Products per row (desktop)",
+        "info": "How many products you want to show per row",
+        "default": "3",
+        "options": [
+          {
+            "value": "6",
+            "label": "2"
+          },
+          {
+            "value": "4",
+            "label": "3"
+          },
+          {
+            "value": "3",
+            "label": "4"
+          },
+          {
+            "value": "15",
+            "label": "5 (not support when use sidebar)"
+          },
+          {
+            "value": "2",
+            "label": "6 (not support when use sidebar)"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_pr_tb",
+        "label": "Products per row (tablet)",
+        "default": "3",
+        "options": [
+          {
+            "value": "6",
+            "label": "2"
+          },
+          {
+            "value": "4",
+            "label": "3"
+          },
+          {
+            "value": "3",
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "col_pr_mb",
+        "label": "Products per row (mobile)",
+        "default": "6",
+        "options": [
+          {
+            "value": "12",
+            "label": "1"
+          },
+          {
+            "value": "6",
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "pr_des",
+        "label": "Design product",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "Design 1"
+          },
+          {
+            "value": "1 tc",
+            "label": "Design 1 (center)"
+          },
+          {
+            "value": "2",
+            "label": "Design 2"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "show_vendor",
+        "label": "Show product vendors",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "== Countdown timer"
+      },
+      {
+        "type": "paragraph",
+        "content": "Countdown to the end sale date will be shown. Be sure you have set final date of the product sale price. product.metafields.meta.countdown ( 2017\/08\/17 )"
+      },
+      {
+        "type": "checkbox",
+        "id": "use_cdt",
+        "default": false,
+        "label": "Use countdown timer?"
+      },
+      {
+        "type": "checkbox",
+        "id": "round_cd",
+        "default": false,
+        "label": "Round countdown timer?"
+      },
+      {
+        "type": "select",
+        "id": "cdt_des",
+        "label": "Countdown Design:",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "Design 1"
+          },
+          {
+            "value": "2",
+            "label": "Design 2"
+          },
+          {
+            "value": "3",
+            "label": "Design 3"
+          },
+          {
+            "value": "4",
+            "label": "Design 4"
+          },
+          {
+            "value": "5",
+            "label": "Design 5"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "== Design Image"
+      },
+      {
+        "type": "checkbox",
+        "id": "use_eq_height",
+        "label": "Use equal height images?",
+        "default": false
+      },
+      {
+        "type": "select",
+        "id": "image_ratio",
+        "label": "Aspect Ratio",
+        "default": "ratio_nt",
+        "info": "Aspect Ratio Custom will settings in General panel.",
+        "options": [
+          {
+            "group": "Landscape",
+            "value": "ratio2_1",
+            "label": "2:1"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio16_9",
+            "label": "16:9"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio8_5",
+            "label": "8:5"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio3_2",
+            "label": "3:2"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio4_3",
+            "label": "4:3"
+          },
+          {
+            "group": "Landscape",
+            "value": "ratio_nt",
+            "label": "Ratio ASOS"
+          },
+          {
+            "group": "Squared",
+            "value": "ratio1_1",
+            "label": "1:1"
+          },
+          {
+            "group": "Portrait",
+            "value": "ratio2_3",
+            "label": "2:3"
+          },
+          {
+            "group": "Portrait",
+            "value": "ratio1_2",
+            "label": "1:2"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus1",
+            "label": "Ratio Custom 1"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus2",
+            "label": "Ratio Custom 2"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus3",
+            "label": "Ratio Custom 3"
+          },
+          {
+            "group": "Custom",
+            "value": "ratio_cus4",
+            "label": "Ratio Custom 4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "image_size",
+        "label": "Image Size",
+        "default": "nt_cover",
+        "options": [
+          {
+            "value": "nt_cover",
+            "label": "Full"
+          },
+          {
+            "value": "nt_contain",
+            "label": "Auto"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "image_position",
+        "info": "The first value is the horizontal position and the second value is the vertical.",
+        "options": [
+          {
+            "value": "default",
+            "label": "Default"
+          },
+          {
+            "value": "1",
+            "label": "Left Top"
+          },
+          {
+            "value": "2",
+            "label": "Left Center"
+          },
+          {
+            "value": "3",
+            "label": "Left Bottom"
+          },
+          {
+            "value": "4",
+            "label": "Right Top"
+          },
+          {
+            "value": "5",
+            "label": "Right Center"
+          },
+          {
+            "value": "6",
+            "label": "Right Bottom"
+          },
+          {
+            "value": "7",
+            "label": "Center Top"
+          },
+          {
+            "value": "8",
+            "label": "Center Center"
+          },
+          {
+            "value": "9",
+            "label": "Center Bottom"
+          }
+        ],
+        "label": "Image Position",
+        "default": "8"
+      }
+    ]
+  }
+{% endschema %}

@@ -1,0 +1,81 @@
+{%- assign des_header = settings.header_design -%}
+{%- assign limit = 5 -%} 
+<div class="header__mid"><div class="container">
+   <div class="row al_center" style="min-height: {{section.settings.height}}px">
+      <div class="col-lg-3 col-md-9 col-9">
+        <div class="row fl_nowrap al_center">
+          <div class="col-lg-auto col-md-4 col-4 in_flex lh__1">{%- render 'push_menu' -%}</div>
+          <div class="col-lg col-md-8 col-8 tc">{%- render 'nt_logo' with 'div' -%}</div>
+       </div>
+      </div>
+      <div class="col-6 dn db_lg cl_h_search{% if collection != blank and settings.show_search_suggest %} atc_opended_rs{% endif %}">
+        <form action="{{ routes.search_url }}" method="get" class="h_search_frm js_frm_search pr" role="search">
+             <input type="hidden" name="type" value="product">
+             <input type="hidden" name="options[unavailable_products]" value="{{settings.unavailable_prs}}">
+             <input type="hidden" name="options[prefix]" value="{{settings.prefix}}">
+             <div class="row no-gutters al_center">
+               {%- if settings.filter_type_search and shop.types.size > 0 -%}
+                  <div class="frm_search_cat col-auto">
+                      <select name="product_type">
+                        <option value="*">{{ 'general.search.all_cat' | t }}</option>
+                        {%- for product_type in shop.types -%}{%- if product_type == blank %}{% continue-%}{% endif -%}<option value="{{product_type}}"{% if search_pr_type == product_type %} selected="selected"{% endif %}>{{product_type}}</option>{%- endfor -%}
+                      </select>
+                  </div>
+                  <div class="col-auto h_space_search"></div>
+                {%- endif -%}
+               <div class="frm_search_input pr oh col">
+                 <input class="h_search_ip js_iput_search" autocomplete="off" type="text" name="q" placeholder="{{ 'general.search.placeholder2' | t }}" value="{% if template.suffix == blank and search.performed %}{{search_terms |remove:'*'}}{% endif %}">
+               </div>
+               <div class="frm_search_cat col-auto">
+                <button class="h_search_btn js_btn_search" type="submit">{{ 'general.search.btn' | t }}</button>
+               </div>
+             </div>
+           </form>
+           <div class="pr">
+                <div class="mini_cart_content fixcl-scroll widget">
+                   <div class="fixcl-scroll-content product_list_widget">
+                      <div class="ld_bar_search"></div>
+                      <div class="skeleton_wrap skeleton_js dn">
+                         {%- for i in (1..4) -%}
+                         <div class="row mb__10 pb__10">
+                            <div class="col-auto widget_img_pr"><div class="skeleton_img"></div></div>
+                            <div class="col widget_if_pr"><div class="skeleton_txt1"></div><div class="skeleton_txt2"></div></div>
+                         </div>
+                         {%- endfor -%}
+                      </div>
+                      <div class="js_prs_search">
+                      {%- if collection != blank and settings.show_search_suggest -%}
+                          {%- liquid
+                           assign on_sale_txt = 'products.product.on_sale' | t
+                           assign save_js = 'products.product.save_js' | t: saved_amount:'saved_amount' -%}
+                         {%- for product in collection.products limit:limit -%}{%- render 'pr_group_loop',product:product,c:collection,on_sale_txt:on_sale_txt,save_js:save_js -%}{%- endfor -%}
+                         {%- if collection.all_products_count > limit -%}<a href="{{collection.url}}" class="btn fwsb detail_link">{{ 'general.search.view_all' | t }} <i class="facl facl-right"></i></a>{%- endif -%}
+                      {%- endif -%}
+                      </div>
+                   </div>
+                </div>
+           </div>
+      </div>
+     
+      <div class="col-lg-3 col-md-3 col-3 tr">{%- render 'nt_group_btns' -%}</div>
+   </div>
+</div></div>
+
+{%- schema -%}
+  {
+    "name": "Header Design 10",
+    "class": "sp_header_mid",
+	  "settings": [
+      {
+        "type": "range",
+        "id": "height",
+        "label": "== Custom header height",
+        "min": 60,
+        "max": 160,
+        "step": 1,
+        "unit": "px",
+        "default": 80
+      }
+	  ]
+  }
+{% endschema %}

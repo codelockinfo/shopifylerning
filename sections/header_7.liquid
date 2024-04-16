@@ -1,0 +1,225 @@
+{%- liquid 
+    assign se_blocks = section.blocks
+    assign only_icon = 'only_icon_' | append:settings.only_icon -%}
+{%- comment %}<i class="close-menu hide-md db_lg dn pe-7s-close pa"></i>{% endcomment -%}
+<div class="header__mid pl__15 pr__15">
+   <div class="row al_center">
+      <div class="col-lg-12 col-3 dn_lg">{%- render 'push_menu' -%}</div>
+      <div class="col-lg-12 col-6 tc">{%- render 'nt_logo' with 'div' -%}</div>
+      <div class="col-lg-12 col-3 cl_h7_btns tr">{%- render 'nt_group_btns' -%}</div>
+      {%- if section.settings.show_currencies -%}<div class="col-lg-12 tc cl_h7_group mt__20 dn db_lg">{%- render 'currencies' -%}</div>{%- endif -%}
+      <div class="col-12 dn db_lg mt__10 mb__30 tc">
+         <nav id="nav_header7" class="nav_header7 nt_navigation center-xs">
+              <ul class="nt_mb_menu">
+                 {%- if se_blocks.size > 0 -%}
+                    {%- for block in se_blocks -%}
+
+                             {%- if linklists[block.settings.menu].links.size > 0 -%}
+                                 <li id="item_{{block.id}}" class="menu-item item-level-0 menu-item-has-children {{only_icon}}" {{ block.shopify_attributes }}>
+                                   <a href="{{block.settings.url}}" target="{{block.settings.open_link}}"><span class="nav_link_txt flex al_center"{% if block.settings.cus_cl %} style="color: {{block.settings.cl}}"{% endif %}>{% if block.settings.icon != blank %}<i class="las la-{{block.settings.icon | strip }} mr__10 fs__15"></i>{% endif %}{{block.settings.title}}{% if block.settings.lb != blank %}<span class="lbc_nav_mb ml__5" style="background-color: {{block.settings.lb_cl | default:'#01bad4'}}">{{block.settings.lb}}</span>{% endif %}</span><span class="nav_link_icon ml__5"></span></a>
+                                   <ul class="sub-menu">
+                                      {%- for link in linklists[block.settings.menu].links -%}
+
+                                         {%- assign arrlt = link.title | split: '[' -%}
+                                         {%- if link.links != blank -%}
+                                            <li class="menu-item item-level-1 menu-item-has-children {{only_icon}}{% if link.active %} current_item{% endif %}">
+                                               <a href="{{link.url}}"><span class="nav_link_txt flex al_center">{%- render 'lb_inc_mb',arrlt:arrlt -%}</span><span class="nav_link_icon ml__5"></span></a>
+                                               <ul class="sub-sub-menu">
+                                                  {%- for child_link in link.links -%}
+
+                                                     {%- assign arrlt = child_link.title | split: '[' -%}
+                                                     {%- if child_link.links != blank -%}
+                                                        <li id="item_{{block.id}}" class="menu-item item-level-2 menu-item-has-children {{only_icon}}{% if child_link.active %} current_item{% endif %}">
+                                                           <a href="{{child_link.url}}"><span class="nav_link_txt flex al_center">{%- render 'lb_inc_mb',arrlt:arrlt -%}</span><span class="nav_link_icon ml__5"></span></a>
+                                                           <ul class="sub-sub-sub-menu">
+
+                                                              {%- for grandchild_link in child_link.links -%}
+                                                              {%- assign arrlt = grandchild_link.title | split: '[' -%}
+                                                              <li class="menu-item item-level-3{% if grandchild_link.active %} current_item{% endif %}"><a href="{{grandchild_link.url}}">{%- render 'lb_inc_mb',arrlt:arrlt -%}</a></li>
+                                                              {%- endfor -%}
+
+                                                           </ul>
+                                                        </li>
+                                                     {%- else -%}
+                                                         <li class="menu-item item-level-2{% if child_link.active %} current_item{% endif %}"><a href="{{child_link.url}}">{%- render 'lb_inc_mb',arrlt:arrlt -%}</a></li>
+                                                     {%- endif -%}
+
+                                                  {%- endfor -%}
+                                               </ul>
+                                            </li>
+                                         {%- else -%}
+                                            <li class="menu-item item-level-1{% if link.active %} current_item{% endif %}"><a href="{{link.url}}">{%- render 'lb_inc_mb',arrlt:arrlt -%}</a></li>
+                                         {%- endif -%}
+
+                                      {%- endfor -%}
+                                   </ul>
+                                </li>
+                             {%- else -%}
+                                 <li id="item_{{block.id}}" class="menu-item item-level-0"><a href="{{block.settings.url}}"{% if block.settings.cus_cl %} style="color: {{block.settings.cl}}"{% endif %}>{% if block.settings.icon != blank %}<i class="las la-{{block.settings.icon | strip }} mr__10 fs__15"></i>{% endif %}{{block.settings.title }}{% if block.settings.lb != blank %}<span class="lbc_nav_mb ml__5" style="background-color: {{block.settings.lb_cl | default:'#01bad4'}}">{{block.settings.lb}}</span>{% endif %}</a></li>
+                             {%- endif -%}
+                    {%- endfor -%}
+                 {%- else -%}
+                    <li><a href="/admin/themes/">Create your mobile menu sidebar and config from Section > Header Design 7</a></li>
+                 {%- endif -%}
+              </ul>
+         </nav>
+      </div>
+      <div class="col-12 dn db_lg tc">
+          {%- if section.settings.source == '1' -%}{{section.settings.txt}}
+          {%- elsif section.settings.source == '0' -%}
+          {%- elsif section.settings.social == '1' -%}{%- render 'social-sharing',class_tooltip:'ttip_nt tooltip_top' -%}
+          {%- elsif section.settings.social == '2' -%}{%- render 'social-sharing',follow_social:true,class_tooltip:'ttip_nt tooltip_top' -%}{%- endif -%}
+      </div>
+   </div>
+</div>
+
+{%- schema -%}
+  {
+    "name": "Header Design 7",
+    "max_blocks": 20,
+    "class": "sp_header_mid",
+     "settings": [
+      {
+        "type": "header",
+        "content": "1. Currencies",
+        "info": "only show when 'Currency Converter Plus' enable"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_currencies",
+        "label": "Show Currencies?",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "2. Text\/Social Bottom"
+      },
+      {
+        "type": "select",
+        "id": "source",
+        "options": [
+          {
+            "value": "0",
+            "label": "None"
+          },
+          {
+            "value": "1",
+            "label": "Text"
+          },
+          {
+            "value": "2",
+            "label": "Social"
+          }
+        ],
+        "label": "Show:",
+        "default": "2"
+      },
+      {
+        "type": "html",
+        "id": "txt",
+        "label": "___ Text in the header",
+        "info": "You can place here some advertisement or phone numbers.",
+        "default": "Welcome to our store!"
+      },
+      {
+        "type": "select",
+        "id": "social",
+        "options": [
+          {
+            "value": "1",
+            "label": "Share"
+          },
+          {
+            "value": "2",
+            "label": "Follow"
+          }
+        ],
+        "label": "___ Social:",
+        "default": "2"
+      }
+     ],
+    "blocks": [
+      {
+        "type": "menu",
+        "name": "Menu item",
+        "settings": [
+                  {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Heading"
+          },
+          {
+             "type": "url",
+             "id": "url",
+             "label": "Link"
+          },
+          {
+            "type": "select",
+            "id": "open_link",
+            "options": [
+              {
+                "value": "_self",
+                "label": "Current window (_self)"
+              },
+             {
+                "value": "_blank",
+                "label": "New window (_blank)"
+              }
+            ],
+            "label": "Open link in"
+          },
+          {
+            "type": "link_list",
+            "id": "menu",
+            "label": "Add menu"
+          },
+          {
+            "id": "icon",
+            "type": "text",
+            "label": "Icon",
+            "info":"Ex:user [Line awesome icons](https://icons8.com/line-awesome)"
+          },
+          {
+            "type": "checkbox",
+            "id": "cus_cl",
+            "label": "Use cusom heading color?",
+            "default": false
+          },
+          {
+            "type":"color",
+            "id":"cl",
+            "default": "#ec0101",
+            "label":"Heading color"
+          },
+          {
+            "type":"text",
+            "id":"lb",
+            "label":"Label text"
+          },
+          {
+            "type":"color",
+            "id":"lb_cl",
+            "label":"Label color"
+          }
+        ]
+      }
+   ],
+    "default": {
+      "blocks": [
+        {
+          "type": "menu",
+          "settings": {
+            "title": "Heading 1","url":"#"
+          }
+        },
+        {
+          "type": "menu",
+          "settings": {
+            "title": "Heading 2","url":"#"
+          }
+        }
+      ]
+    }
+  }
+{% endschema %}

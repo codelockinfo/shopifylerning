@@ -1,0 +1,40 @@
+{%- liquid
+assign variant_unit = product.variants.first
+assign pid = product.id
+assign hd_up = 'group-' |append:pid
+assign nav_up = linklists[hd_up].links | where:'type','product_link'
+assign nav_up_size = nav_up.size -%}
+
+{%- if nav_up_size == 0 and variant_unit.unit_price_measurement -%}
+   {%- if variant_unit.compare_at_price > variant_unit.price -%}<del>{{ variant_unit.compare_at_price  | money }}</del><ins>{{ variant_unit.price | money }}</ins>{%- else -%}{{ variant_unit.price | money }}{%- endif -%}
+   {%- capture unit_price_base_unit -%}
+    <span class="unit_base">
+      {%- if variant_unit.unit_price_measurement -%}
+        {%- if variant_unit.unit_price_measurement.reference_value != 1 -%}
+          {{- variant_unit.unit_price_measurement.reference_value -}}
+        {%- endif -%}
+        {{ variant_unit.unit_price_measurement.reference_unit }}
+      {%- endif -%}
+    </span>
+   {%- endcapture -%}
+   <div class="price__unit"><span class="unit_price">{{ variant_unit.unit_price | money }}</span><span>/</span>{{- unit_price_base_unit -}}</div>
+
+{%- elsif inc_price == '1' -%}
+  {%- if nav_up_size > 0 -%}{{ product.price | money }}{%- if product.compare_at_price != blank -%} – {{ product.compare_at_price | money }}{%- endif -%}
+  {%- else -%}
+    {%- if product.price_varies -%}{{ product.price_min | money }} – {{ product.price_max | money }}
+    {%- elsif product.compare_at_price > product.price -%}<del>{{ product.compare_at_price  | money }}</del><ins>{{ product.price | money }}</ins>
+    {%- else -%}{{ product.price | money }}
+    {%- endif -%}
+  {%- endif -%}
+
+{%- else -%}
+
+  {%- if nav_up_size > 0 -%}<span class="cb fwn">{{ 'products.product.from' | t }}</span> {{ product.price | money }}
+  {%- else -%}
+    {%- if product.price_varies -%}<span class="cb fwn">{{ 'products.product.from' | t }}</span> {{ product.price_min | money }}
+    {%- elsif product.compare_at_price > product.price -%}<del>{{ product.compare_at_price  | money }}</del><ins>{{ product.price | money }}</ins>
+    {%- else -%}{{ product.price | money }}
+    {%- endif -%}
+  {%- endif -%}
+{%- endif -%}

@@ -1,0 +1,204 @@
+{%- liquid 
+  assign sid = section.id
+  assign image = section.settings.image
+  assign title = section.settings.title -%}
+
+<div class="nt_se_{{sid}} pr oh__ {{section.settings.layout}} nt_img_txt">
+    {%- if image != blank %}{% assign ratio = image.aspect_ratio %}{% assign img_url_1_1 = image | img_url: '1x1' -%}
+      {%- if section.settings.use_pr -%}
+      <div class="parallax-inner nt_parallax_{{section.settings.use_pr}} pa t__0 l__0 r__0 b__0 lazyload" style="background-image: url({{img_url_1_1}})" data-bgset="{{ img_url_1_1 }}" data-ratio="{{ratio}}" data-sizes="auto" data-parent-fit="cover"></div>
+      {%- else -%}
+      <div class="pa t__0 l__0 r__0 b__0 bg_rp_norepeat bg_sz_cover lazyload item__position {{section.settings.img_align}}" style="background-image: url({{img_url_1_1}})" data-bgset="{{ img_url_1_1 }}" data-ratio="{{ratio}}" data-sizes="auto" data-parent-fit="cover"></div>
+      {%- endif -%}
+    {%- endif -%}
+    <div class="wrap_sea_section txt_shadow_{{section.settings.use_shadow}} pr z_100">
+       {% if title != blank %}<div class="item_shadow heading_sea h3">{{title}}</div>{% endif -%}
+       <form action="{{ routes.search_url }}" method="get" role="search" class="search-form search-page-form js_h_search js_frm_search">
+         <div class="input-group input-group--nowrap pr">
+           <div class="input-group__field input-group__field--connected search-form__input-wrapper row no-gutters tl">
+               {%- if search_type and false -%}
+               <div class="frm_search_cat col-auto">
+                   <select name="product_type">
+                     <option value="*">{{ 'general.search.all_cat' | t }}</option>
+                     {%- for product_type in shop.types -%}{%- if product_type == blank %}{% continue-%}{% endif -%}<option value="{{product_type}}"{% if search_pr_type == product_type %} selected="selected"{% endif %}>{{product_type}}</option>{%- endfor -%}
+                   </select>
+               </div>
+               {%- endif -%}
+               <input type="hidden" name="type" value="product">
+               <input type="hidden" name="options[unavailable_products]" value="{{settings.unavailable_prs}}">
+               <input type="hidden" name="options[prefix]" value="{{settings.prefix}}">
+               <input type="text" autocomplete="off" name="q" value placeholder="{{ 'general.search.placeholder' | t }}" class="search-form__input js_iput_search col" />
+              <div class="mini_cart_content fixcl-scroll widget">
+                 <div class="fixcl-scroll-content product_list_widget">
+                    <div class="ld_bar_search"></div>
+                    <div class="skeleton_wrap skeleton_js dn">
+                        <div class="row no-gutters product_list_widget">
+                             {%- for i in (1..4) -%}
+                             <div class="col-12 col-md-6">
+                             <div class="row mb__10 pb__10">
+                                <div class="col widget_img_pr"><div class="skeleton_img"></div></div>
+                                <div class="col widget_if_pr"><div class="skeleton_txt1"></div><div class="skeleton_txt2"></div></div>
+                             </div>
+                             </div>
+                             {%- endfor -%}
+                        </div>
+                    </div>
+                    <div class="js_prs_search"></div>
+                 </div>
+              </div>
+           </div>
+           <button type="submit" class="search-form__connected-submit use_jsSe js_btn_search"><i class="las la-search"></i></button>
+         </div>
+       </form>
+    </div>
+    <a href="/" class="pa t__0 l__0 b__0 r__0 pe_none"></a>
+</div>
+
+{%- render 'section_css' -%}
+{%- style -%}
+   .nt_se_{{sid}}.nt_img_txt>a:after{ background-color: {{section.settings.cl_overlay}};opacity: {{section.settings.cl_opacity | divided_by: 100.00}} }
+   .h3.heading_sea {color: {{section.settings.cl_heading}}}
+{%- endstyle -%}   
+
+{%- schema -%}
+  {
+    "name": "Search Section",
+    "class": "nt_section type_sea_section equal_nt",
+    "settings": [
+      {
+         "type": "textarea",
+         "id": "title",
+         "label": "Heading",
+         "default": "Find the good out there."
+       },
+      {
+         "type": "image_picker",
+         "id": "image",
+         "label": "Image"
+       },
+       {
+        "type": "checkbox",
+        "id": "use_pr",
+        "label": "Enable parallax scroll?",
+        "default": false
+      },
+      {
+        "type": "select",
+        "id": "img_align",
+        "default": "center",
+        "options": [
+         {
+            "value": "top",
+            "label": "Top"
+         },
+         {
+            "value": "center",
+            "label": "Middle"
+         },
+         {
+            "value": "bottom",
+            "label": "Bottom"
+         }
+        ],
+        "label": "Image alignment",
+        "info":"Not active when enable parallax"
+      },
+      {
+        "type": "header",
+        "content": "== Color"
+      },
+      {
+        "type": "checkbox",
+        "id": "use_shadow",
+        "label": "Use text shadow?",
+        "default": false
+      },
+      {
+        "type": "color",
+        "id": "cl_heading",
+        "label": "Heading",
+        "default": "#222"
+      },
+      {
+        "type": "color",
+        "id": "cl_overlay",
+        "label": "Overlay",
+        "default": "#000"
+      },
+      {
+        "type": "range",
+        "id": "cl_opacity",
+        "label": "Overlay opacity",
+        "default": 0,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%"
+      },
+      {
+        "type": "header",
+        "content": "== Design Options"
+      },
+      {
+        "type": "select",
+        "id": "layout",
+        "default": "nt_full",
+        "options": [
+         {
+            "value": "container",
+            "label": "Container"
+         },
+         {
+            "value": "nt_full",
+            "label": "Full Width"
+          }
+        ],
+        "label": "Layout"
+      },
+      {
+        "type": "color",
+        "id": "cl_bg",
+        "label": "Background color",
+        "default": "#f5f5f5"
+      },
+      {
+        "type": "text",
+        "id": "mg",
+        "label": "Margin",
+        "info":"Margin top, margin right, margin bottom, margin left. If you not use to blank",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd",
+        "label": "Padding",
+        "info":"Padding top, padding right, padding bottom, padding left. If you not use to blank",
+        "default": "120px,,120px,",
+        "placeholder": "50px,,50px,"
+      },
+     {
+        "type": "header",
+        "content": "== Design Mobile Options"
+      },
+      {
+        "type": "text",
+        "id": "mg_mb",
+        "label": "Margin",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd_mb",
+        "label": "Padding",
+        "default": "50px,,50px,",
+        "placeholder": "50px,,50px,"
+      }
+    ],
+    "presets": [
+      {
+        "name": "1. Search section",
+        "category": "Others"
+      }
+    ]
+  }
+{% endschema %}

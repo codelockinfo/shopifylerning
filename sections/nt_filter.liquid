@@ -1,0 +1,221 @@
+<div class="h3 mg__0 tu bgb cw visible-sm fs__16 pr">{{ 'collections.general.filter' | t }}<i class="close_pp pegk pe-7s-close fs__40 ml__5"></i></div>
+<div class="cat_shop_wrap">
+<div class="cat_fixcl-scroll">
+<div class="cat_fixcl-scroll-content css_ntbar">
+<div class="row wrap_filter">{%- assign col_class= '3' -%}
+{%- if section.blocks.size > 0 -%}
+{%- if collection.all_tags.size > 0 -%}
+  {%- if current_tags -%}
+     {%- assign tags_dow = collection.tags | join: ',' | downcase -%}{%- assign tags_dow_arr = tags_dow | split:',' -%}{%- assign current_arr = current_tags | join: ',' | downcase -%}{%- assign current_tags = current_arr | split:',' -%}
+  {%- else -%}
+     {%- assign tags_dow = collection.all_tags | join: ',' | downcase -%}{%- assign tags_dow_arr = tags_dow | split:',' -%}
+  {%- endif -%}
+
+  {%- for block in section.blocks -%}
+     {%- case block.type -%}
+        {%- when 'brand' %}{% if block.settings.hidden_block %}{% continue %}{% endif %}{% render 'block_brand',tags_dow_arr:tags_dow_arr,block:block,col_class:col_class,current_tags:current_tags -%}
+        {%- when 'color' %}{% if block.settings.hidden_block %}{% continue %}{% endif %}{% render 'block_color',tags_dow_arr:tags_dow_arr,block:block,col_class:col_class,current_tags:current_tags -%}
+        {%- else %}{% if block.settings.hidden_block %}{% continue %}{% endif %}{% render 'block_other',tags_dow_arr:tags_dow_arr,block:block,col_class:col_class,current_tags:current_tags -%}
+     {%- endcase -%}
+  {%- endfor -%}
+  {%- if current_tags.size > 1 -%}<div class="col-12 tc mt__20 mb__20"><a class="button clear_filter_js" href="{{collection.url}}">{{ 'collections.general.clear_filter' | t}}</a></div>{%- endif -%}
+{%- endif -%}
+{%- else -%}
+<div class="tc">{%- render 'no_blocks'-%}</div>   
+{%- endif -%}
+</div>
+</div>
+</div>
+</div>
+{%- schema -%}
+  {
+    "name": "Filter by tags",
+    "class": "nt_ajaxFilter section_nt_filter",
+    "max_blocks": 50,
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Tags must start with group- and look like group-TAG-NAME where TAG-NAME can be anything you choose, group is a key word."
+      },
+      {
+        "type": "paragraph",
+        "content": "Works: color-Blue or color_Blue"
+      },
+      {
+        "type": "paragraph",
+        "content": "Doesn't work: colors-Blue, colors_Blue, colorBlue"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "brand",
+        "name": "By Brand",
+        "limit": 1,
+        "settings": [
+          {
+          "type": "checkbox",
+          "id": "hidden_block",
+          "label": "Hidden block?",
+          "info": "if checked block will be set to hidden.",
+          "default": false
+        },
+          { 
+          "type":"text",
+          "id":"title",
+          "label":"Filter by categories title",
+          "default":"By Brand"
+          },
+          {
+           "type": "textarea",
+           "id": "arra_enter",
+           "label": "Shop by tags list",
+           "info": "Separate by a comma, i.e \"Tag1, Tag2, Tag3\"."
+         },
+         {
+          "type": "checkbox",
+          "id": "use_auto_filter_tag",
+          "label": "Use auto filter groups?",
+          "default": false
+         },
+         { 
+          "type":"text",
+          "id":"key",
+          "label":"Filter key word",
+          "placeholder": "Vendor",
+          "default":"Vendor"
+          },
+          {
+           "type": "select",
+           "id": "style",
+           "default":"ck",
+           "label": "Design block filter:",
+           "options": [
+             {
+               "value": "df",
+               "label": "Deafult"
+             },
+             {
+               "value": "ck",
+               "label": "Checkbox"
+             },
+             {
+               "value": "tag",
+               "label": "Tag"
+             }
+           ]
+         },
+         {
+          "type": "paragraph",
+          "content": "Create tag filter groups in Shopify. This snippet is designed to group and separate out collection tags. Use admin extensions"
+          }
+        ]
+      },
+      {
+        "type": "color",
+        "name": "By Color",
+        "limit": 1,
+        "settings": [
+          {
+          "type": "checkbox",
+          "id": "hidden_block",
+          "label": "Hidden block?",
+          "info": "if checked block will be set to hidden.",
+          "default": false
+        },
+          { 
+          "type":"text",
+          "id":"title",
+          "label":"Filter by categories title",
+          "default":"By Color"
+          },
+          {
+           "type": "textarea",
+           "id": "arra_enter",
+           "label": "Shop by tags list",
+           "default":"Red,White,Brown,Blue, Black, Green, Grey, Sliver,Pink",
+           "info": "Separate by a comma, i.e \"Tag1, Tag2, Tag3\"."
+         },
+         {
+          "type": "checkbox",
+          "id": "use_auto_filter_tag",
+          "label": "Use auto filter groups?",
+          "default": false
+         },
+         { 
+          "type":"text",
+          "id":"key",
+          "label":"Filter key word",
+          "placeholder": "Color",
+          "default":"Color"
+          },
+         {
+          "type": "paragraph",
+          "content": "Create tag filter groups in Shopify. This snippet is designed to group and separate out collection tags. Use admin extensions"
+          }
+        ]
+      },
+      {
+        "type": "other",
+        "name": "By Other",
+        "settings": [
+          {
+          "type": "checkbox",
+          "id": "hidden_block",
+          "label": "Hidden block?",
+          "info": "if checked block will be set to hidden.",
+          "default": false
+        },
+          { 
+          "type":"text",
+          "id":"title",
+          "label":"Filter by categories title",
+          "default":"By Other"
+          },
+           {
+              "type": "textarea",
+              "id": "arra_enter",
+              "label": "Shop by tags list",
+              "info": "Separate by a comma, i.e \"Tag1, Tag2, Tag3\"."
+            },
+          {
+          "type": "checkbox",
+          "id": "use_auto_filter_tag",
+          "label": "Use auto filter groups?",
+          "default": false
+         },
+         { 
+          "type":"text",
+          "id":"key",
+          "label":"Filter key word",
+          "placeholder": "Other",
+          "default":"Other"
+          },
+          {
+           "type": "select",
+           "id": "style",
+           "default":"ck",
+           "label": "Design block filter:",
+           "options": [
+             {
+               "value": "df",
+               "label": "Deafult"
+             },
+             {
+               "value": "ck",
+               "label": "Checkbox"
+             },
+             {
+               "value": "tag",
+               "label": "Tag"
+             }
+           ]
+         },
+         {
+          "type": "paragraph",
+          "content": "Create tag filter groups in Shopify. This snippet is designed to group and separate out collection tags. Use admin extensions"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

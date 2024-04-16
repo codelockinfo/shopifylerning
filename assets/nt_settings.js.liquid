@@ -1,0 +1,113 @@
+{%- assign pr_curent = settings.pr_curent -%}
+var T4stt_var = { 
+  "disabled_ver_console":false,
+  "CartAttrHidden":true,
+  "theme_ver":"Gecko Shopify v5.6.1",
+  "scrollTop":100,
+  "pjaxTimeout":5000,
+  "HoverInterval":35,
+  "HoverTimeout":150,
+  "dragThreshold":10,
+  "prevOnHref":false,
+  "zoom_mb":{{settings.zoom_mb | json }},
+  "show_confetti":{{settings.shipconfetti | json }},
+  "sw_limit_click":{% if settings.sw_click == '2' %}true{% else %}false{% endif %},
+  "backtop":{{settings.backtop | json }},
+  "pagination":{{settings.use_pagination | json }},
+  "review":{%- if settings.use_pr_rating or settings.use_pr_page_rating -%}true{%- else -%}false{%- endif -%},
+  "app_review":{{settings.app_review | json  }},
+  "ajax_scroll":{{ settings.ajax_scroll_top | json }},
+  "ajax_shop":{{ settings.ajax_shop | json }},
+  "ajax_scroll_offset":"100",
+  "ntla_ck":{% if pr_curent == "1" %}false{% else %}{{settings.show_first_img | json }}{% endif %},
+  "pr_curent":{{pr_curent | json }},
+  "use_clicking_vimg":{{settings.use_clicking_vimg | json }},
+  "enableHistoryState":{% if pr_curent == "1" %}false{% else %}{{settings.enable_his}}{% endif %},
+  "pr_incoming_mess":{{settings.pr_incoming_mess | json }},
+  "use_notify_me":{{ settings.use_notify_me | json }},
+  "use_vimg":{{ settings.use_vimg | json }},
+  "use_sticky_des":{{ settings.use_sticky_des | json }},
+  "wishlist_type":{{ settings.wishlist_type | json }},
+  "wis_atc_added":{{ settings.wis_atc_added | json }},
+  "shop_filters":{{ settings.shop_filters | json }},
+  "type_filters":{{ settings.type_filters | json }},
+  "auto_hide_ofsock":{{ settings.auto_hide_ofsock | json }},
+  "show_hide_ofsock":{{ settings.show_hide_ofsock | json }},
+  "disOnlyStock":false,{%- comment -%}Disable only stock notice{%- endcomment -%}
+  "disATCerror":false,{%- comment -%}Disable add to cart error notice{%- endcomment -%}
+   "close":"Close (Esc)",
+   "share_fb":"Share on Facebook",
+   "pin_it":"Pin it",
+   "tweet":"Tweet",
+   "download_image":"Download image",
+   "img_captions":true,
+   "z_magnify":2,
+   "z_touch":false,
+   "galleryType":"pswp",{%- comment -%}pswp mfp{%- endcomment -%}
+   "maxSpreadZoom":1,
+   "bgOpacity":1,
+   "currencies":{{settings.show_multiple_currencies | json}},
+   "currency_visitor":{{settings.auto_currency | json}},
+   "currency_format":{{settings.currency_format | json}},
+   "round_currency":{{settings.round_currency | json}},
+   "hover_currency":{{settings.hover_currency | json}},
+   "remove_currency":false,
+   "round_cur_shop":false,
+   "after_action_atc":{{settings.after_action_atc |json}},
+   "ins_host":"https://d3ejra0xbg20rg.cloudfront.net",
+  "timezone":{{settings.timezone |default:'not4' |json}},
+  "zoom_tp":{{settings.zoom_tp |json}},
+  "search_prefix":'*',
+  "platform_email":{{settings.platform_email |json}},
+  "checkbox_mail":{{settings.checkbox_mail |json}},
+  "edit_item":{{settings.edit_item |json}} 
+};
+// https://stackoverflow.com/questions/171251/how-can-i-merge-properties-of-two-javascript-objects-dynamically 
+// not support IE 11
+//var nt_settings = {...T4stt_var, ...T4stt_str};
+// polyfill Object.assign
+if (typeof Object.assign !== 'function') {
+  // Must be writable: true, enumerable: false, configurable: true
+  Object.defineProperty(Object, "assign", {
+    value: function assign(target, varArgs) { // .length of function is 2
+      'use strict';
+      if (target === null || target === undefined) {
+        throw new TypeError('Cannot convert undefined or null to object');
+      }
+
+      var to = Object(target);
+
+      for (var index = 1; index < arguments.length; index++) {
+        var nextSource = arguments[index];
+
+        if (nextSource !== null && nextSource !== undefined) {
+          for (var nextKey in nextSource) {
+            // Avoid bugs when hasOwnProperty is shadowed
+            if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
+              to[nextKey] = nextSource[nextKey];
+            }
+          }
+        }
+      }
+      return to;
+    },
+    writable: true,
+    configurable: true
+  });
+}
+var nt_settings = Object.assign({}, T4stt_var, T4stt_str);
+{% if settings.prevent_copying -%}
+    // disable_right_click
+    document.addEventListener("contextmenu", function(event) {var notInput = (event.target || event.srcElement).tagName.toLowerCase() !== "input" && (event.target || event.srcElement).tagName.toLowerCase() !== "textarea";if (notInput && (event.target || event.srcElement).innerText) {event.preventDefault();} });
+    // disable_right_click_img
+    document.addEventListener("mousedown", function(event) { if ((event.target || event.srcElement).tagName.toLowerCase() === "img") {
+        // Middle-click to open in new tab
+        if (event.which == 2) { event.preventDefault(); } 
+    } });
+    document.addEventListener("contextmenu", function(event) { if ((event.target || event.srcElement).tagName.toLowerCase() === "img") { event.preventDefault(); } });
+    // Drag and drop <img> elements
+    const disableDragAndDrop = function(){document.body.setAttribute("ondragstart", "return false;");document.body.setAttribute("ondrop", "return false;");};
+    if (document.readyState === "complete") {disableDragAndDrop();} else {document.addEventListener("DOMContentLoaded", disableDragAndDrop);}
+    // disable_right_click_bg_img
+    document.addEventListener("contextmenu", function(event) { if ((event.target || event.srcElement).style.backgroundImage) { event.preventDefault(); } });
+{%- endif -%}

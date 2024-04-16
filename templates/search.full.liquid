@@ -1,0 +1,80 @@
+{%- liquid
+	layout none
+	assign collection = collections[settings.search_prs_suggest]
+	assign limit = 16 
+	assign search_pr_type = search.terms
+	assign check = true 
+    assign show_search_suggest = settings.show_search_suggest
+	assign on_sale_txt = 'products.product.on_sale' | t
+	assign save_js = 'products.product.save_js' | t: saved_amount:'saved_amount' -%}
+
+<div class="nt_mini_cart flex column h__100">
+	<div class="mini_cart_wrap">
+		<form action="{{ routes.search_url }}" method="get" class="search_header mini_search_frm js_frm_search pr" role="search">
+			<input type="hidden" name="type" value="product">
+			<input type="hidden" name="options[unavailable_products]" value="{{settings.unavailable_prs}}">
+			<input type="hidden" name="options[prefix]" value="{{settings.prefix}}">
+			<div class="row">
+			{%- if shop.types[0] == blank and shop.types.size == 1 %}{% assign check = false %}{% endif -%}
+			{%- if settings.filter_type_search and shop.types.size > 0 and check -%} 
+	         <div class="frm_search_cat col-auto">
+	             <select name="product_type">
+	               <option value="*">{{ 'general.search.all_cat' | t }}</option>
+	               {%- for product_type in shop.types -%}{%- if product_type == blank %}{% continue-%}{% endif -%}<option value="{{product_type}}"{% if search_pr_type == product_type %} selected="selected"{% endif %}>{{product_type}}</option>{%- endfor -%}
+	             </select>
+	         </div>
+	         {%- endif -%}
+			  <div class="frm_search_input pr oh col">
+				  <input class="search_header__input js_iput_search" autocomplete="off" type="text" name="q" placeholder="{{ 'general.search.placeholder' | t }}">
+				  <button class="search_header__submit js_btn_search use_jsfull hide_ {% if settings.ajax_search %} pe_none{% endif %}" type="submit"><i class="iccl iccl-search"></i></button>
+			  </div>
+			</div>
+          
+		  <i class="close_pp pegk pe-7s-close ts__03 cd pa r__0"></i>
+		  <div class="ld_bar_search"></div>
+		</form>
+		<div class="search_header__prs fwsb cd tc{% if collection == blank or show_search_suggest == false %} dn{% endif %}">
+			{%- if collection != blank and show_search_suggest %}<span class="h_suggest">{{ 'general.search.suggest' | t }}</span>{% endif %}<span class="h_result{% if show_search_suggest and collection != blank %} dn{% endif %}">{{ 'general.search.result' | t }}</span><span class="h_results dn">{{ 'general.search.results' | t }}</span>
+		</div> 
+      <div class="search_header__content mini_cart_content fixcl-scroll widget{% if collection == blank or show_search_suggest == false %} dn{% endif %}">
+         <div class="fixcl-scroll-content product_list_widget">
+         	<div class="skeleton_wrap skeleton_js row fl_center dn">
+         		{%- for i in (1..4) -%}
+         		<div class="col-auto tc">
+         		<div class="row mb__10 pb__10">
+         			<div class="col-12"><div class="skeleton_img"></div></div>
+         			<div class="col-12 mt__10"><div class="skeleton_txt1"></div><div class="skeleton_txt2"></div></div>
+         		</div>
+         	    </div>
+         		{%- endfor -%}
+         	</div>
+         	<div class="js_prs_search row fl_center">
+            {%- if collection != blank and show_search_suggest -%}
+               {%- for product in collection.products limit:limit -%}
+					{%- assign on_sale = false -%}{%- assign image = product.images[0] -%}{%- if product.compare_at_price_min > product.price_min -%}{%- assign on_sale = true -%}{%- endif -%}
+					<div class="col-auto tc">
+						<div class="row mb__10 pb__10">
+							<div class="col-12">
+							    {%- if image != blank %}{% assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+							    <div class="img_fix_search"><a class="db pr oh" href="{{product.url}}"><img src="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20{{image.width}}%20{{image.height}}%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3C%2Fsvg%3E" data-src="{{ img_url }}" data-widths="[85, 170, 340, 680, 1360]" data-sizes="auto" class="w__100 lazyload lz_op_ef" class="w__100 lz_op_ef lazyload" alt="{{image.alt | escape }}"></a></div>
+							    {%- endif -%}
+							</div>
+							<div class="col-12 mt__10">
+								 <a class="product-title db" href="{{product.url | within: c}}">{{ product.title }}</a>
+							   {%- if product.price_varies -%}
+								{{ product.price_min | money }}–{{ product.price_max | money }}
+								{%- elsif on_sale -%}<del>{{ product.compare_at_price  | money }}</del> <ins>{{ product.price | money }}</ins>{%- if settings.label_sale_style == '1' -%}<span class="nt_label onsale">{{ on_sale_txt }}</span>{%- else-%}{%- assign save = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | ceil -%}<span class="onsale nt_label">{{ save_js | replace: 'saved_amount':save }}</span>{% endif -%}
+								{%- else -%}
+								{{ product.price | money }}
+								{%- endif -%}
+							</div>
+						</div>
+					</div>
+               {%- endfor -%}
+               {%- if collection.all_products_count > limit -%}<a href="{{collection.url}}" class="btn fwsb detail_link col-12">{{ 'general.search.view_all' | t }} <i class="las la-arrow-right fs__18"></i></a>{%- endif -%}
+            {%- endif -%}
+            </div>
+         </div>
+      </div>
+	</div>
+</div>

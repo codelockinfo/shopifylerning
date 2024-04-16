@@ -1,0 +1,201 @@
+{%- liquid
+assign hidden_cat = settings.use_hidden_cat
+assign type_filters = settings.type_filters
+assign shop_filters = settings.shop_filters
+assign show_list_switch = settings.show_list_switch
+assign admin_sp = request.design_mode
+assign class_main = '12'
+assign shop_des = settings.shop_des
+assign no_sidebar = true
+assign shop_sidebar = settings.shop_sidebar
+if hidden_cat == false 
+  case shop_sidebar
+    when 'right'
+      assign no_sidebar = false
+      case settings.shop_size_sidebar
+        when '1'
+          assign class_main = '10 order-1 '
+          assign class_sidebar = '2 order-12 '
+        when '2'
+          assign class_main = '9 order-1 '
+          assign class_sidebar = '3 order-12 '
+         when '3'
+          assign class_main = '8 order-1 '
+           assign class_sidebar = '4 order-12 '
+      endcase
+    when 'left'
+      assign no_sidebar = false
+      case settings.shop_size_sidebar
+        when '1'
+          assign class_main = '10'
+          assign class_sidebar = '2'
+        when '2'
+          assign class_main = '9'
+          assign class_sidebar = '3'
+        when '3'
+          assign class_main = '8'
+          assign class_sidebar = '4'
+       endcase
+   endcase
+elsif shop_sidebar == 'left' or shop_sidebar == 'right'
+   assign no_sidebar = false 
+   assign class_sidebar = '12'
+endif
+section 'cat_shop'
+section 'cat_heading'
+assign cat_des = settings.cat_des
+assign hd_up = 'sub-' |append:collection.id
+assign nav_up = linklists[hd_up].links | where:'type','collection_link'
+if type_filters == '1'
+ assign nt_filter = 'nt_filter'
+ assign lz_filter = 'lazyload'
+ assign sidebar_shop = 'sidebar_shop'
+else 
+ assign nt_filter = 'nt_filter2'
+ assign lz_filter = ''
+ assign sidebar_shop = 'sidebar_shop2'
+endif
+assign IsShowPRS = true -%}
+
+{%- if nav_up.size > 0 %}{% section 'sub-collections' %}{%- assign IsShowPRS = settings.show_pr_sub -%}{%- endif -%}
+{%- if IsShowPRS -%}
+  {%- if cat_des == '2' %}<div class="cat_des_ntt4 container container_cat tc mt__40">{{ collection.description}}</div>{%- endif -%}
+  <div class="container container_cat {{settings.pop_style}} cat_{{settings.shop_layout}} mb__60">
+     {%- assign get_url = '' | link_to_remove_tag: '' | split:'href="' | last | split:'"' | first | remove:'?customer_posted=true' -%}
+     {%- assign sy = collection.sort_by -%}
+     {%- if collection.current_type or sy != blank or collection.current_vendor or get_url contains '?' -%} {%- assign get_url = get_url | append:'&' -%} {%- else -%} {%- assign get_url = get_url | append:'/?' -%} {%- endif -%}
+     {%- assign sort_by = sy | default: collection.default_sort_by -%}
+     <div class="cat_toolbar row fl_center al_center mt__30">
+        <div class="cat_filter col op__0 pe_none">
+        {%- assign ck = true -%}
+        {%- if settings.shop_filters -%}
+           <a rel="nofollow" href="#" data-no-instant data-opennt="#shopify-section-{{nt_filter}}" data-pos="left" data-remove="true" data-class="popup_filter" data-bg="hide_btn" class="has_icon btn_filter mgr"><i class="iccl fwb iccl-filter fwb mr__5"></i>{{ 'collections.general.filter' | t }}</a>
+           <a rel="nofollow" href="#" data-no-instant data-id="#shopify-section-{{nt_filter}}" class="btn_filter js_filter dn mgr"><i class="iccl fwb iccl-filter fwb mr__5"></i>{{ 'collections.general.filter' | t }}</a>
+        {%- elsif hidden_cat and no_sidebar == false -%}{%- assign ck = false -%}
+           <div class="cat_sidebar">
+              <a rel="nofollow" data-no-instant href="#" data-opennt="#shopify-section-{{sidebar_shop}}" data-pos="left" data-remove="true" data-class="popup_filter" data-bg="hide_btn" class="has_icon btn_sidebar mgr"><i class="iccl fwb iccl-trello fwb mr__5"></i>{{ 'collections.general.sidebar' | t }}</a>
+           </div>
+        {%- elsif no_sidebar == false -%}
+           <div class="cat_sidebar no_hidden_sidebar">
+              <a rel="nofollow" data-no-instant href="#" data-opennt="#shopify-section-{{sidebar_shop}}" data-pos="left" data-remove="true" data-class="popup_filter" data-bg="hide_btn" class="has_icon btn_sidebar mgr"><i class="iccl fwb iccl-trello fwb mr__5"></i>{{ 'collections.general.sidebar' | t }}</a>
+           </div>
+        {%- endif -%}
+        </div>
+        <div class="cat_view col-auto">
+        {%- if settings.show_column_switch and shop_des != 'packery' -%}
+           <div class="dn dev_desktop dev_view_cat">
+               {%- if show_list_switch %}<a rel="nofollow" data-no-instant href="#" data-mode='list' data-dev="dk" data-col="listt4" class="pr mr__10 cat_view_page view_list view_list_js"></a>{% endif -%}
+               <a rel="nofollow" data-no-instant href="#" data-dev="dk" data-col="6" class="pr mr__10 cat_view_page view_6"></a>
+               <a rel="nofollow" data-no-instant href="#" data-dev="dk" data-col="4" class="pr mr__10 cat_view_page view_4"></a>
+               <a rel="nofollow" data-no-instant href="#" data-dev="dk" data-col="3" class="pr mr__10 cat_view_page view_3"></a>
+               {%- if no_sidebar or hidden_cat -%}<a rel="nofollow" data-no-instant href="#" data-dev="dk" data-col="15" class="pr mr__10 cat_view_page view_15"></a>{%- endif -%}
+               {%- if no_sidebar or hidden_cat -%}<a rel="nofollow" data-no-instant href="#" data-dev="dk" data-col="2" class="pr cat_view_page view_2"></a>{%- endif -%}
+           </div>
+           <div class="dn dev_tablet dev_view_cat">
+               {%- if show_list_switch %}<a rel="nofollow" data-link="{{get_url}}" data-no-instant href="#" data-dev="tb" data-col="listt4" class="pr mr__10 cat_view_page view_list"></a>{% endif -%}
+               <a rel="nofollow" data-no-instant href="#" data-dev="tb" data-col="6" class="pr mr__10 cat_view_page view_6"></a>
+               <a rel="nofollow" data-no-instant href="#" data-dev="tb" data-col="4" class="pr mr__10 cat_view_page view_4"></a>
+               <a rel="nofollow" data-no-instant href="#" data-dev="tb" data-col="3" class="pr cat_view_page view_3"></a>
+           </div>
+           <div class="flex dev_mobile dev_view_cat">
+               {%- if show_list_switch %}<a rel="nofollow" data-link="{{get_url}}" data-no-instant href="#" data-dev="mb" data-col="listt4" class="pr mr__10 cat_view_page view_list"></a>{% endif -%}
+               <a rel="nofollow" data-no-instant href="#" data-dev="mb" data-col="12" class="pr mr__10 cat_view_page view_12"></a>
+               <a rel="nofollow" data-no-instant href="#" data-dev="mb" data-col="6" class="pr cat_view_page view_6"></a>
+           </div>
+        {%- endif -%}
+        </div>
+        {%- if no_sidebar == false and settings.shop_filters and ck -%}
+        <div class="cat_hidden_{{hidden_cat}} col tr">
+           <div class="cat_sidebar">
+              <a rel="nofollow" data-no-instant href="#" data-no-instant data-opennt="#shopify-section-{{sidebar_shop}}" data-pos="right" data-remove="true" data-class="popup_filter" data-bg="hide_btn" class="has_icon btn_sidebar mgr op__0"><i class="iccl fwb iccl-trello fwb mr__5"></i>{{ 'collections.general.sidebar' | t }}</a>
+           </div> 
+           <div class="cat_sortby cat_sortby_js dn">{%- assign option_selected = collection.sort_options | where:"value",sort_by -%}
+              <a class="in_flex fl_between al_center sortby_pick" rel="nofollow" data-no-instant href="#"><span class="sr_txt dn">{{- option_selected.first.name -}}</span><span class="sr_txt_mb">{{ 'collections.sorting.title' | t }}</span><i class="ml__5 mr__5 facl facl-angle-down"></i></a>
+              <div class="nt_sortby dn">
+                <svg class="ic_triangle_svg" viewBox="0 0 20 9" role="presentation"><path d="M.47108938 9c.2694725-.26871321.57077721-.56867841.90388257-.89986354C3.12384116 6.36134886 5.74788116 3.76338565 9.2467995.30653888c.4145057-.4095171 1.0844277-.40860098 1.4977971.00205122L19.4935156 9H.47108938z" fill="#ffffff"></path></svg>
+                <div class="h3 mg__0 tc cd tu ls__2 dn_lg db">{{ 'collections.sorting.title' | t }}<i class="pegk pe-7s-close fs__50 ml__5"></i></div>
+                <div class="nt_ajaxsortby wrap_sortby">
+                 {%- if type_filters == '2' -%}
+
+                      {%- assign nt_canonical_url = canonical_url | replace:'for_offest','for_no_offest' | replace:'?q=%2f%3fq%3d','?q=' -%}
+                      {%- assign txt_current_page = '?page=' |append:current_page -%} 
+                      {%- assign key_block = 'for_no_offest%3d' | append:get_fillter_offset -%}
+                      {%- assign key_block2 = '+nt+for_no_offest%3d' | append:get_fillter_offset -%}
+                      {%- assign sortby_url = nt_canonical_url | remove:key_block2 | remove:key_block | remove:txt_current_page | replace:'+nt+&sort_by','&sort_by' -%}
+
+                      {%- if nt_canonical_url contains sort_by -%}
+                        {%- for option in collection.sort_options -%}
+                          <a class="truncate{% if sort_by == option.value %} selected{% endif %}" href="{{ sortby_url | replace:sort_by,option.value }}">{{ option.name }}</a>
+                        {%- endfor -%}
+                      {%- else -%}
+                        {%- for option in collection.sort_options -%}
+                          <a class="truncate{% if sort_by == option.value %} selected{% endif %}" href="{{ sortby_url | sort_by: option.value }}">{{ option.name }}</a>
+                        {%- endfor -%}
+                      {%- endif -%}
+                 {%- else -%}
+                    
+                      {%- if get_url contains sort_by -%}
+                        {%- for option in collection.sort_options %}<a class="truncate{% if sort_by == option.value %} selected{% endif %}" href="{{ get_url | replace:sort_by,option.value | replace:'+nt+&sort_by','&sort_by' }}">{{ option.name }}</a>{% endfor -%}
+                      {%- else -%}
+                        {%- for option in collection.sort_options %}<a class="truncate{% if sort_by == option.value %} selected{% endif %}" href="{{ get_url | sort_by: option.value  | replace:'+nt+&sort_by','&sort_by'}}">{{ option.name }}</a>{% endfor -%}
+                      {%- endif -%}
+
+                 {%- endif -%}
+                </div>
+              </div>
+           </div>
+        </div>
+        {%- elsif settings.sort_enable -%}
+            <div class="cat_sortby cat_sortby_js col tr">{%- assign option_selected = collection.sort_options | where:"value",sort_by -%}
+              <a class="in_flex fl_between al_center sortby_pick" rel="nofollow" data-no-instant href="#"><span class="sr_txt dn">{{- option_selected.first.name -}}</span><span class="sr_txt_mb">{{ 'collections.sorting.title' | t }}</span><i class="ml__5 mr__5 facl facl-angle-down"></i></a>
+              <div class="nt_sortby dn">
+                <svg class="ic_triangle_svg" viewBox="0 0 20 9" role="presentation"><path d="M.47108938 9c.2694725-.26871321.57077721-.56867841.90388257-.89986354C3.12384116 6.36134886 5.74788116 3.76338565 9.2467995.30653888c.4145057-.4095171 1.0844277-.40860098 1.4977971.00205122L19.4935156 9H.47108938z" fill="#ffffff"></path></svg>
+                <div class="h3 mg__0 tc cd tu ls__2 dn_lg db">{{ 'collections.sorting.title' | t }}<i class="pegk pe-7s-close fs__50 ml__5"></i></div>
+                <div class="nt_ajaxsortby wrap_sortby">
+                 {%- if type_filters == '2' -%}
+
+                      {%- assign nt_canonical_url = canonical_url | replace:'for_offest','for_no_offest' | replace:'?q=%2f%3fq%3d','?q=' | replace:'+nt++nt+','+nt+' -%}
+                      {%- assign txt_current_page = '?page=' |append:current_page -%} 
+                      {%- assign key_block = 'for_no_offest%3d' | append:get_fillter_offset -%}
+                      {%- assign key_block2 = '+nt+for_no_offest%3d' | append:get_fillter_offset -%}
+                      {%- assign sortby_url = nt_canonical_url | remove:key_block2 | remove:key_block | remove:txt_current_page -%}
+                      
+                      {%- if nt_canonical_url contains sort_by -%}
+                        {%- for option in collection.sort_options -%}
+                          <a class="truncate{% if sort_by == option.value %} selected{% endif %}" href="{{ sortby_url | replace:sort_by,option.value | replace:'+nt+&sort_by','&sort_by'}}">{{ option.name }}</a>
+                        {%- endfor -%}
+                      {%- else -%}
+                        {%- for option in collection.sort_options -%}
+                          <a class="truncate{% if sort_by == option.value %} selected{% endif %}" href="{{ sortby_url | sort_by: option.value | replace:'+nt+&sort_by','&sort_by'}}">{{ option.name }}</a>
+                        {%- endfor -%}
+                      {%- endif -%}
+                 {%- else -%}
+                    
+                      {%- if get_url contains sort_by -%}
+                        {%- for option in collection.sort_options %}<a class="truncate{% if sort_by == option.value %} selected{% endif %}" href="{{ get_url | replace:sort_by,option.value }}">{{ option.name }}</a>{% endfor -%}
+                      {%- else -%}
+                        {%- for option in collection.sort_options %}<a class="truncate{% if sort_by == option.value %} selected{% endif %}" href="{{ get_url | sort_by: option.value }}">{{ option.name }}</a>{% endfor -%}
+                      {%- endif -%}
+
+                 {%- endif -%}
+                </div>
+              </div>
+            </div>
+        {%- else -%}<div class="col"></div>
+        {%- endif -%}
+     </div>
+
+     {%- if shop_filters and admin_sp -%}
+           <div class="filter_area"><div class="filter_area_wrap">{% if type_filters == '1' %}{%- section 'nt_filter' -%}{% else %}{%- section 'nt_filter2' -%}{% endif %}</div></div>
+       {%- elsif shop_filters -%}
+          <div class="filter_area_js filter_area {{lz_filter}} lazypreload" data-include="{{get_url}}section_id={{nt_filter}}"></div>
+     {%- endif -%}
+
+     <div class="row">
+        {%- if no_sidebar == false and admin_sp -%}<div class="js_sidebar sidebar sidebar_nt col-lg-{{class_sidebar}} col-12 space_{{settings.space_sidebar}} hidden_{{hidden_cat}}">{% if type_filters == '1' %}{%- section 'sidebar_shop' -%}{% else %}{%- section 'sidebar_shop2' -%}{% endif %}</div>
+        {%- elsif no_sidebar == false -%}<div class="js_sidebar sidebar sidebar_nt col-lg-{{class_sidebar}} col-12 space_{{settings.space_sidebar}} hidden_{{hidden_cat}} {{lz_filter}} lazypreload" data-include="{{get_url}}section_id={{sidebar_shop}}"><div class="nt_svg_loader dn"></div></div>{%- endif -%}
+        <div class="col-lg-{{class_main}} col-12">{%- section 'collection_page' -%}</div>
+     </div>
+  </div>
+  {%- if cat_des == '3' %}<div class="cat_des_ntt4 container container_cat tc mb__60">{{ collection.description}}</div>{%- endif -%}
+{%- endif -%}

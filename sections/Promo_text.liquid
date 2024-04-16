@@ -1,0 +1,258 @@
+{%- liquid 
+  assign sid = section.id
+  assign se_stts = section.settings
+  assign se_height = se_stts.se_height
+  assign layout = se_stts.layout
+  assign se_blocks = section.blocks 
+  assign index = 1
+  assign image = se_stts.image
+  if layout == 'wrap'
+   assign html_layout = '<div class="container">__</div>' | split:'__'
+  else
+   assign html_layout = '__' | split:'__'
+  endif -%}
+
+<div class="nt_se_{{sid}} {{layout}}{%- if image != blank %} hide_bgimg_{{se_stts.hide_bgimg}} lazyload se_t4_bg nt_parallax_{{se_stts.use_pr}}{%- endif -%}"{% if image != blank %} data-bgset="{{ image | img_url: '1x1' }}" data-ratio="{{image.aspect_ratio}}" data-sizes="auto" data-parent-fit="cover"{% endif %}>
+   {{-html_layout[0]-}}
+   <div class="row tc{% if se_blocks.size > 1 %} nt_slider js_carousel{% endif %}"{% if se_blocks.size > 1 %} data-flickity='{ "fade":{{ se_stts.effect }},"cellAlign": "center","imagesLoaded": 0,"lazyLoad": 0,"freeScroll": 0,"wrapAround": true,"autoPlay" : {{ se_stts.au_time | times: 1000 }},"pauseAutoPlayOnHover" : true, "rightToLeft": false, "prevNextButtons": false,"pageDots": false, "contain" : 1,"adaptiveHeight" : 1,"dragThreshold" : 5,"percentPosition": 1 }'{% endif %}>
+       {%- if se_blocks.size > 0 -%}
+          {%- for block in se_blocks %}{% assign bid = block.id %}{% assign bk_stts = block.settings -%}
+
+            {%- capture cap_date %}<span data-hbanner_cd data-loop="{% if bk_stts.dayx > 0 %}true{% else %}false{% endif %}" data-date="{{bk_stts.countdown}}" data-dayl="{{bk_stts.dayx}}"></span>{% endcapture -%}
+            <div class="col-12" id="nt_{{block.id}}" {{ block.shopify_attributes }}>
+               {{bk_stts.content | replace:'[countdown]',cap_date}}
+               {%- style -%}
+                 #nt_{{bid}} { {% if bk_stts.content_pd_mb != blank %}padding:{{bk_stts.content_pd_mb}};{% endif %}{% if bk_stts.ls_mb_text != 0 %}letter-spacing:{{bk_stts.ls_mb_text}}px;{% endif %}{% if bk_stts.lh_mb_text != 0 %}line-height:{{bk_stts.lh_mb_text}}px;{% endif %}font-size: {{bk_stts.fs_mb_text}}px;font-weight: {{bk_stts.fw_text}};color: {{bk_stts.color}} }@media (min-width: 768px) {#nt_{{bid}} { {% if bk_stts.content_pd != blank %}padding:{{bk_stts.content_pd}};{% endif %}{% if bk_stts.ls_text != 0 %}letter-spacing:{{bk_stts.ls_text}}px;{% endif %}{% if bk_stts.lh_text != 0 %}line-height: {{bk_stts.lh_text}}px;{% endif %}font-size: {{bk_stts.fs_text}}px}}
+               {%- endstyle -%}
+            </div>
+
+          {%- endfor -%}
+       {%- else -%}
+          {%- render 'no_blocks'-%}
+       {%- endif -%}
+   </div>
+   {{-html_layout[1]-}}
+</div>
+
+{%- render 'section_css' -%}
+
+{%- style -%}
+
+{%- endstyle -%}
+
+{%- schema -%}
+  {
+    "name": "Promo Text",
+    "class": "type_promo_text type_carousel tp_se_cdth",
+    "max_blocks": 50,
+    "settings": [
+      {
+        "type": "select",
+        "id": "effect",
+        "label": "Effect Slider",
+        "default": "1",
+        "options": [
+          {
+            "value": "1",
+            "label": "Fade"
+          },
+          {
+            "value": "0",
+            "label": "Slide"
+          }
+        ]
+      },
+      {
+        "type": "range",
+        "id": "au_time",
+        "min": 0,
+        "max": 30,
+        "step": 0.5,
+        "label": "Autoplay Speed in second.",
+        "info": "Set is '0' to disable autoplay.",
+        "unit": "sec",
+        "default": 3.5
+      },
+      {
+        "type": "header","content": "== Design Options"
+      },
+      {
+        "type": "select","id": "layout","default": "wrap","label": "Layout",
+        "options": [
+            { "value": "container", "label": "Container"},
+            { "value": "wrap", "label": "Wrapped Container"},
+            { "value": "nt_full", "label": "Full Width"}
+        ]
+      },
+      {
+        "type": "color","id": "cl_bg","label": "Background color","default": "#1a1a1a"
+      },
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Background Image"
+      },
+      {
+        "type": "checkbox",
+        "id": "hide_bgimg",
+        "label": "Hide Background Image on mobile?",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "use_pr",
+        "label": "Enable parallax Image scroll?",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "mg",
+        "label": "Margin",
+        "info":"Margin top, margin right, margin bottom, margin left. If you not use to blank",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd",
+        "label": "Padding",
+        "default": "8px,,8px,,",
+        "info":"Padding top, padding right, padding bottom, padding left. If you not use to blank",
+        "placeholder": "50px,,50px,"
+      },
+     {
+        "type": "header",
+        "content": "== Design Mobile Options"
+      },
+      {
+        "type": "text",
+        "id": "mg_mb",
+        "label": "Margin",
+        "placeholder": "50px,,50px,"
+      },
+      {
+        "type": "text",
+        "id": "pd_mb",
+        "label": "Padding",
+        "placeholder": "50px,,50px,"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "1",
+        "name": "Content",
+        "settings": [
+            {
+              "type": "richtext",
+              "id": "content",
+              "label": "Content",
+              "default": "<p>TODAY DEAL SALE OFF 70%. END IN [countdown]. HURRY UP!!!<p>"
+            },
+            {
+              "type": "text",
+              "id": "countdown",
+              "label": "Date countdown",
+              "default": "2021\/12\/20",
+              "info": "Use shortocdes: [countdown]. Countdown to the end sale date will be shown.( 2020\/04\/19 )"
+            },
+            {
+              "type": "range",
+              "id": "dayx",
+              "min": 0,
+              "max": 100,
+              "step": 1,
+              "label": "Reset countdown every x days from an initial date.",
+              "info": "Set is '0' to disable reset countdown.",
+              "unit": "day",
+              "default": 0
+            },
+            {
+              "type": "color",
+              "id": "color",
+              "label": "Color Text",
+              "default": "#fff"
+            },
+            {
+              "type": "range",
+              "id": "fw_text",
+              "min": 300,
+              "max": 800,
+              "step": 100,
+              "label": "Font weight",
+              "default": 600
+            },
+            {
+              "type": "range",
+              "id": "fs_text",
+              "min": 10,
+              "max": 60,
+              "step": 0.5,
+              "label": "Font size",
+              "unit": "px",
+              "default": 10
+            },
+            {
+              "type": "range",
+              "id": "lh_text",
+              "min": 0,
+              "max": 100,
+              "step": 1,
+              "label": "Line Height",
+              "info": "set is '0' use to default",
+              "unit": "px",
+              "default": 0
+            },
+            {
+              "type": "range",
+              "id": "ls_text",
+              "min": 0,
+              "max": 10,
+              "step": 0.1,
+              "label": "Letter spacing",
+              "info": "set is '0' use to default",
+              "unit": "px",
+              "default": 0
+            },
+            {
+              "type": "range",
+              "id": "fs_mb_text",
+              "min": 10,
+              "max": 50,
+              "step": 0.5,
+              "label": "Font size (mobile)",
+              "unit": "px",
+              "default": 10
+            },
+            {
+              "type": "range",
+              "id": "lh_mb_text",
+              "min": 0,
+              "max": 50,
+              "step": 0.5,
+              "label": "Line Height (mobile)",
+              "info": "set is '0' use to default",
+              "unit": "px",
+              "default": 0
+            },
+            {
+              "type": "range",
+              "id": "ls_mb_text",
+              "min": 0,
+              "max": 10,
+              "step": 0.1,
+              "label": "Letter spacing",
+              "info": "set is '0' use to default",
+              "unit": "px",
+              "default": 0
+            }
+          ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "9.1 Promo Text",
+        "category": "V. Text",
+        "blocks": [{"type": "1"}]
+      }
+    ]
+  }
+{% endschema %}

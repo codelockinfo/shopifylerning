@@ -1,0 +1,177 @@
+{%- liquid 
+    assign routes_search_url = routes.search_url
+    assign admin_sp = request.design_mode -%}
+<script type="application/ld+json">{"@context": "http://schema.org","@type": "Organization","name": {{ shop.name | json }},{%- if settings.logo -%}{%- assign image_size = settings.logo.width | append:'x' -%}"logo": {{ settings.logo | img_url: image_size | prepend: "https:" | json }},{%- endif -%}"sameAs": [{{ settings.social_twitter_link | json }},{{ settings.social_facebook_link | json }},{{ settings.social_pinterest_link | json }},{{ settings.social_dribbble_link | json }},{{ settings.social_instagram_link | json }},{{ settings.social_tumblr_link | json }},{{ settings.social_youtube_link | json }},{{ settings.social_linkedin_link | json }},{{ settings.social_behance_link | json }},{{ settings.social_soundcloud_link | json }}],"url": {{ shop.url | append: page.url | json }},"address": {"@type": "PostalAddress","streetAddress": "{{ shop.address.street }}","addressLocality": "{{ shop.address.city }}","addressRegion": "{{ shop.address.province }}","postalCode": "{{ shop.address.zip }}","addressCountry": "{{ shop.address.country }}"},"contactPoint": [{ "@type": "ContactPoint","telephone": "{{shop.phone}}","contactType": "customer service"}] }</script>
+{%- if t_name == 'index' -%}{%- capture potential_action_target -%}{{shop.url}}{{ routes_search_url }}?q={search_term_string}{%- endcapture -%}
+<script type="application/ld+json">{"@context": "http://schema.org","@type": "WebSite","name": {{ shop.name | json }},"potentialAction": {"@type": "SearchAction","target": {{ potential_action_target | json }},"query-input": "required name=search_term_string"},"url": {{ shop.url | append: page.url | json }} }</script>
+{%- endif -%}
+{%- if settings.backtop != '1' -%}<a id="nt_backtop" class="pf br__50 z__100 des_bt{{settings.backtop_des}}" href="/"><span class="tc br__50 db cw"><i class="pr pegk pe-7s-angle-up"></i></span></a>{%- endif -%}
+{% comment %}<div id="nt_fk_menu"></div><div id="nt_fk_cart"></div>{% endcomment %}
+<div id="order_day" class="dn">{{'products.product.order_dayNames' | t}}</div><div id="order_mth" class="dn">{{'products.product.order_monthNames' | t}}</div><div id="js_we_stcl" class="dn">{{ 'products.product.notice_only_stock' | t: max: '[max]' }}</div>
+{%- if settings.wishlist_type == "1" -%}
+  <a rel="nofollow" id="wis_ntjs" class="dn" data-get='{{ routes_search_url }}' href="{{ routes_search_url }}/?view=wish"><span class="txt_add">{{ 'general.nt_tooltip.add_to_wishlist' | t }}</span><span class="txt_view">{{ 'general.nt_tooltip.browse_wishlist' | t }}</span><span class="txt_remve">{{ 'general.nt_tooltip.remove_wishlist' | t }}</span></a>
+{%- elsif settings.wishlist_type == "2" and customer %}{% assign customer_meta_wis_prs = customer.metafields.nitro_wishlist.products -%}
+  <a rel="nofollow" id="wis_ntjs" class="dn" data-cusid="{{customer.id}}" data-email="{{customer.email | escape}}" data-get='{{ routes_search_url }}' href="{{ routes_search_url }}/?view=wish"><span id="arr_wis_id">{%- if customer_meta_wis_prs != blank %}{{- customer_meta_wis_prs | strip | split: '|' | first | strip -}}{% endif -%}</span><span class="txt_add">{{ 'general.nt_tooltip.add_to_wishlist' | t }}</span><span class="txt_view">{{ 'general.nt_tooltip.browse_wishlist' | t }}</span><span class="txt_remve">{{ 'general.nt_tooltip.remove_wishlist' | t }}</span></a>
+{%- endif -%}
+{%- if settings.enable_compe %}<a rel="nofollow" id="cp_ntjs" class="dn" data-get='{{ routes_search_url }}' href="{{ routes_search_url }}/?view=compe"></a>{% endif -%}
+<div class="pswp pswp_t4_js dn pswp_tp_{{settings.pswp_tp}}" tabindex="-1" role="dialog" aria-hidden="true"><div class="pswp__bg"></div><div class="pswp__scroll-wrap"><div class="pswp__container"> <div class="pswp__item"></div><div class="pswp__item"></div><div class="pswp__item"></div></div><div class="pswp__ui pswp__ui--hidden"> <div class="pswp__top-bar"> <div class="pswp__counter"></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button> <button class="pswp__button pswp__button--share" title="Share"></button> <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button> <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button> <div class="pswp__preloader"> <div class="pswp__preloader__icn"> <div class="pswp__preloader__cut"> <div class="pswp__preloader__donut"></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"> <div class="pswp__share-tooltip"></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"> </button> <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"> </button> <div class="pswp__caption"> <div class="pswp__caption__center"></div></div></div></div><div class="pswp__thumbnails"></div></div>
+<div class="mask-overlay ntpf t__0 r__0 l__0 b__0 op__0 pe_none"></div>
+{%- liquid 
+assign search_pos = settings.search_pos
+if search_pos == 'dropdown'
+assign search_pos = 'canvas'
+endif
+if admin_sp
+  section 'nt_custom_color'
+endif
+if t_name != 'cart' and settings.cart_pos != 'disable'
+  section 'cart_widget'
+endif -%}
+{%- if admin_sp -%}
+{%- render 'style_up_css' -%}
+<div id="nt_menu_canvas" class="nt_fk_canvas nt_sleft dn">
+  {%- comment -%}
+  {%- if settings.mb_search -%}
+  <div class="search_header_mb">
+    <form action="{{ routes_search_url }}" method="get" class="search_frm_mb pr" role="search"><input autocomplete="off" class="search_input_mb" type="text" name="q" placeholder="{{ 'general.search.placeholder' | t }}"><button class="search_btn_mb pr" type="submit"><i class="iccl iccl-search"></i></button></form>
+  </div>
+  {%- endif -%}
+  <i class="close_pp pegk pe-7s-close ts__03 cd"></i>
+  {%- endcomment -%}
+  {%- assign mb_cat = settings.mb_cat -%}
+  {%- assign first_cat = settings.first_cat -%}
+  {%- if first_cat and mb_cat -%}
+    <div class="mb_nav_tabs flex al_center mb_cat_{{mb_cat}} first_cat_{{first_cat}}">
+      <div class="mb_nav_title pr flex al_center fl_center active" data-id="#shopify-section-mb_cat_js"><span class="db truncate">{{ 'general.mobile_menu.categories' | t }}</span></div>
+      <div class="mb_nav_title pr mb_nav_ul flex al_center fl_center" data-id="#shopify-section-mb_nav_js"><span class="db truncate">{{ 'general.mobile_menu.menu' | t }}</span></div>
+    </div>
+    <div id="shopify-section-mb_cat_js" class="mb_nav_tab active">{%- section 'mb_cat' -%}</div><div id="shopify-section-mb_nav_js" class="mb_nav_tab">{%- section 'mb_nav' -%}</div>
+
+  {%- else -%}
+    <div class="mb_nav_tabs flex al_center mb_cat_{{mb_cat}}">
+      <div class="mb_nav_title pr mb_nav_ul flex al_center fl_center active" data-id="#shopify-section-mb_nav_js"><span class="db truncate">{{ 'general.mobile_menu.menu' | t }}</span></div>
+      {%- if mb_cat -%}<div class="mb_nav_title pr flex al_center fl_center" data-id="#shopify-section-mb_cat_js"><span class="db truncate">{{ 'general.mobile_menu.categories' | t }}</span></div>{%- endif -%}
+    </div>
+    <div id="shopify-section-mb_nav_js" class="mb_nav_tab active">{%- section 'mb_nav' -%}</div>{%- if mb_cat -%}<div id="shopify-section-mb_cat_js" class="mb_nav_tab">{%- section 'mb_cat' -%}</div>{%- endif -%}
+  {%- endif -%}
+</div>
+<i class="close_pp pegk pe-7s-close ts__03 cw close_mn_t4 ntpf op__0 pe_none"></i>
+{%- else -%}
+<div id="nt_menu_canvas" class="nt_fk_canvas nt_sleft dn lazyload" data-include="{{ routes_search_url }}/?view=mn"></div>
+<i class="close_pp pegk pe-7s-close ts__03 cw close_mn_t4 ntpf op__0 pe_none"></i>
+{%- endif -%}
+<div id="sp_notices_wrapper"></div>
+
+{%- liquid 
+assign locale_selector = false
+assign currency_selector = false
+if shop.enabled_currencies.size > 1 and settings.currency_type == '1' and settings.show_multiple_currencies
+  assign currency_selector = true
+endif
+if settings.show_locale_selector and shop.published_locales.size > 1
+  assign locale_selector = true
+endif -%}
+
+{%- if currency_selector or locale_selector -%}
+  {%- form 'localization', id: 'CurrencyLangSelector', class: 'hide hidden dn' %}{% if locale_selector %}<input type="hidden" name="locale_code" id="LocaleSelector" value="{{ form.current_locale.iso_code }}" data-disclosure-input/>{% endif %}{% if currency_selector %}<input type="hidden" name="currency_code" id="CurrencySelector" value="{{ form.current_currency.iso_code }}" data-disclosure-input/>{% endif %}{%- endform -%}
+{%- endif -%}
+{%- if settings.lang_pos != '0' and locale_selector %}{% render 'languages',class_2:'curt4_fixed' %}{% endif -%}
+{%- if settings.currency_pos != '0' and settings.show_multiple_currencies %}{% render 'currencies',class_2:'curt4_fixed' %}{% endif -%}
+
+{%- if settings.login_side -%}
+  {%- unless t_name contains 'customers/' or customer -%}
+    <div id="nt_login_canvas" class="nt_fk_canvas dn lazyload" data-include="{{ routes.cart_url }}/?view=login"><div class="lds_bginfinity pr"></div></div>
+  {%- endunless -%}
+{%- endif -%}
+{%- if search_pos != 'disable' -%}
+{%- assign search_pr_type = search.terms | split:'product_type:' | last | url_encode -%}
+  <div id="nt_search_canvas" class="nt_fk_{{search_pos}} dn{%- if search_pos == 'full' %} tl tc_lg{% endif %}" data-include="{%- if search_pos == 'full' -%}{{ routes_search_url }}?q={{search_pr_type}}&view=full (min-width: 1025px), {% endif %}{{ routes_search_url }}?q={{search_pr_type}}&view=pp"></div>
+{%- endif -%}
+{%- liquid 
+if t_name == 'product' and settings.sticky_atc and product.available and product.metafields.external == blank 
+  section 'sticky_atc'
+endif
+if settings.enable_toolbar
+  section 'toolbar_mobile'
+endif 
+if settings.enable_new_pp
+  section 'newsletter_pp'
+endif
+if settings.enable_pro_pr_pp and admin_sp
+  section 'promo_pr_pp'
+endif
+if admin_sp and settings.after_action_atc == '2'
+  section 're_upsell'
+endif
+if settings.enable_salse_pp and admin_sp
+  section 'sales_popup'
+endif       
+if settings.enable_ck_pp
+  section 'cookies_law'
+endif
+if settings.enable_age_pp
+  section 'age_verify'
+endif -%}
+{%- if admin_sp == false and settings.enable_pro_pr_pp -%}
+   <div class="js_lz_pppr dn" data-include="{{ routes_search_url }}/?q={{t_name}}&view=pp_pr"></div> 
+{%- endif -%}
+{%- if admin_sp == false and settings.enable_salse_pp -%}
+   <div class="js_lz_slpr dn salse_pp_mb_{{settings.enable_salse_pp_mb}}" data-include="{{ routes_search_url }}/?q={{t_name}}&view=pp_sl"></div>
+{%- endif -%}
+{%- if settings.enable_meta and admin_sp %}{%- section 'page_meta_ntt4' -%}{%- section 'img_meta_ntt4' -%}{% endif -%}
+<div id="snow_ef_t4" class="dn"></div><div id="gliconsymbols" class="hide dn"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><symbol id="scl_remove"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"> <polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line> </svg> </symbol> <symbol id="scl_edit"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"> <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path> </svg> </symbol> <symbol id="scl_selected"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 20l-7-7 3-3 4 4L19 4l3 3z"/></svg></symbol></svg></div>
+
+{%- comment -%}integration growave app{%- endcomment -%}
+{%- if settings.enable_growave -%}
+  <script>
+    {%- if shop.metafields.ssw['fave_enabled'] == 1 and settings.wishlist_type == "3" -%}
+    sswRun(function(){
+      
+  function addToCart(selector){
+       var addCart = setInterval(function() {
+        if(ssw(selector).length !== 0) {
+          ssw(selector).on('click', function() {
+            setTimeout(function(){
+              geckoShopify.onCartUpdate(0,1);
+            }, 1000);
+          })
+          clearInterval(addCart);
+        }
+      },1000)
+    }
+      addToCart('#ssw-fave-page-lists .ssw-fave-add-to-cart');
+      addToCart('#ssw-fave-lists-wrapper .ssw-fave-add-to-cart');
+      addToCart('#fave-variants-modal .ssw-product-variant-add-to-cart');
+      
+      
+      
+      
+      ssw( window ).on('load', function() {
+        var counterWishlist = setInterval(function() {
+          var countWishlist = parseInt(ssw('.ssw-counter-fave-menu').text());
+          if(ssw('.ssw-counter-fave-menu').length) {
+            ssw('.sp-myaccount-nav-link--wishlist .jswcount').html(countWishlist);
+          }
+          clearInterval(counterWishlist);
+        },1000)
+      });
+      
+      var reviewTab = setInterval(function() {
+        if(ssw('.ssw-stars.ssw-stars-large').length) {
+          ssw('.ssw-stars.ssw-stars-large').on('click', function() {
+            ssw('.tab_title_block.active').click();
+          })
+          clearInterval(reviewTab);
+        }
+      },1000)
+    });
+    {%- endif -%}
+  </script>
+{%- endif -%}
+
+{%- comment -%}integration ReCharge app{%- endcomment -%}
+{%- if settings.enable_sub_reCharge -%}
+ <!-- Begin ReCharge code -->
+{%- render 'subscription-theme-footer',template:template -%}
+<!-- End ReCharge code -->
+{%- endif -%}

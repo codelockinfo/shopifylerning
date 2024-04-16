@@ -1,0 +1,520 @@
+{%- liquid
+  assign cl_des = settings.des_pr_design
+  assign cl_mb  = section.settings.des_mb
+  if cl_des == '2'
+    assign ck = section.settings.auto
+  else
+    assign ck = true
+  endif 
+  assign additions = product.metafields.additions
+  assign currently_var = product.selected_or_first_available_variant
+  assign cur_var_id = currently_var.id
+  assign pid = product.id
+  assign hd_up = 'fbt-' |append:pid
+  assign fbt_tag = product.tags| where:'fbtt4_' | first | default:hd_up | remove:'fbtt4_'
+  assign nav_up = linklists[fbt_tag].links | where:'type','product_link'
+  assign nav_up_size = nav_up.size 
+  if product.available == false or settings.fbt_pos == '1'
+    assign nav_up_size = 0
+  endif
+  assign des_w  = section.settings.des_w
+  assign des_pr_layout = settings.des_pr_layout
+  assign pr_tags = product.tags
+  assign tag_arr_size = pr_tags | where:'tabt4_' | size -%}
+
+{%- for i in (1..1) -%}
+  {%- unless section.settings.show %}<style>#wrap_des_pr,#shopify-section-pr_description {display: none !important}</style>{% break %}{% endunless -%}
+  <ul class="ul_none ul_tabs is-flex fl_center fs__16 des_mb_{{cl_mb}} des_style_{{cl_des}}">
+
+    {%- for block in section.blocks -%}
+      {%- case block.type -%}
+      {%- when 'add' %}{% if product.has_only_default_variant %}{% continue %}{% endif -%}
+      <li class="tab_title_block{% if ck %} active{% assign ck = false %}{% endif %}"><a class="db cg truncate pr" href="#tab_{{block.id}}">{{block.settings.title}}</a></li>
+      {%- when 'buy' %}{% if nav_up_size == 0 %}{% continue %}{% endif -%}
+      <li class="tab_title_block{% if ck %} active{% assign ck = false %}{% endif %}"><a class="db cg truncate pr" href="#tab_{{block.id}}">{{block.settings.title}}</a></li>
+      {%- when 'des' -%}
+      <li class="tab_title_block{% if ck %} active{% assign ck = false %}{% endif %}"><a class="db cg truncate pr" href="#tab_pr_deskl">{{block.settings.title}}</a></li>
+      {%- when 'rivui' -%}
+      <li class="tab_title_block{% if ck %} active{% assign ck = false %}{% endif %}"><a class="db cg truncate pr" href="#tab_pr_reivew">{{block.settings.title}}</a></li>
+      {%- when 'tag_pr' %}{% assign tag_arr = 'tabt4_' | append:block.settings.title %}{% if tag_arr_size == 0 %}{% continue %}{% endif %}{% assign tag_arr = pr_tags | where:tag_arr %}{% if tag_arr.size == 0 %}{% continue %}{% endif -%}
+      <li class="tab_title_block{% if ck %} active{% assign ck = false %}{% endif %}"><a class="db cg truncate pr" href="#tab_{{block.id}}">{{block.settings.title}}</a></li>
+      {%- when 'text' %}
+      <li class="tab_title_block{% if ck %} active{% assign ck = false %}{% endif %}"><a class="db cg truncate pr" href="#tab_{{block.id}}">{{block.settings.title}}</a></li>
+      {%- when 'html' %}
+      <li class="tab_title_block{% if ck %} active{% assign ck = false %}{% endif %}"><a class="db cg truncate pr" href="#tab_{{block.id}}">{{block.settings.title}}</a></li>
+      {%- else -%}
+         {%- unless additions[block.type] %}{% continue %}{% endunless -%}
+         <li class="tab_title_block{% if ck %} active{% assign ck = false %}{% endif %}"><a class="db cg truncate pr" href="#tab_{{block.id}}">{{additions[block.type] | split:'|||' | first | strip_html | strip}}</a></li>
+      {%- endcase -%}
+    {%- endfor -%}
+    
+    {%- comment -%}
+    {%- if additions.size > 0 -%}
+      {%- for meta in additions -%}
+        <li class="tab_title_block{% if ck %} active{% assign ck = false %}{% endif %}"><a class="db cg truncate pr" href="#tab_meta_{{forloop.index}}">{{meta[0]}}</a></li>
+       {%- endfor -%}
+    {%- endif -%}
+    {%- endcomment -%}
+
+  </ul>
+  {%- if cl_des == '2' %}{% assign ck = section.settings.auto %}{% else -%}{% assign ck = true %}{% endif -%} 
+  {%- for block in section.blocks -%}
+    {%- case block.type -%}
+
+      {%- when 'des' -%}
+      <div class="panel entry-content sp-tab des_mb_{{cl_mb}} des_style_{{cl_des}}{% if ck %} active{% assign ck = false %}{% else %} dn{% endif %}" id="tab_pr_deskl" {{ block.shopify_attributes }}>
+      	<div class="js_ck_view"></div><div class="heading bgbl dn"><a class="tab-heading flex al_center fl_between pr cd chp fwm" href="#tab_pr_deskl"><span class="txt_h_tab">{{block.settings.title}}</span><span class="nav_link_icon ml__5"></span></a></div>
+      	<div class="sp-tab-content">{{ product.description }}</div>
+      </div>
+
+      {%- when 'buy' -%}{% if nav_up_size == 0 %}{% continue %}{% endif -%} 
+      <div class="panel entry-content sp-tab des_mb_{{cl_mb}} des_style_{{cl_des}}{% if ck %} active{% assign ck = false %}{% else %} dn{% endif %}" id="tab_{{block.id}}" {{ block.shopify_attributes }}>
+        <div class="js_ck_view"></div><div class="heading bgbl dn"><a class="tab-heading flex al_center fl_between pr cd chp fwm" href="#tab_{{block.id}}"><span class="txt_h_tab">{{block.settings.title}}</span><span class="nav_link_icon ml__5"></span></a></div>
+        <div class="sp-tab-content kl_fbt_wrap js_wrap_group">
+          
+         {%- form 'product', product, id: "fbt_frm_id", class:'fbt_frm', novalidate: 'novalidate' -%}
+             <div class="row al_center">
+               <div class="col-auto">
+                 <ul class="ul_none flex wrap al_center kl_fbt_ul">
+                     {%- assign price = currently_var.price -%}{%- assign compare_pr = currently_var.compare_at_price | default:price -%}{%- assign image = currently_var.featured_image | default:product.featured_image -%}
+                     {%- assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+                     <li class="kl_fbt_img_0 kl_fbt_img"><img alt="{{currently_var.title | escape}}" src="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20{{image.width}}%20{{image.height}}%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3C%2Fsvg%3E" data-src="{{ img_url }}" data-widths="[115, 230]" data-sizes="auto" class="lazyload lz_op_ef"></li>
+
+                     {%- for link in nav_up %}{% assign pr = link.object -%}
+                         {%- if pid == pr.id or pr.available == false %}{% continue %}{% endif -%}
+                         {%- assign currently = pr.selected_or_first_available_variant -%}
+                         {%- assign cu_pr = currently.price -%}
+                         {%- assign cp_pr = currently.compare_at_price | default:cu_pr -%}
+                         {%- assign price = price | plus:cu_pr -%}{%- assign compare_pr = compare_pr | plus:cp_pr -%}{%- assign image = currently.featured_image | default:pr.featured_image -%}
+                          {%- assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+                          <li class="kl_fbt_img kl_fbt_img_{{forloop.index}}"><a href="{{pr.url}}" class="dib"><img alt="{{pr.title | escape}}" src="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20{{image.width}}%20{{image.height}}%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3C%2Fsvg%3E" data-src="{{ img_url }}" data-widths="[115, 230]" data-sizes="auto" class="lazyload lz_op_ef"></a></li>
+                     {%- endfor -%}
+
+                 </ul>
+               </div>
+               <div class="col-auto js_fpt_clbtn mt__10 mb__10">
+                 <div class="kl_fbt_total_price mb__10"><span class="mr__5">{{'products.fbt.tt_price' | t}}</span><span class="kl_fbt_tt_price" data-cppr='{{compare_pr}}' data-pr='{{price}}'>{% if compare_pr > price %}<del>{{compare_pr| money}}</del> <ins>{{price| money}}</ins>{% else %}{{price| money}}{% endif %}</span></div>
+                 <button type="submit" name="add" class="kl_fbt_btn js_add_group single_add_to_cart_button button"><span>{{'products.fbt.add_tc' | t}}</span></button>
+               </div>
+             </div>
+
+             <ul class="ul_none mt__30 mb__15">
+
+               <li class="kl_fbt_li js_item_group kl_fbt_li_0 kl_fbt_checked" data-sl='.kl_fbt_img_0'>
+                 {%- assign available_v = product.variants | where: "available" -%}
+                 {%- assign available_v_1 = available_v.first -%}
+
+                 <input type="checkbox" checked="checked" class="js_fbt_ck" id="kl_fbt_ck_0"><label for="kl_fbt_ck_0" class="pr pe_none"><svg class="dn scl_selected"><use xlink:href="#scl_selected"></use></svg></label>
+                 <span><strong>{{'products.fbt.this_item' | t}}</strong> {{product.title | truncatewords: 12}}{% if available_v.size < 2 and product.has_only_default_variant == false %} - {{ available_v_1.title }}{% endif %}</span>
+                
+                 {%- if available_v.size < 2 -%}
+                    <input name="items[][id]" class="js_fbt_input" data-ogprice="{{available_v_1.compare_at_price |default:available_v_1.price}}" data-price="{{available_v_1.price}}" value="{{ available_v_1.id }}" type="hidden">
+                 {%- else -%}
+                    <select name="items[][id]" class="js_fbt_sl">
+                     {%- for variant in available_v -%}
+                        <option data-img="{{variant.image | default:product.featured_image | img_url: '1x1'}}" data-ogprice="{{variant.compare_at_price |default:variant.price}}" data-price="{{variant.price}}" value="{{ variant.id }}"{% if variant.id == cur_var_id %} selected="selected"{% endif %}>{{ variant.title | escape }}</option>
+                     {%- endfor -%}
+                    </select>
+                 {%- endif -%}
+                 <input value="1" type="number" name="items[][quantity]" class="hide hidden js_grp_qty">
+                 <span class="kl_fbt_price">{% if available_v_1.compare_at_price > available_v_1.price %}<del>{{available_v_1.compare_at_price| money}}</del> <ins>{{available_v_1.price| money}}</ins>{% else %}{{available_v_1.price | money}}{% endif %}</span>
+               </li>
+
+               {%- for link in nav_up %}{% assign pr = link.object -%}
+
+                  {%- if pid == pr.id or pr.available == false %}{% continue %}{% endif -%}{%- assign index = forloop.index -%}
+                  {%- assign available_v = pr.variants | where: "available" -%}
+                  {%- assign available_v_1 = available_v.first -%}
+                  <li class="kl_fbt_li js_item_group kl_fbt_li_{{index}} kl_fbt_checked" data-sl='.kl_fbt_img_{{index}}'>
+                    <input type="checkbox" checked="checked" class="js_fbt_ck" id="kl_fbt_ck_{{index}}"><label for="kl_fbt_ck_{{index}}" class="pr"><svg class="dn scl_selected"><use xlink:href="#scl_selected"></use></svg></label>
+                    <a class="kl_fbt_a" href="{{pr.url}}">{{pr.title | truncatewords: 12}}{% if available_v.size < 2 and pr.has_only_default_variant == false %} - {{ available_v_1.title }}{% endif %}</a>
+                   
+                    {%- if available_v.size < 2 -%}
+                       <input name="items[][id]" class="js_fbt_input" data-ogprice="{{available_v_1.compare_at_price |default:available_v_1.price}}" data-price="{{available_v_1.price}}" value="{{ available_v_1.id }}" type="hidden">
+                    {%- else -%}
+                       <select name="items[][id]" class="js_fbt_sl">
+                        {%- for variant in available_v -%}
+                           <option data-img="{{variant.image | default:pr.featured_image | img_url: '1x1'}}" data-ogprice="{{variant.compare_at_price |default:variant.price}}" data-price="{{variant.price}}" value="{{ variant.id }}">{{ variant.title | escape }}</option>
+                        {%- endfor -%}
+                       </select>
+                    {%- endif -%}
+                    <input value="1" type="number" name="items[][quantity]" class="hide hidden js_grp_qty">
+                    <span class="kl_fbt_price">{% if available_v_1.compare_at_price > available_v_1.price %}<del>{{available_v_1.compare_at_price| money}}</del> <ins>{{available_v_1.price| money}}</ins>{% else %}{{available_v_1.price | money}}{% endif %}</span>
+                  </li>
+
+               {%- endfor -%}
+             </ul>
+
+         {%- endform -%}
+        </div>
+      </div>
+      <style>.kl_fbt_img:not(.kl_fbt_img_0):before{content:"+";font-size:20px}.kl_fbt_li select{width:auto;border-radius:5px;color:#222;height:36px;line-height:36px;margin-left:5px}.kl_fbt_tt_price{color:#ec0101;font-size:18px}.kl_fbt_price{color:#ec0101;font-size:15px;margin:0 5px}.kl_fbt_wrap del{color:#878787}.kl_fbt_wrap ins{text-decoration:none}.kl_fbt_li:not(:last-child){margin-bottom:10px}.js_fbt_ck,.kl_fbt_li .label{display:none}.kl_fbt_li label:before{position:relative;top:2px;content:'';display:inline-block;margin-right:4px;width:14px;height:14px;min-width:14px;border:1px solid #d4d6d8;background:#fff;box-shadow:none;background-size:0;background-repeat:no-repeat;background-position:50%;transition:all .2s ease-in-out;border-radius:2px;-webkit-appearance:none;transition:border-color .2s ease-in-out,box-shadow .2s ease-in-out,background .2s ease-in-out}.kl_fbt_li svg{display:block;width:10px;height:10px;fill:#fff;position:absolute;top:5px;left:2px;pointer-events:none;transform:scale(0);-webkit-transform:scale(0);-webkit-transition:all .25s ease-in-out;transition:all .25s ease-in-out}.js_fbt_ck:checked+label svg{transform:scale(1);-webkit-transform:scale(1)}.js_fbt_ck:not(:checked)~*{opacity:.2}.js_fbt_ck:not(:checked)+label{opacity:1}.kl_fbt_img img{width:100%;margin:5px 10px;max-width:115px}.kl_fbt_img_0.kl_fbt_img img{margin-left:0}@media (max-width:1024px){.kl_fbt_img img{margin:5px;max-width:70px}.des_style_1.des_mb_2.sp-tab .kl_fbt_img img,.des_style_2 .kl_fbt_img img{max-width:55px}.des_style_1.des_mb_2 .kl_fbt_img_0.kl_fbt_img img{margin-left:5px}.kl_fbt_img:not(.kl_fbt_img_0):before{font-size:16px}.kl_fbt_li label:before{width:24px;height:24px}.kl_fbt_li svg{width:16px;height:16px;top:-2px;left:3px}}</style> 
+      
+      {%- when 'add' %}{% if product.has_only_default_variant %}{% continue %}{% endif -%}
+      <div class="panel entry-content sp-tab des_mb_{{cl_mb}} des_style_{{cl_des}}{% if ck %} active{% assign ck = false %}{% else %} dn{% endif %}" id="tab_{{block.id}}" {{ block.shopify_attributes }}>
+      	<div class="js_ck_view"></div><div class="heading bgbl dn"><a class="tab-heading flex al_center fl_between pr cd chp fwm" href="#tab_{{block.id}}"><span class="txt_h_tab">{{block.settings.title}}</span><span class="nav_link_icon ml__5"></span></a></div>
+      	<div class="sp-tab-content">
+      		<table class="pr_attrs">
+      			<tbody>
+              {%- for product_option in product.options_with_values -%}
+      				<tr class="attr_pa_{{product_option.name | handle }}">
+      					<th class="attr__label">{{ product_option.name }}</th>
+      					<td class="attr__value">
+      						<p>{% for value in product_option.values %}{{ value }}{% unless forloop.last == true %}, {% endunless %}{% endfor %}</p>
+      					</td>
+      				</tr>
+              {%- endfor -%}
+      			</tbody>
+      		</table>
+      	</div>
+      </div>
+      
+      {%- when 'rivui' -%}
+      <div class="panel entry-content sp-tab des_mb_{{cl_mb}} des_style_{{cl_des}}{% if ck %} active{% assign ck = false %}{% else %} dn{% endif %}" id="tab_pr_reivew" {{ block.shopify_attributes }}>
+      	<div class="js_ck_view"></div><div class="heading bgbl dn"><a class="tab-heading flex al_center fl_between pr cd chp fwm" href="#tab_pr_reivew"><span class="txt_h_tab">{{block.settings.title}}</span><span class="nav_link_icon ml__5"></span></a></div>
+      	<div class="sp-tab-content">
+          {%- case settings.app_review -%}                        
+              {%- when '1' -%}
+                 <div id="shopify-product-reviews" data-id="{{pid}}">{{ product.metafields.spr.reviews }}</div>
+              {%- when '2' -%}
+                 <div class="lt-block-reviews"><ryviu-widget handle="{{product.handle}}" title_product="{{product.title}}" total_meta="{{ product.metafields.ryviu.r_count }}" image_product="{{ product.featured_image.src | img_url: '800x' }}"></ryviu-widget></div>
+              {%- when '3' -%}
+                 <div id="shopify-ali-review" product-id="{{ pid }}">{{ shop.metafields.review_collector.review_code }}</div>
+              {%- when '4' -%}
+                <div id="looxReviews" data-product-id="{{pid}}" class="loox-reviews-default">{{ product.metafields.loox.reviews }}</div>
+              {%- when '5' -%}
+                {%- capture the_snippet_reviews %}{% render 'socialshopwave-widget-recommends' with 1 %}{% endcapture -%}
+                {%- unless the_snippet_reviews contains 'Liquid error' %}{{ the_snippet_reviews }}{% endunless -%}
+              {%- else -%}
+                <div class="star-rating">{%- render 'review_des_other',product:product -%}</div>
+          {%- endcase -%}
+      	</div>
+      </div>
+      
+      {%- when 'html' -%}
+      <div class="panel entry-content sp-tab des_mb_{{cl_mb}} des_style_{{cl_des}}{% if ck %} active{% assign ck = false %}{% else %} dn{% endif %}" id="tab_{{block.id}}" {{ block.shopify_attributes }}>
+        <div class="js_ck_view"></div><div class="heading bgbl dn"><a class="tab-heading flex al_center fl_between pr cd chp fwm" href="#tab_{{block.id}}"><span class="txt_h_tab">{{block.settings.title}}</span><span class="nav_link_icon ml__5"></span></a></div>
+        <div class="sp-tab-content">{{pages[block.settings.page].content}}</div>
+      </div>
+      
+      {%- when 'tag_pr' %}{% if tag_arr_size == 0 %}{% continue %}{% endif %}{% assign tag_arr = 'tabt4_' | append:block.settings.title %}{% assign tag_arr = pr_tags | where:tag_arr %}{% if tag_arr.size == 0 %}{% continue %}{% endif -%}
+      <div class="panel entry-content sp-tab des_mb_{{cl_mb}} des_style_{{cl_des}}{% if ck %} active{% assign ck = false %}{% else %} dn{% endif %}" id="tab_{{block.id}}" {{ block.shopify_attributes }}>
+        <div class="js_ck_view"></div><div class="heading bgbl dn"><a class="tab-heading flex al_center fl_between pr cd chp fwm" href="#tab_{{block.id}}"><span class="txt_h_tab">{{block.settings.title}}</span><span class="nav_link_icon ml__5"></span></a></div>
+        <div class="sp-tab-content">{{pages[block.settings.page].content}}</div>
+      </div>
+
+      {%- when 'text' -%}
+      <div class="panel entry-content sp-tab des_mb_{{cl_mb}} des_style_{{cl_des}}{% if ck %} active{% assign ck = false %}{% else %} dn{% endif %}" id="tab_{{block.id}}" {{ block.shopify_attributes }}>
+        <div class="js_ck_view"></div><div class="heading bgbl dn"><a class="tab-heading flex al_center fl_between pr cd chp fwm" href="#tab_{{block.id}}"><span class="txt_h_tab">{{block.settings.title}}</span><span class="nav_link_icon ml__5"></span></a></div>
+        <div class="sp-tab-content">{{block.settings.text}}</div>
+      </div>
+
+      {%- else -%}
+
+      {%- unless additions[block.type] %}{% continue %}{% endunless %}{% assign tab_meta = additions[block.type] | split:'|||' -%}
+      <div class="panel entry-content sp-tab des_mb_{{cl_mb}} des_style_{{cl_des}}{% if ck %} active{% assign ck = false %}{% else %} dn{% endif %}" id="tab_{{block.id}}" {{ block.shopify_attributes }}>
+        <div class="js_ck_view"></div><div class="heading bgbl dn"><a class="tab-heading flex al_center fl_between pr cd chp fwm" href="#tab_{{block.id}}"><span class="txt_h_tab">{{tab_meta[0] | strip}}</span><span class="nav_link_icon ml__5"></span></a></div>
+        <div class="sp-tab-content">{{tab_meta[1] | strip}}</div>
+      </div>
+
+    {%- endcase -%}
+  {%- endfor -%}
+  
+  {%- comment -%}
+  {%- if additions.size > 0 -%}
+    {%- for meta in additions -%}
+          <div class="panel entry-content sp-tab des_mb_{{cl_mb}} des_style_{{cl_des}}{% if ck %} active{% assign ck = false %}{% else %} dn{% endif %}" id="tab_meta_{{forloop.index}}">
+            <div class="heading bgbl dn"><a class="tab-heading flex al_center fl_between pr cd chp fwm" href="#tab_meta_{{forloop.index}}"><span class="txt_h_tab">{{meta[0]}}</span><span class="nav_link_icon ml__5"></span></a></div>
+            <div class="sp-tab-content">{{ meta[1] }}</div>
+          </div>
+    {%- endfor -%}
+  {%- endif -%}
+  {%- endcomment -%}
+
+{%- style -%}
+   {%- if des_pr_layout == '1' %}
+     {%- if des_w == '3' -%}#wrap_des_pr{%- elsif des_w == '1' -%}#shopify-section-pr_description{%- else -%}.container_des{%- endif -%}{background-color: {{section.settings.bgclmb}};}
+     @media (min-width: 1025px){
+        {%- if des_w == '2' or des_w == '4' -%}
+        .container_des {
+              {%- if des_w == '2' %}max-width: 1600px;
+              {%- else %}max-width: 100%;padding-left: 30px;padding-right: 30px;
+              {%- endif -%}
+         }
+        {%- endif -%}
+        {%- if des_w == '3' -%}#wrap_des_pr{%- elsif des_w == '1' -%}#shopify-section-pr_description{%- else -%}.container_des{%- endif -%}{
+            background-color: {{section.settings.bgcl}};
+        }
+     }
+  {%- else -%}
+    .des_pr_layout_2 #shopify-section-pr_description {margin-top: 40px;}@media (max-width: 1024px) {.des_pr_layout_2 .des_style_1.des_mb_2.sp-tab(:first-child) {margin-bottom: 40px;}}
+  {%- endif -%}
+  {%- assign mg = section.settings.mg -%}
+  {%- assign mg_mb = section.settings.mg_mb -%}
+  {%- if mg != blank -%} 
+  #wrap_des_pr {
+     {%- assign arr_mg = mg | remove:' ' | split:',' -%}
+      margin-top: {{arr_mg[0]}} !important;margin-right: {{arr_mg[1]}} !important;margin-bottom: {{arr_mg[2]}} !important;margin-left: {{arr_mg[3]}} !important;
+  }
+  {%- endif -%}
+  {%- if mg_mb != blank-%} 
+  @media only screen and (max-width: 767px) {
+    #wrap_des_pr {
+      {%- assign arr_mg = mg_mb | remove:' ' | split:',' -%}
+      margin-top: {{arr_mg[0]}} !important;margin-right: {{arr_mg[1]}} !important;margin-bottom: {{arr_mg[2]}} !important;margin-left: {{arr_mg[3]}} !important;
+    }
+  }
+  {%- endif -%}
+{%- endstyle -%}
+
+{%- endfor -%}
+{%- schema -%} 
+  {
+    "name": "Tab Descriptions",
+    "class": "shopify-tabs sp-tabs nt_section",
+    "settings": [ 
+      /*{
+        "type": "paragraph",
+        "content": "Custom Metafields (namespace: additions)"
+      },*/
+      {
+        "type": "checkbox",
+        "id": "show",
+        "label": "Show Tab Descriptions?",
+        "default": true
+      },
+      {
+        "type": "color",
+        "id": "bgcl",
+        "label": "Background Color",
+        "info": "Not working when enable description sidebar",
+        "default": "#fff"
+      },
+      {
+        "type": "color",
+        "id": "bgclmb",
+        "label": "Background Color (mobile)",
+        "info": "Not working when enable description sidebar",
+        "default": "#fff"
+      },
+      {
+        "type": "select",
+        "id": "des_w",
+        "default": "1",
+        "info": "Not working when enable description sidebar",
+        "options": [
+          {
+            "value": "1",
+            "label": "Default"
+          },
+          {
+            "value": "2",
+            "label": "Wide (1600px)"
+          },
+          {
+            "value": "3",
+            "label": "full Width"
+          },
+          {
+            "value": "4",
+            "label": "Content full Width"
+          }
+        ],
+        "label": "Description Layout"
+      },
+      {
+        "type": "select",
+        "id": "des_mb",
+        "label": "Description design mobile",
+        "info": "Only working in Product Tab Description",
+        "default": "2",
+        "options": [
+          {
+            "value": "1","label": "Design 1"
+          },
+          {
+            "value": "2","label": "Design 2"
+          }
+        ]
+      },  
+      {
+      "type": "checkbox",
+      "id": "auto",
+      "label": "Enable auto open?",
+      "info": "Only working in Product Tab Accordions",
+      "default": true
+      },
+      {
+        "type": "text",
+        "id": "mg",
+        "label": "Margin",
+        "default": "30px,,30px,",
+        "placeholder": "30px,,30px,"
+      },
+      {
+        "type": "text",
+        "id": "mg_mb",
+        "label": "Margin Mobile",
+        "default": "0,,0,",
+        "placeholder": "0,,0,"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "des",
+        "name": "Description",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Description"
+          }
+        ]
+      },
+      {
+        "type": "buy",
+        "name": "Bought Together",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "paragraph",
+            "content": "Only active when enable Frequently Bought Together on inside description."
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Frequently Bought Together"
+          }/*,
+          {
+            "type": "paragraph",
+            "content": "'fbt-product_id' [Tutorials Doc](https://gecko-demo.myshopify.com)"
+          },
+          {
+            "type": "paragraph",
+            "content": "[Tutorials Video](https://gecko-demo.myshopify.com)"
+          }*/
+        ]
+      },
+      {
+        "type": "add",
+        "name": "Additional Information",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Additional Information"
+          }
+        ]
+      },
+      {
+        "type": "rivui",
+        "name": "Review",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Reviews"
+          }
+        ]
+      },
+      /*{
+        "type": "shipping",
+        "name": "shipping Information",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "shipping"
+          }
+        ]
+      },*/
+      {
+        "type": "html",
+        "name": "Custom HTML",
+        "settings": [
+         {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Custom tab"
+          },
+          {
+            "type": "page",
+            "id": "page",
+            "label": "Tab content",
+            "info": "This page content will appear in the extra tab."
+          }
+        ]
+      },
+      {
+        "type": "tag_pr",
+        "name": "Product tag tab",
+        "settings": [
+         {
+            "type": "paragraph",
+            "content": "Only show this tab when product has tag 'tabt4_Tab Name'."
+          },
+         {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Tab Name"
+          },
+          {
+            "type": "page",
+            "id": "page",
+            "label": "Tab content",
+            "info": "This page content will appear in the extra tab."
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "name": "Text",
+        "settings": [
+            {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Talk about your brand"
+            },
+            {
+            "type": "richtext",
+            "id": "text",
+            "label": "Text",
+            "default": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>"
+            }
+         ]
+      },
+      {
+        "type": "cus_tab_1","name": "Metafield - Tab #1","limit": 1
+      },
+      {
+        "type": "cus_tab_2","name": "Metafield - Tab #2","limit": 1
+      },
+      {
+        "type": "cus_tab_3","name": "Metafield - Tab #3","limit": 1
+      },
+      {
+        "type": "cus_tab_4","name": "Metafield - Tab #4","limit": 1
+      },
+      {
+        "type": "cus_tab_5","name": "Metafield - Tab #5","limit": 1
+      }
+    ],
+    "default": {
+      "blocks": [
+        { "type": "des" },{ "type": "add" },{ "type": "rivui" }
+      ]
+    }
+  }
+{% endschema %}

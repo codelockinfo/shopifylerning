@@ -1,0 +1,27 @@
+{%- liquid
+	layout none
+	assign limit = 5
+	assign results_count = search.results_count
+	assign only_search_prs = settings.only_search_prs
+	assign arr_terms = search.terms |split:'product_type:'
+    assign search_terms = arr_terms[0] | strip 
+    assign product_type = arr_terms[1] | strip
+   assign on_sale_txt = 'products.product.on_sale' | t
+   assign save_js = 'products.product.save_js' | t: saved_amount:'saved_amount' -%}
+ 
+{%- if results_count > 0 %}{% if results_count > 1 %}.h_results{% else %}.h_result{% endif %}||
+{%- paginate search.results by limit -%}
+	{%- for item in search.results %}{%- render 'pr_group_loop',product:item,on_sale_txt:on_sale_txt,save_js:save_js -%}{% endfor -%}
+	{%- if paginate.pages > 1 -%}
+	    <a href="{{ paginate.next.url | replace: '&page=2', '' | replace: '&view=jsfull', '' | replace: '&view=js', '' }}" class="btn db fwsb detail_link">{{ 'general.search.view_all' | t }}({{results_count}}) <i class="las la-arrow-right fs__18"></i></a>
+	{%- endif -%}
+     {%- if only_search_prs == false and product_type == '*' or product_type == blank -%}
+     <div class="results_article_blog lazyload mt__25" data-include='{{ routes.search_url }}?view=link&q={{search_terms| url_encode}}&type=article,page'></div>
+     {%- endif -%}
+{%- endpaginate -%}
+{%- else -%}
+.h_result||{{ 'general.search.no_prs_results' | t }}
+ {%- if only_search_prs == false and product_type == '*' or product_type == blank -%}
+ <div class="results_article_blog lazyload mt__25" data-include='{{ routes.search_url }}?view=link&q={{search_terms| url_encode}}&type=article,page'></div>
+ {%- endif -%}
+{%- endif -%}

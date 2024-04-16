@@ -1,0 +1,74 @@
+{%- capture array -%}
+{%- assign arr = product.options_with_values[0].values -%}
+{%- assign size = product.options.size -%}
+{%- assign available_prs = pr_variants | where: "available" -%}
+{
+"Ntavailable": [
+  {%- if size == 3 -%}
+      {%- if remove_soldout  -%}
+          {%- for i in arr -%}
+            {
+              "NT": [
+                {%- for variant in available_prs -%}
+                    {%- if variant.option1 == i -%}"{{variant.option2| handle}}","{{variant.option3| handle}}",{%- endif -%}
+                   {%- endfor -%}
+               ]
+            }{%- if forloop.last == false -%},{%- endif -%}        
+          {%- endfor -%}
+        {%- else -%}
+          {%- for i in arr -%}
+            {
+              "NT": [
+                {%- for variant in product.variants -%}
+                    {%- if variant.option1 == i -%}"{{variant.option2| handle}}","{{variant.option3| handle}}",{%- endif -%}
+                   {%- endfor -%}
+               ]
+            }{%- if forloop.last == false -%},{%- endif -%}        
+          {%- endfor -%}
+        {%- endif -%}
+  {%- else -%}
+    {%- if remove_soldout  -%}
+        {%- for i in arr -%}
+          [
+                 {%- for variant in available_prs -%}
+                  {%- if variant.option1 == i -%}"{{variant.option2| handle}}",{%- endif -%}
+                 {%- endfor -%}
+          ]{%- if forloop.last == false -%},{%- endif -%}        
+        {%- endfor -%}
+      {%- else -%}
+        {%- for i in arr -%}
+          [
+                 {%- for variant in product.variants -%}
+                  {%- if variant.option1 == i -%}"{{variant.option2| handle}}",{%- endif -%}
+                 {%- endfor -%}
+          ]{%- if forloop.last == false -%},{%- endif -%}        
+        {%- endfor -%}
+      {%- endif -%}
+  {%- endif -%}
+],
+"Ntsoldout": [
+  {%- if size == 3 -%}
+      {%- for i in arr -%}
+        {
+          "NT": [
+            {%- for variant in available_prs -%}
+                {%- if variant.option1 == i -%}"{{variant.option2| handle}}","{{variant.option3| handle}}",{%- endif -%}
+               {%- endfor -%}
+           ]
+        }{%- if forloop.last == false -%},{%- endif -%}        
+      {%- endfor -%}
+  {%- elsif size == 2 -%}
+    {%- for i in arr -%}
+      [
+             {%- for variant in available_prs -%}
+              {%- if variant.option1 == i -%}"{{variant.option2| handle}}",{%- endif -%}
+             {%- endfor -%}
+      ]{%- if forloop.last == false -%},{%- endif -%}        
+    {%- endfor -%}
+  {%- else -%}
+   {%- for variant in available_prs -%}"{{variant.option1| handle}}",{%- endfor -%}
+  {%- endif -%}
+]
+}
+ {%- endcapture -%}
+ {{- array | strip_newlines | remove:"  " | replace: ',]', ']' -}}

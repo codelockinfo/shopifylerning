@@ -1,0 +1,28 @@
+{%- assign des_header = settings.header_design -%}
+{%- assign h__bgimg = settings.h__bgimg -%}
+<div class="header__mid{% if h__bgimg != blank %} lazyload h__lz_img" data-bgset="{{ h__bgimg | img_url: '1x1' }}" data-ratio="{{h__bgimg.aspect_ratio}}" data-sizes="auto"{% else %}"{% endif %}><div class="container">
+   <div class="row al_center" style="min-height: {{section.settings.height}}px">
+      <div class="col-lg-3 col-md-3 col-3 in_flex lh__1">{%- render 'push_menu' -%}</div>
+      <div class="col-lg-6 col-md-6 col-6 tc">{%- render 'nt_logo' with 'div' -%}</div>
+      <div class="col-lg-3 col-md-3 col-3 tr">{%- render 'nt_group_btns' -%}</div>
+   </div>
+</div></div>
+
+{%- schema -%}
+  {
+    "name": "Header Design 1",
+    "class": "sp_header_mid",
+	  "settings": [
+      {
+        "type": "range",
+        "id": "height",
+        "label": "== Custom header height",
+        "min": 60,
+        "max": 160,
+        "step": 1,
+        "unit": "px",
+        "default": 62
+      }
+	  ]
+  }
+{% endschema %}

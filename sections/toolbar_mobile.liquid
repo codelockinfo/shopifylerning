@@ -1,0 +1,320 @@
+{%- liquid
+  assign show_txt = section.settings.show_txt
+  assign toolbar = settings.enable_toolbar
+  assign img_size = 'x40'
+  assign search_url = routes.search_url -%}
+<div class="gecko_toolbar gecko_toolbar_label_{{show_txt}} ntpf r__0 l__0 b__0 flex fl_between al_center">
+{%- for block in section.blocks %}{% assign block_type = block.type -%}
+{%- case block_type -%}
+  {%- when 'shop' -%}
+   <div class="type_toolbar_{{block_type}} gecko_toolbar_item">
+      <a href="{{collections[block.settings.link].url|default:routes.all_products_collection_url}}">
+        <span class="toolbar_icon"></span>
+        {%- if show_txt -%}<span class="gecko_toolbar_label">{{block.settings.title}}</span>{%- endif -%}
+      </a>
+   </div>
+  {%- when 'wish' -%}
+    {%- if settings.wishlist_type == '0' -%}{%- continue -%}{%- endif -%} 
+    {%- if settings.wishlist_type != "3" -%}
+      <div class="type_toolbar_{{block_type}} gecko_toolbar_item">
+        <a rel="nofollow" class="js_link_wis" href="{{ search_url }}/?view=wish">
+          <span class="toolbar_icon"><span class="jswcount toolbar_count">0</span></span>
+          {%- if show_txt -%}<span class="gecko_toolbar_label">{{block.settings.title}}</span>{%- endif -%}
+        </a>
+      </div>
+    {%- elsif shop.customer_accounts_enabled -%}
+      {%- capture the_snippet_fave_icon %}{% render 'ssw-widget-faveicon' with product.id %}{% endcapture -%}
+      {%- unless the_snippet_fave_icon contains 'Liquid error' -%}
+        <div class="type_toolbar_{{block_type}} gecko_toolbar_item">
+          <a rel="nofollow" class="ssw-link-fave-menu ssw-link-fave-menu-hide-count" href="/pages/wishlist">
+            <span class="toolbar_icon"><span class="jswcount ssw-counter-fave-menu toolbar_count">0</span></span>
+            {%- if show_txt -%}<span class="gecko_toolbar_label">{{block.settings.title}}</span>{%- endif -%}
+          </a>
+        </div>
+      {%- endunless -%}
+    {%- endif -%}
+
+  {%- when 'compe' -%}
+    {%- unless settings.enable_compe -%}{%- continue -%}{%- endunless -%} 
+      <div class="type_toolbar_compare gecko_toolbar_item">
+        <a rel="nofollow" class="js_link_cp" href="{{ search_url }}/?view=compe">
+          <span class="toolbar_icon"><span class="jscpcount toolbar_count">0</span></span>
+          {%- if show_txt -%}<span class="gecko_toolbar_label">{{block.settings.title}}</span>{%- endif -%}
+        </a>
+      </div>
+  {%- when 'cart' -%}
+      <div class="type_toolbar_{{block_type}} gecko_toolbar_item">
+        <a href="{{routes.cart_url}}" class="push_side" data-id="#nt_cart_canvas">
+          <span class="toolbar_icon"><span class="jsccount toolbar_count">{{cart.item_count}}</span></span>
+          {%- if show_txt -%}<span class="gecko_toolbar_label">{{block.settings.title}}</span>{%- endif -%}
+        </a>
+      </div>
+  {%- when 'account' -%}
+      <div class="type_toolbar_{{block_type}} gecko_toolbar_item">
+        <a href="{{routes.account_url}}" class="push_side" data-id="#nt_login_canvas">
+          <span class="toolbar_icon"></span>
+          {%- if show_txt -%}<span class="gecko_toolbar_label">{{block.settings.title}}</span>{%- endif -%}
+        </a>
+      </div>
+  {%- when 'search' -%}
+      <div class="type_toolbar_{{block_type}} gecko_toolbar_item">
+        <a href="{{search_url}}" class="push_side" data-id="#nt_search_canvas">
+          <span class="toolbar_icon"></span>
+          {%- if show_txt -%}<span class="gecko_toolbar_label">{{block.settings.title}}</span>{%- endif -%}
+        </a>
+      </div>
+  {%- when 'blog' -%}
+      <div class="type_toolbar_{{block_type}} gecko_toolbar_item">
+        <a href="{{block.settings.blog |default:routes.all_products_collection_url}}">
+          <span class="toolbar_icon"></span>
+          {%- if show_txt -%}<span class="gecko_toolbar_label">{{block.settings.title}}</span>{%- endif -%}
+        </a>
+      </div>
+  {%- when 'filter' -%}
+      <div class="type_toolbar_{{block_type}} gecko_toolbar_item dn">
+        <a class="dt_trigger_cl" rel="nofollow" data-no-instant href="#" data-trigger=".btn_filter">
+          <span class="toolbar_icon"></span>
+          {%- if show_txt -%}<span class="gecko_toolbar_label">{{block.settings.title}}</span>{%- endif -%}
+        </a>
+      </div>
+  {%- when 'sidebar' -%}
+      <div class="type_toolbar_{{block_type}} gecko_toolbar_item dn">
+        <a class="dt_trigger_cl" rel="nofollow" data-no-instant href="#" data-trigger=".btn_sidebar">
+          <span class="toolbar_icon"></span>
+          {%- if show_txt -%}<span class="gecko_toolbar_label">{{block.settings.title}}</span>{%- endif -%}
+        </a>
+      </div>
+  {%- when 'nav' -%}
+      <div class="type_toolbar_{{block_type}} gecko_toolbar_item">
+        <a href="{{routes.root_url}}" class="push_side" data-id="#nt_menu_canvas">
+          <span class="toolbar_icon"></span>
+          {%- if show_txt -%}<span class="gecko_toolbar_label">{{block.settings.title}}</span>{%- endif -%}
+        </a>
+      </div>
+  {%- when 'home' -%}
+      <div class="type_toolbar_{{block_type}} gecko_toolbar_item">
+        <a href="{{routes.root_url}}">
+          <span class="toolbar_icon"></span>
+          {%- if show_txt -%}<span class="gecko_toolbar_label">{{block.settings.title}}</span>{%- endif -%}
+        </a>
+      </div>
+  {%- else -%}
+      <div class="type_toolbar_{{block_type}} type_toolbar_{{block.id}} gecko_toolbar_item">
+        <a href="{{block.settings.link |default:routes.account_url}}">
+          {%- if block.settings.image != blank %}<img class="lazyload lz_op_ef" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{block.settings.image | img_url:img_size }}" alt="{{block.settings.image.alt}}"></i>{% else %}<span class="toolbar_icon"></span>{% endif -%}
+          {%- if show_txt -%}<span class="gecko_toolbar_label">{{block.settings.title}}</span>{%- endif -%}
+        </a>
+      </div>
+{%- endcase -%}
+{%- endfor -%}
+</div>
+
+{%- schema -%}
+  {
+    "name": "Sticky Toolbar Mobile",
+    "max_blocks": 20,
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Config enable/disable on Theme settings: General settings ---> SHOP SECTION SETTINGS"
+      }, 
+      {
+        "type": "checkbox",
+        "id": "show_txt",
+        "label": "Show text under icon?",
+        "default": true
+      }
+    ],
+    "blocks": [
+      {
+        "type": "shop",
+        "name": "Shop",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Shop"
+          },
+          {
+            "type": "collection",
+            "id": "link",
+            "label": "Link (optional)"
+          }
+        ]
+      },
+      {
+        "type": "wish",
+        "name": "Wishlist",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Wishlist"
+          }
+        ]
+      },
+      {
+        "type": "compe",
+        "name": "Compare",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Compare"
+          }
+        ]
+      },
+      {
+        "type": "cart",
+        "name": "Cart",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Cart"
+          }
+        ]
+      },
+      {
+        "type": "account",
+        "name": "Account",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Account"
+          }
+        ]
+      },
+      {
+        "type": "search",
+        "name": "Search",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Search"
+          }
+        ]
+      },
+      {
+        "type": "blog",
+        "name": "Blog",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Blog"
+          },
+          {
+            "id": "blog",
+            "type": "blog",
+            "label": "Blog"
+          }
+        ]
+      },
+      {
+        "type": "filter",
+        "name": "Filter",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Filter"
+          },
+          {
+            "type": "paragraph",
+            "content": "Only show when page has 'Filter'"
+          }
+        ]
+      },
+      {
+        "type": "sidebar",
+        "name": "Sidebar",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Sidebar"
+          },
+          {
+            "type": "paragraph",
+            "content": "Only show when page has 'Sidebar'"
+          }
+        ]
+      },
+      {
+        "type": "nav",
+        "name": "Menu",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Menu"
+          }
+        ]
+      },
+      {
+        "type": "home",
+        "name": "Home",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Home"
+          }
+        ]
+      },
+      {
+        "type": "link",
+        "name": "Link Custom",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Custom"
+          },
+          {
+             "type": "image_picker",
+             "id": "image",
+             "label": "Icon image"
+          },
+          {
+            "type": "url",
+            "id": "link",
+            "label": "Link",
+            "default": "/"
+          }
+        ]
+      }
+    ],
+    "default": {
+      "blocks": [
+        {"type": "shop"},{"type": "wish"},{"type": "cart"},{"type": "account"},{"type": "search"}
+      ]
+    }
+  }
+{% endschema %}

@@ -1,0 +1,10 @@
+{%- liquid
+  if enable_minify == 'css'
+   echo nameFile | asset_url | replace:".css?v=",".css?enable_css_minification=1&v="
+  elsif enable_minify == 'tagcss'
+   echo nameFile | asset_url | replace:".css?v=",".css?enable_css_minification=1&v=" | stylesheet_tag
+  elsif enable_minify == 'js'
+   echo nameFile | asset_url | replace:".js?v=",".js?enable_js_minification=1&v="
+  else
+   echo nameFile | asset_url | replace:".css?v=",".css?enable_css_minification=1&v=" | script_tag
+  endif -%}
